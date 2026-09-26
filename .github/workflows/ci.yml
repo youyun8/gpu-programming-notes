@@ -65,7 +65,7 @@ jobs:
           make examples-test
 
   triton:
-    name: Chapter 14 Triton kernels (interpreter)
+    name: Chapters 14-15 Triton kernels (interpreter)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -103,6 +103,8 @@ jobs:
           python-version: "3.12"
       - name: Check README index
         run: python3 scripts/build_index.py --check
+      - name: Check site generator
+        run: python3 scripts/test_build_site.py
       - name: Check that the figures are current
         run: python3 scripts/build_figures.py --check
       - name: Check that every figure label is legible (no overlaps, no clipping)

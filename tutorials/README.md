@@ -1,15 +1,14 @@
-# Tutorials
+# GPU Programming Learning Paths
 
-The tutorials are organised in five parts. Read Part I in order; after it,
-Part II (parallel patterns) and Part III (matrix multiplication) can be
-read in either order, Part IV (AMD GPUs) assumes chapter 04, and Part V
-(Triton and publishing) is independent tooling. Every chapter points at the
-practice problems that exercise it, and chapters 09–14 come with tested
-example programs in [`examples/`](examples/check.cuh).
+The tutorials are organised as six short learning paths. Start with Part I.
+Then choose parallel patterns, matrix multiplication, or portable model
+kernels. The AMD production path builds on matrix multiplication and the model
+case studies. Publishing is independent. Chapters 09–15 include tested
+programs in [`examples/`](examples/check.cuh).
 
-![The tutorials: five parts, read top to bottom](figures/overview-learning-path.svg)
+![Six learning paths from GPU foundations to portable and AMD production kernels](figures/overview-learning-path.svg)
 
-## Part I · CUDA Foundations
+## Part I · Foundations
 
 How a GPU runs code and how to feed it data. Enough to write correct,
 bandwidth-bound kernels for every elementwise, reduction and normalization
@@ -54,23 +53,34 @@ technique each and come with a complete, tested program.
 | 04.6 | [Split-K and Stream-K](gemm/06-split-k-stream-k.md) | Tile quantization, partial tiles, cross-block fix-up | [`06-split-k.cu`](gemm/06-split-k.cu), [`07-stream-k.cu`](gemm/07-stream-k.cu) |
 | 04.7 | [Tensor Cores](gemm/07-tensor-cores.md) | WMMA, `ldmatrix` + `mma.sync`, swizzled smem, `wgmma` | [`08-wmma.cu`](gemm/08-wmma.cu), [`09-mma-sync.cu`](gemm/09-mma-sync.cu) |
 
-## Part IV · AMD GPUs
+## Part IV · Portable Model Kernels
+
+Start with Triton's block-level model, then apply it to quantization, serving
+caches, and Kimi Delta Attention.
+
+| # | Chapter | Main topics | Program |
+|---|---|---|---|
+| 14 | [Triton Fundamentals](14-triton.md) | Blocks, masks, fused softmax, autotuned matmul, FlashAttention, compiler and debugging | [`14-triton/`](examples/14-triton/test_kernels.py) |
+| 15 | [Triton in Quark, Kimi K3, and SGLang](15-triton-model-systems.md) | SiTU-GLU, MXFP4 concepts, indexed state caches, recurrent KDA, prefill and serving dispatch | [`15-triton-k3/`](examples/15-triton-k3/test_model_kernels.py) |
+
+## Part V · AMD Production Kernels
 
 The same ideas on AMD's CDNA3 (MI300): first the hardware and instruction,
 then a hand-written kernel, then the generator that produces thousands of
-such kernels. Assumes chapter 04 (and ideally 04.7).
+such kernels. The final chapter connects AITER and FlyDSL to Kimi K3. This path
+assumes chapter 04 and ideally 04.7.
 
 | # | Chapter | Main topics | Practice |
 |---|---|---|---|
 | 05 | [CDNA3 and MFMA](05-amd-cdna3-mfma.md) | Vocabulary map, wave64, MFMA operand layout, a teaching kernel and its ISA | [`amd/mfma_gemm.hip`](amd/mfma_gemm.hip) |
 | 06 | [Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md) | AITER dispatch, one wave per SIMD, direct-to-LDS, interleaving, split-K | Disassemble AITER `.co` files |
 | 07 | [hipBLASLt and TensileLite](07-hipblaslt-tensilelite.md) | Solution parameters, kernel names, selection, offline tuning | `hipblaslt-bench` |
+| 16 | [AITER and FlyDSL for Kimi K3](16-aiter-flydsl-kimi-k3.md) | Layout algebra, quantization, two-stage MoE, MLA/KDA backend boundaries, multi-GPU validation | AITER and FlyDSL tagged test suites |
 
-## Part V · Tools & Publishing
+## Part VI · Publishing
 
 | # | Chapter | Main topics | Program |
 |---|---|---|---|
-| 14 | [Triton](14-triton.md) | Block-level programming model, fused softmax, matmul with autotuning, FlashAttention, compiler and debugging | [`14-triton/`](examples/14-triton/test_kernels.py) |
 | 08 | [Deploying This Site](08-deploying-this-site.md) | Site builder, GitHub Pages, static hosts, EPUB/PDF, CI, figures | |
 
 ## How Every Chapter Is Organised
@@ -116,7 +126,7 @@ level of the memory hierarchy until $W/F$ is the bound.
 ```bash
 make examples-test                     # every examples/*.cu on the CPU emulator
 nvcc -O3 -arch=sm_80 -std=c++17 -lineinfo tutorials/examples/11-scan.cu -o scan && ./scan --bench
-python3 tutorials/examples/14-triton/test_kernels.py   # Triton (interpreter without a GPU)
+make triton-test                     # chapters 14-15 (interpreter without a GPU)
 ```
 
 ## Reading List
