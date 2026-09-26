@@ -1,5 +1,5 @@
 // Causal Attention (LeetGPU)
-// https://leetgpu.com/challenges/causal-attention
+// https://leetgpu.com/challenges/causal-self-attention
 //
 // softmax(mask(Q K^T / sqrt(d))) V with key j visible to query i iff j <= i.
 // Flash-style kernel: 8 warps = 8 query rows per block, 32-key tiles in shared

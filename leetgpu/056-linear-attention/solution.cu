@@ -1,5 +1,5 @@
 // Linear Attention (LeetGPU)
-// https://leetgpu.com/challenges/linear-attention
+// https://leetgpu.com/challenges/linear-self-attention
 //
 // out_i = phi(Q_i) S / (phi(Q_i) . z),  S = phi(K)^T V (d x d),  z = sum_j phi(K_j),
 // phi(x) = elu(x) + 1. Associativity turns O(M^2 d) attention into O(M d^2):

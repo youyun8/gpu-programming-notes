@@ -1,5 +1,5 @@
 // GAE Reverse Scan (LeetGPU)
-// https://leetgpu.com/challenges/gae-reverse-scan
+// https://leetgpu.com/challenges/parallel-reverse-scan-gae
 //
 // delta_t = r_t + gamma V_{t+1} - V_t (V_S = 0);  A_t = delta_t + c A_{t+1}, c = gamma lambda.
 // The reverse recurrence is a scan of affine maps x -> c x + delta run from the

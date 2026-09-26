@@ -1,5 +1,5 @@
 // ViT Patch Embedding (LeetGPU)
-// https://leetgpu.com/challenges/vit-patch-embedding
+// https://leetgpu.com/challenges/vision-transformer-patch-embedding
 //
 // tokens = patches (B*N x CPP) * W^T (CPP x D) + bias; row 0 of every image is
 // cls + pos[0], row n+1 is token n + pos[n+1].

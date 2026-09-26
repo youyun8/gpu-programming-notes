@@ -1,5 +1,5 @@
 // Sliding Window Attention (LeetGPU)
-// https://leetgpu.com/challenges/sliding-window-attention
+// https://leetgpu.com/challenges/sliding-window-self-attention
 //
 // Query i attends to keys j with |i - j| <= w. Flash-style kernel (warp per
 // query row, 32-key shared tiles, online softmax) that only visits the key

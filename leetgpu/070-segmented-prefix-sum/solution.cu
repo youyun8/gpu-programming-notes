@@ -1,5 +1,5 @@
 // Segmented Prefix Sum (LeetGPU)
-// https://leetgpu.com/challenges/segmented-prefix-sum
+// https://leetgpu.com/challenges/segmented-exclusive-prefix-sum
 //
 // Exclusive scan that restarts at every flag. A segmented scan is an ordinary
 // scan over (flag, sum) pairs with the associative operator

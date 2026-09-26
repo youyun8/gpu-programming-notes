@@ -1,5 +1,5 @@
 // SwiGLU (LeetGPU)
-// https://leetgpu.com/challenges/swiglu
+// https://leetgpu.com/challenges/swish-gated-linear-unit
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;

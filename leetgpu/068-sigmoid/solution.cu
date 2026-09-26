@@ -1,5 +1,5 @@
 // Sigmoid (LeetGPU)
-// https://leetgpu.com/challenges/sigmoid
+// https://leetgpu.com/challenges/sigmoid-activation
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;

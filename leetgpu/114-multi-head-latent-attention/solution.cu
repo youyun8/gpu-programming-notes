@@ -1,5 +1,5 @@
 // Multi-Head Latent Attention (decode, weight-absorbed) (LeetGPU)
-// https://leetgpu.com/challenges/multi-head-latent-attention
+// https://leetgpu.com/challenges/multi-head-latent-attention-decode
 //
 // DeepSeek-style MLA decode for one token:
 //   q_lat[h] = q_nope[h] W_UK[h]                          (absorb W_UK into the query)

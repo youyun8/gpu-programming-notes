@@ -1,5 +1,5 @@
 // DiT Block (LeetGPU)
-// https://leetgpu.com/challenges/dit-block
+// https://leetgpu.com/challenges/diffusion-transformer-block
 //
 // Diffusion-Transformer block with adaLN-Zero conditioning (D = 512, 8 heads
 // of 64, MLP = 2048; weights stored (out, in) -> "NT" GEMMs):

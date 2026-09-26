@@ -1,5 +1,5 @@
 // RoPE Embedding (LeetGPU)
-// https://leetgpu.com/challenges/rope-embedding
+// https://leetgpu.com/challenges/rotary-positional-embedding
 //
 // out = q * cos + rotate_half(q) * sin, rotate_half([x1, x2]) = [-x2, x1].
 // One thread per element pair (j, j + D/2) of a row: both outputs need the

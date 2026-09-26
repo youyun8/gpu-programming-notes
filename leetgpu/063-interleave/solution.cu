@@ -1,5 +1,5 @@
 // Interleave (LeetGPU)
-// https://leetgpu.com/challenges/interleave
+// https://leetgpu.com/challenges/interleave-arrays
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;

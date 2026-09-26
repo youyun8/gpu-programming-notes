@@ -1,5 +1,5 @@
 // GEGLU (LeetGPU)
-// https://leetgpu.com/challenges/geglu
+// https://leetgpu.com/challenges/gaussian-error-gated-linear-unit
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;

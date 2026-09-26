@@ -1,5 +1,5 @@
 // Jacobi Stencil 2D (LeetGPU)
-// https://leetgpu.com/challenges/jacobi-stencil-2d
+// https://leetgpu.com/challenges/2d-jacobi-stencil
 //
 // One sweep of the 5-point stencil; boundary cells are copied. A 32 x 8 block
 // with threadIdx.x along columns: the left/right/center reads of a warp share

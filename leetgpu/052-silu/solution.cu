@@ -1,5 +1,5 @@
 // SiLU (LeetGPU)
-// https://leetgpu.com/challenges/silu
+// https://leetgpu.com/challenges/sigmoid-linear-unit
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;

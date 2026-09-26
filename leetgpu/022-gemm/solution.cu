@@ -1,5 +1,5 @@
 // GEMM (FP16) (LeetGPU)
-// https://leetgpu.com/challenges/gemm
+// https://leetgpu.com/challenges/general-matrix-multiplication-gemm
 //
 // C = alpha * A B + beta * C, A: M x K, B: K x N, C: M x N, all fp16 row-major,
 // fp32 accumulation on tensor cores via WMMA.

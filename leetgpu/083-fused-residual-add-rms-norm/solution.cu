@@ -1,5 +1,5 @@
 // Fused Residual Add + RMSNorm (LeetGPU)
-// https://leetgpu.com/challenges/fused-residual-add-rms-norm
+// https://leetgpu.com/challenges/fused-residual-add-and-rms-norm
 //
 // out = (x + r) / sqrt(mean((x + r)^2) + eps) * w, per row.
 // One block per row; z = x + r is never written to global memory:
