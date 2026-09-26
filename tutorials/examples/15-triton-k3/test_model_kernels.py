@@ -33,7 +33,7 @@ def mxfp4_reference(x):
     scale = torch.pow(2.0, torch.ceil(torch.log2(torch.clamp(max_abs / 6.0, min=2.0 ** -126))))
     scale = torch.where(max_abs == 0, 1.0, scale)
     levels = torch.tensor([0, .5, 1, 1.5, 2, 3, 4, 6], device=x.device)
-    indices = (groups.abs().unsqueeze(-1) - levels).abs().argmin(-1)
+    indices = ((groups.abs() / scale).unsqueeze(-1) - levels).abs().argmin(-1)
     q = levels[indices].copysign(groups)
     return (q * scale).flatten()[:x.numel()].to(x.dtype).reshape_as(x)
 
