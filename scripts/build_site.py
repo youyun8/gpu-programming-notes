@@ -13,6 +13,7 @@ are rewritten to the generated pages, and every referenced source file is
 also published verbatim so it can be downloaded.
 """
 import argparse
+import json
 import re
 import shutil
 import sys
@@ -54,6 +55,102 @@ def site_path(repo_path: Path) -> Path:
     if rel.suffix in CODE_LANGUAGES and rel.parent.parts[:1] == ("tutorials",):
         return rel.with_name(rel.name.replace(".", "-") + ".md")
     return rel
+
+
+
+HOME_TEMPLATE = """---
+hide:
+  - navigation
+  - toc
+---
+
+<div class="hero" markdown>
+
+# GPU Programming Notes
+
+From your first CUDA kernel to reading the hand-written assembly of AMD's
+fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara problem.
+
+[Start the tutorials](tutorials/index.md){{ .md-button .md-button--primary }}
+[Browse problems](leetgpu/index.md){{ .md-button }}
+[Topics](tags.md){{ .md-button }}
+
+<div class="stats">
+<div><b>{total}</b>solved problems</div>
+<div><b>{chapters}</b>tutorial chapters</div>
+<div><b>100%</b>tested on the reference cases</div>
+</div>
+
+</div>
+
+## Where to start
+
+<div class="grid cards" markdown>
+
+-   :material-school:{{ .lg .middle }} **CUDA foundations**
+
+    ---
+
+    Execution model, memory hierarchy, reductions and tiled GEMM, each derived
+    from first principles with the cost model written out.
+
+    [:octicons-arrow-right-24: Chapters 00–04](tutorials/index.md)
+
+-   :material-chip:{{ .lg .middle }} **AMD GEMM deep dive**
+
+    ---
+
+    CDNA3 and MFMA, an instruction-by-instruction teardown of aiter's asm GEMM,
+    and how hipBLASLt/TensileLite generates thousands of kernels.
+
+    [:octicons-arrow-right-24: Chapters 05–07](tutorials/05-amd-cdna3-mfma.md)
+
+-   :material-code-braces:{{ .lg .middle }} **LeetGPU: {leetgpu} problems**
+
+    ---
+
+    Elementwise ops to attention, sorting, FFT and full transformer blocks.
+
+    [:octicons-arrow-right-24: Problem index](leetgpu/index.md)
+
+-   :material-lightning-bolt:{{ .lg .middle }} **Tensara: {tensara} problems**
+
+    ---
+
+    Benchmark-style kernels, including MXFP4/MXFP8/NVFP4 quantised GEMMs.
+
+    [:octicons-arrow-right-24: Problem index](tensara/index.md)
+
+-   :material-cpu-64-bit:{{ .lg .middle }} **cuemu**
+
+    ---
+
+    A CPU emulator that runs every solution against the official reference
+    tests, so no GPU is needed.
+
+    [:octicons-arrow-right-24: How it works](tools/cuemu/index.md)
+
+-   :material-rocket-launch:{{ .lg .middle }} **Deploy your own copy**
+
+    ---
+
+    GitHub Pages, any static host, or offline as EPUB/PDF.
+
+    [:octicons-arrow-right-24: Chapter 08](tutorials/08-deploying-this-site.md)
+
+</div>
+
+## How every problem page is organised
+
+1. **Problem**: the task in my own words, with shapes and data types.
+2. **Formulation**: the exact mathematics in TeX, followed by a symbol table
+   that defines every symbol.
+3. **Approach**: how the work is split across threads, blocks and warps, and why.
+4. **Cost analysis**: FLOPs, bytes moved and arithmetic intensity, which tell
+   you whether the kernel is memory- or compute-bound.
+5. **Pitfalls** and **verification**: what goes wrong, and how the solution was tested.
+6. **Solution**: the complete source, with line numbers.
+"""
 
 
 LIST_ITEM_RE = re.compile(r"^( *)([-*+]|\d+[.)])( +)\S")
@@ -156,21 +253,28 @@ class SiteBuilder:
     def write(self, page: Path, text: str):
         dest = OUT / page
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(normalize_lists(text) if page.suffix == ".md" else text)
+        if page.suffix == ".md":
+            front = re.match(r"^---\n.*?\n---\n", text, re.S)
+            head = front.group(0) if front else ""
+            text = head + normalize_lists(text[len(head):])
+        dest.write_text(text)
 
     # ----- pages --------------------------------------------------------------------------
     def home(self):
+        """Landing page (hero + cards) and an 'About' page rendered from README.md."""
         text = (ROOT / "README.md").read_text()
-        # The problem tables are rendered on their own pages; keep the home page short.
         for tag, platform in (("LEETGPU", "leetgpu"), ("TENSARA", "tensara")):
             text = re.sub(rf"<!-- BEGIN {tag} INDEX -->.*?<!-- END {tag} INDEX -->",
                           f"@@{platform}@@", text, flags=re.S)
-        text = self.rewrite_links(text, ROOT / "README.md", Path("index.md"))
+        about = self.rewrite_links(text, ROOT / "README.md", Path("about.md"))
         for platform, name in PLATFORMS.items():
-            count = sum(1 for d in (ROOT / platform).iterdir() if (d / "README.md").exists())
-            text = text.replace(f"@@{platform}@@", f"All {count} problems with write-ups and full solutions: "
-                                                   f"[{name} index]({platform}/index.md).")
-        self.write(Path("index.md"), text)
+            about = about.replace(f"@@{platform}@@", f"See the [{name} index]({platform}/index.md).")
+        self.write(Path("about.md"), about)
+
+        counts = {p: sum(1 for d in (ROOT / p).iterdir() if (d / "README.md").exists()) for p in PLATFORMS}
+        chapters = len([p for p in (ROOT / "tutorials").glob("[0-9][0-9]-*.md")])
+        self.write(Path("index.md"), HOME_TEMPLATE.format(
+            leetgpu=counts["leetgpu"], tensara=counts["tensara"], total=sum(counts.values()), chapters=chapters))
 
     def tutorials(self):
         nav, code_nav = [], []
@@ -207,30 +311,51 @@ class SiteBuilder:
             meta, body = parse_front_matter(readme.read_text())
             page = site_path(readme)
             sources = sorted(p for p in pdir.iterdir() if p.suffix in (".cu", ".py") and p.is_file())
-            parts = [self.rewrite_links(body.strip(), readme, page), ""]
+            difficulty = meta.get("difficulty") if meta.get("difficulty") in DIFFICULTIES else "easy"
+            tags = meta.get("tags") or []
+            title = meta.get("title", pdir.name)
+
+            # The README's own "**Platform:** ..." line is replaced by a header bar.
+            body = re.sub(r"^\*\*Platform:\*\*.*\n", "", body.strip(), count=1, flags=re.M)
+            body = re.sub(r"^# .*\n", "", body, count=1)
+            header = [f'<div class="problem-meta" markdown>',
+                      f'<span class="badge {platform}">{PLATFORMS[platform]}</span>'
+                      f'<span class="badge {difficulty}">{difficulty}</span>',
+                      " ".join(f'<span class="chip">{t}</span>' for t in tags),
+                      '<span class="spacer"></span>',
+                      f'[:octicons-link-external-16: Statement]({meta.get("url", "")}){{ .md-button }}']
+            for src in sources:
+                header.append(f"[:material-download: {src.name}]({src.name}){{ .md-button }}")
+            header.append("</div>")
+            parts = ["---", f"title: {json.dumps(title)}", "hide:", "  - tags", f"description: {json.dumps(PLATFORMS[platform] + ' ' + difficulty + ' problem: ' + title)}", "tags:", *[f"  - {t}" for t in tags], "---", "", f"# {title}", "", *header, "",
+                     self.rewrite_links(body, readme, page), ""]
             for src in sources:
                 self.static_files.add(src)
                 lang = CODE_LANGUAGES[src.suffix]
+                lines = src.read_text().count("\n") + 1
                 parts += [f"## Solution: `{src.name}`", "",
-                          f"[Download `{src.name}`]({src.name}) · "
+                          f"{lines} lines · [Download]({src.name}) · "
                           f"[View on GitHub]({self.repo_url}/blob/main/{src.relative_to(ROOT).as_posix()})", "",
-                          f"````{lang} linenums=\"1\"", src.read_text().rstrip(), "````", ""]
+                          f"````{lang} linenums=\"1\" title=\"{src.relative_to(ROOT).as_posix()}\"",
+                          src.read_text().rstrip(), "````", ""]
             self.write(page, "\n".join(parts))
-            difficulty = meta.get("difficulty", "easy") if meta.get("difficulty") in DIFFICULTIES else "easy"
-            tags = ", ".join(meta.get("tags") or []) or "–"
+            chips = " ".join(f'<span class="chip">{t}</span>' for t in tags) or "–"
             rows[difficulty].append(
-                f"| [{meta.get('title', pdir.name)}]({pdir.name}/index.md) | {tags} "
-                f"| {STATUS_ICONS.get(meta.get('status', 'todo'), '?')} | [statement]({meta.get('url', '')}) |")
+                f"| [{title}]({pdir.name}/index.md) | {chips} | [:octicons-link-external-16:]({meta.get('url', '')}) |")
             nav[difficulty].append(page.as_posix())
         count = sum(len(v) for v in rows.values())
+        summary = " ".join(f'<span class="badge {d}">{len(rows[d])} {d}</span>' for d in DIFFICULTIES if rows[d])
         out = [f"# {PLATFORMS[platform]}", "",
-               f"{count} problems. Each page has my write-up (problem summary, approach, pitfalls) and the full "
-               f"solution source. Problem statements are not reproduced here; follow the *statement* links.", ""]
+               f"**{count} problems, all solved and tested.** {summary}", "",
+               "Every page has a formal statement of the task (equations with a full symbol table), the parallel "
+               "design, a cost analysis, pitfalls, and the complete solution source. The original problem "
+               "statements are not reproduced; follow the :octicons-link-external-16: links.", "",
+               "Browse by topic on the [tags](../tags.md) page.", ""]
         for d in DIFFICULTIES:
             if not rows[d]:
                 continue
-            out += [f"## {d.capitalize()} ({len(rows[d])})", "", "| Problem | Tags | Status | Source |",
-                    "|---|---|---|---|", *rows[d], ""]
+            out += [f"## {d.capitalize()} ({len(rows[d])})", "", "| Problem | Topics | Statement |",
+                    "|---|---|:-:|", *rows[d], ""]
         self.write(Path(platform) / "index.md", "\n".join(out))
         return nav
 
@@ -243,6 +368,9 @@ class SiteBuilder:
         return pages
 
     def copy_static(self):
+        shutil.copytree(ROOT / "site_assets", OUT / "assets", dirs_exist_ok=True)
+        self.write(Path("tags.md"), "# Topics\n\nEvery problem page is tagged by technique and domain.\n\n"
+                                    "<!-- material/tags -->\n")
         for src in sorted(self.static_files):
             dest = OUT / src.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -304,7 +432,7 @@ def main() -> int:
     tool_nav = b.tools()
     b.copy_static()
 
-    nav = [{"Home": "index.md"},
+    nav = [{"Home": ["index.md", "about.md"]},
            {"Tutorials": ["tutorials/index.md", *tutorial_nav]}]
     for platform, by_diff in problem_nav.items():
         section = [f"{platform}/index.md"]
@@ -312,6 +440,7 @@ def main() -> int:
             if by_diff[d]:
                 section.append({d.capitalize(): by_diff[d]})
         nav.append({PLATFORMS[platform]: section})
+    nav.append({"Topics": "tags.md"})
     if tool_nav:
         nav.append({"Tools": [{Path(p).parent.name: p} for p in tool_nav]})
 
@@ -329,7 +458,7 @@ def main() -> int:
     pages = len(list(OUT.rglob("*.md")))
     print(f"wrote {pages} pages and {len(b.static_files)} downloadable files to {OUT.relative_to(ROOT)}/")
     if args.bundle:
-        order = ["index.md", "tutorials/index.md", *(p for p in tutorial_nav if isinstance(p, str))]
+        order = ["about.md", "tutorials/index.md", *(p for p in tutorial_nav if isinstance(p, str))]
         for platform, by_diff in problem_nav.items():
             order.append(f"{platform}/index.md")
             for d in DIFFICULTIES:
