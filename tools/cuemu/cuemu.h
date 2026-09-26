@@ -1135,3 +1135,65 @@ inline void cuemuMmaM16N8K16(float* d, const uint32_t* a, const uint32_t* b, con
     __syncwarp();
     for (int i = 0; i < 4; ++i) d[i] = out[i];
 }
+
+
+// ---------------------------------------------------------------------------
+// Cooperative groups: the block and warp-tile subset (thread_block,
+// tiled_partition<N> with N <= 32, shuffles, votes, reduce, inclusive_scan).
+// Grid-wide groups (grid.sync()) cannot be emulated: blocks run one at a time.
+// ---------------------------------------------------------------------------
+namespace cooperative_groups {
+struct thread_block {
+    void sync() const { __syncthreads(); }
+    unsigned thread_rank() const { return threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * threadIdx.z); }
+    unsigned size() const { return blockDim.x * blockDim.y * blockDim.z; }
+    unsigned num_threads() const { return size(); }
+};
+inline thread_block this_thread_block() { return {}; }
+inline void sync(const thread_block& g) { g.sync(); }
+
+template <unsigned N>
+struct thread_block_tile {
+    static_assert(N >= 1 && N <= 32 && (N & (N - 1)) == 0, "tile size must be a power of two <= 32");
+    static unsigned linear() { return cuemu::g_block.fibers[cuemu::g_current].linear; }
+    unsigned mask() const {
+        const unsigned lane = linear() % 32;
+        return N == 32 ? 0xffffffffu : ((1u << N) - 1u) << (lane / N * N);
+    }
+    unsigned thread_rank() const { return linear() % N; }
+    static constexpr unsigned size() { return N; }
+    static constexpr unsigned num_threads() { return N; }
+    unsigned meta_group_rank() const { return linear() / N; }
+    unsigned meta_group_size() const { return (cooperative_groups::this_thread_block().size() + N - 1) / N; }
+    void sync() const { __syncwarp(mask()); }
+    template <class T> T shfl(T v, int src) const { return __shfl_sync(mask(), v, src, N); }
+    template <class T> T shfl_up(T v, unsigned d) const { return __shfl_up_sync(mask(), v, d, N); }
+    template <class T> T shfl_down(T v, unsigned d) const { return __shfl_down_sync(mask(), v, d, N); }
+    template <class T> T shfl_xor(T v, int m) const { return __shfl_xor_sync(mask(), v, m, N); }
+    unsigned ballot(int pred) const { return __ballot_sync(mask(), pred) >> (linear() % 32 / N * N); }
+    int any(int pred) const { return __any_sync(mask(), pred); }
+    int all(int pred) const { return __all_sync(mask(), pred); }
+};
+template <unsigned N>
+inline thread_block_tile<N> tiled_partition(const thread_block&) { return {}; }
+
+template <class T> struct plus { T operator()(const T& a, const T& b) const { return a + b; } };
+template <class T> struct greater { T operator()(const T& a, const T& b) const { return a > b ? a : b; } };
+template <class T> struct less { T operator()(const T& a, const T& b) const { return a < b ? a : b; } };
+
+template <unsigned N, class T, class Op>
+inline T reduce(const thread_block_tile<N>& g, T v, Op op) {
+    for (unsigned o = N / 2; o > 0; o /= 2) v = op(v, g.shfl_xor(v, o));
+    return v;
+}
+template <unsigned N, class T, class Op>
+inline T inclusive_scan(const thread_block_tile<N>& g, T v, Op op) {
+    for (unsigned d = 1; d < N; d *= 2) {
+        const T u = g.shfl_up(v, d);
+        if (g.thread_rank() >= d) v = op(u, v);
+    }
+    return v;
+}
+template <unsigned N, class T>
+inline T inclusive_scan(const thread_block_tile<N>& g, T v) { return inclusive_scan(g, v, plus<T>()); }
+}  // namespace cooperative_groups

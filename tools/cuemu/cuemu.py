@@ -22,8 +22,9 @@ DROPPED_INCLUDES = {
     "cuda_runtime.h", "cuda.h", "cuda_runtime_api.h", "cuda_fp16.h", "cuda_bf16.h", "cuda_fp8.h",
     "cuda_fp4.h", "device_launch_parameters.h", "math_constants.h", "device_functions.h",
     "vector_types.h", "sm_20_atomic_functions.h", "cuda_pipeline.h", "mma.h", "cstdint", "stdint.h",
+    "cooperative_groups.h", "cooperative_groups/reduce.h", "cooperative_groups/scan.h",
 }
-UNSUPPORTED_INCLUDES = {"cooperative_groups.h", "cub/cub.cuh", "cublas_v2.h", "cudnn.h"}
+UNSUPPORTED_INCLUDES = {"cub/cub.cuh", "cublas_v2.h", "cudnn.h"}
 
 
 class TranslateError(Exception):

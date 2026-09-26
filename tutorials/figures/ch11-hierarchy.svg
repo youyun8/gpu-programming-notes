@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" width="720" height="340" class="fig-svg" role="img">
+<title>Scanning one 2048-item tile: registers, warps, block</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch11-hierarchy-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch11-hierarchy-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch11-hierarchy-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch11-hierarchy-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch11-hierarchy-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch11-hierarchy-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch11-hierarchy-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="340" class="fig-paper"/>
+<text x="20" y="30" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">1. each thread scans its 8 consecutive items sequentially (registers)</text>
+<rect x="20" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="40" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="60" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="80" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="100" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="120" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="140" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<rect x="160" y="44" width="18" height="24" rx="2" class="f-a s-line" stroke-width="0.6"/>
+<text x="100" y="84" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">thread 0: total T0</text>
+<rect x="180" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="200" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="220" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="240" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="260" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="280" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="300" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<rect x="320" y="44" width="18" height="24" rx="2" class="f-b s-line" stroke-width="0.6"/>
+<text x="260" y="84" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">thread 1: total T1</text>
+<rect x="340" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="360" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="380" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="400" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="420" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="440" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="460" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<rect x="480" y="44" width="18" height="24" rx="2" class="f-c s-line" stroke-width="0.6"/>
+<text x="420" y="84" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">thread 2: total T2</text>
+<text x="520" y="56" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">… up to thread 255</text>
+<text x="20" y="130" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">2. warp scan of the thread totals (__shfl_up_sync); lane 31 holds the warp total</text>
+<rect x="20" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="58" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 0</text>
+<rect x="104" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="142" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 1</text>
+<rect x="188" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="226" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 2</text>
+<rect x="272" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="310" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 3</text>
+<rect x="356" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="394" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 4</text>
+<rect x="440" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="478" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 5</text>
+<rect x="524" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="562" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 6</text>
+<rect x="608" y="146" width="76" height="30" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="646" y="161" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 7</text>
+<text x="20" y="210" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">3. warp 0 scans the 8 warp totals; every thread adds the totals of earlier warps</text>
+<rect x="20" y="226" width="660" height="30" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="350" y="241" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp_totals[0 … 7] → inclusive scan → carry for each warp</text>
+<text x="20" y="288" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">4. each item = its register prefix + its thread's exclusive prefix (+ the tile's carry-in)</text>
+<text x="20" y="314" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Only steps 2–3 synchronize; the sequential step does 7 of every 8 additions without any.</text>
+</svg>
