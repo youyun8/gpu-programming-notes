@@ -109,6 +109,26 @@ bytes = a 16×32 block) delivers *exactly* the MFMA B-operand fragments:
 lane `l` gets column `l % 16` and 8 consecutive k values. Section 3 explains
 why this matters.
 
+Written as an index map: split the weight coordinates as
+$n = 16n_1 + n_0$ and $k = 32k_1 + 8k_2 + k_3$. The permutation stores
+element $(n, k)$ at
+
+$$
+\pi(n, k) = \Bigl(\bigl(n_1\,\tfrac{K}{32} + k_1\bigr)\cdot 4 + k_2\Bigr)\cdot 128 + 8\,n_0 + k_3, \qquad
+\ell = 16\,k_2 + n_0
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $n_1, n_0$ | 16-row block of $W$ and row inside it ($0 \le n_0 < 16$) |
+| $k_1, k_2, k_3$ | 32-wide K block, 8-element chunk inside it ($0 \le k_2 < 4$), element inside the chunk |
+| $\pi(n, k)$ | element offset in the shuffled buffer |
+| $\ell$ | the lane that receives the element when a wave reads 1 KiB contiguously (16 bytes per lane) |
+
+Each contiguous 1 KiB chunk is one $16\times32$ block, and lane $\ell$ gets
+row $n_0 = \ell \bmod 16$ with 8 consecutive $k$: the MFMA B-operand
+layout for two consecutive 16x16x16 instructions.
+
 ## 2. The kernel descriptor: one fat wave per SIMD
 
 ```
@@ -173,6 +193,20 @@ waves split N: 4 × 16 = 64 = tileN. Two consequences follow:
    and B leaves `Σₖ aₖ·bₖ` unchanged. The shuffle picks the k order that makes
    loads contiguous.
 
+In symbols, for any permutation $\sigma$ of $\{0, \dots, K-1\}$:
+
+$$
+C_{ij} = \sum_{k=0}^{K-1} A_{ik}\,B_{kj} = \sum_{k=0}^{K-1} A_{i\sigma(k)}\,B_{\sigma(k)j}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $\sigma$ | a reordering of the reduction index, applied identically to both operands |
+
+The only requirement is that the A fragments read from LDS use the same
+$\sigma$ as the pre-shuffled B, which the kernel's LDS read offsets
+guarantee.
+
 ## 4. The main loop
 
 The steady state is a block that repeats for every K step of 64.
@@ -194,6 +228,26 @@ their own 64×64 B columns (8 KiB), then issue 128 MFMAs:
 128 × 16·16·16 × 2 = 1 MFLOP per 24 KiB fetched. Compare this with
 chapter 05's teaching kernel, which issues 8 MFMAs for every 2 global loads,
 4 LDS reads and 2 LDS writes.
+
+The tile shape sets the reuse. For a $128\times64$ workgroup tile and
+K steps of 64 (bf16, 2 bytes):
+
+$$
+I_{\text{tile}} = \frac{2\,B_MB_NB_K}{2\,(B_M + B_N)\,B_K} = \frac{128\cdot64}{128 + 64} \approx 42.7\ \frac{\text{flop}}{\text{byte}}, \qquad
+\rho = \frac{n_{\text{MFMA}}}{n_{\text{mem}}} = \frac{32}{16 + 2 + 16} \approx 0.94
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $B_M, B_N, B_K$ | workgroup tile: 128 (M), 64 (N), 64 (K per step) |
+| $I_{\text{tile}}$ | flops per byte fetched from L2/HBM |
+| $n_{\text{MFMA}}$ | MFMAs per wave per K step |
+| $n_{\text{mem}}$ | memory instructions per wave per K step (buffer loads plus LDS reads) |
+| $\rho$ | MFMAs per memory instruction: about one, so every memory instruction can sit in the shadow of an MFMA |
+
+The teaching kernel of chapter 05 has $\rho = 8/8 = 1$ as well, but each of
+its MFMAs is surrounded by address arithmetic, waits and barriers; here the
+whole loop body is scheduled so that the matrix pipe never idles.
 
 ### Direct-to-LDS loads
 
@@ -314,6 +368,38 @@ Adding `0x8000` and truncating rounds ties *away from zero in magnitude*. This
 is **not round-to-nearest-even**; torch's `.to(torch.bfloat16)` adds
 `0x7fff + lsb`. The results can differ by 1 ulp on exact ties, which matters
 when you compare against a reference bit for bit.
+
+The two rounding rules, on the 32-bit pattern $u$ of the fp32 value:
+
+$$
+\operatorname{bf16}_{\text{RNE}}(u) = \Bigl\lfloor \frac{u + \texttt{0x7FFF} + \bigl(\lfloor u / 2^{16} \rfloor \bmod 2\bigr)}{2^{16}} \Bigr\rfloor, \qquad
+\operatorname{bf16}_{\text{aiter}}(u) = \Bigl\lfloor \frac{u + \texttt{0x8000}}{2^{16}} \Bigr\rfloor
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $u$ | fp32 bit pattern as an unsigned integer (NaN handled separately) |
+| $\lfloor u/2^{16}\rfloor \bmod 2$ | the lowest kept bit (the bf16 mantissa LSB) |
+| $\operatorname{bf16}_{\text{RNE}}$ | round to nearest, ties to even (PyTorch) |
+| $\operatorname{bf16}_{\text{aiter}}$ | round to nearest, ties away from zero (this kernel) |
+
+They differ only when the low 16 bits are exactly `0x8000` and the kept
+LSB is 0.
+
+Split-K itself is just the sum over K ranges:
+
+$$
+C = \sum_{z=0}^{S-1} A_{:,\,\mathcal{K}_z}\,B_{\mathcal{K}_z,\,:}, \qquad
+\mathcal{K}_z = \Bigl[\,z\,\tfrac{K}{S},\ (z+1)\,\tfrac{K}{S}\Bigr)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $S$ | split factor (`splitk`, the grid's z extent) |
+| $\mathcal{K}_z$ | the K range handled by slice $z$ |
+
+It multiplies the number of workgroups by $S$ at the cost of $S$ partial
+results per tile (atomics) and non-deterministic fp32 summation order.
 
 ## 6. Modifying and profiling such a kernel
 

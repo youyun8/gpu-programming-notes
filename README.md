@@ -77,107 +77,107 @@ See [tutorials/](tutorials/README.md).
 <!-- BEGIN LEETGPU INDEX -->
 | Problem | Difficulty | Tags | Status | Source |
 |---|---|---|---|---|
-| [Vector Addition](leetgpu/001-vector-add) | easy | elementwise, memory-bound | ✅ | [link](https://leetgpu.com/challenges/vector-addition) |
+| [Vector Addition](leetgpu/001-vector-add) | easy | elementwise, memory-bound, coalescing | ✅ | [link](https://leetgpu.com/challenges/vector-addition) |
 | [Matrix Multiplication](leetgpu/002-matrix-multiplication) | easy | gemm, shared-memory, tiling, register-blocking | ✅ | [link](https://leetgpu.com/challenges/matrix-multiplication) |
-| [Matrix Transpose](leetgpu/003-matrix-transpose) | easy | shared-memory, coalescing, bank-conflicts | ✅ | [link](https://leetgpu.com/challenges/matrix-transpose) |
-| [Reduction](leetgpu/004-reduction) | medium | reduction, warp-shuffle, two-pass | ✅ | [link](https://leetgpu.com/challenges/reduction) |
-| [Softmax](leetgpu/005-softmax) | medium | softmax, reduction, online-softmax | ✅ | [link](https://leetgpu.com/challenges/softmax) |
-| [Softmax Attention](leetgpu/006-softmax-attention) | medium | attention, flash-attention, online-softmax, shared-memory | ✅ | [link](https://leetgpu.com/challenges/softmax-attention) |
-| [Color Inversion](leetgpu/007-color-inversion) | easy | elementwise, vectorized, uint8 | ✅ | [link](https://leetgpu.com/challenges/color-inversion) |
-| [Matrix Addition](leetgpu/008-matrix-addition) | easy | elementwise, vectorized | ✅ | [link](https://leetgpu.com/challenges/matrix-addition) |
-| [1D Convolution](leetgpu/009-1d-convolution) | easy | convolution, shared-memory, dynamic-shared-memory | ✅ | [link](https://leetgpu.com/challenges/1d-convolution) |
-| [2D Convolution](leetgpu/010-2d-convolution) | medium | convolution, shared-memory, tiling | ✅ | [link](https://leetgpu.com/challenges/2d-convolution) |
-| [3D Convolution](leetgpu/011-3d-convolution) | medium | convolution, 3d | ✅ | [link](https://leetgpu.com/challenges/3d-convolution) |
-| [Multi-Head Attention](leetgpu/012-multi-head-attention) | hard | attention, flash-attention, multi-head | ✅ | [link](https://leetgpu.com/challenges/multi-head-attention) |
-| [Histogramming](leetgpu/013-histogramming) | medium | histogram, atomics, privatization | ✅ | [link](https://leetgpu.com/challenges/histogramming) |
-| [Multi-Agent Simulation](leetgpu/014-multi-agent-sim) | hard | n-body, simulation, shared-memory | ✅ | [link](https://leetgpu.com/challenges/multi-agent-simulation) |
-| [Sorting](leetgpu/015-sorting) | hard | sorting, radix-sort | ✅ | [link](https://leetgpu.com/challenges/sorting) |
-| [Prefix Sum](leetgpu/016-prefix-sum) | medium | scan, prefix-sum, reduce-then-scan | ✅ | [link](https://leetgpu.com/challenges/prefix-sum) |
-| [Dot Product](leetgpu/017-dot-product) | medium | reduction, two-pass | ✅ | [link](https://leetgpu.com/challenges/dot-product) |
-| [Sparse Matrix-Vector Multiplication](leetgpu/018-sparse-matrix-vector-multiplication) | medium | gemv, warp-per-row | ✅ | [link](https://leetgpu.com/challenges/sparse-matrix-vector-multiplication) |
-| [Reverse Array](leetgpu/019-reverse-array) | easy | in-place, memory-bound | ✅ | [link](https://leetgpu.com/challenges/reverse-array) |
-| [K-Means Clustering](leetgpu/020-kmeans-clustering) | hard | clustering, atomics, privatization | ✅ | [link](https://leetgpu.com/challenges/k-means-clustering) |
-| [ReLU](leetgpu/021-relu) | easy | elementwise, activation, vectorized | ✅ | [link](https://leetgpu.com/challenges/relu) |
+| [Matrix Transpose](leetgpu/003-matrix-transpose) | easy | shared-memory, coalescing, bank-conflicts, memory-bound | ✅ | [link](https://leetgpu.com/challenges/matrix-transpose) |
+| [Reduction](leetgpu/004-reduction) | medium | reduction, warp-shuffle, two-pass, deterministic | ✅ | [link](https://leetgpu.com/challenges/reduction) |
+| [Softmax](leetgpu/005-softmax) | medium | softmax, reduction, online-softmax, numerical-stability | ✅ | [link](https://leetgpu.com/challenges/softmax) |
+| [Softmax Attention](leetgpu/006-softmax-attention) | medium | attention, flash-attention, online-softmax, shared-memory, warp-shuffle | ✅ | [link](https://leetgpu.com/challenges/softmax-attention) |
+| [Color Inversion](leetgpu/007-color-inversion) | easy | elementwise, vectorized, uint8, image | ✅ | [link](https://leetgpu.com/challenges/color-inversion) |
+| [Matrix Addition](leetgpu/008-matrix-addition) | easy | elementwise, vectorized, memory-bound | ✅ | [link](https://leetgpu.com/challenges/matrix-addition) |
+| [1D Convolution](leetgpu/009-1d-convolution) | easy | convolution, shared-memory, dynamic-shared-memory, register-blocking | ✅ | [link](https://leetgpu.com/challenges/1d-convolution) |
+| [2D Convolution](leetgpu/010-2d-convolution) | medium | convolution, shared-memory, tiling, dynamic-shared-memory | ✅ | [link](https://leetgpu.com/challenges/2d-convolution) |
+| [3D Convolution](leetgpu/011-3d-convolution) | medium | convolution, 3d, shared-memory | ✅ | [link](https://leetgpu.com/challenges/3d-convolution) |
+| [Multi-Head Attention](leetgpu/012-multi-head-attention) | hard | attention, flash-attention, multi-head, online-softmax | ✅ | [link](https://leetgpu.com/challenges/multi-head-attention) |
+| [Histogramming](leetgpu/013-histogramming) | medium | histogram, atomics, privatization, shared-memory | ✅ | [link](https://leetgpu.com/challenges/histogramming) |
+| [Multi-Agent Simulation](leetgpu/014-multi-agent-sim) | hard | n-body, simulation, shared-memory, floating-point | ✅ | [link](https://leetgpu.com/challenges/multi-agent-simulation) |
+| [Sorting](leetgpu/015-sorting) | hard | sorting, radix-sort, bit-tricks, scan | ✅ | [link](https://leetgpu.com/challenges/sorting) |
+| [Prefix Sum](leetgpu/016-prefix-sum) | medium | scan, prefix-sum, reduce-then-scan, warp-shuffle | ✅ | [link](https://leetgpu.com/challenges/prefix-sum) |
+| [Dot Product](leetgpu/017-dot-product) | medium | reduction, two-pass, fma, deterministic | ✅ | [link](https://leetgpu.com/challenges/dot-product) |
+| [Sparse Matrix-Vector Multiplication](leetgpu/018-sparse-matrix-vector-multiplication) | medium | gemv, warp-per-row, memory-bound, sparse | ✅ | [link](https://leetgpu.com/challenges/sparse-matrix-vector-multiplication) |
+| [Reverse Array](leetgpu/019-reverse-array) | easy | in-place, memory-bound, race-conditions | ✅ | [link](https://leetgpu.com/challenges/reverse-array) |
+| [K-Means Clustering](leetgpu/020-kmeans-clustering) | hard | clustering, atomics, privatization, iterative | ✅ | [link](https://leetgpu.com/challenges/k-means-clustering) |
+| [ReLU](leetgpu/021-relu) | easy | elementwise, activation, vectorized, memory-bound | ✅ | [link](https://leetgpu.com/challenges/relu) |
 | [General Matrix Multiplication (GEMM)](leetgpu/022-gemm) | medium | gemm, fp16, tensor-cores, wmma | ✅ | [link](https://leetgpu.com/challenges/general-matrix-multiplication-gemm) |
-| [Leaky ReLU](leetgpu/023-leaky-relu) | easy | elementwise, activation, vectorized | ✅ | [link](https://leetgpu.com/challenges/leaky-relu) |
+| [Leaky ReLU](leetgpu/023-leaky-relu) | easy | elementwise, activation, vectorized, memory-bound | ✅ | [link](https://leetgpu.com/challenges/leaky-relu) |
 | [Rainbow Table](leetgpu/024-rainbow-table) | easy | hashing, compute-bound, integer | ✅ | [link](https://leetgpu.com/challenges/rainbow-table) |
-| [Categorical Cross Entropy Loss](leetgpu/025-categorical-cross-entropy-loss) | medium | reduction, logsumexp, warp-per-row | ✅ | [link](https://leetgpu.com/challenges/categorical-cross-entropy-loss) |
-| [Multi-Head Cross-Attention](leetgpu/026-multi-head-cross-attention) | hard | attention, cross-attention, flash-attention | ✅ | [link](https://leetgpu.com/challenges/multi-head-cross-attention) |
-| [Mean Squared Error](leetgpu/027-mean-squared-error) | medium | reduction, two-pass | ✅ | [link](https://leetgpu.com/challenges/mean-squared-error) |
-| [Gaussian Blur](leetgpu/028-gaussian-blur) | medium | convolution, stencil, shared-memory | ✅ | [link](https://leetgpu.com/challenges/gaussian-blur) |
-| [Top K Selection](leetgpu/029-top-k-selection) | medium | selection, radix-select, bitonic-sort | ✅ | [link](https://leetgpu.com/challenges/top-k-selection) |
-| [Batched Matrix Multiplication](leetgpu/030-batched-matrix-multiplication) | medium | gemm, batched, register-blocking | ✅ | [link](https://leetgpu.com/challenges/batched-matrix-multiplication) |
-| [Matrix Copy](leetgpu/031-matrix-copy) | easy | memory-bound, vectorized | ✅ | [link](https://leetgpu.com/challenges/matrix-copy) |
+| [Categorical Cross Entropy Loss](leetgpu/025-categorical-cross-entropy-loss) | medium | reduction, logsumexp, warp-per-row, loss | ✅ | [link](https://leetgpu.com/challenges/categorical-cross-entropy-loss) |
+| [Multi-Head Cross-Attention](leetgpu/026-multi-head-cross-attention) | hard | attention, cross-attention, flash-attention, multi-head | ✅ | [link](https://leetgpu.com/challenges/multi-head-cross-attention) |
+| [Mean Squared Error](leetgpu/027-mean-squared-error) | medium | reduction, two-pass, loss | ✅ | [link](https://leetgpu.com/challenges/mean-squared-error) |
+| [Gaussian Blur](leetgpu/028-gaussian-blur) | medium | convolution, stencil, shared-memory, zero-padding | ✅ | [link](https://leetgpu.com/challenges/gaussian-blur) |
+| [Top K Selection](leetgpu/029-top-k-selection) | medium | selection, radix-select, bitonic-sort, bit-tricks | ✅ | [link](https://leetgpu.com/challenges/top-k-selection) |
+| [Batched Matrix Multiplication](leetgpu/030-batched-matrix-multiplication) | medium | gemm, batched, register-blocking, shared-memory | ✅ | [link](https://leetgpu.com/challenges/batched-matrix-multiplication) |
+| [Matrix Copy](leetgpu/031-matrix-copy) | easy | memory-bound, vectorized, bandwidth | ✅ | [link](https://leetgpu.com/challenges/matrix-copy) |
 | [INT8 Quantized MatMul](leetgpu/032-int8-quantized-matmul) | medium | gemm, int8, quantization, tensor-cores, wmma | ✅ | [link](https://leetgpu.com/challenges/int8-quantized-matmul) |
 | [Ordinary Least Squares](leetgpu/033-ordinary-least-squares) | medium | linear-algebra, cholesky, normal-equations, fp64 | ✅ | [link](https://leetgpu.com/challenges/ordinary-least-squares) |
-| [Logistic Regression](leetgpu/034-logistic-regression) | medium | optimization, newton, irls, cholesky | ✅ | [link](https://leetgpu.com/challenges/logistic-regression) |
-| [Monte Carlo Integration](leetgpu/035-monte-carlo-integration) | medium | reduction | ✅ | [link](https://leetgpu.com/challenges/monte-carlo-integration) |
-| [Radix Sort](leetgpu/036-radix-sort) | hard | sorting, radix-sort, scan, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/radix-sort) |
-| [Matrix Power](leetgpu/037-matrix-power) | medium | gemm, binary-exponentiation | ✅ | [link](https://leetgpu.com/challenges/matrix-power) |
-| [Nearest Neighbor](leetgpu/038-nearest-neighbor) | medium | brute-force, shared-memory, exact-arithmetic | ✅ | [link](https://leetgpu.com/challenges/nearest-neighbor) |
-| [Fast Fourier Transform](leetgpu/039-fast-fourier-transform) | hard | fft, bluestein, stockham | ✅ | [link](https://leetgpu.com/challenges/fast-fourier-transform) |
-| [Batch Normalization](leetgpu/040-batch-normalization) | medium | normalization, column-reduction, welford | ✅ | [link](https://leetgpu.com/challenges/batch-normalization) |
-| [Simple Inference](leetgpu/041-simple-inference) | easy | pytorch, linear-layer | ✅ | [link](https://leetgpu.com/challenges/simple-inference) |
-| [2D Max Pooling](leetgpu/042-2d-max-pooling) | medium | pooling | ✅ | [link](https://leetgpu.com/challenges/2d-max-pooling) |
-| [Count Array Element](leetgpu/043-count-array-element) | medium | reduction, counting, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/count-array-element) |
-| [Count 2D Array Element](leetgpu/044-count-2d-array-element) | medium | reduction, counting | ✅ | [link](https://leetgpu.com/challenges/count-2d-array-element) |
-| [Count 3D Array Element](leetgpu/045-count-3d-array-element) | medium | reduction, counting | ✅ | [link](https://leetgpu.com/challenges/count-3d-array-element) |
-| [BFS Shortest Path](leetgpu/046-bfs-shortest-path) | hard | graph, bfs, persistent-kernel | ✅ | [link](https://leetgpu.com/challenges/bfs-shortest-path) |
-| [Subarray Sum](leetgpu/047-subarray-sum) | medium | reduction, integer | ✅ | [link](https://leetgpu.com/challenges/subarray-sum) |
-| [2D Subarray Sum](leetgpu/048-2d-subarray-sum) | medium | reduction, integer | ✅ | [link](https://leetgpu.com/challenges/2d-subarray-sum) |
-| [3D Subarray Sum](leetgpu/049-3d-subarray-sum) | medium | reduction, integer | ✅ | [link](https://leetgpu.com/challenges/3d-subarray-sum) |
-| [RMS Normalization](leetgpu/050-rms-normalization) | medium | normalization, reduction | ✅ | [link](https://leetgpu.com/challenges/rms-normalization) |
-| [Max Subarray Sum](leetgpu/051-max-subarray-sum) | medium | scan, prefix-sum | ✅ | [link](https://leetgpu.com/challenges/max-subarray-sum) |
-| [Sigmoid Linear Unit](leetgpu/052-silu) | easy | elementwise, activation | ✅ | [link](https://leetgpu.com/challenges/sigmoid-linear-unit) |
-| [Causal Self-Attention](leetgpu/053-casual-attention) | hard | attention, causal, flash-attention | ✅ | [link](https://leetgpu.com/challenges/causal-self-attention) |
+| [Logistic Regression](leetgpu/034-logistic-regression) | medium | optimization, newton, irls, cholesky, fp64 | ✅ | [link](https://leetgpu.com/challenges/logistic-regression) |
+| [Monte Carlo Integration](leetgpu/035-monte-carlo-integration) | medium | reduction, statistics, two-pass | ✅ | [link](https://leetgpu.com/challenges/monte-carlo-integration) |
+| [Radix Sort](leetgpu/036-radix-sort) | hard | sorting, radix-sort, scan, warp-intrinsics, stable | ✅ | [link](https://leetgpu.com/challenges/radix-sort) |
+| [Matrix Power](leetgpu/037-matrix-power) | medium | gemm, binary-exponentiation, linear-algebra | ✅ | [link](https://leetgpu.com/challenges/matrix-power) |
+| [Nearest Neighbor](leetgpu/038-nearest-neighbor) | medium | brute-force, shared-memory, exact-arithmetic, all-pairs | ✅ | [link](https://leetgpu.com/challenges/nearest-neighbor) |
+| [Fast Fourier Transform](leetgpu/039-fast-fourier-transform) | hard | fft, bluestein, stockham, complex | ✅ | [link](https://leetgpu.com/challenges/fast-fourier-transform) |
+| [Batch Normalization](leetgpu/040-batch-normalization) | medium | normalization, column-reduction, welford, fp64 | ✅ | [link](https://leetgpu.com/challenges/batch-normalization) |
+| [Simple Inference](leetgpu/041-simple-inference) | easy | pytorch, linear-layer, gemm | ✅ | [link](https://leetgpu.com/challenges/simple-inference) |
+| [2D Max Pooling](leetgpu/042-2d-max-pooling) | medium | pooling, cnn, stencil | ✅ | [link](https://leetgpu.com/challenges/2d-max-pooling) |
+| [Count Array Element](leetgpu/043-count-array-element) | medium | reduction, counting, warp-intrinsics, atomics | ✅ | [link](https://leetgpu.com/challenges/count-array-element) |
+| [Count 2D Array Element](leetgpu/044-count-2d-array-element) | medium | reduction, counting, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/count-2d-array-element) |
+| [Count 3D Array Element](leetgpu/045-count-3d-array-element) | medium | reduction, counting, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/count-3d-array-element) |
+| [BFS Shortest Path](leetgpu/046-bfs-shortest-path) | hard | graph, bfs, persistent-kernel, atomics | ✅ | [link](https://leetgpu.com/challenges/bfs-shortest-path) |
+| [Subarray Sum](leetgpu/047-subarray-sum) | medium | reduction, integer, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/subarray-sum) |
+| [2D Subarray Sum](leetgpu/048-2d-subarray-sum) | medium | reduction, integer, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/2d-subarray-sum) |
+| [3D Subarray Sum](leetgpu/049-3d-subarray-sum) | medium | reduction, integer, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/3d-subarray-sum) |
+| [RMS Normalization](leetgpu/050-rms-normalization) | medium | normalization, reduction, three-pass | ✅ | [link](https://leetgpu.com/challenges/rms-normalization) |
+| [Max Subarray Sum](leetgpu/051-max-subarray-sum) | medium | scan, prefix-sum, sliding-window, integer | ✅ | [link](https://leetgpu.com/challenges/max-subarray-sum) |
+| [Sigmoid Linear Unit](leetgpu/052-silu) | easy | elementwise, activation, transcendental | ✅ | [link](https://leetgpu.com/challenges/sigmoid-linear-unit) |
+| [Causal Self-Attention](leetgpu/053-casual-attention) | hard | attention, causal-mask, flash-attention, online-softmax | ✅ | [link](https://leetgpu.com/challenges/causal-self-attention) |
 | [Swish-Gated Linear Unit](leetgpu/054-swiglu) | easy | elementwise, activation, gated | ✅ | [link](https://leetgpu.com/challenges/swish-gated-linear-unit) |
-| [Attention with Linear Biases](leetgpu/055-attn-w-linear-bias) | medium | attention, alibi, gemm, softmax | ✅ | [link](https://leetgpu.com/challenges/attention-with-linear-biases) |
-| [Linear Self-Attention](leetgpu/056-linear-attention) | hard | attention, linear-attention | ✅ | [link](https://leetgpu.com/challenges/linear-self-attention) |
+| [Attention with Linear Biases](leetgpu/055-attn-w-linear-bias) | medium | attention, alibi, gemm, softmax, fused-epilogue | ✅ | [link](https://leetgpu.com/challenges/attention-with-linear-biases) |
+| [Linear Self-Attention](leetgpu/056-linear-attention) | hard | attention, linear-attention, associativity | ✅ | [link](https://leetgpu.com/challenges/linear-self-attention) |
 | [FP16 Batched Matrix Multiplication](leetgpu/057-fp16-batched-matmul) | medium | gemm, fp16, tensor-cores, wmma, batched | ✅ | [link](https://leetgpu.com/challenges/fp16-batched-matrix-multiplication) |
-| [FP16 Dot Product](leetgpu/058-fp16-dot-product) | medium | reduction, fp16 | ✅ | [link](https://leetgpu.com/challenges/fp16-dot-product) |
-| [Sliding Window Self-Attention](leetgpu/059-sliding-window-attn) | hard | attention, sliding-window, flash-attention | ✅ | [link](https://leetgpu.com/challenges/sliding-window-self-attention) |
-| [Top-p Sampling](leetgpu/060-top-p-sampling) | medium | sampling, softmax, selection, llm | ✅ | [link](https://leetgpu.com/challenges/top-p-sampling) |
-| [Rotary Positional Embedding](leetgpu/061-rope-embedding) | medium | elementwise, rope, llm | ✅ | [link](https://leetgpu.com/challenges/rotary-positional-embedding) |
-| [Value Clipping](leetgpu/062-value-clipping) | easy | elementwise | ✅ | [link](https://leetgpu.com/challenges/value-clipping) |
-| [Interleave Arrays](leetgpu/063-interleave) | easy | memory-bound, vectorized | ✅ | [link](https://leetgpu.com/challenges/interleave-arrays) |
-| [Weight Dequantization](leetgpu/064-weight-dequantization) | medium | elementwise, quantization | ✅ | [link](https://leetgpu.com/challenges/weight-dequantization) |
-| [Gaussian Error Gated Linear Unit](leetgpu/065-geglu) | easy | elementwise, activation, gated | ✅ | [link](https://leetgpu.com/challenges/gaussian-error-gated-linear-unit) |
-| [RGB to Grayscale](leetgpu/066-rgb-to-grayscale) | easy | image, elementwise | ✅ | [link](https://leetgpu.com/challenges/rgb-to-grayscale) |
-| [MoE Top-K Gating](leetgpu/067-moe-topk-gating) | medium | moe, top-k, softmax, warp-intrinsics | ✅ | [link](https://leetgpu.com/challenges/moe-top-k-gating) |
-| [Sigmoid Activation](leetgpu/068-sigmoid) | easy | elementwise, activation, vectorized | ✅ | [link](https://leetgpu.com/challenges/sigmoid-activation) |
-| [2D Jacobi Stencil](leetgpu/069-jacobi-stencil-2d) | medium | stencil | ✅ | [link](https://leetgpu.com/challenges/2d-jacobi-stencil) |
-| [Segmented Exclusive Prefix Sum](leetgpu/070-segmented-prefix-sum) | medium | scan, segmented-scan | ✅ | [link](https://leetgpu.com/challenges/segmented-exclusive-prefix-sum) |
+| [FP16 Dot Product](leetgpu/058-fp16-dot-product) | medium | reduction, fp16, mixed-precision | ✅ | [link](https://leetgpu.com/challenges/fp16-dot-product) |
+| [Sliding Window Self-Attention](leetgpu/059-sliding-window-attn) | hard | attention, sliding-window, flash-attention, local-attention | ✅ | [link](https://leetgpu.com/challenges/sliding-window-self-attention) |
+| [Top-p Sampling](leetgpu/060-top-p-sampling) | medium | sampling, softmax, selection, llm, bit-tricks | ✅ | [link](https://leetgpu.com/challenges/top-p-sampling) |
+| [Rotary Positional Embedding](leetgpu/061-rope-embedding) | medium | elementwise, rope, llm, positional-encoding | ✅ | [link](https://leetgpu.com/challenges/rotary-positional-embedding) |
+| [Value Clipping](leetgpu/062-value-clipping) | easy | elementwise, clamp | ✅ | [link](https://leetgpu.com/challenges/value-clipping) |
+| [Interleave Arrays](leetgpu/063-interleave) | easy | memory-bound, vectorized, data-movement | ✅ | [link](https://leetgpu.com/challenges/interleave-arrays) |
+| [Weight Dequantization](leetgpu/064-weight-dequantization) | medium | elementwise, quantization, block-scaling | ✅ | [link](https://leetgpu.com/challenges/weight-dequantization) |
+| [Gaussian Error Gated Linear Unit](leetgpu/065-geglu) | easy | elementwise, activation, gated, gelu | ✅ | [link](https://leetgpu.com/challenges/gaussian-error-gated-linear-unit) |
+| [RGB to Grayscale](leetgpu/066-rgb-to-grayscale) | easy | image, elementwise, strided-access | ✅ | [link](https://leetgpu.com/challenges/rgb-to-grayscale) |
+| [MoE Top-K Gating](leetgpu/067-moe-topk-gating) | medium | moe, top-k, softmax, warp-intrinsics, llm | ✅ | [link](https://leetgpu.com/challenges/moe-top-k-gating) |
+| [Sigmoid Activation](leetgpu/068-sigmoid) | easy | elementwise, activation, vectorized, transcendental | ✅ | [link](https://leetgpu.com/challenges/sigmoid-activation) |
+| [2D Jacobi Stencil](leetgpu/069-jacobi-stencil-2d) | medium | stencil, memory-bound, pde | ✅ | [link](https://leetgpu.com/challenges/2d-jacobi-stencil) |
+| [Segmented Exclusive Prefix Sum](leetgpu/070-segmented-prefix-sum) | medium | scan, segmented-scan, monoid | ✅ | [link](https://leetgpu.com/challenges/segmented-exclusive-prefix-sum) |
 | [Parallel Merge](leetgpu/071-parallel-merge) | medium | merge, merge-path, binary-search | ✅ | [link](https://leetgpu.com/challenges/parallel-merge) |
-| [Stream Compaction](leetgpu/072-stream-compaction) | medium | scan, compaction | ✅ | [link](https://leetgpu.com/challenges/stream-compaction) |
-| [All-Pairs Shortest Paths](leetgpu/073-all-pairs-shortest-paths) | hard | graph, floyd-warshall, blocked-algorithm | ✅ | [link](https://leetgpu.com/challenges/all-pairs-shortest-paths) |
-| [GPT-2 Transformer Block](leetgpu/074-gpt2-block) | hard | transformer, gpt-2, gemm, fusion | ✅ | [link](https://leetgpu.com/challenges/gpt-2-transformer-block) |
-| [Sparse Matrix-Dense Matrix Multiplication](leetgpu/075-sparse-matrix-dense-matrix-multiplication) | medium | gemm, sparsity | ✅ | [link](https://leetgpu.com/challenges/sparse-matrix-dense-matrix-multiplication) |
-| [Adder Transformer Inference](leetgpu/076-adder-transformer) | medium | transformer, inference, decoding | ✅ | [link](https://leetgpu.com/challenges/adder-transformer-inference) |
-| [2D FFT](leetgpu/078-2d-fft) | medium | fft, transpose, shared-memory | ✅ | [link](https://leetgpu.com/challenges/2d-fft) |
-| [Grouped Query Attention](leetgpu/080-grouped-query-attention) | medium | attention, gqa, flash-attention | ✅ | [link](https://leetgpu.com/challenges/grouped-query-attention) |
-| [INT4 Weight-Only Quantized MatMul](leetgpu/081-int4-matmul) | medium | gemm, int4, quantization, tensor-cores, wmma | ✅ | [link](https://leetgpu.com/challenges/int4-weight-only-quantized-matmul) |
-| [Linear Recurrence](leetgpu/082-linear-recurrence) | medium | scan, linear-recurrence, ssm | ✅ | [link](https://leetgpu.com/challenges/linear-recurrence) |
-| [Fused Residual Add and RMS Norm](leetgpu/083-fused-residual-add-rms-norm) | medium | normalization, fusion | ✅ | [link](https://leetgpu.com/challenges/fused-residual-add-and-rms-norm) |
-| [SwiGLU MLP Block](leetgpu/084-swiglu-mlp-block) | medium | gemm, fusion, mlp | ✅ | [link](https://leetgpu.com/challenges/swiglu-mlp-block) |
-| [LoRA Linear](leetgpu/085-lora-linear) | medium | gemm, lora, fusion | ✅ | [link](https://leetgpu.com/challenges/lora-linear) |
-| [Speculative Decoding Verification](leetgpu/087-speculative-decoding-verification) | medium | sampling, llm, scan | ✅ | [link](https://leetgpu.com/challenges/speculative-decoding-verification) |
-| [Causal Depthwise Conv1d](leetgpu/090-causal-depthwise-conv1d) | medium | convolution, depthwise, ssm | ✅ | [link](https://leetgpu.com/challenges/causal-depthwise-conv1d) |
-| [Decaying Causal Attention](leetgpu/092-decaying-causal-attention) | medium | attention, retention, retnet | ✅ | [link](https://leetgpu.com/challenges/decaying-causal-attention) |
-| [Llama Transformer Block](leetgpu/093-llama-transformer-block) | hard | transformer, llama, gqa, rope, swiglu | ✅ | [link](https://leetgpu.com/challenges/llama-transformer-block) |
-| [SSM Selective Scan](leetgpu/094-ssm-selective-scan) | medium | ssm, mamba, scan | ✅ | [link](https://leetgpu.com/challenges/ssm-selective-scan) |
-| [INT8 KV-Cache Attention](leetgpu/096-int8-kv-cache-attention) | medium | attention, decode, flash-decoding, int8 | ✅ | [link](https://leetgpu.com/challenges/int8-kv-cache-attention) |
-| [Group Normalization](leetgpu/105-group-normalization) | medium | normalization | ✅ | [link](https://leetgpu.com/challenges/group-normalization) |
-| [Token Embedding Layer](leetgpu/106-token-embedding-layer) | medium | embedding, layernorm, gather | ✅ | [link](https://leetgpu.com/challenges/token-embedding-layer) |
-| [PPO Clipped Surrogate Loss](leetgpu/107-ppo-clipped-surrogate-loss) | medium | reduction, rl | ✅ | [link](https://leetgpu.com/challenges/ppo-clipped-surrogate-loss) |
-| [DPO Sequence Loss](leetgpu/108-dpo-sequence-loss) | medium | reduction, rl | ✅ | [link](https://leetgpu.com/challenges/dpo-sequence-loss) |
-| [GRPO Surrogate Loss](leetgpu/109-grpo-surrogate-loss) | medium | reduction, rl | ✅ | [link](https://leetgpu.com/challenges/grpo-surrogate-loss) |
-| [Parallel Reverse Scan (GAE)](leetgpu/110-gae-reverse-scan) | medium | scan, rl | ✅ | [link](https://leetgpu.com/challenges/parallel-reverse-scan-gae) |
-| [Softmax Attention Backward](leetgpu/111-softmax-attention-backward) | medium | attention, backward, flash-attention | ✅ | [link](https://leetgpu.com/challenges/softmax-attention-backward) |
-| [Attention with Sinks](leetgpu/112-attention-with-sinks) | medium | attention, sliding-window, streaming-llm | ✅ | [link](https://leetgpu.com/challenges/attention-with-sinks) |
-| [Layer Normalization](leetgpu/113-layer-normalization) | medium | normalization | ✅ | [link](https://leetgpu.com/challenges/layer-normalization) |
-| [Multi-Head Latent Attention Decode](leetgpu/114-multi-head-latent-attention) | hard | attention, mla, deepseek, decode | ✅ | [link](https://leetgpu.com/challenges/multi-head-latent-attention-decode) |
-| [Diffusion Transformer Block](leetgpu/116-dit-block) | hard | transformer, diffusion, adaln | ✅ | [link](https://leetgpu.com/challenges/diffusion-transformer-block) |
-| [Vision Transformer Patch Embedding](leetgpu/118-vit-patch-embedding) | medium | gemm, im2col, vision | ✅ | [link](https://leetgpu.com/challenges/vision-transformer-patch-embedding) |
+| [Stream Compaction](leetgpu/072-stream-compaction) | medium | scan, compaction, filter | ✅ | [link](https://leetgpu.com/challenges/stream-compaction) |
+| [All-Pairs Shortest Paths](leetgpu/073-all-pairs-shortest-paths) | hard | graph, floyd-warshall, blocked-algorithm, shared-memory | ✅ | [link](https://leetgpu.com/challenges/all-pairs-shortest-paths) |
+| [GPT-2 Transformer Block](leetgpu/074-gpt2-block) | hard | transformer, gpt-2, gemm, fusion, layernorm, attention | ✅ | [link](https://leetgpu.com/challenges/gpt-2-transformer-block) |
+| [Sparse Matrix-Dense Matrix Multiplication](leetgpu/075-sparse-matrix-dense-matrix-multiplication) | medium | gemm, sparsity, register-blocking | ✅ | [link](https://leetgpu.com/challenges/sparse-matrix-dense-matrix-multiplication) |
+| [Adder Transformer Inference](leetgpu/076-adder-transformer) | medium | transformer, inference, decoding, kv-cache, rope | ✅ | [link](https://leetgpu.com/challenges/adder-transformer-inference) |
+| [2D FFT](leetgpu/078-2d-fft) | medium | fft, transpose, shared-memory, complex | ✅ | [link](https://leetgpu.com/challenges/2d-fft) |
+| [Grouped Query Attention](leetgpu/080-grouped-query-attention) | medium | attention, gqa, flash-attention, llm | ✅ | [link](https://leetgpu.com/challenges/grouped-query-attention) |
+| [INT4 Weight-Only Quantized MatMul](leetgpu/081-int4-matmul) | medium | gemm, int4, quantization, tensor-cores, wmma, w4a16 | ✅ | [link](https://leetgpu.com/challenges/int4-weight-only-quantized-matmul) |
+| [Linear Recurrence](leetgpu/082-linear-recurrence) | medium | scan, linear-recurrence, ssm, affine-maps | ✅ | [link](https://leetgpu.com/challenges/linear-recurrence) |
+| [Fused Residual Add and RMS Norm](leetgpu/083-fused-residual-add-rms-norm) | medium | normalization, fusion, row-reduction, llm | ✅ | [link](https://leetgpu.com/challenges/fused-residual-add-and-rms-norm) |
+| [SwiGLU MLP Block](leetgpu/084-swiglu-mlp-block) | medium | gemm, fusion, mlp, dual-gemm, llm | ✅ | [link](https://leetgpu.com/challenges/swiglu-mlp-block) |
+| [LoRA Linear](leetgpu/085-lora-linear) | medium | gemm, lora, fusion, fine-tuning | ✅ | [link](https://leetgpu.com/challenges/lora-linear) |
+| [Speculative Decoding Verification](leetgpu/087-speculative-decoding-verification) | medium | sampling, llm, speculative-decoding, scan | ✅ | [link](https://leetgpu.com/challenges/speculative-decoding-verification) |
+| [Causal Depthwise Conv1d](leetgpu/090-causal-depthwise-conv1d) | medium | convolution, depthwise, ssm, channels-last | ✅ | [link](https://leetgpu.com/challenges/causal-depthwise-conv1d) |
+| [Decaying Causal Attention](leetgpu/092-decaying-causal-attention) | medium | attention, retention, retnet, causal-mask | ✅ | [link](https://leetgpu.com/challenges/decaying-causal-attention) |
+| [Llama Transformer Block](leetgpu/093-llama-transformer-block) | hard | transformer, llama, gqa, rope, swiglu, rmsnorm, fusion | ✅ | [link](https://leetgpu.com/challenges/llama-transformer-block) |
+| [SSM Selective Scan](leetgpu/094-ssm-selective-scan) | medium | ssm, mamba, scan, registers | ✅ | [link](https://leetgpu.com/challenges/ssm-selective-scan) |
+| [INT8 KV-Cache Attention](leetgpu/096-int8-kv-cache-attention) | medium | attention, decode, flash-decoding, int8, split-k | ✅ | [link](https://leetgpu.com/challenges/int8-kv-cache-attention) |
+| [Group Normalization](leetgpu/105-group-normalization) | medium | normalization, row-reduction, cnn | ✅ | [link](https://leetgpu.com/challenges/group-normalization) |
+| [Token Embedding Layer](leetgpu/106-token-embedding-layer) | medium | embedding, layernorm, gather, fusion | ✅ | [link](https://leetgpu.com/challenges/token-embedding-layer) |
+| [PPO Clipped Surrogate Loss](leetgpu/107-ppo-clipped-surrogate-loss) | medium | reduction, rl, loss, rlhf | ✅ | [link](https://leetgpu.com/challenges/ppo-clipped-surrogate-loss) |
+| [DPO Sequence Loss](leetgpu/108-dpo-sequence-loss) | medium | reduction, rl, loss, rlhf, numerical-stability | ✅ | [link](https://leetgpu.com/challenges/dpo-sequence-loss) |
+| [GRPO Surrogate Loss](leetgpu/109-grpo-surrogate-loss) | medium | reduction, rl, loss, rlhf | ✅ | [link](https://leetgpu.com/challenges/grpo-surrogate-loss) |
+| [Parallel Reverse Scan (GAE)](leetgpu/110-gae-reverse-scan) | medium | scan, rl, reverse-scan, affine-maps | ✅ | [link](https://leetgpu.com/challenges/parallel-reverse-scan-gae) |
+| [Softmax Attention Backward](leetgpu/111-softmax-attention-backward) | medium | attention, backward, flash-attention, autograd | ✅ | [link](https://leetgpu.com/challenges/softmax-attention-backward) |
+| [Attention with Sinks](leetgpu/112-attention-with-sinks) | medium | attention, sliding-window, streaming-llm, causal-mask | ✅ | [link](https://leetgpu.com/challenges/attention-with-sinks) |
+| [Layer Normalization](leetgpu/113-layer-normalization) | medium | normalization, row-reduction, warp-per-row, transformer | ✅ | [link](https://leetgpu.com/challenges/layer-normalization) |
+| [Multi-Head Latent Attention Decode](leetgpu/114-multi-head-latent-attention) | hard | attention, mla, deepseek, decode, weight-absorption | ✅ | [link](https://leetgpu.com/challenges/multi-head-latent-attention-decode) |
+| [Diffusion Transformer Block](leetgpu/116-dit-block) | hard | transformer, diffusion, adaln, fusion, attention | ✅ | [link](https://leetgpu.com/challenges/diffusion-transformer-block) |
+| [Vision Transformer Patch Embedding](leetgpu/118-vit-patch-embedding) | medium | gemm, im2col, vision, vit | ✅ | [link](https://leetgpu.com/challenges/vision-transformer-patch-embedding) |
 <!-- END LEETGPU INDEX -->
 
 ## Tensara
@@ -185,90 +185,90 @@ See [tutorials/](tutorials/README.md).
 <!-- BEGIN TENSARA INDEX -->
 | Problem | Difficulty | Tags | Status | Source |
 |---|---|---|---|---|
-| [All-Pairs Shortest Path](tensara/all-pairs-shortest-path) | medium | graph, floyd-warshall | ✅ | [link](https://tensara.org/problems/all-pairs-shortest-path) |
-| [Argmax Over Dimension](tensara/argmax) | easy | reduction, argmax | ✅ | [link](https://tensara.org/problems/argmax) |
-| [Argmin Over Dimension](tensara/argmin) | easy | reduction, argmin | ✅ | [link](https://tensara.org/problems/argmin) |
-| [Array Sorting](tensara/array-sort) | easy | sorting, radix-sort | ✅ | [link](https://tensara.org/problems/array-sort) |
-| [1D Average Pooling](tensara/avg-pool-1d) | easy | pooling | ✅ | [link](https://tensara.org/problems/avg-pool-1d) |
-| [2D Average Pooling](tensara/avg-pool-2d) | medium | pooling | ✅ | [link](https://tensara.org/problems/avg-pool-2d) |
-| [3D Average Pooling](tensara/avg-pool-3d) | hard | pooling | ✅ | [link](https://tensara.org/problems/avg-pool-3d) |
-| [Batch Normalization](tensara/batch-norm) | medium | normalization | ✅ | [link](https://tensara.org/problems/batch-norm) |
-| [Box Blur](tensara/box-blur) | easy | stencil, separable | ✅ | [link](https://tensara.org/problems/box-blur) |
-| [1D Convolution](tensara/conv-1d) | easy | convolution, shared-memory | ✅ | [link](https://tensara.org/problems/conv-1d) |
-| [2D Convolution](tensara/conv-2d) | medium | convolution, shared-memory | ✅ | [link](https://tensara.org/problems/conv-2d) |
-| [3D Square Convolution](tensara/conv-square-3d) | hard | convolution | ✅ | [link](https://tensara.org/problems/conv-square-3d) |
-| [2D Convolution with ReLU and HardSwish](tensara/conv2d-relu-hardswish) | medium | convolution, fusion | ✅ | [link](https://tensara.org/problems/conv2d-relu-hardswish) |
-| [Cosine Similarity](tensara/cosine-similarity) | easy | loss, reduction | ✅ | [link](https://tensara.org/problems/cosine-similarity) |
-| [Cumulative Product](tensara/cumprod) | medium | scan | ✅ | [link](https://tensara.org/problems/cumprod) |
-| [Cumulative Sum](tensara/cumsum) | medium | scan | ✅ | [link](https://tensara.org/problems/cumsum) |
-| [Diagonal Matrix Multiplication](tensara/diagonal-matmul) | easy | elementwise | ✅ | [link](https://tensara.org/problems/diagonal-matmul) |
-| [ECC Point Negation (Batched)](tensara/ecc-point-negation) | easy | finite-field, integer | ✅ | [link](https://tensara.org/problems/ecc-point-negation) |
-| [Edge Detection](tensara/edge-detect) | easy | stencil, reduction | ✅ | [link](https://tensara.org/problems/edge-detect) |
-| [ELU](tensara/elu) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/elu) |
-| [Frobenius Normalization](tensara/frobenius-norm) | easy | normalization, reduction | ✅ | [link](https://tensara.org/problems/frobenius-norm) |
-| [GELU](tensara/gelu) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/gelu) |
-| [GEMM with Element-wise Multiply and LeakyReLU](tensara/gemm-multiply-leakyrelu) | medium | gemm, fusion | ✅ | [link](https://tensara.org/problems/gemm-multiply-leakyrelu) |
-| [GEMM with Bias and ReLU](tensara/gemm-relu) | medium | gemm, fusion | ✅ | [link](https://tensara.org/problems/gemm-relu) |
-| [Grayscale Conversion](tensara/grayscale) | easy | image, elementwise | ✅ | [link](https://tensara.org/problems/grayscale) |
-| [Hard Sigmoid](tensara/hard-sigmoid) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/hard-sigmoid) |
+| [All-Pairs Shortest Path](tensara/all-pairs-shortest-path) | medium | graph, floyd-warshall, blocked-algorithm, shared-memory | ✅ | [link](https://tensara.org/problems/all-pairs-shortest-path) |
+| [Argmax Over Dimension](tensara/argmax) | easy | reduction, argmax, strided-reduction | ✅ | [link](https://tensara.org/problems/argmax) |
+| [Argmin Over Dimension](tensara/argmin) | easy | reduction, argmin, strided-reduction | ✅ | [link](https://tensara.org/problems/argmin) |
+| [Array Sorting](tensara/array-sort) | easy | sorting, radix-sort, bit-tricks | ✅ | [link](https://tensara.org/problems/array-sort) |
+| [1D Average Pooling](tensara/avg-pool-1d) | easy | pooling, stencil, memory-bound | ✅ | [link](https://tensara.org/problems/avg-pool-1d) |
+| [2D Average Pooling](tensara/avg-pool-2d) | medium | pooling, stencil, grid-stride | ✅ | [link](https://tensara.org/problems/avg-pool-2d) |
+| [3D Average Pooling](tensara/avg-pool-3d) | hard | pooling, stencil, grid-stride | ✅ | [link](https://tensara.org/problems/avg-pool-3d) |
+| [Batch Normalization](tensara/batch-norm) | medium | normalization, reduction, fp64-accumulation | ✅ | [link](https://tensara.org/problems/batch-norm) |
+| [Box Blur](tensara/box-blur) | easy | stencil, separable, image-processing | ✅ | [link](https://tensara.org/problems/box-blur) |
+| [1D Convolution](tensara/conv-1d) | easy | convolution, shared-memory, tiling | ✅ | [link](https://tensara.org/problems/conv-1d) |
+| [2D Convolution](tensara/conv-2d) | medium | convolution, shared-memory, tiling | ✅ | [link](https://tensara.org/problems/conv-2d) |
+| [3D Square Convolution](tensara/conv-square-3d) | hard | convolution, 3d, shared-memory | ✅ | [link](https://tensara.org/problems/conv-square-3d) |
+| [2D Convolution with ReLU and HardSwish](tensara/conv2d-relu-hardswish) | medium | convolution, fusion, activation | ✅ | [link](https://tensara.org/problems/conv2d-relu-hardswish) |
+| [Cosine Similarity](tensara/cosine-similarity) | easy | loss, reduction, row-per-block | ✅ | [link](https://tensara.org/problems/cosine-similarity) |
+| [Cumulative Product](tensara/cumprod) | medium | scan, prefix-product, fp64-accumulation | ✅ | [link](https://tensara.org/problems/cumprod) |
+| [Cumulative Sum](tensara/cumsum) | medium | scan, prefix-sum, fp64-accumulation | ✅ | [link](https://tensara.org/problems/cumsum) |
+| [Diagonal Matrix Multiplication](tensara/diagonal-matmul) | easy | elementwise, matmul, bandwidth-bound | ✅ | [link](https://tensara.org/problems/diagonal-matmul) |
+| [ECC Point Negation (Batched)](tensara/ecc-point-negation) | easy | finite-field, integer, elliptic-curve, bandwidth-bound | ✅ | [link](https://tensara.org/problems/ecc-point-negation) |
+| [Edge Detection](tensara/edge-detect) | easy | stencil, reduction, atomics, image-processing | ✅ | [link](https://tensara.org/problems/edge-detect) |
+| [ELU](tensara/elu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/elu) |
+| [Frobenius Normalization](tensara/frobenius-norm) | easy | normalization, reduction, fp64-accumulation, grid-reduction | ✅ | [link](https://tensara.org/problems/frobenius-norm) |
+| [GELU](tensara/gelu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/gelu) |
+| [GEMM with Element-wise Multiply and LeakyReLU](tensara/gemm-multiply-leakyrelu) | medium | matmul, sgemm, fusion, activation | ✅ | [link](https://tensara.org/problems/gemm-multiply-leakyrelu) |
+| [GEMM with Bias and ReLU](tensara/gemm-relu) | medium | matmul, sgemm, fusion, linear-layer | ✅ | [link](https://tensara.org/problems/gemm-relu) |
+| [Grayscale Conversion](tensara/grayscale) | easy | elementwise, image-processing, strided-access | ✅ | [link](https://tensara.org/problems/grayscale) |
+| [Hard Sigmoid](tensara/hard-sigmoid) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/hard-sigmoid) |
 | [Hinge Loss](tensara/hinge-loss) | easy | loss, elementwise | ✅ | [link](https://tensara.org/problems/hinge-loss) |
-| [Image Histogram](tensara/histogram) | easy | histogram, atomics, privatization | ✅ | [link](https://tensara.org/problems/histogram) |
+| [Image Histogram](tensara/histogram) | easy | histogram, atomics, shared-memory, privatization | ✅ | [link](https://tensara.org/problems/histogram) |
 | [Huber Loss](tensara/huber-loss) | easy | loss, elementwise | ✅ | [link](https://tensara.org/problems/huber-loss) |
-| [Kullback-Leibler Divergence](tensara/kl-loss) | medium | loss, elementwise | ✅ | [link](https://tensara.org/problems/kl-loss) |
-| [L1 Normalization](tensara/l1-norm) | easy | normalization, reduction | ✅ | [link](https://tensara.org/problems/l1-norm) |
-| [L2 Normalization](tensara/l2-norm) | easy | normalization, reduction | ✅ | [link](https://tensara.org/problems/l2-norm) |
-| [Layer Normalization](tensara/layer-norm) | medium | normalization | ✅ | [link](https://tensara.org/problems/layer-norm) |
-| [Leaky ReLU](tensara/leaky-relu) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/leaky-relu) |
-| [Log Softmax](tensara/log-softmax) | easy | softmax | ✅ | [link](https://tensara.org/problems/log-softmax) |
-| [Lower Triangular Matrix Multiplication](tensara/lower-trig-matmul) | medium | gemm, triangular | ✅ | [link](https://tensara.org/problems/lower-trig-matmul) |
-| [3D Tensor-Matrix Multiplication](tensara/matmul-3d) | hard | gemm, batched | ✅ | [link](https://tensara.org/problems/matmul-3d) |
-| [4D Tensor-Matrix Multiplication](tensara/matmul-4d) | hard | gemm, batched | ✅ | [link](https://tensara.org/problems/matmul-4d) |
-| [Matrix Multiplication with Sigmoid and Sum](tensara/matmul-sigmoid-sum) | medium | gemm, fusion, reduction | ✅ | [link](https://tensara.org/problems/matmul-sigmoid-sum) |
-| [Matrix Multiplication with Swish Activation](tensara/matmul-swish) | medium | gemm, fusion | ✅ | [link](https://tensara.org/problems/matmul-swish) |
-| [Matrix Multiplication with Swish and Scaling](tensara/matmul-swish-scaling) | medium | gemm, fusion | ✅ | [link](https://tensara.org/problems/matmul-swish-scaling) |
-| [Matrix Multiplication](tensara/matrix-multiplication) | medium | gemm, register-blocking | ✅ | [link](https://tensara.org/problems/matrix-multiplication) |
-| [Matrix Nth Power](tensara/matrix-power) | medium | gemm, binary-exponentiation | ✅ | [link](https://tensara.org/problems/matrix-power) |
-| [Matrix Scalar Multiplication](tensara/matrix-scalar) | easy | elementwise | ✅ | [link](https://tensara.org/problems/matrix-scalar) |
-| [Matrix Vector Multiplication](tensara/matrix-vector) | easy | gemv | ✅ | [link](https://tensara.org/problems/matrix-vector) |
-| [Max Over Dimension](tensara/max-dim) | easy | reduction | ✅ | [link](https://tensara.org/problems/max-dim) |
-| [1D Max Pooling](tensara/max-pool-1d) | easy | pooling | ✅ | [link](https://tensara.org/problems/max-pool-1d) |
-| [2D Max Pooling](tensara/max-pool-2d) | medium | pooling | ✅ | [link](https://tensara.org/problems/max-pool-2d) |
-| [3D Max Pooling](tensara/max-pool-3d) | hard | pooling | ✅ | [link](https://tensara.org/problems/max-pool-3d) |
-| [Mean Over Dimension](tensara/mean-dim) | easy | reduction | ✅ | [link](https://tensara.org/problems/mean-dim) |
-| [Min Over Dimension](tensara/min-dim) | easy | reduction | ✅ | [link](https://tensara.org/problems/min-dim) |
-| [Minimum Spanning Tree](tensara/min-spanning-tree) | medium | graph, prim | ✅ | [link](https://tensara.org/problems/min-spanning-tree) |
-| [Mean Squared Error Loss](tensara/mse-loss) | easy | loss, reduction | ✅ | [link](https://tensara.org/problems/mse-loss) |
-| [MXFP4 Dequantization](tensara/mxfp4-dequantize) | easy | quantization, mxfp4, low-precision | ✅ | [link](https://tensara.org/problems/mxfp4-dequantize) |
-| [MXFP4 GEMM](tensara/mxfp4-gemm) | hard | gemm, quantization, mxfp4, block-scaling | ✅ | [link](https://tensara.org/problems/mxfp4-gemm) |
-| [MXFP4 Quantization](tensara/mxfp4-quantize) | medium | quantization, mxfp4, low-precision | ✅ | [link](https://tensara.org/problems/mxfp4-quantize) |
-| [MXFP8 Dequantization](tensara/mxfp8-dequantize) | easy | quantization, mxfp8, low-precision | ✅ | [link](https://tensara.org/problems/mxfp8-dequantize) |
-| [MXFP8 GEMM](tensara/mxfp8-gemm) | hard | gemm, quantization, mxfp8, block-scaling | ✅ | [link](https://tensara.org/problems/mxfp8-gemm) |
-| [MXFP8 Quantization](tensara/mxfp8-quantize) | medium | quantization, mxfp8, low-precision | ✅ | [link](https://tensara.org/problems/mxfp8-quantize) |
-| [NVFP4 Dequantization](tensara/nvfp4-dequantize) | medium | quantization, nvfp4, low-precision | ✅ | [link](https://tensara.org/problems/nvfp4-dequantize) |
-| [NVFP4 GEMM](tensara/nvfp4-gemm) | hard | gemm, quantization, nvfp4, block-scaling | ✅ | [link](https://tensara.org/problems/nvfp4-gemm) |
-| [NVFP4 GEMV](tensara/nvfp4-gemv) | hard | gemv, quantization, nvfp4 | ✅ | [link](https://tensara.org/problems/nvfp4-gemv) |
-| [NVFP4 Quantization](tensara/nvfp4-quantize) | medium | quantization, nvfp4, low-precision | ✅ | [link](https://tensara.org/problems/nvfp4-quantize) |
-| [Polynomial Multiplication over Finite Field](tensara/poly-multiply-ff) | medium | finite-field, convolution | ✅ | [link](https://tensara.org/problems/poly-multiply-ff) |
-| [Product Over Dimension](tensara/product-dim) | easy | reduction | ✅ | [link](https://tensara.org/problems/product-dim) |
-| [ReLU](tensara/relu) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/relu) |
-| [RMS Normalization](tensara/rms-norm) | easy | normalization | ✅ | [link](https://tensara.org/problems/rms-norm) |
-| [1D Running Sum](tensara/running-sum-1d) | easy | scan, sliding-window | ✅ | [link](https://tensara.org/problems/running-sum-1d) |
-| [Scaled Dot-Product Attention](tensara/scaled-dot-attention) | hard | attention, flash-attention | ✅ | [link](https://tensara.org/problems/scaled-dot-attention) |
-| [SELU](tensara/selu) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/selu) |
-| [Single Source Shortest Path](tensara/shortest-path) | medium | graph, bellman-ford | ✅ | [link](https://tensara.org/problems/shortest-path) |
-| [Sigmoid](tensara/sigmoid) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/sigmoid) |
-| [Softplus](tensara/soft-plus) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/soft-plus) |
-| [Softmax](tensara/softmax) | medium | softmax, online-softmax | ✅ | [link](https://tensara.org/problems/softmax) |
-| [Square Matrix Multiplication](tensara/square-matmul) | medium | gemm | ✅ | [link](https://tensara.org/problems/square-matmul) |
-| [Sum Over Dimension](tensara/sum-dim) | easy | reduction | ✅ | [link](https://tensara.org/problems/sum-dim) |
-| [Swish](tensara/swish) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/swish) |
-| [Symmetric Matrix Multiplication](tensara/symmetric-matmul) | medium | gemm | ✅ | [link](https://tensara.org/problems/symmetric-matmul) |
-| [Tanh](tensara/tanh) | easy | elementwise, activation | ✅ | [link](https://tensara.org/problems/tanh) |
-| [Image Thresholding](tensara/threshold) | easy | elementwise, image | ✅ | [link](https://tensara.org/problems/threshold) |
-| [Triplet Margin Loss](tensara/triplet-margin) | medium | loss, reduction | ✅ | [link](https://tensara.org/problems/triplet-margin) |
-| [Upper Triangular Matrix Multiplication](tensara/upper-trig-matmul) | medium | gemm, triangular | ✅ | [link](https://tensara.org/problems/upper-trig-matmul) |
-| [Vector Addition](tensara/vector-addition) | easy | elementwise, vectorized, memory-bound | ✅ | [link](https://tensara.org/problems/vector-addition) |
-| [Vector Multiplication over Finite Field](tensara/vector-multiply-ff) | medium | finite-field, integer, mersenne | ✅ | [link](https://tensara.org/problems/vector-multiply-ff) |
+| [Kullback-Leibler Divergence](tensara/kl-loss) | medium | loss, elementwise, numerics | ✅ | [link](https://tensara.org/problems/kl-loss) |
+| [L1 Normalization](tensara/l1-norm) | easy | normalization, reduction, row-per-block | ✅ | [link](https://tensara.org/problems/l1-norm) |
+| [L2 Normalization](tensara/l2-norm) | easy | normalization, reduction, row-per-block | ✅ | [link](https://tensara.org/problems/l2-norm) |
+| [Layer Normalization](tensara/layer-norm) | medium | normalization, reduction, fp64-accumulation | ✅ | [link](https://tensara.org/problems/layer-norm) |
+| [Leaky ReLU](tensara/leaky-relu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/leaky-relu) |
+| [Log Softmax](tensara/log-softmax) | easy | softmax, online-softmax, warp-per-row | ✅ | [link](https://tensara.org/problems/log-softmax) |
+| [Lower Triangular Matrix Multiplication](tensara/lower-trig-matmul) | medium | matmul, sgemm, triangular, work-skipping | ✅ | [link](https://tensara.org/problems/lower-trig-matmul) |
+| [3D Tensor-Matrix Multiplication](tensara/matmul-3d) | hard | matmul, sgemm, batched, reshape | ✅ | [link](https://tensara.org/problems/matmul-3d) |
+| [4D Tensor-Matrix Multiplication](tensara/matmul-4d) | hard | matmul, sgemm, einsum, reshape | ✅ | [link](https://tensara.org/problems/matmul-4d) |
+| [Matrix Multiplication with Sigmoid and Sum](tensara/matmul-sigmoid-sum) | medium | matmul, sgemm, fusion, reduction, atomics | ✅ | [link](https://tensara.org/problems/matmul-sigmoid-sum) |
+| [Matrix Multiplication with Swish Activation](tensara/matmul-swish) | medium | matmul, sgemm, fusion, linear-layer | ✅ | [link](https://tensara.org/problems/matmul-swish) |
+| [Matrix Multiplication with Swish and Scaling](tensara/matmul-swish-scaling) | medium | matmul, sgemm, fusion | ✅ | [link](https://tensara.org/problems/matmul-swish-scaling) |
+| [Matrix Multiplication](tensara/matrix-multiplication) | medium | matmul, sgemm, register-blocking, shared-memory | ✅ | [link](https://tensara.org/problems/matrix-multiplication) |
+| [Matrix Nth Power](tensara/matrix-power) | medium | matmul, sgemm, exponentiation-by-squaring | ✅ | [link](https://tensara.org/problems/matrix-power) |
+| [Matrix Scalar Multiplication](tensara/matrix-scalar) | easy | elementwise, float4 | ✅ | [link](https://tensara.org/problems/matrix-scalar) |
+| [Matrix Vector Multiplication](tensara/matrix-vector) | easy | gemv, warp-per-row, float4, bandwidth-bound | ✅ | [link](https://tensara.org/problems/matrix-vector) |
+| [Max Over Dimension](tensara/max-dim) | easy | reduction, strided-reduction, max | ✅ | [link](https://tensara.org/problems/max-dim) |
+| [1D Max Pooling](tensara/max-pool-1d) | easy | pooling, stencil, dilation, grid-stride | ✅ | [link](https://tensara.org/problems/max-pool-1d) |
+| [2D Max Pooling](tensara/max-pool-2d) | medium | pooling, stencil, dilation, grid-stride | ✅ | [link](https://tensara.org/problems/max-pool-2d) |
+| [3D Max Pooling](tensara/max-pool-3d) | hard | pooling, stencil, dilation, grid-stride | ✅ | [link](https://tensara.org/problems/max-pool-3d) |
+| [Mean Over Dimension](tensara/mean-dim) | easy | reduction, strided-reduction, mean | ✅ | [link](https://tensara.org/problems/mean-dim) |
+| [Min Over Dimension](tensara/min-dim) | easy | reduction, strided-reduction, min | ✅ | [link](https://tensara.org/problems/min-dim) |
+| [Minimum Spanning Tree](tensara/min-spanning-tree) | medium | graph, prim, single-block, reduction | ✅ | [link](https://tensara.org/problems/min-spanning-tree) |
+| [Mean Squared Error Loss](tensara/mse-loss) | easy | loss, reduction, fp64-accumulation, grid-reduction | ✅ | [link](https://tensara.org/problems/mse-loss) |
+| [MXFP4 Dequantization](tensara/mxfp4-dequantize) | easy | quantization, mxfp4, low-precision, elementwise | ✅ | [link](https://tensara.org/problems/mxfp4-dequantize) |
+| [MXFP4 GEMM](tensara/mxfp4-gemm) | hard | matmul, mxfp4, block-scaled, low-precision | ✅ | [link](https://tensara.org/problems/mxfp4-gemm) |
+| [MXFP4 Quantization](tensara/mxfp4-quantize) | medium | quantization, mxfp4, low-precision, warp-per-block | ✅ | [link](https://tensara.org/problems/mxfp4-quantize) |
+| [MXFP8 Dequantization](tensara/mxfp8-dequantize) | easy | quantization, mxfp8, low-precision, elementwise | ✅ | [link](https://tensara.org/problems/mxfp8-dequantize) |
+| [MXFP8 GEMM](tensara/mxfp8-gemm) | hard | matmul, mxfp8, block-scaled, low-precision | ✅ | [link](https://tensara.org/problems/mxfp8-gemm) |
+| [MXFP8 Quantization](tensara/mxfp8-quantize) | medium | quantization, mxfp8, low-precision, warp-per-block | ✅ | [link](https://tensara.org/problems/mxfp8-quantize) |
+| [NVFP4 Dequantization](tensara/nvfp4-dequantize) | medium | quantization, nvfp4, low-precision, elementwise | ✅ | [link](https://tensara.org/problems/nvfp4-dequantize) |
+| [NVFP4 GEMM](tensara/nvfp4-gemm) | hard | matmul, nvfp4, block-scaled, low-precision | ✅ | [link](https://tensara.org/problems/nvfp4-gemm) |
+| [NVFP4 GEMV](tensara/nvfp4-gemv) | hard | gemv, nvfp4, low-precision, warp-per-row, bandwidth-bound | ✅ | [link](https://tensara.org/problems/nvfp4-gemv) |
+| [NVFP4 Quantization](tensara/nvfp4-quantize) | medium | quantization, nvfp4, low-precision, half-warp | ✅ | [link](https://tensara.org/problems/nvfp4-quantize) |
+| [Polynomial Multiplication over Finite Field](tensara/poly-multiply-ff) | medium | finite-field, convolution, mersenne-prime, shared-memory | ✅ | [link](https://tensara.org/problems/poly-multiply-ff) |
+| [Product Over Dimension](tensara/product-dim) | easy | reduction, strided-reduction, product | ✅ | [link](https://tensara.org/problems/product-dim) |
+| [ReLU](tensara/relu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/relu) |
+| [RMS Normalization](tensara/rms-norm) | easy | normalization, reduction, row-per-block | ✅ | [link](https://tensara.org/problems/rms-norm) |
+| [1D Running Sum](tensara/running-sum-1d) | easy | scan, prefix-sum, sliding-window, fp64-accumulation | ✅ | [link](https://tensara.org/problems/running-sum-1d) |
+| [Scaled Dot-Product Attention](tensara/scaled-dot-attention) | hard | attention, flash-attention, online-softmax, shared-memory | ✅ | [link](https://tensara.org/problems/scaled-dot-attention) |
+| [SELU](tensara/selu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/selu) |
+| [Single Source Shortest Path](tensara/shortest-path) | medium | graph, bellman-ford, early-exit | ✅ | [link](https://tensara.org/problems/shortest-path) |
+| [Sigmoid](tensara/sigmoid) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/sigmoid) |
+| [Softplus](tensara/soft-plus) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/soft-plus) |
+| [Softmax](tensara/softmax) | medium | softmax, online-softmax, strided-reduction | ✅ | [link](https://tensara.org/problems/softmax) |
+| [Square Matrix Multiplication](tensara/square-matmul) | medium | matmul, sgemm, register-blocking | ✅ | [link](https://tensara.org/problems/square-matmul) |
+| [Sum Over Dimension](tensara/sum-dim) | easy | reduction, strided-reduction, sum | ✅ | [link](https://tensara.org/problems/sum-dim) |
+| [Swish](tensara/swish) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/swish) |
+| [Symmetric Matrix Multiplication](tensara/symmetric-matmul) | medium | matmul, sgemm, register-blocking | ✅ | [link](https://tensara.org/problems/symmetric-matmul) |
+| [Tanh](tensara/tanh) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/tanh) |
+| [Image Thresholding](tensara/threshold) | easy | elementwise, image-processing, float4 | ✅ | [link](https://tensara.org/problems/threshold) |
+| [Triplet Margin Loss](tensara/triplet-margin) | medium | loss, reduction, row-per-block, fp64-accumulation | ✅ | [link](https://tensara.org/problems/triplet-margin) |
+| [Upper Triangular Matrix Multiplication](tensara/upper-trig-matmul) | medium | matmul, sgemm, triangular, work-skipping | ✅ | [link](https://tensara.org/problems/upper-trig-matmul) |
+| [Vector Addition](tensara/vector-addition) | easy | elementwise, float4 | ✅ | [link](https://tensara.org/problems/vector-addition) |
+| [Vector Multiplication over Finite Field](tensara/vector-multiply-ff) | medium | finite-field, elementwise, mersenne-prime | ✅ | [link](https://tensara.org/problems/vector-multiply-ff) |
 <!-- END TENSARA INDEX -->
 
 ## Code conventions

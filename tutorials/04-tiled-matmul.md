@@ -1,40 +1,224 @@
 # 04 – Tiled Matrix Multiplication
 
-`C (M x K) = A (M x N) · B (N x K)`: `2·M·N·K` FLOPs over `M·N + N·K + M·K`
-elements — high arithmetic intensity, so it can be compute-bound *if* data is
-reused from fast memory.
+Matrix multiplication is the opposite of the kernels in chapters 01–03: it
+has plenty of arithmetic per byte, so it *can* be compute-bound, but only if
+data is reused from fast memory. This chapter builds the standard
+optimisation ladder:
 
-## Naive kernel
+1. naive;
+2. shared-memory tiling;
+3. register tiling;
+4. the techniques that get to 80–90 % of cuBLAS.
 
-One thread per `C[row][col]`, loops over `N`. Each thread reads a full row of
-`A` and column of `B` from global memory → intensity ≈ 0.25 FLOP/byte. Memory-bound.
+Throughout, $C = AB$ with $A$ of size $M\times K$, $B$ of size $K\times N$
+and $C$ of size $M\times N$, all row-major FP32.
 
-## Shared-memory tiling
+## 1. The numbers that matter
 
-Split the inner dimension into tiles of width `T`. Each block:
+$$
+C_{ij} = \sum_{k=0}^{K-1} A_{ik} B_{kj}, \qquad
+W = 2MNK, \qquad Q_{\min} = 4\,(MK + KN + MN), \qquad
+I_{\max} = \frac{W}{Q_{\min}} \xrightarrow{M = N = K} \frac{n}{6}
+$$
 
-1. Cooperatively loads a `T x T` tile of `A` and of `B` into shared memory.
-2. `__syncthreads()`.
-3. Each thread does `T` multiply-adds from shared memory.
-4. `__syncthreads()` before the next tile overwrites shared memory.
+| Symbol | Meaning |
+|---|---|
+| $A, B, C$ | operands and result |
+| $M, N, K$ | rows of $C$, columns of $C$, reduction length |
+| $W$ | flops (each multiply-add counts as 2) |
+| $Q_{\min}$ | compulsory DRAM bytes if every element were read or written exactly once |
+| $I_{\max}$ | best possible arithmetic intensity; for square $n\times n$ matrices it grows like $n/6$ |
 
-Global loads are reduced by a factor `T`. Full implementation:
-[leetgpu/002-matrix-multiplication](../leetgpu/002-matrix-multiplication/solution.cu).
+At $n = 4096$, $I_{\max} \approx 680$ flop/byte, far above any GPU's ridge
+point (chapter 00). The whole game is to get the *actual* intensity, as
+seen from DRAM and from each level of on-chip memory, high enough.
 
-## Beyond shared memory tiling
+## 2. Naive kernel
 
-| Technique | Why |
+One thread per output element:
+
+```cpp
+__global__ void matmulNaive(const float* a, const float* b, float* c, int m, int n, int k) {
+    const int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const int col = blockIdx.x * blockDim.x + threadIdx.x;
+    if (row >= m || col >= n) return;
+    float acc = 0.0f;
+    for (int kk = 0; kk < k; ++kk) acc = fmaf(a[row * k + kk], b[kk * n + col], acc);
+    c[row * n + col] = acc;
+}
+```
+
+Every FMA loads two floats (8 bytes) and does 2 flops:
+
+$$
+I_{\text{naive}} = \frac{2}{8} = 0.25\ \frac{\text{flop}}{\text{byte}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $I_{\text{naive}}$ | intensity seen by the load/store units |
+
+Caches rescue some of it (the warp's 32 threads share the row of $A$, and
+neighbouring warps reuse $B$), but the kernel still typically reaches only
+1–5 % of peak.
+
+## 3. Shared-memory tiling
+
+Split $C$ into $T\times T$ tiles, one per block of $T\times T$ threads, and
+split the $k$ loop into phases of $T$:
+
+$$
+C_{\mathcal{I}\mathcal{J}} = \sum_{s=0}^{\lceil K/T \rceil - 1} A_{\mathcal{I},\,\mathcal{K}_s}\; B_{\mathcal{K}_s,\,\mathcal{J}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $\mathcal{I}, \mathcal{J}$ | the $T$ rows and $T$ columns of one output tile |
+| $\mathcal{K}_s$ | the $s$-th slice of $T$ reduction indices |
+| $A_{\mathcal{I},\mathcal{K}_s}$, $B_{\mathcal{K}_s,\mathcal{J}}$ | $T\times T$ sub-matrices staged in shared memory |
+
+```cpp
+constexpr int kTile = 32;
+
+// launch: block(kTile, kTile), grid(ceil(n / kTile), ceil(m / kTile))
+__global__ void matmulTiled(const float* a, const float* b, float* c, int m, int n, int k) {
+    __shared__ float a_tile[kTile][kTile];
+    __shared__ float b_tile[kTile][kTile];
+    const int row = blockIdx.y * kTile + threadIdx.y;
+    const int col = blockIdx.x * kTile + threadIdx.x;
+    float acc = 0.0f;
+    for (int k0 = 0; k0 < k; k0 += kTile) {
+        // Each thread loads one element of each tile; out-of-range -> 0.
+        const int a_col = k0 + threadIdx.x, b_row = k0 + threadIdx.y;
+        a_tile[threadIdx.y][threadIdx.x] = (row < m && a_col < k) ? a[row * k + a_col] : 0.0f;
+        b_tile[threadIdx.y][threadIdx.x] = (b_row < k && col < n) ? b[b_row * n + col] : 0.0f;
+        __syncthreads();
+        for (int kk = 0; kk < kTile; ++kk) acc = fmaf(a_tile[threadIdx.y][kk], b_tile[kk][threadIdx.x], acc);
+        __syncthreads();   // before the next phase overwrites the tiles
+    }
+    if (row < m && col < n) c[row * n + col] = acc;
+}
+```
+
+- Loads of both tiles are coalesced: `threadIdx.x` walks a row of $A$'s
+  tile and a row of $B$'s tile.
+- In the inner loop, `a_tile[ty][kk]` is the same address for the whole
+  warp (a broadcast), and `b_tile[kk][tx]` reads a row (conflict-free).
+
+Each block loads $2T^2$ floats per phase and performs $T^3$ FMAs with them:
+
+$$
+Q_{\text{tiled}} = \underbrace{\frac{MN}{T^2}}_{\text{blocks}}\cdot\underbrace{\frac{K}{T}}_{\text{phases}}\cdot\underbrace{2T^2\cdot 4}_{\text{bytes per phase}} = \frac{8MNK}{T}, \qquad
+I_{\text{tiled}} = \frac{2MNK}{8MNK/T} = \frac{T}{4}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T$ | tile width (32 here) |
+| $Q_{\text{tiled}}$ | bytes loaded from global memory (L2/DRAM) in total |
+| $I_{\text{tiled}}$ | global-memory intensity: global traffic drops by a factor of $T$ |
+
+With $T = 32$, $I = 8$ flop/byte from L2/DRAM. The new bottleneck is shared
+memory: the inner loop still does **one shared load per FMA** (the
+broadcast of `a_tile` is nearly free, the `b_tile` read is not), and an SM
+can issue far fewer shared loads than FMAs per cycle. This kernel typically
+reaches 10–20 % of peak.
+
+## 4. Register tiling
+
+Give each thread a $t_M\times t_N$ patch of outputs held in registers. For
+each $k$, a thread loads $t_M$ values of $A$ and $t_N$ values of $B$ from
+shared memory and does $t_Mt_N$ FMAs (an outer product):
+
+$$
+\frac{\text{FMAs}}{\text{shared loads}} = \frac{t_M t_N}{t_M + t_N}, \qquad
+I_{\text{L2}} = \frac{2\,B_MB_NB_K}{4\,B_K\,(B_M + B_N)} = \frac{B_MB_N}{2\,(B_M + B_N)}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $t_M, t_N$ | outputs per thread along $M$ and $N$ (register tile) |
+| $B_M, B_N$ | outputs per block (block tile) |
+| $B_K$ | depth of one K-slice staged in shared memory |
+| $I_{\text{L2}}$ | flops per byte loaded into shared memory from L2/DRAM |
+
+| Configuration | FMAs per shared load | $I_{\text{L2}}$ (flop/B) |
+|---|---|---|
+| $T = 32$, 1 output per thread | 1 (0.5 counting both loads) | 8 |
+| $64\times64$ block, $4\times4$ per thread | 2 | 16 |
+| $128\times128$ block, $8\times8$ per thread | 4 | 32 |
+
+The Tensara matmul pages use the $64\times64$ / $4\times4$ version
+([Tensara – Matrix Multiplication](../tensara/matrix-multiplication/)). Its
+inner loop is:
+
+```cpp
+#pragma unroll
+for (int kk = 0; kk < kTileK; ++kk) {
+    float a_frag[4], b_frag[4];
+#pragma unroll
+    for (int i = 0; i < 4; ++i) a_frag[i] = a_tile[kk][ty + 16 * i];   // A stored transposed
+#pragma unroll
+    for (int j = 0; j < 4; ++j) b_frag[j] = b_tile[kk][tx + 16 * j];
+#pragma unroll
+    for (int i = 0; i < 4; ++i)
+#pragma unroll
+        for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
+}
+```
+
+Details that matter:
+
+- **Transposed $A$ tile** (`a_tile[k][m]`): both operands are then read
+  along rows of shared memory.
+- **Stride-16 ownership** (`ty + 16 * i`, `tx + 16 * j`) instead of four
+  adjacent elements: at every store instruction, 16 consecutive lanes
+  write 16 consecutive columns (coalesced), and shared reads stay
+  conflict-free.
+- **Padding** of the shared tiles (`[kTileK][64 + 4]`) avoids conflicts in
+  the transposed store.
+- **Full unrolling** keeps `acc[4][4]` in registers; a dynamic index would
+  force it into local memory.
+
+## 5. The rest of the ladder
+
+| Technique | Why it helps |
 |-----------|-----|
-| 1D / 2D register tiling (each thread computes 4x4 or 8x8 outputs) | Reuse from registers, fewer shared loads per FMA. |
-| `float4` loads, transposed `A` tile in smem | Fewer instructions, conflict-free reads. |
-| Double buffering / `cp.async` | Overlap next tile load with current compute. |
-| Warp tiling | Match the hardware hierarchy block → warp → thread. |
-| Tensor cores (WMMA, `mma.sync`, CuTe / CUTLASS) | 8–16x more FLOPs for fp16/bf16/tf32. |
+| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments |
+| Double buffering (two sets of tiles) | load slice $s+1$ while computing slice $s$; one barrier per slice instead of two |
+| `cp.async` (sm_80+) / TMA (sm_90) | global → shared copies without going through registers, asynchronous |
+| Warp tiling | a warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse |
+| Swizzled tile order ("grouped" launch) | blocks that run together share rows of $A$ and columns of $B$ in L2 |
+| Split-K / Stream-K | more parallelism when $M\cdot N$ has too few tiles to fill the GPU |
+| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow |
 
-A good naive → tuned progression is typically 1% → 10% → 50% → 80–90% of cuBLAS.
+A typical progression on one GPU, as a fraction of cuBLAS FP32:
 
-## Checklist
+| Kernel | Fraction of cuBLAS |
+|---|---|
+| naive | 1–5 % |
+| shared-memory tiling | 10–20 % |
+| $4\times4$ register tiling | 40–60 % |
+| $8\times8$, `float4`, double buffering, warp tiling | 80–95 % |
 
-- `threadIdx.x` ↔ column for coalesced `B` reads and `C` writes.
-- Zero-pad edge tiles instead of skipping the load.
-- Two `__syncthreads()` per tile iteration.
+Chapters 05–07 continue the story on AMD hardware with matrix-core
+instructions, a hand-written assembly kernel and a kernel generator.
+
+## 6. Checklist
+
+- `threadIdx.x` ↔ column, for coalesced $B$ reads and $C$ writes.
+- Zero-fill out-of-range elements when staging edge tiles, instead of
+  skipping the load (the FMA loop then needs no bounds checks).
+- Two `__syncthreads()` per slice with single buffering: after the loads,
+  and before the next loads overwrite the tiles.
+- Index with `size_t` once $MK$, $KN$ or $MN$ can exceed $2^{31}$ elements
+  (for example a $64\cdot4096 \times 4096$ activation in
+  [Tensara – Matmul 3D](../tensara/matmul-3d/)).
+- Accumulate in FP32 even when inputs are FP16/BF16.
+
+## Practice
+
+- [LeetGPU – Matrix Multiplication](../leetgpu/002-matrix-multiplication/)
+- [LeetGPU – GEMM](../leetgpu/022-gemm/)
+- [Tensara – Matrix Multiplication](../tensara/matrix-multiplication/)
+- [Tensara – GEMM + ReLU](../tensara/gemm-relu/) (fused epilogue)

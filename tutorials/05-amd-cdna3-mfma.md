@@ -62,6 +62,39 @@ tile, cooperatively across the 64 lanes of a wave.
 | `B` (16×16, bf16) | 4 × bf16 = 2 VGPRs | col `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
 | `C`/`D` (16×16, fp32) | 4 × fp32 = 4 regs | col `l % 16`, rows `4·(l/16) … 4·(l/16)+3` |
 
+In formulas, for lane $\ell$ and register slot $t \in \{0, 1, 2, 3\}$:
+
+$$
+a_{\ell,t} = A\bigl[\ell \bmod 16,\ 4\lfloor \ell/16 \rfloor + t\bigr], \qquad
+b_{\ell,t} = B^{\mathsf T}\bigl[\ell \bmod 16,\ 4\lfloor \ell/16 \rfloor + t\bigr], \qquad
+d_{\ell,t} = D\bigl[4\lfloor \ell/16 \rfloor + t,\ \ell \bmod 16\bigr]
+$$
+
+$$
+D_{ij} = \sum_{k=0}^{15} A_{ik}\,B_{kj} + C_{ij}, \qquad 0 \le i, j < 16
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $\ell$ | lane index, $0 \dots 63$ |
+| $t$ | which of the lane's 4 values (bf16 halves of 2 VGPRs, or 4 accumulator registers) |
+| $a_{\ell,t}, b_{\ell,t}$ | operand values held by lane $\ell$ |
+| $d_{\ell,t}$ | accumulator value held by lane $\ell$ |
+| $B^{\mathsf T}[j, k]$ | $B[k, j]$: the B operand is indexed by output column, then $k$ |
+| $A, B, C, D$ | the $16\times16$ operand, accumulator-in and result tiles |
+
+One instruction performs $2\cdot16^3 = 8192$ flops. The chip's peak is
+
+$$
+F = n_{\text{CU}}\cdot f\cdot \phi, \qquad 304 \times 2.1\ \text{GHz} \times 2048 \approx 1.31\ \text{PFLOP/s (dense bf16, MI300X)}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $n_{\text{CU}}$ | compute units (304 on MI300X) |
+| $f$ | peak engine clock |
+| $\phi$ | dense bf16 flops per CU per clock (2048 on CDNA3, spread over 4 SIMDs) |
+
 Compare this with the opaque NVIDIA WMMA fragments used in
 [leetgpu/022-gemm](../leetgpu/022-gemm/solution.cu): on AMD the layout is
 documented and hand-written kernels rely on it.
@@ -167,6 +200,28 @@ Notice:
 
    The rest of this chapter and the next two are about fixing that ratio.
 
+The block-tile arithmetic makes the problem concrete. A workgroup that
+owns a $B_M\times B_N$ output tile and walks $K$ in slices of $B_K$
+loads $(B_M + B_N)B_K$ bf16 values per slice and performs
+$2B_MB_NB_K$ flops:
+
+$$
+I_{\text{tile}} = \frac{2B_MB_NB_K}{2\,(B_M + B_N)\,B_K} = \frac{B_MB_N}{B_M + B_N}\ \frac{\text{flop}}{\text{byte}}, \qquad
+I^{\star} = \frac{F}{\beta} \approx \frac{1.31\times10^{15}}{5.3\times10^{12}} \approx 250\ \frac{\text{flop}}{\text{byte}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $B_M, B_N, B_K$ | workgroup tile sizes (64, 64, 32 here) |
+| $I_{\text{tile}}$ | flops per byte the workgroup pulls from L2/HBM |
+| $\beta$ | HBM bandwidth (~5.3 TB/s on MI300X) |
+| $I^{\star}$ | ridge point of the chip |
+
+The teaching kernel's $64\times64$ tile gives $I_{\text{tile}} = 32$,
+an eighth of the ridge point: without help from the caches it could
+reach at most ~13 % of peak. A $256\times256$ tile gives 128, and L2 and
+Infinity Cache reuse between neighbouring tiles provide the rest.
+
 > This kernel is compile-checked for gfx942 in this repo, but it has not been
 > run: there is no AMD GPU in CI. On a ROCm machine,
 > `hipcc -O3 --offload-arch=gfx942 tutorials/amd/mfma_gemm.hip -o mfma_gemm && ./mfma_gemm 4096 4096 4096`
@@ -185,6 +240,27 @@ Each step below is visible in chapter 06's disassembly:
 | 5 | **Interleave everything with MFMAs** | An MFMA occupies the matrix pipe for several cycles. Issuing one load, LDS read or address update between consecutive MFMAs hides their issue cost completely. Compilers do this poorly, which is why the best kernels are asm or generated (TensileLite's `ScheduleIterAlg`) |
 | 6 | **Split-K / Stream-K** for small M·N | Too few output tiles to fill 304 CUs? Split the K loop across workgroups and reduce with atomics or a fix-up pass |
 | 7 | **Cache-aware tile order** | Make workgroups that run concurrently on one XCD share A/B panels in that XCD's L2 |
+
+Why step 6 matters is simple counting. With $T$ output tiles and
+$n_{\text{CU}}$ compute units each running one workgroup at a time:
+
+$$
+T = \left\lceil \frac{M}{B_M} \right\rceil\left\lceil \frac{N}{B_N} \right\rceil, \qquad
+\text{waves} = \left\lceil \frac{T}{n_{\text{CU}}} \right\rceil, \qquad
+\eta_{\text{fill}} = \frac{T}{n_{\text{CU}}\cdot\text{waves}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T$ | number of output tiles (workgroups without split-K) |
+| waves | rounds of workgroups needed to cover all tiles |
+| $\eta_{\text{fill}}$ | fraction of CU-time doing useful work, ignoring per-tile imbalance |
+
+For $M = N = 2048$ with $256\times256$ tiles, $T = 64$: only 21 % of
+MI300X's 304 CUs are busy. For $T = 320$, two waves are needed and the
+second one is 5 % full, so $\eta_{\text{fill}} = 53\%$. Split-K multiplies
+$T$ by the split factor; Stream-K gives every CU an equal share of the
+$T\cdot\lceil K/B_K\rceil$ loop iterations (chapter 07).
 
 ## 5. Tools you will want
 

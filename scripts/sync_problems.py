@@ -111,11 +111,44 @@ status: todo
 
 ## Problem
 
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+<!-- Summarize the task in your own words: inputs, outputs, shapes,
+     test sizes and tolerance. Never copy the upstream statement. -->
+
+## Formulation
+
+<!-- Every display formula is followed by a symbol table.
+     No bare | inside math in a table cell: use \\lvert x \\rvert or \\mid. -->
+
+$$
+y_i = f(x_i)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $x_i$ | input element |
+| $y_i$ | output element |
 
 ## Approach
 
+<!-- Parallel decomposition, memory access pattern, why it is correct. -->
+
+## Cost analysis
+
+$$
+Q = \\ldots\\ \\text{{bytes}}, \\qquad W = \\ldots, \\qquad T_{{\\min}} = \\max\\left(\\frac{{W}}{{F}},\\ \\frac{{Q}}{{\\beta}}\\right)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $Q$ | compulsory DRAM bytes |
+| $W$ | useful flops |
+| $F, \\beta$ | peak compute throughput and DRAM bandwidth |
+
 ## Pitfalls
+
+## Verification
+
+## Related
 """
 
 

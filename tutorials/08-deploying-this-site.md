@@ -23,7 +23,7 @@ leetgpu/NNN/solution.cu    ─┴►   leetgpu/NNN/index.md         ──►   
 mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav)
 ```
 
-`scripts/build_site.py` does five things:
+`scripts/build_site.py` does six things:
 
 1. **Tutorial pages.** Every Markdown file under `tutorials/` becomes a page.
    Every code file there (`.hip`, `.h`, …) also gets a rendered page with a
@@ -44,6 +44,10 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 5. **Navigation.** It generates `build/mkdocs.yml`. That file inherits the
    theme and Markdown extensions from the root `mkdocs.yml` and adds the full
    navigation tree.
+
+6. **Static assets.** It copies `site_assets/` to `assets/` in the site:
+   the stylesheet, the favicon, the KaTeX loader and the vendored KaTeX and
+   font files (section 9).
 
 The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
@@ -181,3 +185,60 @@ git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pa
 
 A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
 in `tutorials/README.md`. The navigation is generated.
+
+## 9. How math and code are rendered
+
+Every problem page and tutorial writes formulas in TeX and follows each
+display formula with a table that explains every symbol. The pieces:
+
+| Piece | Where | What it does |
+|---|---|---|
+| `pymdownx.arithmatex` (generic mode) | `mkdocs.yml` | Leaves `$...$` and `$$...$$` untouched in the HTML, wrapped in `<span class="arithmatex">` / `<div class="arithmatex">` |
+| KaTeX 0.16 | `site_assets/vendor/katex/` | Renders those spans in the browser; its fonts are included |
+| `site_assets/javascripts/katex.js` | loader | Calls `renderMathInElement` on every page load, including Material's instant navigation (`document$.subscribe`), and defines the macros `\ceil`, `\floor`, `\R` |
+| Ubuntu Mono, Inter | `site_assets/vendor/fonts/`, `stylesheets/fonts.css` | Self-hosted fonts; `theme.font: false` stops Material from loading Google Fonts |
+| `stylesheets/extra.css` | theme | Colours, the problem header, formula blocks, tables, code in Ubuntu Mono |
+
+Nothing is fetched from a CDN, so the site (and the zipped HTML) works
+offline and behind firewalls. The vendored files add about 0.8 MB.
+
+A page that follows the house style looks like this:
+
+````markdown
+## Formulation
+
+$$
+\text{out}_i = \frac{x_i}{\sqrt{\frac{1}{N}\sum_{j=0}^{N-1} x_j^2 + \epsilon}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $x_i$ | input element |
+| $N$ | row length |
+| $\epsilon$ | small constant for numerical stability |
+````
+
+which renders as:
+
+$$
+\text{out}_i = \frac{x_i}{\sqrt{\frac{1}{N}\sum_{j=0}^{N-1} x_j^2 + \epsilon}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $x_i$ | input element |
+| $N$ | row length |
+| $\epsilon$ | small constant for numerical stability |
+
+Rules that keep KaTeX and Markdown from tripping over each other:
+
+- Leave a blank line before and after a `$$` block.
+- Never start a line inside a display formula with `+ `, `- ` or `1. `:
+  Markdown reads it as a list item and breaks the block. Put the operator
+  at the end of the previous line instead.
+- Inside a table cell, never write a bare `|` in math (it ends the cell).
+  Use `\lvert x \rvert`, `\mid` or `\Vert`.
+- Do not put display math inside indented list items; close the list first.
+- Check with a browser: `python3 -m http.server -d build/site` and look for
+  red KaTeX error text, or count `.katex-error` elements with Playwright.
+

@@ -18,6 +18,14 @@
   --gn-card-border: rgba(255, 255, 255, .10);
   --gn-hero-from: #151d30;
   --gn-hero-to: #243a5c;
+  /* The navy primary is unreadable on the dark background: use a light
+     blue for links and the active navigation entry. */
+  --md-typeset-a-color: #8ab4f8;
+}
+[data-md-color-scheme="slate"] .md-nav__link--active,
+[data-md-color-scheme="slate"] .md-nav__item .md-nav__link--active {
+  color: #8ab4f8;
+  font-weight: 600;
 }
 
 /* ---------- typography --------------------------------------------------- */

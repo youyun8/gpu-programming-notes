@@ -58,6 +58,27 @@ The comment in `ValidParameters.py` explains the 9-number format:
 - **Waves** `2×2`: four waves per workgroup, so the **macro tile** is
   (32·4·2) × (64·1·2) = **256×128**.
 
+In general, with the 9 numbers written as
+$[m, n, k, b,\ \beta_M,\ w_M, w_N,\ W_M, W_N]$:
+
+$$
+\text{MT}_0 = m\,\beta_M\,w_M\,W_M, \qquad
+\text{MT}_1 = n\,\frac{b}{\beta_M}\,w_N\,W_N, \qquad
+\text{threads} = 64\,W_M W_N
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $m, n, k$ | MFMA shape (e.g. 32, 32, 1) |
+| $b$ | number of blocks the MFMA computes at once (multi-block variants), 1 for most |
+| $\beta_M$ | `MIBlockM`: how many of those $b$ blocks are stacked along M (the rest go along N) |
+| $w_M, w_N$ | WaveTile: MFMA tiles per wave along M and N |
+| $W_M, W_N$ | waves per workgroup along M and N |
+| $\text{MT}_0, \text{MT}_1$ | macro tile (workgroup tile) along M and N |
+
+For the example: $\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$ and
+$\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$, 256 threads.
+
 For the gfx942 bf16 kernels you mostly see `16x16x16` or `32x32x8` MFMAs,
 written as `[16,16,16,1, 1, …]`.
 
@@ -66,6 +87,24 @@ that chapter 05's teaching kernel lacked. It costs accumulator registers:
 - A 128×64 wave tile in fp32 is 8192 values over 64 lanes, which is 128 AGPRs
   per lane.
 - That is why fast kernels run at one or two waves per SIMD.
+
+The accumulator cost and the reuse both follow from the wave tile
+$T_M\times T_N$ (the MFMA tile times the WaveTile):
+
+$$
+r_{\text{acc}} = \frac{T_M T_N}{64}, \qquad
+\frac{\text{MFMAs}}{\text{operand fetches}} = \frac{w_M w_N}{w_M + w_N}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T_M, T_N$ | output elements per wave along M and N |
+| $r_{\text{acc}}$ | fp32 accumulator registers per lane |
+| $w_M, w_N$ | MFMA tiles per wave; each A fragment is reused $w_N$ times and each B fragment $w_M$ times |
+
+A $4\times4$ WaveTile of 16x16 MFMAs ($T_M = T_N = 64$) needs 64
+accumulator registers per lane and reuses every operand fragment 4 times;
+$128\times64$ needs 128.
 
 **`DepthU`** is the K extent of one main-loop iteration: 64 in the aiter
 kernel, and typically 32–128 for 16-bit types.
@@ -156,6 +195,30 @@ combined in one of three ways:
 - Partial tiles are fixed up either through a workspace (deterministic) or
   with atomics.
 
+The balance Stream-K achieves, in formulas:
+
+$$
+L = T\left\lceil \frac{K}{\text{DepthU}} \right\rceil, \qquad
+L_g \in \left\{ \left\lfloor \frac{L}{G} \right\rfloor,\ \left\lceil \frac{L}{G} \right\rceil \right\}, \qquad
+\eta_{\text{SK}} = \frac{L}{G\,\lceil L/G \rceil}
+\quad\text{vs.}\quad
+\eta_{\text{tile}} = \frac{T}{G\,\lceil T/G \rceil}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T$ | number of output (macro) tiles |
+| DepthU | K per main-loop iteration |
+| $L$ | total MAC-loop iterations in the whole GEMM |
+| $G$ | number of Stream-K workgroups (about the CU count) |
+| $L_g$ | iterations assigned to workgroup $g$ |
+| $\eta_{\text{SK}}, \eta_{\text{tile}}$ | fill efficiency of Stream-K and of one-workgroup-per-tile |
+
+Because $L \gg G$, $\eta_{\text{SK}}$ is essentially 1, whereas
+$\eta_{\text{tile}}$ can be as low as $\sim 50\%$ when $T$ is slightly above
+a multiple of $G$. The price is the fix-up of tiles shared by two
+workgroups.
+
 This removes the "last wave is 10% full" quantisation problem. Because one
 kernel covers many shapes well, it also shrinks the library. hipBLASLt
 exposes it through environment variables:
@@ -185,6 +248,30 @@ Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
     begin on the same DRAM channel.
   - `StaggerUMapping` selects which workgroup index drives the offset:
     wg0, wg1, wg2 or the serial ID.
+
+The idea behind WGM is the same as the "grouped" launch order used by
+Triton and CUTLASS. Written in that common form, the serial launch index
+$s$ is mapped to the tile $(w_0', w_1')$ that the workgroup computes:
+
+$$
+s = w_0 + w_1\,n_0, \qquad
+w_1' = g\left\lfloor \frac{s}{g\,n_0} \right\rfloor + (s \bmod g), \qquad
+w_0' = \left\lfloor \frac{s \bmod g\,n_0}{g} \right\rfloor
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $w_0, w_1$ | launch-order workgroup indices |
+| $n_0$ | number of tiles along dimension 0 |
+| $g$ | box height (WGM) |
+| $s$ | serial launch order |
+| $w_0', w_1'$ | the tile actually computed |
+
+Consecutive workgroups first walk down $g$ tile rows, then move one tile
+column over, so the workgroups in flight cover a $g$-tall box and share
+$g$ row panels of A plus a few column panels of B in L2. TensileLite's own
+formula differs in detail (and WGMXCC adds the XCD remap on top), but the
+reuse argument is the same.
 
 WGM, WGMXCC, StaggerU and GSU are cheap to change at run time. They are
 packed into the kernel arguments rather than compiled in:
