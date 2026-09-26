@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 392" width="720" height="392" class="fig-svg" role="img">
+<title>The example kernels on a roofline (A100-class numbers, log-log)</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch09-roofline-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch09-roofline-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch09-roofline-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch09-roofline-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch09-roofline-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch09-roofline-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch09-roofline-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="392" class="fig-paper"/>
+<rect x="90" y="30" width="560" height="290" rx="0" class="fig-none s-line" stroke-width="1"/>
+<text x="90" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">0.01</text>
+<text x="202" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">0.1</text>
+<text x="314" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<text x="426" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">10</text>
+<text x="538" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">100</text>
+<text x="650" y="334" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1000</text>
+<text x="82" y="320" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0.001</text>
+<text x="82" y="262" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0.01</text>
+<text x="82" y="204" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0.1</text>
+<text x="82" y="146" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<text x="82" y="88" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">10</text>
+<text x="82" y="30" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">100</text>
+<text x="370" y="354" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">arithmetic intensity (flop per DRAM byte)</text>
+<text x="24" y="175" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small" transform="rotate(-90 24 175)">TFLOP/s (FP32)</text>
+<line x1="90" y1="251.79" x2="438.76" y2="71.18" class="s-b" stroke-width="2"/>
+<line x1="438.76" y1="71.18" x2="650" y2="71.18" class="s-a" stroke-width="2"/>
+<text x="221.72" y="169.57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small" transform="rotate(-27.377702771331727 221.72 169.57)">memory roof: 1.5 TB/s</text>
+<text x="557.72" y="59.18" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small">FP32 roof: 19.5 TFLOP/s</text>
+<line x1="438.76" y1="71.18" x2="438.76" y2="320" class="s-line" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="444.76" y="306" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">ridge 13</text>
+<circle cx="123.72" cy="236.98" r="6" class="k-c" stroke-width="1"/>
+<text x="135.72" y="250.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">copies, transposes</text>
+<text x="135.72" y="267.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">judge them by GB/s,</text>
+<text x="135.72" y="284.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">not by TFLOP/s</text>
+<circle cx="516.29" cy="77.79" r="6" class="k-d" stroke-width="1"/>
+<text x="516.29" y="99.79" text-anchor="middle" dominant-baseline="central" class="fig-txt t-d fig-small">polynomial: 64 flop/B</text>
+<circle cx="280.28" cy="244.54" r="6" class="k-hl" stroke-width="1"/>
+<text x="292.28" y="236.54" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">latency-bound:</text>
+<text x="292.28" y="253.54" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">far below both roofs</text>
+<text x="360" y="376" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">The distance from a point to the roof above it is the headroom; the roof says which unit.</text>
+</svg>
