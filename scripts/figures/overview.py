@@ -3,36 +3,34 @@ from .svg import Svg
 
 
 def fig_learning_path(name):
-    s = Svg(name, 740, 460, "The tutorials: four parts, read top to bottom")
+    s = Svg(name, 770, 470, "The tutorials: five parts, read left to right, each top to bottom")
     parts = [
-        ("Part I · CUDA Foundations", "a", [("00", "Getting started"), ("01", "Execution model"),
-                                            ("02", "Memory hierarchy"), ("03", "Parallel reduction")]),
-        ("Part II · Matrix Multiplication", "c", [("04", "Tiled matmul"), ("04.1–04.3", "Loads, pipelines"),
-                                                  ("04.4–04.6", "Warps, order, split-K"),
-                                                  ("04.7", "Tensor cores")]),
-        ("Part III · AMD GPUs", "b", [("05", "CDNA3 and MFMA"), ("06", "AITER asm GEMM"),
-                                      ("07", "hipBLASLt, TensileLite")]),
-        ("Part IV · Publishing", "d", [("08", "Deploying this site")]),
+        ("Part I", "CUDA Foundations", "a", [("00", "Getting started"), ("01", "Execution model"),
+                                             ("02", "Memory hierarchy"), ("03", "Reduction"),
+                                             ("09", "Profiling")]),
+        ("Part II", "Parallel Patterns", "hl", [("10", "Warp primitives"), ("11", "Scan"),
+                                               ("12", "Stencils, conv."), ("13", "Softmax, attention")]),
+        ("Part III", "Matrix Multiply", "c", [("04", "Tiled matmul"), ("04.1–04.3", "Loads, pipelines"),
+                                              ("04.4–04.6", "Warps, split-K"), ("04.7", "Tensor cores")]),
+        ("Part IV", "AMD GPUs", "b", [("05", "CDNA3, MFMA"), ("06", "AITER GEMM"), ("07", "hipBLASLt")]),
+        ("Part V", "Tools, Publishing", "d", [("14", "Triton"), ("08", "Deploying the site")]),
     ]
-    col_w, gap, x0, y0, bh, step = 170, 12, 16, 60, 58, 76
-    for i, (title, role, chapters) in enumerate(parts):
+    col_w, gap, x0, bh, step = 146, 6, 8, 52, 70
+    for i, (part, title, role, chapters) in enumerate(parts):
         x = x0 + i * (col_w + gap)
-        s.rect(x, 20, col_w, 430, fill=f"f-{role}", stroke=f"s-{role}", sw=1.2, rx=8)
-        words = title.split(" · ")
-        s.text(x + col_w / 2, 36, words[0], size="small", bold=True, role=role)
-        s.text(x + col_w / 2, 54, words[1], size="small", bold=True)
+        s.rect(x, 12, col_w, 448, fill=f"f-{role}", stroke=f"s-{role}", sw=1.2, rx=8)
+        s.text(x + col_w / 2, 30, part, size="small", bold=True, role=role)
+        s.text(x + col_w / 2, 48, title, size="small", bold=True)
         for j, (num, label) in enumerate(chapters):
-            y = y0 + 20 + j * step
+            y = 70 + j * step
             s.box(x + 10, y, col_w - 20, bh, f"{num}\n{label}", role=role, fill="fig-paper", size="small")
             if j + 1 < len(chapters):
                 s.arrow(x + col_w / 2, y + bh, x + col_w / 2, y + step - 2, role=role, sw=1.2)
-    notes = ["then Part II", "then Part III", "", ""]
-    for i, note in enumerate(notes):
-        if note:
-            s.text(x0 + i * (col_w + gap) + col_w / 2, 420, f"→ {note}", size="small", bold=True,
-                   role=parts[i][1])
-    s.text(x0 + 3 * (col_w + gap) + col_w / 2, 200, "read any time", size="small", role="muted")
-    s.text(x0 + 3 * (col_w + gap) + col_w / 2, 370, "Each chapter has:", size="small", bold=True)
-    s.text(x0 + 3 * (col_w + gap) + col_w / 2, 390, "goals, sections,", size="small")
-    s.text(x0 + 3 * (col_w + gap) + col_w / 2, 408, "takeaways, exercises", size="small")
+    notes = {1: ["after Part I;", "any order with III"], 2: ["after Part I"], 3: ["after chapter 04"],
+             4: ["independent", "", "Each chapter has:", "goals, sections,", "takeaways,", "exercises"]}
+    for i, lines in notes.items():
+        x = x0 + i * (col_w + gap) + col_w / 2
+        y = 70 + len(parts[i][3]) * step + 4
+        for k, ln in enumerate(lines):
+            s.text(x, y + k * 19, ln, size="small", role="muted" if k < 2 else "ink", bold=k == 2)
     return s

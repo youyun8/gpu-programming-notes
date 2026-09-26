@@ -1,7 +1,7 @@
 # 07 – hipBLASLt and TensileLite: GEMM Kernels Written by a Program
 
-> **Part III · AMD GPUs** · Prerequisites: [05](05-amd-cdna3-mfma.md), [06](06-aiter-asm-gemm.md) ·
-> Next: [08 – Deploying This Site](08-deploying-this-site.md)
+> **Part IV · AMD GPUs** · Prerequisites: [05](05-amd-cdna3-mfma.md), [06](06-aiter-asm-gemm.md) ·
+> Next: [14 – Triton](14-triton.md) (Part V)
 
 AITER (chapter 06) hand-writes a few dozen GEMM kernels.
 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) ships **thousands**: ROCm's `libhipblaslt` holds one set of code objects per GPU

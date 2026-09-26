@@ -1,6 +1,6 @@
 # 04.1 – Vectorized Loads and a Conflict-Free Fragment Layout
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Program: [`01-vectorized.cu`](01-vectorized.cu) · Builds on: [chapter 04, section 4](../04-tiled-matmul.md#4-register-tiling) ·
 > Next: [04.2 – Double Buffering](02-double-buffering.md)
 

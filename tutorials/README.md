@@ -1,11 +1,13 @@
 # Tutorials
 
-The tutorials are organised in four parts. Read Part I in order; after it,
-Part II (matrix multiplication) and Part III (AMD GPUs, which assumes
-Part II's chapter 04) can be read as tracks. Every chapter points at the
-practice problems that exercise it.
+The tutorials are organised in five parts. Read Part I in order; after it,
+Part II (parallel patterns) and Part III (matrix multiplication) can be
+read in either order, Part IV (AMD GPUs) assumes chapter 04, and Part V
+(Triton and publishing) is independent tooling. Every chapter points at the
+practice problems that exercise it, and chapters 09–14 come with tested
+example programs in [`examples/`](examples/check.cuh).
 
-![The tutorials: four parts, read top to bottom](figures/overview-learning-path.svg)
+![The tutorials: five parts, read top to bottom](figures/overview-learning-path.svg)
 
 ## Part I · CUDA Foundations
 
@@ -19,8 +21,22 @@ problem.
 | 01 | [Execution Model](01-execution-model.md) | Grid/block/warp, indexing, divergence, latency hiding, occupancy, streams | Vector Addition, Matrix Addition |
 | 02 | [Memory Hierarchy and Coalescing](02-memory-hierarchy.md) | Memory spaces, coalescing, layouts, `float4`, banks, swizzles, transpose | Matrix Transpose, Matrix Copy |
 | 03 | [Parallel Reduction](03-parallel-reduction.md) | Work/depth, shuffles, cross-block patterns, row reductions, accuracy, monoids | Reduction, Softmax, Dot Product |
+| 09 | [Profiling and Performance Analysis](09-profiling.md) | Timing, Nsight Systems and Compute, metrics, stall reasons, occupancy, sanitizers, rocprof | Matrix Transpose, Matrix Copy |
 
-## Part II · Matrix Multiplication
+## Part II · Parallel Patterns
+
+The building blocks beyond reduction: warp-level cooperation, scans,
+neighbourhood operations and the online algorithms behind fused attention.
+Each chapter has a tested example program.
+
+| # | Chapter | Main topics | Program |
+|---|---|---|---|
+| 10 | [Warp-Level Primitives and Cooperative Groups](10-warp-primitives.md) | Shuffles, votes, `match_any`, warp-aggregated atomics, compaction, cooperative groups | [`10-warp-primitives.cu`](examples/10-warp-primitives.cu) |
+| 11 | [Scan](11-scan.md) | Kogge-Stone and Brent-Kung, block scan, reduce-then-scan, decoupled look-back | [`11-scan.cu`](examples/11-scan.cu) |
+| 12 | [Convolution and Stencils](12-convolution-stencils.md) | Halos, constant-memory filters, 2-D tiling, 2.5-D stencil blocking | [`12-convolution-stencil.cu`](examples/12-convolution-stencil.cu) |
+| 13 | [Softmax, LayerNorm and FlashAttention](13-softmax-attention.md) | Online softmax, Welford, fused attention with tiles in registers | [`13-softmax-attention.cu`](examples/13-softmax-attention.cu) |
+
+## Part III · Matrix Multiplication
 
 The one kernel that can be compute-bound, built from a naive loop up to
 tensor cores. Chapter 04 builds the ladder; the 04.x pages take one
@@ -38,7 +54,7 @@ technique each and come with a complete, tested program.
 | 04.6 | [Split-K and Stream-K](gemm/06-split-k-stream-k.md) | Tile quantization, partial tiles, cross-block fix-up | [`06-split-k.cu`](gemm/06-split-k.cu), [`07-stream-k.cu`](gemm/07-stream-k.cu) |
 | 04.7 | [Tensor Cores](gemm/07-tensor-cores.md) | WMMA, `ldmatrix` + `mma.sync`, swizzled smem, `wgmma` | [`08-wmma.cu`](gemm/08-wmma.cu), [`09-mma-sync.cu`](gemm/09-mma-sync.cu) |
 
-## Part III · AMD GPUs
+## Part IV · AMD GPUs
 
 The same ideas on AMD's CDNA3 (MI300): first the hardware and instruction,
 then a hand-written kernel, then the generator that produces thousands of
@@ -50,11 +66,12 @@ such kernels. Assumes chapter 04 (and ideally 04.7).
 | 06 | [Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md) | AITER dispatch, one wave per SIMD, direct-to-LDS, interleaving, split-K | Disassemble AITER `.co` files |
 | 07 | [hipBLASLt and TensileLite](07-hipblaslt-tensilelite.md) | Solution parameters, kernel names, selection, offline tuning | `hipblaslt-bench` |
 
-## Part IV · Publishing
+## Part V · Tools & Publishing
 
-| # | Chapter | Main topics |
-|---|---|---|
-| 08 | [Deploying This Site](08-deploying-this-site.md) | Site builder, GitHub Pages, static hosts, EPUB/PDF, CI, figures |
+| # | Chapter | Main topics | Program |
+|---|---|---|---|
+| 14 | [Triton](14-triton.md) | Block-level programming model, fused softmax, matmul with autotuning, FlashAttention, compiler and debugging | [`14-triton/`](examples/14-triton/test_kernels.py) |
+| 08 | [Deploying This Site](08-deploying-this-site.md) | Site builder, GitHub Pages, static hosts, EPUB/PDF, CI, figures | |
 
 ## How Every Chapter Is Organised
 
@@ -89,19 +106,18 @@ $$
 | $T_{\min}$ | The best achievable time |
 | $I, I^{\star}$ | Arithmetic intensity of the kernel, and the GPU's ridge point |
 
-Part I is about reaching $Q/\beta$ for kernels with $I < I^{\star}$ (almost
-all elementwise, reduction and normalization problems). Parts II and III
-are about raising the *effective* $I$ of matrix multiplication at every
+Parts I and II are about reaching $Q/\beta$ for kernels with $I < I^{\star}$
+(almost all elementwise, reduction, scan, stencil and normalization
+problems). Parts III and IV are about raising the *effective* $I$ of matrix multiplication at every
 level of the memory hierarchy until $W/F$ is the bound.
 
-## Planned
+## Running the Example Programs
 
-- Profiling with Nsight Compute / rocprofv3 & the roofline model
-- Warp-level primitives (`__shfl_sync`, cooperative groups)
-- Scan / prefix sum (see the Cumsum and Prefix Sum problem pages meanwhile)
-- Convolution (1D / 2D) and stencils
-- Softmax, LayerNorm & online algorithms (FlashAttention-style)
-- Triton for the same problems
+```bash
+make examples-test                     # every examples/*.cu on the CPU emulator
+nvcc -O3 -arch=sm_80 -std=c++17 -lineinfo tutorials/examples/11-scan.cu -o scan && ./scan --bench
+python3 tutorials/examples/14-triton/test_kernels.py   # Triton (interpreter without a GPU)
+```
 
 ## Reading List
 

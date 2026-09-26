@@ -1,6 +1,6 @@
 # 08 – Deploying This Site
 
-> **Part IV · Publishing** · Prerequisites: none (Python, Git) ·
+> **Part V · Tools & Publishing** · Prerequisites: none (Python, Git) ·
 > Back to: [Tutorials index](README.md)
 
 This repository renders to a static website. It contains:
@@ -190,9 +190,11 @@ would publish something broken or wrong:
 
 | Job | What it guarantees |
 |-----|--------------------|
-| `nvcc compile check` | Every `solution.cu` and every GEMM tutorial program compiles with the real CUDA toolkit |
+| `nvcc compile check` | Every `solution.cu`, every GEMM tutorial program and every example program compiles with the real CUDA toolkit |
 | `cuemu tests (leetgpu / tensara)` | Every solution produces correct results against the platforms' reference implementations, on the CPU emulator (see [tools/cuemu](../tools/cuemu/README.md)) |
 | `GEMM tutorial programs (cuemu)` | Every program in `tutorials/gemm/` passes its `--test` shapes on the CPU emulator |
+| `Chapter 09-13 example programs (cuemu)` | Every program in `tutorials/examples/` passes its checks on the CPU emulator |
+| `Chapter 14 Triton kernels (interpreter)` | The Triton kernels in `tutorials/examples/14-triton/` match PyTorch in the Triton interpreter |
 | `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
 | `README index and site build` | The README tables and the figures are current, and the site builds with no broken links |
 
@@ -206,8 +208,10 @@ python3 scripts/build_index.py                                  # refresh README
 git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pages redeploys
 ```
 
-A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
-in `tutorials/README.md`. The navigation is generated.
+A new tutorial chapter needs a Markdown file in `tutorials/`, a row in
+`tutorials/README.md`, and its number prefix in `TUTORIAL_PARTS` in
+`scripts/build_site.py`, which assigns chapters to parts and orders them
+within a part. The navigation is generated from that.
 
 Figures are not drawn by hand: each one is a Python function in
 `scripts/figures/<chapter>.py` that uses the small SVG helper in

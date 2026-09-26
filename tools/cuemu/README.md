@@ -75,9 +75,12 @@ python3 tools/cuemu/cuemu.py run tutorials/gemm/03-cp-async.cu -- --test  # a pr
 ## Limits
 
 - **Correctness only.** Timings mean nothing on a CPU.
-- **Unsupported:** cooperative groups, CUB, Thrust, cuBLAS/cuDNN and inline
-  PTX (other than through the `__CUEMU__` hooks above). Solutions here avoid
-  them on purpose.
+- **Unsupported:** CUB, Thrust, cuBLAS/cuDNN and inline PTX (other than
+  through the `__CUEMU__` hooks above). Solutions here avoid them on purpose.
+- **Cooperative groups:** a subset is emulated: `this_thread_block()`,
+  `tiled_partition<N>()` with its shuffles, votes and `sync()`, and
+  `cg::reduce` / `cg::inclusive_scan` with `cg::plus`, `cg::less` and
+  `cg::greater`. Grid and cluster groups are not.
 - **Scheduling:** threads interleave only at barriers and warp collectives. A
   data race without a barrier may pass here and fail on a GPU; `--reverse`
   catches the most common kind.

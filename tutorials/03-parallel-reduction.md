@@ -1,7 +1,7 @@
 # 03 – Parallel Reduction
 
 > **Part I · CUDA Foundations** · Prerequisites: [01](01-execution-model.md), [02](02-memory-hierarchy.md) ·
-> Next: [04 – Tiled Matrix Multiplication](04-tiled-matmul.md)
+> Next: [09 – Profiling and Performance Analysis](09-profiling.md)
 
 Goal: $s = \sum_i x_i$. The same pattern computes maxima, arg-max, dot
 products, norms, softmax denominators, means and variances, so it is the

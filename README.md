@@ -12,8 +12,9 @@ problem, with the full solution source. How to deploy it is covered in
 ## Layout
 
 ```
-tutorials/            concept chapters, read in order (00, 01, ...); amd/ holds HIP example code,
-                      gemm/ the GEMM deep-dive pages and programs, figures/ the generated SVG figures
+tutorials/            concept chapters, organised in five parts (see tutorials/README.md); amd/ holds HIP
+                      example code, gemm/ the GEMM deep-dive pages and programs, examples/ the tested
+                      programs of chapters 09-14, figures/ the generated SVG figures
 leetgpu/NNN-slug/     README.md (write-up) + solution.cu (solution.py for PyTorch-only challenges)
 tensara/slug/         README.md (write-up) + solution.cu
 tools/cuemu/          CPU CUDA emulator + test runner: checks solutions without a GPU
@@ -43,11 +44,13 @@ make check
 ```
 
 CI (`.github/workflows/ci.yml`) runs these jobs:
-- compiles every solution and GEMM tutorial program with `nvcc`;
+- compiles every solution and tutorial program with `nvcc`;
 - runs every solution against the platforms' reference implementations on
   the [cuemu](tools/cuemu/README.md) CPU emulator;
 - runs the GEMM deep-dive programs (`tutorials/gemm/`) on cuemu, including
   their `cp.async`, `ldmatrix` and `mma.sync` code paths;
+- runs the example programs of chapters 09–13 on cuemu, and the Triton
+  kernels of chapter 14 in the Triton interpreter;
 - compiles the AMD example for gfx942;
 - checks that this index, the figures and the site build are current.
 
@@ -58,10 +61,11 @@ to `main`.
 
 | Part | Chapters | Topic |
 |---|---|---|
-| I · CUDA Foundations | 00–03 | Toolchain, execution model, memory hierarchy, reduction |
-| II · Matrix Multiplication | 04, 04.1–04.7 | Tiled GEMM, then one page and one tested program per technique: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` |
-| III · AMD GPUs | 05–07 | CDNA3 & MFMA, AITER's hand-written asm GEMM, hipBLASLt & TensileLite |
-| IV · Publishing | 08 | Deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
+| I · CUDA Foundations | 00–03, 09 | Toolchain, execution model, memory hierarchy, reduction, profiling (Nsight Systems/Compute, rocprof) |
+| II · Parallel Patterns | 10–13 | Warp primitives and cooperative groups, scan (decoupled look-back), convolution and stencils, softmax/LayerNorm/FlashAttention; each with a tested program |
+| III · Matrix Multiplication | 04, 04.1–04.7 | Tiled GEMM, then one page and one tested program per technique: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` |
+| IV · AMD GPUs | 05–07 | CDNA3 & MFMA, AITER's hand-written asm GEMM, hipBLASLt & TensileLite |
+| V · Tools & Publishing | 14, 08 | Triton (vector add, fused softmax, autotuned matmul, FlashAttention), deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
 
 See [tutorials/](tutorials/README.md).
 

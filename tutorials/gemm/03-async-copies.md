@@ -1,6 +1,6 @@
 # 04.3 – Asynchronous Copies: `cp.async` Pipelines and TMA
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Program: [`03-cp-async.cu`](03-cp-async.cu) · Builds on: [04.2](02-double-buffering.md) ·
 > Next: [04.4 – Warp Tiling](04-warp-tiling.md)
 

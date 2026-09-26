@@ -1,6 +1,6 @@
 # 04.7 – Tensor Cores: WMMA, `mma.sync` and `wgmma`
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Programs: [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) · Builds on: [04.3](03-async-copies.md), [04.4](04-warp-tiling.md) ·
 > Next: [05 – AMD CDNA3 and MFMA](../05-amd-cdna3-mfma.md)
 

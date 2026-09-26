@@ -1,6 +1,6 @@
 # 05 – AMD CDNA3 and MFMA: From CUDA to wave64 Matrix Cores
 
-> **Part III · AMD GPUs** · Prerequisites: [04](04-tiled-matmul.md) (and ideally [04.7](gemm/07-tensor-cores.md)) ·
+> **Part IV · AMD GPUs** · Prerequisites: [04](04-tiled-matmul.md) (and ideally [04.7](gemm/07-tensor-cores.md)) ·
 > Next: [06 – Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md)
 
 Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's

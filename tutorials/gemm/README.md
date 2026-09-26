@@ -1,6 +1,6 @@
 # 04.x – GEMM Deep Dive: The Rest of the Ladder
 
-> **Part II · Matrix Multiplication** · Prerequisites: [04 – Tiled Matrix Multiplication](../04-tiled-matmul.md) ·
+> **Part III · Matrix Multiplication** · Prerequisites: [04 – Tiled Matrix Multiplication](../04-tiled-matmul.md) ·
 > Next: [04.1 – Vectorized Loads](01-vectorized-loads.md)
 
 [Chapter 04](../04-tiled-matmul.md) ends with a table of techniques that take

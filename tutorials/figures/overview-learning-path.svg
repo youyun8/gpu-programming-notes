@@ -1,67 +1,96 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 740 460" width="740" height="460" class="fig-svg" role="img">
-<title>The tutorials: four parts, read top to bottom</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 770 470" width="770" height="470" class="fig-svg" role="img">
+<title>The tutorials: five parts, read left to right, each top to bottom</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
 <defs><marker id="overview-learning-path-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="overview-learning-path-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="overview-learning-path-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="overview-learning-path-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="overview-learning-path-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="overview-learning-path-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="overview-learning-path-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
-<rect x="0" y="0" width="740" height="460" class="fig-paper"/>
-<rect x="16" y="20" width="170" height="430" rx="8" class="f-a s-a" stroke-width="1.2"/>
-<text x="101" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">Part I</text>
-<text x="101" y="54" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">CUDA Foundations</text>
-<rect x="26" y="80" width="150" height="58" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
-<text x="101" y="100.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">00</text>
-<text x="101" y="117.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Getting started</text>
-<line x1="101" y1="138" x2="101" y2="154" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
-<rect x="26" y="156" width="150" height="58" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
-<text x="101" y="176.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">01</text>
-<text x="101" y="193.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Execution model</text>
-<line x1="101" y1="214" x2="101" y2="230" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
-<rect x="26" y="232" width="150" height="58" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
-<text x="101" y="252.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">02</text>
-<text x="101" y="269.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Memory hierarchy</text>
-<line x1="101" y1="290" x2="101" y2="306" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
-<rect x="26" y="308" width="150" height="58" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
-<text x="101" y="328.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">03</text>
-<text x="101" y="345.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Parallel reduction</text>
-<rect x="198" y="20" width="170" height="430" rx="8" class="f-c s-c" stroke-width="1.2"/>
-<text x="283" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">Part II</text>
-<text x="283" y="54" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Matrix Multiplication</text>
-<rect x="208" y="80" width="150" height="58" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
-<text x="283" y="100.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04</text>
-<text x="283" y="117.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Tiled matmul</text>
-<line x1="283" y1="138" x2="283" y2="154" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
-<rect x="208" y="156" width="150" height="58" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
-<text x="283" y="176.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.1–04.3</text>
-<text x="283" y="193.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Loads, pipelines</text>
-<line x1="283" y1="214" x2="283" y2="230" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
-<rect x="208" y="232" width="150" height="58" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
-<text x="283" y="252.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.4–04.6</text>
-<text x="283" y="269.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Warps, order, split-K</text>
-<line x1="283" y1="290" x2="283" y2="306" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
-<rect x="208" y="308" width="150" height="58" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
-<text x="283" y="328.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.7</text>
-<text x="283" y="345.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Tensor cores</text>
-<rect x="380" y="20" width="170" height="430" rx="8" class="f-b s-b" stroke-width="1.2"/>
-<text x="465" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">Part III</text>
-<text x="465" y="54" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">AMD GPUs</text>
-<rect x="390" y="80" width="150" height="58" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
-<text x="465" y="100.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">05</text>
-<text x="465" y="117.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">CDNA3 and MFMA</text>
-<line x1="465" y1="138" x2="465" y2="154" class="s-b" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-b)"/>
-<rect x="390" y="156" width="150" height="58" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
-<text x="465" y="176.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">06</text>
-<text x="465" y="193.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">AITER asm GEMM</text>
-<line x1="465" y1="214" x2="465" y2="230" class="s-b" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-b)"/>
-<rect x="390" y="232" width="150" height="58" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
-<text x="465" y="252.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">07</text>
-<text x="465" y="269.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">hipBLASLt, TensileLite</text>
-<rect x="562" y="20" width="170" height="430" rx="8" class="f-d s-d" stroke-width="1.2"/>
-<text x="647" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-d fig-small fig-bold">Part IV</text>
-<text x="647" y="54" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Publishing</text>
-<rect x="572" y="80" width="150" height="58" rx="4" class="fig-paper s-d" stroke-width="1.2"/>
-<text x="647" y="100.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">08</text>
-<text x="647" y="117.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Deploying this site</text>
-<text x="101" y="420" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">→ then Part II</text>
-<text x="283" y="420" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">→ then Part III</text>
-<text x="647" y="200" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">read any time</text>
-<text x="647" y="370" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Each chapter has:</text>
-<text x="647" y="390" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">goals, sections,</text>
-<text x="647" y="408" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">takeaways, exercises</text>
+<rect x="0" y="0" width="770" height="470" class="fig-paper"/>
+<rect x="8" y="12" width="146" height="448" rx="8" class="f-a s-a" stroke-width="1.2"/>
+<text x="81" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">Part I</text>
+<text x="81" y="48" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">CUDA Foundations</text>
+<rect x="18" y="70" width="126" height="52" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
+<text x="81" y="87.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">00</text>
+<text x="81" y="104.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Getting started</text>
+<line x1="81" y1="122" x2="81" y2="138" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
+<rect x="18" y="140" width="126" height="52" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
+<text x="81" y="157.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">01</text>
+<text x="81" y="174.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Execution model</text>
+<line x1="81" y1="192" x2="81" y2="208" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
+<rect x="18" y="210" width="126" height="52" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
+<text x="81" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">02</text>
+<text x="81" y="244.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Memory hierarchy</text>
+<line x1="81" y1="262" x2="81" y2="278" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
+<rect x="18" y="280" width="126" height="52" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
+<text x="81" y="297.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">03</text>
+<text x="81" y="314.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Reduction</text>
+<line x1="81" y1="332" x2="81" y2="348" class="s-a" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-a)"/>
+<rect x="18" y="350" width="126" height="52" rx="4" class="fig-paper s-a" stroke-width="1.2"/>
+<text x="81" y="367.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">09</text>
+<text x="81" y="384.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Profiling</text>
+<rect x="160" y="12" width="146" height="448" rx="8" class="f-hl s-hl" stroke-width="1.2"/>
+<text x="233" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-hl fig-small fig-bold">Part II</text>
+<text x="233" y="48" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Parallel Patterns</text>
+<rect x="170" y="70" width="126" height="52" rx="4" class="fig-paper s-hl" stroke-width="1.2"/>
+<text x="233" y="87.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">10</text>
+<text x="233" y="104.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Warp primitives</text>
+<line x1="233" y1="122" x2="233" y2="138" class="s-hl" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-hl)"/>
+<rect x="170" y="140" width="126" height="52" rx="4" class="fig-paper s-hl" stroke-width="1.2"/>
+<text x="233" y="157.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">11</text>
+<text x="233" y="174.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Scan</text>
+<line x1="233" y1="192" x2="233" y2="208" class="s-hl" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-hl)"/>
+<rect x="170" y="210" width="126" height="52" rx="4" class="fig-paper s-hl" stroke-width="1.2"/>
+<text x="233" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">12</text>
+<text x="233" y="244.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Stencils, conv.</text>
+<line x1="233" y1="262" x2="233" y2="278" class="s-hl" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-hl)"/>
+<rect x="170" y="280" width="126" height="52" rx="4" class="fig-paper s-hl" stroke-width="1.2"/>
+<text x="233" y="297.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">13</text>
+<text x="233" y="314.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Softmax, attention</text>
+<rect x="312" y="12" width="146" height="448" rx="8" class="f-c s-c" stroke-width="1.2"/>
+<text x="385" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">Part III</text>
+<text x="385" y="48" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Matrix Multiply</text>
+<rect x="322" y="70" width="126" height="52" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
+<text x="385" y="87.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04</text>
+<text x="385" y="104.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Tiled matmul</text>
+<line x1="385" y1="122" x2="385" y2="138" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
+<rect x="322" y="140" width="126" height="52" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
+<text x="385" y="157.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.1–04.3</text>
+<text x="385" y="174.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Loads, pipelines</text>
+<line x1="385" y1="192" x2="385" y2="208" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
+<rect x="322" y="210" width="126" height="52" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
+<text x="385" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.4–04.6</text>
+<text x="385" y="244.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Warps, split-K</text>
+<line x1="385" y1="262" x2="385" y2="278" class="s-c" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-c)"/>
+<rect x="322" y="280" width="126" height="52" rx="4" class="fig-paper s-c" stroke-width="1.2"/>
+<text x="385" y="297.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">04.7</text>
+<text x="385" y="314.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Tensor cores</text>
+<rect x="464" y="12" width="146" height="448" rx="8" class="f-b s-b" stroke-width="1.2"/>
+<text x="537" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">Part IV</text>
+<text x="537" y="48" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">AMD GPUs</text>
+<rect x="474" y="70" width="126" height="52" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
+<text x="537" y="87.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">05</text>
+<text x="537" y="104.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">CDNA3, MFMA</text>
+<line x1="537" y1="122" x2="537" y2="138" class="s-b" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-b)"/>
+<rect x="474" y="140" width="126" height="52" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
+<text x="537" y="157.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">06</text>
+<text x="537" y="174.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">AITER GEMM</text>
+<line x1="537" y1="192" x2="537" y2="208" class="s-b" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-b)"/>
+<rect x="474" y="210" width="126" height="52" rx="4" class="fig-paper s-b" stroke-width="1.2"/>
+<text x="537" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">07</text>
+<text x="537" y="244.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">hipBLASLt</text>
+<rect x="616" y="12" width="146" height="448" rx="8" class="f-d s-d" stroke-width="1.2"/>
+<text x="689" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-d fig-small fig-bold">Part V</text>
+<text x="689" y="48" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Tools, Publishing</text>
+<rect x="626" y="70" width="126" height="52" rx="4" class="fig-paper s-d" stroke-width="1.2"/>
+<text x="689" y="87.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">14</text>
+<text x="689" y="104.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Triton</text>
+<line x1="689" y1="122" x2="689" y2="138" class="s-d" stroke-width="1.2" marker-end="url(#overview-learning-path-ah-d)"/>
+<rect x="626" y="140" width="126" height="52" rx="4" class="fig-paper s-d" stroke-width="1.2"/>
+<text x="689" y="157.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">08</text>
+<text x="689" y="174.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Deploying the site</text>
+<text x="233" y="354" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">after Part I;</text>
+<text x="233" y="373" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">any order with III</text>
+<text x="385" y="354" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">after Part I</text>
+<text x="537" y="284" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">after chapter 04</text>
+<text x="689" y="214" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">independent</text>
+<text x="689" y="252" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Each chapter has:</text>
+<text x="689" y="271" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">goals, sections,</text>
+<text x="689" y="290" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">takeaways,</text>
+<text x="689" y="309" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">exercises</text>
 </svg>

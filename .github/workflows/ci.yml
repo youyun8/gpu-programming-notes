@@ -6,7 +6,7 @@ on:
 
 jobs:
   compile:
-    name: nvcc compile check (solutions and GEMM programs)
+    name: nvcc compile check (solutions and tutorial programs)
     runs-on: ubuntu-latest
     container: nvidia/cuda:12.4.1-devel-ubuntu22.04
     steps:
@@ -53,6 +53,33 @@ jobs:
         run: |
           clang++ --version
           make gemm-test
+
+  examples:
+    name: Chapter 09-13 example programs (cuemu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run every example program's checks on the CPU emulator
+        run: |
+          clang++ --version
+          make examples-test
+
+  triton:
+    name: Chapter 14 Triton kernels (interpreter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PyTorch (CPU) and Triton
+        run: |
+          pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install triton==3.8.0 numpy
+      - name: Check the kernels against PyTorch in the Triton interpreter
+        env:
+          TRITON_INTERPRET: "1"
+        run: make triton-test
 
   amd:
     name: AMD tutorial code compiles for gfx942

@@ -1,6 +1,6 @@
 # 06 – Inside a Hand-Written AMD GEMM: AITER's bf16 Asm Kernels
 
-> **Part III · AMD GPUs** · Prerequisites: [05 – CDNA3 and MFMA](05-amd-cdna3-mfma.md) ·
+> **Part IV · AMD GPUs** · Prerequisites: [05 – CDNA3 and MFMA](05-amd-cdna3-mfma.md) ·
 > Next: [07 – hipBLASLt and TensileLite](07-hipblaslt-tensilelite.md)
 
 [AITER](https://github.com/ROCm/aiter) is AMD's operator library for LLM

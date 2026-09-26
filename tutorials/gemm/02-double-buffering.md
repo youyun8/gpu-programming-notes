@@ -1,6 +1,6 @@
 # 04.2 – Double Buffering
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Program: [`02-double-buffering.cu`](02-double-buffering.cu) · Builds on: [04.1](01-vectorized-loads.md) ·
 > Next: [04.3 – Asynchronous Copies](03-async-copies.md)
 

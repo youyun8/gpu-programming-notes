@@ -33,11 +33,13 @@ CODE_LANGUAGES = {".cu": "cuda", ".cuh": "cuda", ".hip": "cpp", ".h": "cpp", ".c
 TUTORIAL_SECTIONS = {"gemm": ("04.x GEMM Deep Dive", "04-")}
 # The tutorials are grouped into parts in the navigation: (title, chapter file-name prefixes).
 # A sub-directory section goes into the part of the chapter it follows.
+# Parts, in reading order; chapters appear in the order of their prefixes here, not by number.
 TUTORIAL_PARTS = [
-    ("Part I · CUDA Foundations", ("00-", "01-", "02-", "03-")),
-    ("Part II · Matrix Multiplication", ("04-",)),
-    ("Part III · AMD GPUs", ("05-", "06-", "07-")),
-    ("Part IV · Publishing", ("08-",)),
+    ("Part I · CUDA Foundations", ("00-", "01-", "02-", "03-", "09-")),
+    ("Part II · Parallel Patterns", ("10-", "11-", "12-", "13-")),
+    ("Part III · Matrix Multiplication", ("04-",)),
+    ("Part IV · AMD GPUs", ("05-", "06-", "07-")),
+    ("Part V · Tools & Publishing", ("14-", "08-")),
 ]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
 # A figure: an SVG image alone on its line. The site inlines it (see inline_figures).
@@ -105,10 +107,28 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     ---
 
-    Execution model, memory hierarchy, reductions and tiled GEMM, each derived
+    Execution model, memory hierarchy, reductions and profiling, each derived
     from first principles with the cost model written out.
 
-    [:octicons-arrow-right-24: Chapters 00–04](tutorials/index.md)
+    [:octicons-arrow-right-24: Chapters 00–03, 09](tutorials/index.md)
+
+-   :material-vector-combine:{{ .lg .middle }} **Parallel Patterns**
+
+    ---
+
+    Warp primitives, scan, stencils, and FlashAttention's online softmax,
+    each with a tested example program.
+
+    [:octicons-arrow-right-24: Chapters 10–13](tutorials/10-warp-primitives.md)
+
+-   :material-matrix:{{ .lg .middle }} **Matrix Multiplication**
+
+    ---
+
+    From a tiled kernel to `cp.async` pipelines, warp tiling, Stream-K and
+    tensor cores, one tested program per technique.
+
+    [:octicons-arrow-right-24: Chapter 04 and 04.x](tutorials/04-tiled-matmul.md)
 
 -   :material-chip:{{ .lg .middle }} **AMD GEMM Deep Dive**
 
@@ -143,6 +163,15 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
     tests, so no GPU is needed.
 
     [:octicons-arrow-right-24: How it works](tools/cuemu/index.md)
+
+-   :material-language-python:{{ .lg .middle }} **Triton**
+
+    ---
+
+    The same kernels at block level in Python: fused softmax, an autotuned
+    matmul and FlashAttention.
+
+    [:octicons-arrow-right-24: Chapter 14](tutorials/14-triton.md)
 
 -   :material-rocket-launch:{{ .lg .middle }} **Deploy Your Own Copy**
 
@@ -346,19 +375,27 @@ class SiteBuilder:
             at = next((i + 1 for i, p in enumerate(nav) if isinstance(p, str) and Path(p).name.startswith(after)),
                       len(nav))
             nav.insert(at, {title: pages})
-        # Group chapters (and the sections that follow them) into parts.
-        parts, current = [], None
+        # Group chapters (and the sections that follow them) into parts, in TUTORIAL_PARTS order.
+        groups, current, loose = [], None, []
         for item in nav:
             if isinstance(item, str):
-                title = next((t for t, prefixes in TUTORIAL_PARTS if Path(item).name.startswith(prefixes)), None)
-                if title is not None and (current is None or title != next(iter(current))):
-                    current = {title: []}
-                    parts.append(current)
+                name = Path(item).name
+                current = next(((pi, prefixes.index(pre)) for pi, (_, prefixes) in enumerate(TUTORIAL_PARTS)
+                                for pre in prefixes if name.startswith(pre)), None)
+                if current is not None:
+                    groups.append((current, [item]))
+                    continue
             if current is None:
-                parts.append(item)
+                loose.append(item)
             else:
-                next(iter(current.values())).append(item)
-        return parts + ([{"Example Code": code_nav}] if code_nav else [])
+                groups[-1][1].append(item)
+        parts = []
+        for (part, _), items in sorted(groups, key=lambda g: g[0]):
+            title = TUTORIAL_PARTS[part][0]
+            if not parts or title not in parts[-1]:
+                parts.append({title: []})
+            parts[-1][title].extend(items)
+        return loose + parts + ([{"Example Code": code_nav}] if code_nav else [])
 
     def problems(self, platform: str):
         rows = {d: [] for d in DIFFICULTIES}

@@ -1,6 +1,6 @@
 # 04.4 – Warp Tiling
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Program: [`04-warp-tiling.cu`](04-warp-tiling.cu) · Builds on: [04.1](01-vectorized-loads.md), [04.2](02-double-buffering.md) ·
 > Next: [04.5 – Tile Swizzling](05-tile-swizzling.md)
 

@@ -1,6 +1,6 @@
 # 04.5 – Swizzled Tile Order for L2 Reuse
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Program: [`05-tile-swizzle.cu`](05-tile-swizzle.cu) · Builds on: [04.4](04-warp-tiling.md) ·
 > Next: [04.6 – Split-K and Stream-K](06-split-k-stream-k.md)
 

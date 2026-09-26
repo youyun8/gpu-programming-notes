@@ -1,6 +1,6 @@
 # 04 – Tiled Matrix Multiplication
 
-> **Part II · Matrix Multiplication** · Prerequisites: [01](01-execution-model.md), [02](02-memory-hierarchy.md) ·
+> **Part III · Matrix Multiplication** · Prerequisites: [01](01-execution-model.md), [02](02-memory-hierarchy.md) ·
 > Next: [04.x – GEMM Deep Dive](gemm/README.md)
 
 Matrix multiplication is the opposite of the kernels in chapters 01–03: it

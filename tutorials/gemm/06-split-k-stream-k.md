@@ -1,6 +1,6 @@
 # 04.6 – Split-K and Stream-K
 
-> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
 > Programs: [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) · Builds on: [04.1](01-vectorized-loads.md) ·
 > Next: [04.7 – Tensor Cores](07-tensor-cores.md)
 
