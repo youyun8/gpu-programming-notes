@@ -1,54 +1,32 @@
 ---
 title: Matrix Multiplication
 platform: LeetGPU
+upstream: easy/2_matrix_multiplication
 url: https://leetgpu.com/challenges/matrix-multiplication
 difficulty: easy
-tags: [gemm, shared-memory, tiling]
+tags: [gemm, shared-memory, tiling, register-blocking]
 status: solved
 ---
 
 # Matrix Multiplication
 
-**Platform:** LeetGPU · **Difficulty:** easy · [Problem link](https://leetgpu.com/challenges/matrix-multiplication)
+**Platform:** LeetGPU · **Difficulty:** easy · [Problem statement](https://leetgpu.com/challenges/matrix-multiplication)
 
 ## Problem
-
-`A` is `M x N`, `B` is `N x K`, both row-major float32 on the device.
-Compute `C = A * B` (`M x K`).
-
-> Verify the dimension naming against the starter code — platforms differ on
-> whether the inner dimension is called `N` or `K`.
+`C (M×K) = A (M×N) · B (N×K)`, all float32 row-major. Note that the inner
+dimension is called `N` here.
 
 ## Approach
-
-**v1 – naive:** one thread per output element, loops over the inner dimension
-reading directly from global memory. Each element of `A` and `B` is read
-`K` / `M` times from DRAM (mostly served by L1/L2, but still slow).
-
-**v2 – shared-memory tiling (submitted):** each 16x16 block computes a 16x16
-tile of `C`. It walks the inner dimension in 16-wide steps; per step, every
-thread loads one element of `A` and one of `B` into shared memory, the block
-synchronizes, then each thread accumulates 16 products from shared memory.
-Global traffic drops by a factor of `kTile`. See
-[tutorials/04-tiled-matmul.md](../../tutorials/04-tiled-matmul.md).
-
-## Complexity & performance
-
-| Version | Idea | Runtime | GPU |
-|---------|------|---------|-----|
-| v1      | naive, one thread per output | | |
-| v2      | 16x16 shared-memory tiles | | |
+Classic shared-memory + register tiling (see [tutorial 04](../../tutorials/04-tiled-matmul.md)):
+- A 256-thread block computes a 64×64 tile of `C`; each thread owns a 4×4
+  sub-tile laid out with stride 16 so that neighbouring threads write
+  neighbouring columns (coalesced stores).
+- The inner dimension is walked in 16-wide slices. The `A` slice is stored
+  **transposed** in shared memory so both operands are read along rows; the
+  `+4` padding avoids bank conflicts on the transposed store.
+- Each shared-memory value is reused 4 times from registers, i.e. 16 FMAs per
+  8 shared loads instead of 1 FMA per 2 loads in the naive tiled kernel.
 
 ## Pitfalls
-
-- Out-of-range tiles on the edges must load `0.0f`, not skip the load, or the
-  `__syncthreads()` pattern and the accumulation break.
-- `__syncthreads()` is needed **both** after loading a tile and before
-  overwriting it on the next iteration.
-- Map `threadIdx.x` to the column so reads of `B` and writes of `C` are coalesced.
-
-## Takeaways
-
-- Tiling = reuse data from fast memory. Arithmetic intensity grows with tile size.
-- Next steps: register tiling (each thread computes several outputs), vectorized
-  `float4` loads, double buffering, tensor cores (WMMA / MMA).
+- Edge tiles load zeros instead of skipping the load, so the barriers stay uniform.
+- Two `__syncthreads()` per K-slice: after loading and before overwriting.

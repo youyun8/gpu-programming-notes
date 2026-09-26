@@ -3,34 +3,29 @@
 #include <cuda_runtime.h>
 
 constexpr int kBlockSize = 256;
-constexpr int kMaxBlocks = 1024;
+constexpr int kMaxBlocks = 4096;
 
-__global__ void vectorAddVec4(const float* input1, const float* input2, float* output, size_t n) {
+// float4 vectorized, grid-stride; scalar loop handles the n % 4 tail.
+__global__ void vectorAddVec4(const float* a, const float* b, float* c, size_t n) {
     const size_t num_vec4 = n / 4;
     const size_t stride = static_cast<size_t>(gridDim.x) * blockDim.x;
     const size_t start = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
-
-    const float4* a4 = reinterpret_cast<const float4*>(input1);
-    const float4* b4 = reinterpret_cast<const float4*>(input2);
-    float4* c4 = reinterpret_cast<float4*>(output);
-
+    const float4* a4 = reinterpret_cast<const float4*>(a);
+    const float4* b4 = reinterpret_cast<const float4*>(b);
+    float4* c4 = reinterpret_cast<float4*>(c);
     for (size_t i = start; i < num_vec4; i += stride) {
-        const float4 a = a4[i];
-        const float4 b = b4[i];
-        c4[i] = make_float4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+        const float4 x = a4[i];
+        const float4 y = b4[i];
+        c4[i] = make_float4(x.x + y.x, x.y + y.y, x.z + y.z, x.w + y.w);
     }
-
-    // Scalar tail for the last n % 4 elements.
     for (size_t i = num_vec4 * 4 + start; i < n; i += stride) {
-        output[i] = input1[i] + input2[i];
+        c[i] = a[i] + b[i];
     }
 }
 
-// input1, input2, output are device pointers
-extern "C" void solution(const float* input1, const float* input2, float* output, size_t n) {
-    const size_t num_vec4 = (n + 3) / 4;
-    size_t num_blocks = (num_vec4 + kBlockSize - 1) / kBlockSize;
-    if (num_blocks > kMaxBlocks) num_blocks = kMaxBlocks;
-    if (num_blocks == 0) num_blocks = 1;
-    vectorAddVec4<<<static_cast<unsigned int>(num_blocks), kBlockSize>>>(input1, input2, output, n);
+// d_input1, d_input2, d_output are device pointers
+extern "C" void solution(const float* d_input1, const float* d_input2, float* d_output, size_t n) {
+    size_t num_blocks = (n / 4 + kBlockSize - 1) / kBlockSize;
+    num_blocks = num_blocks < 1 ? 1 : (num_blocks > kMaxBlocks ? kMaxBlocks : num_blocks);
+    vectorAddVec4<<<static_cast<unsigned>(num_blocks), kBlockSize>>>(d_input1, d_input2, d_output, n);
 }

@@ -23,3 +23,6 @@ __pycache__/
 .vscode/
 .idea/
 .DS_Store
+
+# Upstream problem definitions (scripts/fetch_upstream.sh)
+.upstream/

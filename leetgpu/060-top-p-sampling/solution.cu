@@ -1,0 +1,6 @@
+// Top-p Sampling (LeetGPU)
+// https://leetgpu.com/challenges/top-p-sampling
+#include <cuda_runtime.h>
+
+extern "C" void solve(const float* logits, const float* p, const int* seed, int* sampled_token, int vocab_size) {
+}
