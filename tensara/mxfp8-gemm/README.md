@@ -4,8 +4,8 @@ platform: Tensara
 upstream: mxfp8-gemm
 url: https://tensara.org/problems/mxfp8-gemm
 difficulty: hard
-tags: [quantization, mxfp8, matmul]
-status: todo
+tags: [gemm, quantization, mxfp8, block-scaling]
+status: solved
 ---
 
 # MXFP8 GEMM
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** hard · [Problem statement](https://tensara.org/problems/mxfp8-gemm)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`C = A·Bᵀ` with MXFP8 operands and swizzled E8M0 scales.
 
 ## Approach
-
-## Pitfalls
+Same structure as [mxfp4-gemm](../mxfp4-gemm) with E4M3 decoding.

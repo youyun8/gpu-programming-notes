@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matmul-4d
 url: https://tensara.org/problems/matmul-4d
 difficulty: hard
-tags: [matmul]
-status: todo
+tags: [gemm, batched]
+status: solved
 ---
 
 # 4D Tensor-Matrix Multiplication
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** hard · [Problem statement](https://tensara.org/problems/matmul-4d)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`einsum("bijl,lk->bijk")`.
 
 ## Approach
-
-## Pitfalls
+One `(b·i·j) × l × k` SGEMM.

@@ -5,7 +5,7 @@ upstream: layer-norm
 url: https://tensara.org/problems/layer-norm
 difficulty: medium
 tags: [normalization]
-status: todo
+status: solved
 ---
 
 # Layer Normalization
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/layer-norm)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+LayerNorm over the last three dims of `(B, F, D1, D2)` with elementwise γ/β.
 
 ## Approach
-
-## Pitfalls
+Each batch element is a contiguous group. One block per group computes the
+mean, then the **centered** variance (two fp64 passes, no cancellation), then
+writes the output.

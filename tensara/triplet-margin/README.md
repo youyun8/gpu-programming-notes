@@ -4,8 +4,8 @@ platform: Tensara
 upstream: triplet-margin
 url: https://tensara.org/problems/triplet-margin
 difficulty: medium
-tags: [loss-function, reduction]
-status: todo
+tags: [loss, reduction]
+status: solved
 ---
 
 # Triplet Margin Loss
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/triplet-margin)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Mean triplet-margin loss with `‖a − p + ε‖` distances (`ε = 1e-6`, as in `pairwise_distance`).
 
 ## Approach
-
-## Pitfalls
+Block per sample computes both distances in one pass; a final block averages in fp64.

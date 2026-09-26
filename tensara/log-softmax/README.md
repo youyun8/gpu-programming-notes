@@ -4,8 +4,8 @@ platform: Tensara
 upstream: log-softmax
 url: https://tensara.org/problems/log-softmax
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [softmax]
+status: solved
 ---
 
 # Log Softmax
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/log-softmax)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`log_softmax` over the columns of an M×N matrix.
 
 ## Approach
-
-## Pitfalls
+Warp per row: online `(max, sum)` with a shuffle merge, then
+`x − (max + log sum)`.

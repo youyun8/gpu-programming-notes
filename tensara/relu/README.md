@@ -4,8 +4,8 @@ platform: Tensara
 upstream: relu
 url: https://tensara.org/problems/relu
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # ReLU
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/relu)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise `max(0, x)` over an M×N matrix.
 
 ## Approach
-
-## Pitfalls
+The shared Tensara elementwise template: a grid-stride `float4` loop plus a
+scalar tail. The matrix shape only matters through `M·N`.

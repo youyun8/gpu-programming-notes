@@ -4,8 +4,8 @@ platform: Tensara
 upstream: kl-loss
 url: https://tensara.org/problems/kl-loss
 difficulty: medium
-tags: [loss-function]
-status: todo
+tags: [loss, elementwise]
+status: solved
 ---
 
 # Kullback-Leibler Divergence
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/kl-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise KL term `t·(log t − log p)` with clamping at 1e-10, zero where `t ≤ 0`.
 
 ## Approach
-
-## Pitfalls
+Elementwise kernel that reproduces the reference's clamping.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: shortest-path
 url: https://tensara.org/problems/shortest-path
 difficulty: medium
-tags: [graphs]
-status: todo
+tags: [graph, bellman-ford]
+status: solved
 ---
 
 # Single Source Shortest Path
@@ -13,9 +13,10 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/shortest-path)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Single-source shortest paths on a dense graph with positive weights.
 
 ## Approach
-
-## Pitfalls
+Bellman–Ford relaxation, parallel over destinations: thread `v` scans column
+`v`, which is coalesced across the warp for each `u`. It **stops early** once a
+sweep changes nothing, typically after about as many sweeps as the graph's
+diameter rather than `N−1`.

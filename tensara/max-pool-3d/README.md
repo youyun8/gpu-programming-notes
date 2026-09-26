@@ -5,7 +5,7 @@ upstream: max-pool-3d
 url: https://tensara.org/problems/max-pool-3d
 difficulty: hard
 tags: [pooling]
-status: todo
+status: solved
 ---
 
 # 3D Max Pooling
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** hard · [Problem statement](https://tensara.org/problems/max-pool-3d)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`max_pool3d` with padding and dilation.
 
 ## Approach
-
-## Pitfalls
+One thread per output, looping over the 3-D dilated window.

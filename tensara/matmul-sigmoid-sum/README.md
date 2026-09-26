@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matmul-sigmoid-sum
 url: https://tensara.org/problems/matmul-sigmoid-sum
 difficulty: medium
-tags: [matmul, reduction, fused]
-status: todo
+tags: [gemm, fusion, reduction]
+status: solved
 ---
 
 # Matrix Multiplication with Sigmoid and Sum
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matmul-sigmoid-sum)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`Σ sigmoid(A·B)` as a scalar.
 
 ## Approach
-
-## Pitfalls
+The product is never stored: the SGEMM epilogue applies the sigmoid, each
+block reduces its tile, and one fp64 `atomicAdd` per block accumulates the
+total.

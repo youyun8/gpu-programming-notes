@@ -5,7 +5,7 @@ upstream: max-dim
 url: https://tensara.org/problems/max-dim
 difficulty: easy
 tags: [reduction]
-status: todo
+status: solved
 ---
 
 # Max Over Dimension
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/max-dim)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Max along a dimension (keepdim).
 
 ## Approach
-
-## Pitfalls
+Generic `(outer, R, inner)` reduction: warp per output when the axis is
+contiguous, otherwise thread per output with coalesced strided loops.

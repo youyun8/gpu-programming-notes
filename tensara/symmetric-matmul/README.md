@@ -4,8 +4,8 @@ platform: Tensara
 upstream: symmetric-matmul
 url: https://tensara.org/problems/symmetric-matmul
 difficulty: medium
-tags: [matmul]
-status: todo
+tags: [gemm]
+status: solved
 ---
 
 # Symmetric Matrix Multiplication
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/symmetric-matmul)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Product of two symmetric matrices.
 
 ## Approach
-
-## Pitfalls
+Symmetry doesn't reduce the FLOPs of a dense product (it only means `Bᵀ = B`),
+so this is the plain SGEMM.

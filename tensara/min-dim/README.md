@@ -5,7 +5,7 @@ upstream: min-dim
 url: https://tensara.org/problems/min-dim
 difficulty: easy
 tags: [reduction]
-status: todo
+status: solved
 ---
 
 # Min Over Dimension
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/min-dim)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Min along a dimension (keepdim).
 
 ## Approach
-
-## Pitfalls
+Generic `(outer, R, inner)` reduction, as in [max-dim](../max-dim).

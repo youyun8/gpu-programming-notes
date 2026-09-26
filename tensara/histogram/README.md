@@ -4,8 +4,8 @@ platform: Tensara
 upstream: histogram
 url: https://tensara.org/problems/histogram
 difficulty: easy
-tags: [graphics, statistics]
-status: todo
+tags: [histogram, atomics, privatization]
+status: solved
 ---
 
 # Image Histogram
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/histogram)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Histogram of `clamp(pixel, 0, bins−1)`, returned as floats.
 
 ## Approach
-
-## Pitfalls
+A privatized shared-memory histogram (shared atomics), merged into the zeroed
+global histogram once per block, with a global-atomic fallback for very large
+bin counts.

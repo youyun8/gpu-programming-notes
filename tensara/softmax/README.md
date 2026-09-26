@@ -4,8 +4,8 @@ platform: Tensara
 upstream: softmax
 url: https://tensara.org/problems/softmax
 difficulty: medium
-tags: [activation-function, normalization]
-status: todo
+tags: [softmax, online-softmax]
+status: solved
 ---
 
 # Softmax
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/softmax)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Softmax along an arbitrary dimension.
 
 ## Approach
-
-## Pitfalls
+Online softmax over the `(outer, R, inner)` view: each lane or thread keeps a
+running `(max, Σe^{x−max})` pair, pairs merge with rescaling, and a second
+pass writes `e^{x−max}/Σ`. That is two reads and one write per element.

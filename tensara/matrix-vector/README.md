@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matrix-vector
 url: https://tensara.org/problems/matrix-vector
 difficulty: easy
-tags: [matmul, vector]
-status: todo
+tags: [gemv]
+status: solved
 ---
 
 # Matrix Vector Multiplication
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/matrix-vector)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`c = A·b`.
 
 ## Approach
-
-## Pitfalls
+GEMV is bandwidth-bound: one warp per row, `float4` loads when rows are
+16-byte aligned, and a shuffle reduction.

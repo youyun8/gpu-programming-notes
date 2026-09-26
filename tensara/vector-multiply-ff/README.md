@@ -4,8 +4,8 @@ platform: Tensara
 upstream: vector-multiply-ff
 url: https://tensara.org/problems/vector-multiply-ff
 difficulty: medium
-tags: [crypto]
-status: todo
+tags: [finite-field, integer, mersenne]
+status: solved
 ---
 
 # Vector Multiplication over Finite Field
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/vector-multiply-ff)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise `a·b mod (2³¹ − 1)`.
 
 ## Approach
-
-## Pitfalls
+Mersenne reduction: since `2³¹ ≡ 1 (mod p)`, a 62-bit product reduces to
+`(x & p) + (x >> 31)`. Two folds and one conditional subtract replace the
+64-bit division.

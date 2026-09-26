@@ -4,8 +4,8 @@ platform: Tensara
 upstream: threshold
 url: https://tensara.org/problems/threshold
 difficulty: easy
-tags: [graphics]
-status: todo
+tags: [elementwise, image]
+status: solved
 ---
 
 # Image Thresholding
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/threshold)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Binarize an image: 255 where the pixel exceeds a threshold, else 0.
 
 ## Approach
-
-## Pitfalls
+Elementwise template with a select.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: nvfp4-gemv
 url: https://tensara.org/problems/nvfp4-gemv
 difficulty: hard
-tags: [quantization, nvfp4, matmul, vector]
-status: todo
+tags: [gemv, quantization, nvfp4]
+status: solved
 ---
 
 # NVFP4 GEMV
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** hard · [Problem statement](https://tensara.org/problems/nvfp4-gemv)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+fp16 `y = A·x` with NVFP4 `A` and `x`.
 
 ## Approach
-
-## Pitfalls
+A bandwidth-bound GEMV at ~0.56 bytes per weight: one warp per row, and each
+lane decodes whole 16-element blocks (8 bytes + 1 scale), accumulating the
+block's integer-like products before applying both block scales.

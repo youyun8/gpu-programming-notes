@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matmul-swish
 url: https://tensara.org/problems/matmul-swish
 difficulty: medium
-tags: [matmul, activation-function, fused]
-status: todo
+tags: [gemm, fusion]
+status: solved
 ---
 
 # Matrix Multiplication with Swish Activation
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matmul-swish)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`s · swish(x·Wᵀ + bias)`.
 
 ## Approach
-
-## Pitfalls
+An NT-GEMM (W is stored `(out, in)`) with bias, swish and scaling fused into
+the epilogue.

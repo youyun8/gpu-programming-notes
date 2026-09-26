@@ -4,8 +4,8 @@ platform: Tensara
 upstream: square-matmul
 url: https://tensara.org/problems/square-matmul
 difficulty: medium
-tags: [matmul]
-status: todo
+tags: [gemm]
+status: solved
 ---
 
 # Square Matrix Multiplication
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/square-matmul)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+N×N matrix product.
 
 ## Approach
-
-## Pitfalls
+The register-blocked SGEMM.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: gemm-multiply-leakyrelu
 url: https://tensara.org/problems/gemm-multiply-leakyrelu
 difficulty: medium
-tags: [matmul, activation-function, fused]
-status: todo
+tags: [gemm, fusion]
+status: solved
 ---
 
 # GEMM with Element-wise Multiply and LeakyReLU
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/gemm-multiply-leakyrelu)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`leaky_relu((A·B) ⊙ C, α)`.
 
 ## Approach
-
-## Pitfalls
+SGEMM whose epilogue reads `C`, multiplies, and applies the activation.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: hinge-loss
 url: https://tensara.org/problems/hinge-loss
 difficulty: easy
-tags: [loss-function]
-status: todo
+tags: [loss, elementwise]
+status: solved
 ---
 
 # Hinge Loss
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/hinge-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise `max(0, 1 − p·t)`.
 
 ## Approach
-
-## Pitfalls
+Grid-stride elementwise kernel.

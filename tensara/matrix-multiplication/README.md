@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matrix-multiplication
 url: https://tensara.org/problems/matrix-multiplication
 difficulty: medium
-tags: [matmul]
-status: todo
+tags: [gemm, register-blocking]
+status: solved
 ---
 
 # Matrix Multiplication
@@ -13,9 +13,11 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matrix-multiplication)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`C = A·B` (fp32, row-major).
 
 ## Approach
-
-## Pitfalls
+Register-blocked SGEMM: a 64×64 block tile, 16-wide K slices in shared memory
+(A stored transposed), and 4×4 outputs per thread with stride 16 so the
+stores are coalesced. See [tutorial 04](../../tutorials/04-tiled-matmul.md).
+The same kernel, templated on B's layout and a fused epilogue functor, is
+reused by the other GEMM problems below.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: sigmoid
 url: https://tensara.org/problems/sigmoid
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # Sigmoid
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/sigmoid)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise logistic sigmoid.
 
 ## Approach
-
-## Pitfalls
+`1 / (1 + e^{−x})` in the `float4` template.

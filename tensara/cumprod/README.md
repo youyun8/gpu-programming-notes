@@ -5,7 +5,7 @@ upstream: cumprod
 url: https://tensara.org/problems/cumprod
 difficulty: medium
 tags: [scan]
-status: todo
+status: solved
 ---
 
 # Cumulative Product
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/cumprod)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Inclusive prefix product.
 
 ## Approach
-
-## Pitfalls
+The same scan pipeline as cumsum with the multiplicative operator (the scan
+is generic in the associative operator).

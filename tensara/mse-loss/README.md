@@ -4,8 +4,8 @@ platform: Tensara
 upstream: mse-loss
 url: https://tensara.org/problems/mse-loss
 difficulty: easy
-tags: [loss-function]
-status: todo
+tags: [loss, reduction]
+status: solved
 ---
 
 # Mean Squared Error Loss
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/mse-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Mean squared error over a tensor of arbitrary shape.
 
 ## Approach
-
-## Pitfalls
+Two-pass reduction with fp64 block partials. The element count is the product
+of `shape` (read with `cudaMemcpyDefault`).

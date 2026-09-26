@@ -4,8 +4,8 @@ platform: Tensara
 upstream: array-sort
 url: https://tensara.org/problems/array-sort
 difficulty: easy
-tags: [sorting]
-status: todo
+tags: [sorting, radix-sort]
+status: solved
 ---
 
 # Array Sorting
@@ -13,9 +13,10 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/array-sort)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Sort int32 values ascending.
 
 ## Approach
-
-## Pitfalls
+Flipping the sign bit maps signed order onto unsigned order. A stable LSD
+radix sort (4 × 8-bit passes, the same code as the
+[LeetGPU radix sort](../../leetgpu/036-radix-sort)) then sorts the keys, and
+the sign bit is flipped back.

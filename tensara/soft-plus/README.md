@@ -4,8 +4,8 @@ platform: Tensara
 upstream: soft-plus
 url: https://tensara.org/problems/soft-plus
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # Softplus
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/soft-plus)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`log(1 + eˣ)` elementwise.
 
 ## Approach
-
-## Pitfalls
+Like PyTorch, return `x` for `x > 20` (where `log1p(eˣ)` equals `x` in fp32)
+and `log1pf(expf(x))` otherwise.

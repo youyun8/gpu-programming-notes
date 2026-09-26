@@ -4,8 +4,8 @@ platform: Tensara
 upstream: gelu
 url: https://tensara.org/problems/gelu
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # GELU
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/gelu)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+GELU with the tanh approximation.
 
 ## Approach
-
-## Pitfalls
+`0.5x(1 + tanh(√(2/π)(x + 0.044715x³)))` in the elementwise `float4` template.

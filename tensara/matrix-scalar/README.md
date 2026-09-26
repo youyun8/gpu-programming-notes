@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matrix-scalar
 url: https://tensara.org/problems/matrix-scalar
 difficulty: easy
-tags: [matmul, scalar]
-status: todo
+tags: [elementwise]
+status: solved
 ---
 
 # Matrix Scalar Multiplication
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/matrix-scalar)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Multiply an N×N matrix by a scalar.
 
 ## Approach
-
-## Pitfalls
+`float4` grid-stride scale over `N²` elements.

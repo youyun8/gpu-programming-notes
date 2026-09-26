@@ -4,8 +4,8 @@ platform: Tensara
 upstream: grayscale
 url: https://tensara.org/problems/grayscale
 difficulty: easy
-tags: [graphics]
-status: todo
+tags: [image, elementwise]
+status: solved
 ---
 
 # Grayscale Conversion
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/grayscale)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+RGB → grayscale with 0.299/0.587/0.114.
 
 ## Approach
-
-## Pitfalls
+One thread per pixel.

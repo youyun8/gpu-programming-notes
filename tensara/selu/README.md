@@ -4,8 +4,8 @@ platform: Tensara
 upstream: selu
 url: https://tensara.org/problems/selu
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # SELU
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/selu)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+SELU with the fixed self-normalizing constants `α ≈ 1.6733`, `λ ≈ 1.0507`.
 
 ## Approach
-
-## Pitfalls
+`λ·(x > 0 ? x : α·expm1(x))` in the elementwise template.

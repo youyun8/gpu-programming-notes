@@ -5,7 +5,7 @@ upstream: batch-norm
 url: https://tensara.org/problems/batch-norm
 difficulty: medium
 tags: [normalization]
-status: todo
+status: solved
 ---
 
 # Batch Normalization
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/batch-norm)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+BatchNorm2d in training mode without affine parameters: per-channel statistics over `(B, D1, D2)`.
 
 ## Approach
-
-## Pitfalls
+One block per channel walks the `B` contiguous `D1·D2` chunks of that channel
+(coalesced) and reduces the mean and centered variance in fp64 before
+normalizing.

@@ -4,8 +4,8 @@ platform: Tensara
 upstream: tanh
 url: https://tensara.org/problems/tanh
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # Tanh
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/tanh)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise `tanh`.
 
 ## Approach
-
-## Pitfalls
+`tanhf` in the `float4` template.

@@ -5,7 +5,7 @@ upstream: rms-norm
 url: https://tensara.org/problems/rms-norm
 difficulty: easy
 tags: [normalization]
-status: todo
+status: solved
 ---
 
 # RMS Normalization
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/rms-norm)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`x / sqrt(mean(x²) + 1e-5)` per row, without weights.
 
 ## Approach
-
-## Pitfalls
+Block per row: block reduction, then rescale.

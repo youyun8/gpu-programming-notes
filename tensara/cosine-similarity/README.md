@@ -4,8 +4,8 @@ platform: Tensara
 upstream: cosine-similarity
 url: https://tensara.org/problems/cosine-similarity
 difficulty: easy
-tags: [loss-function]
-status: todo
+tags: [loss, reduction]
+status: solved
 ---
 
 # Cosine Similarity
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/cosine-similarity)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`1 − cos(p_i, t_i)` per row.
 
 ## Approach
-
-## Pitfalls
+Block per row reduces the three dot products `p·t`, `p·p` and `t·t` in a
+single pass; the denominator is clamped like PyTorch's (`ε = 1e-8`).

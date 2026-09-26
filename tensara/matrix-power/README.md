@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matrix-power
 url: https://tensara.org/problems/matrix-power
 difficulty: medium
-tags: [matmul]
-status: todo
+tags: [gemm, binary-exponentiation]
+status: solved
 ---
 
 # Matrix Nth Power
@@ -13,9 +13,9 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matrix-power)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`Aⁿ` for a square matrix (`n = 0` gives the identity).
 
 ## Approach
-
-## Pitfalls
+Binary exponentiation in the same multiplication order as
+`torch.linalg.matrix_power`, using the register-blocked SGEMM (shared with the
+[LeetGPU version](../../leetgpu/037-matrix-power)).

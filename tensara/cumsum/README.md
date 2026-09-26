@@ -5,7 +5,7 @@ upstream: cumsum
 url: https://tensara.org/problems/cumsum
 difficulty: medium
 tags: [scan]
-status: todo
+status: solved
 ---
 
 # Cumulative Sum
@@ -13,9 +13,8 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/cumsum)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Inclusive prefix sum.
 
 ## Approach
-
-## Pitfalls
+Reduce-then-scan over 2048-element chunks with fp64 carries: chunk totals, a
+single-block scan of the totals, then block scans of the chunks.

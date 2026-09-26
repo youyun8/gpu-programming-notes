@@ -4,8 +4,8 @@ platform: Tensara
 upstream: hard-sigmoid
 url: https://tensara.org/problems/hard-sigmoid
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # Hard Sigmoid
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/hard-sigmoid)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Hard sigmoid (PyTorch definition): `clamp(x/6 + 1/2, 0, 1)`.
 
 ## Approach
-
-## Pitfalls
+Branch-free `fminf/fmaxf` in the elementwise template.

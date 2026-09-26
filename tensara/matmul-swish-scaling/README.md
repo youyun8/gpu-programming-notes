@@ -4,8 +4,8 @@ platform: Tensara
 upstream: matmul-swish-scaling
 url: https://tensara.org/problems/matmul-swish-scaling
 difficulty: medium
-tags: [matmul, activation-function, fused]
-status: todo
+tags: [gemm, fusion]
+status: solved
 ---
 
 # Matrix Multiplication with Swish and Scaling
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matmul-swish-scaling)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`scale · swish(A·B)`.
 
 ## Approach
-
-## Pitfalls
+SGEMM with a fused epilogue.

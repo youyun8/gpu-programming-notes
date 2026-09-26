@@ -4,8 +4,8 @@ platform: Tensara
 upstream: leaky-relu
 url: https://tensara.org/problems/leaky-relu
 difficulty: easy
-tags: [activation-function]
-status: todo
+tags: [elementwise, activation]
+status: solved
 ---
 
 # Leaky ReLU
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/leaky-relu)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`x > 0 ? x : α·x` elementwise (α is a runtime parameter).
 
 ## Approach
-
-## Pitfalls
+Elementwise `float4` template; α is passed by value.

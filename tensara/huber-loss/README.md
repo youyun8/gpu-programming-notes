@@ -4,8 +4,8 @@ platform: Tensara
 upstream: huber-loss
 url: https://tensara.org/problems/huber-loss
 difficulty: easy
-tags: [loss-function]
-status: todo
+tags: [loss, elementwise]
+status: solved
 ---
 
 # Huber Loss
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/huber-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Elementwise smooth-L1 (β = 1).
 
 ## Approach
-
-## Pitfalls
+`|d| < 1 ? d²/2 : |d| − 1/2`, elementwise.

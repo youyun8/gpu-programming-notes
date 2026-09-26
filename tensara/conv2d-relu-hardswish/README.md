@@ -4,8 +4,8 @@ platform: Tensara
 upstream: conv2d-relu-hardswish
 url: https://tensara.org/problems/conv2d-relu-hardswish
 difficulty: medium
-tags: [convolution, activation-function, fused]
-status: todo
+tags: [convolution, fusion]
+status: solved
 ---
 
 # 2D Convolution with ReLU and HardSwish
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/conv2d-relu-hardswish)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Same-padded conv2d → ReLU → HardSwish.
 
 ## Approach
-
-## Pitfalls
+The banded [conv-2d](../conv-2d) kernel with the activations fused into the store.

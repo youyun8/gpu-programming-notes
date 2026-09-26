@@ -5,7 +5,7 @@ upstream: sum-dim
 url: https://tensara.org/problems/sum-dim
 difficulty: easy
 tags: [reduction]
-status: todo
+status: solved
 ---
 
 # Sum Over Dimension
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/sum-dim)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Sum along a dimension (keepdim).
 
 ## Approach
-
-## Pitfalls
+Generic `(outer, R, inner)` reduction with a float accumulator.

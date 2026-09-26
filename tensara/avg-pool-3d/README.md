@@ -5,7 +5,7 @@ upstream: avg-pool-3d
 url: https://tensara.org/problems/avg-pool-3d
 difficulty: hard
 tags: [pooling]
-status: todo
+status: solved
 ---
 
 # 3D Average Pooling
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** hard · [Problem statement](https://tensara.org/problems/avg-pool-3d)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`avg_pool3d` with padding.
 
 ## Approach
-
-## Pitfalls
+One thread per output; the divisor is `k³`.

@@ -5,7 +5,7 @@ upstream: max-pool-2d
 url: https://tensara.org/problems/max-pool-2d
 difficulty: medium
 tags: [pooling]
-status: todo
+status: solved
 ---
 
 # 2D Max Pooling
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/max-pool-2d)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`max_pool2d` with padding and dilation.
 
 ## Approach
-
-## Pitfalls
+One thread per output (grid-stride), with dilated windows and skipped padding.

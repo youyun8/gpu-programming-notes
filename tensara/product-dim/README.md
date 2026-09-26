@@ -5,7 +5,7 @@ upstream: product-dim
 url: https://tensara.org/problems/product-dim
 difficulty: easy
 tags: [reduction]
-status: todo
+status: solved
 ---
 
 # Product Over Dimension
@@ -13,9 +13,7 @@ status: todo
 **Platform:** Tensara · **Difficulty:** easy · [Problem statement](https://tensara.org/problems/product-dim)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Product along a dimension (keepdim).
 
 ## Approach
-
-## Pitfalls
+Generic reduction with the multiplicative identity and a running product.
