@@ -63,7 +63,7 @@ plugin system Material depends on.
   - Keep it that way when you deploy: `scripts/fetch_upstream.sh` clones the
     upstream definitions into `.upstream/`, which is git-ignored and never
     read by the site builder.
-- **aiter / hipBLASLt sources.** They are MIT licensed, but chapters 06–07
+- **AITER / hipBLASLt sources.** They are MIT licensed, but chapters 06–07
   only quote short excerpts and link to the upstream repositories.
 
 ## 2. Build and Preview Locally

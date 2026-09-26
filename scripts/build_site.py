@@ -100,7 +100,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     ---
 
-    CDNA3 and MFMA, an instruction-by-instruction teardown of aiter's asm GEMM,
+    CDNA3 and MFMA, an instruction-by-instruction teardown of AITER's asm GEMM,
     and how hipBLASLt/TensileLite generates thousands of kernels.
 
     [:octicons-arrow-right-24: Chapters 05–07](tutorials/05-amd-cdna3-mfma.md)

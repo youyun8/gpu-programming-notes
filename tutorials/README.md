@@ -10,7 +10,7 @@ Work through these in order; each one points at the practice problems that exerc
 | 03 | [Parallel reduction: work/depth, shuffles, accuracy, monoids](03-parallel-reduction.md) | Reduction, Softmax, Dot Product |
 | 04 | [Tiled matrix multiplication: intensity, shared and register tiling](04-tiled-matmul.md) | Matrix Multiplication, GEMM |
 | 05 | [AMD CDNA3 & MFMA: from CUDA to wave64 matrix cores](05-amd-cdna3-mfma.md) | [`amd/mfma_gemm.hip`](amd/mfma_gemm.hip) |
-| 06 | [Inside a hand-written AMD GEMM: aiter's bf16 asm kernels](06-aiter-asm-gemm.md) | Disassemble aiter `.co` files |
+| 06 | [Inside a hand-written AMD GEMM: AITER's bf16 asm kernels](06-aiter-asm-gemm.md) | Disassemble AITER `.co` files |
 | 07 | [hipBLASLt & TensileLite: GEMM kernels written by a program](07-hipblaslt-tensilelite.md) | `hipblaslt-bench`, offline tuning |
 | 08 | [Deploying this site](08-deploying-this-site.md) | MkDocs, GitHub Pages |
 
@@ -69,5 +69,5 @@ every level of the memory hierarchy until $W/F$ is the bound.
 - Simon Boehm, *How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance*
 - AMD, *AMD Instinct MI300 ISA Reference Guide* (CDNA3)
 - AMD, [Matrix Instruction Calculator](https://github.com/ROCm/amd_matrix_instruction_calculator)
-- aiter, `docs/isa_kernel_optimization.md`
+- AITER, `docs/isa_kernel_optimization.md`
 - Osama et al., *Stream-K: Work-centric Parallel Decomposition for Dense Matrix-Matrix Multiplication on the GPU* (2023)

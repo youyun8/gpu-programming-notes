@@ -1,6 +1,6 @@
-# 06 – Inside a Hand-Written AMD GEMM: aiter's bf16 Asm Kernels
+# 06 – Inside a Hand-Written AMD GEMM: AITER's bf16 Asm Kernels
 
-[aiter](https://github.com/ROCm/aiter) is AMD's operator library for LLM
+[AITER](https://github.com/ROCm/aiter) is AMD's operator library for LLM
 inference; vLLM and SGLang use it on MI300 and MI355. Most of its
 performance-critical kernels are shipped as **pre-assembled code objects
 (`.co`)**, written and tuned directly in GCN/CDNA assembly. This chapter
@@ -13,10 +13,10 @@ hsa/gfx942/bf16gemm/bf16gemm_fp32bf16_tn_128x64_bshuffle_splitk.co
 This is a bf16 × bf16 → fp32/bf16 GEMM with a 128×64 output tile, pre-shuffled
 weights and split-K. It uses the MFMA vocabulary from
 [chapter 05](05-amd-cdna3-mfma.md). Every number quoted here was measured on
-the disassembly of aiter commit `569ae98`. You can reproduce all of it on a
+the disassembly of AITER commit `569ae98`. You can reproduce all of it on a
 machine without a GPU (see [Reproduce this chapter](#reproduce-this-chapter)).
 
-## 1. How aiter Finds and Launches the Kernel
+## 1. How AITER Finds and Launches the Kernel
 
 The Python call chain for `C = A · Bᵀ` (an `nn.Linear`) is:
 
@@ -373,7 +373,7 @@ The two rounding rules, on the 32-bit pattern $u$ of the fp32 value:
 
 $$
 \operatorname{bf16}_{\text{RNE}}(u) = \Bigl\lfloor \frac{u + \texttt{0x7FFF} + \bigl(\lfloor u / 2^{16} \rfloor \bmod 2\bigr)}{2^{16}} \Bigr\rfloor, \qquad
-\operatorname{bf16}_{\text{aiter}}(u) = \Bigl\lfloor \frac{u + \texttt{0x8000}}{2^{16}} \Bigr\rfloor
+\operatorname{bf16}_{\text{AITER}}(u) = \Bigl\lfloor \frac{u + \texttt{0x8000}}{2^{16}} \Bigr\rfloor
 $$
 
 | Symbol | Meaning |
@@ -381,7 +381,7 @@ $$
 | $u$ | fp32 bit pattern as an unsigned integer (NaN handled separately) |
 | $\lfloor u/2^{16}\rfloor \bmod 2$ | The lowest kept bit (the bf16 mantissa LSB) |
 | $\operatorname{bf16}_{\text{RNE}}$ | Round to nearest, ties to even (PyTorch) |
-| $\operatorname{bf16}_{\text{aiter}}$ | Round to nearest, ties away from zero (this kernel) |
+| $\operatorname{bf16}_{\text{AITER}}$ | Round to nearest, ties away from zero (this kernel) |
 
 They differ only when the low 16 bits are exactly `0x8000` and the kept
 LSB is 0.
@@ -403,7 +403,7 @@ results per tile (atomics) and non-deterministic fp32 summation order.
 
 ## 6. Modifying and Profiling Such a Kernel
 
-aiter documents the full workflow in `docs/isa_kernel_optimization.md`, and
+AITER documents the full workflow in `docs/isa_kernel_optimization.md`, and
 its scripts are in `docs/examples/isa_optimization/`:
 
 1. **Round-trip first.** `roundtrip.sh <kernel.co>` extracts a standalone
@@ -421,7 +421,7 @@ its scripts are in `docs/examples/isa_optimization/`:
 3. **Resize.** Changing register or LDS usage means editing
    `.amdhsa_next_free_vgpr`, `.amdhsa_accum_offset`,
    `.amdhsa_group_segment_fixed_size` *and* the metadata.
-4. **Test.** Replace the `.co` in `hsa/gfx942/…` and run the op test. aiter
+4. **Test.** Replace the `.co` in `hsa/gfx942/…` and run the op test. AITER
    logs `LoadKernel: … hsaco: <path>`.
 5. **Profile.**
    - `rocprofv3 --kernel-trace --stats --kernel-include-regex bf16gemm` for

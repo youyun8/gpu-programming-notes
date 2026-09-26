@@ -3,7 +3,7 @@
 //
 //   C[M][N] (fp32) = A[M][K] (bf16, row-major) * B[N][K]^T (bf16, row-major)
 //
-// This is the same operand layout aiter's asm kernels use ("tn"): both A and B
+// This is the same operand layout AITER's asm kernels use ("tn"): both A and B
 // are K-contiguous, so every MFMA operand is 4 consecutive bf16 = one 8-byte
 // LDS read per lane.
 //

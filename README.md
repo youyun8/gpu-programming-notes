@@ -1,7 +1,7 @@
 # GPU Programming Notes
 
 Tutorials on GPU programming, covering CUDA fundamentals and an AMD track on
-how aiter and hipBLASLt build high-performance GEMMs. They come with **tested
+how AITER and hipBLASLt build high-performance GEMMs. They come with **tested
 solutions to every [LeetGPU challenge](https://leetgpu.com/challenges) (101)
 and every [Tensara problem](https://tensara.org/problems) (84)**.
 
@@ -56,7 +56,7 @@ to `main`.
 |---|-------|
 | 00–04 | CUDA: getting started, execution model, memory hierarchy, reduction, tiled GEMM |
 | 05 | AMD CDNA3 & MFMA: from CUDA to wave64 matrix cores (with a HIP MFMA GEMM) |
-| 06 | Inside a hand-written AMD GEMM: aiter's bf16 asm kernels, instruction by instruction |
+| 06 | Inside a hand-written AMD GEMM: AITER's bf16 asm kernels, instruction by instruction |
 | 07 | hipBLASLt & TensileLite: GEMM kernels written by a program, and how to tune them |
 | 08 | Deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
 

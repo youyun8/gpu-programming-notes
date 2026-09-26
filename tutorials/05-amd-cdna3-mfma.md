@@ -4,7 +4,7 @@ Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's
 data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA target `gfx942`). It
 then builds a small bf16 GEMM with the MFMA matrix-core instruction and reads
 the ISA the compiler emits. Chapters 06 and 07 use this vocabulary to take
-apart the hand-written assembly GEMMs in **aiter** and the generated ones in
+apart the hand-written assembly GEMMs in **AITER** and the generated ones in
 **hipBLASLt**.
 
 ## 1. Vocabulary Map
@@ -102,7 +102,7 @@ documented and hand-written kernels rely on it.
 The important consequence is that **the A operand is 4 consecutive k values
 of one row, and so is the B operand when B is stored `[N][K]`.** If both
 matrices are K-contiguous (the "TN" layout, `C = A · Bᵀ`), then every operand
-fetch is one aligned 8-byte read per lane. That is why aiter's asm GEMMs are
+fetch is one aligned 8-byte read per lane. That is why AITER's asm GEMMs are
 all `_tn_`, and why PyTorch's `nn.Linear` weight layout `[out, in]` is exactly
 right.
 

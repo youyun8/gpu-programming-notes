@@ -1,6 +1,6 @@
 # 07 – hipBLASLt and TensileLite: GEMM Kernels Written by a Program
 
-aiter (chapter 06) hand-writes a few dozen GEMM kernels.
+AITER (chapter 06) hand-writes a few dozen GEMM kernels.
 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) ships **thousands**: ROCm's `libhipblaslt` holds one set of code objects per GPU
 architecture, and PyTorch uses it for `torch.matmul` on MI300 by default.
 Nobody writes those by hand. They come from **TensileLite**, a Python program
@@ -106,7 +106,7 @@ A $4\times4$ WaveTile of 16x16 MFMAs ($T_M = T_N = 64$) needs 64
 accumulator registers per lane and reuses every operand fragment 4 times;
 $128\times64$ needs 128.
 
-**`DepthU`** is the K extent of one main-loop iteration: 64 in the aiter
+**`DepthU`** is the K extent of one main-loop iteration: 64 in the AITER
 kernel, and typically 32–128 for 16-bit types.
 
 ### 1.2 Global Reads: PGR, DirectToLds
@@ -119,7 +119,7 @@ kernel, and typically 32–128 for 16-bit types.
 - **PGR=2:** issue *another* global prefetch while the staged data is being
   written to LDS, so two tiles are in flight.
 
-This is exactly what aiter's `pf3` kernels hard-code, and what `vmcnt(N)`
+This is exactly what AITER's `pf3` kernels hard-code, and what `vmcnt(N)`
 expresses in chapter 06.
 
 `DirectToLds=1` uses `buffer_load … lds` (chapter 06, section 4):
@@ -164,7 +164,7 @@ density. `0.1` means one global read every 10 MFMAs.
 
 Clustering global reads back to back improves memory efficiency, but a full
 vector-memory FIFO blocks *all* issue, MFMAs included, so the density is
-tuned. The resulting code has the same shape as the hand-written aiter loop:
+tuned. The resulting code has the same shape as the hand-written AITER loop:
 an MFMA, one or two loads, an MFMA, and so on.
 
 The generator also computes every `s_waitcnt` itself. It knows how many
@@ -181,9 +181,9 @@ combined in one of three ways:
 
 | `GlobalSplitUAlgorithm` | How partials are combined |
 |-------------------------|---------------------------|
-| `SingleBuffer` | Atomic accumulation into one buffer, like aiter's `global_atomic_add_f32` |
+| `SingleBuffer` | Atomic accumulation into one buffer, like AITER's `global_atomic_add_f32` |
 | `MultipleBuffer` | Each slice writes its own buffer; a second kernel reduces them |
-| `MultipleBufferSingleKernel` | Separate buffers, but the last workgroup to arrive reduces them in the same kernel, using a synchroniser/semaphore like aiter's |
+| `MultipleBufferSingleKernel` | Separate buffers, but the last workgroup to arrive reduces them in the same kernel, using a synchroniser/semaphore like AITER's |
 
 `GSU=-1` lets the runtime choose.
 
@@ -362,7 +362,7 @@ Two warnings apply:
 Framework-level alternatives:
 - **PyTorch TunableOp:** `PYTORCH_TUNABLEOP_ENABLED=1` tries the hipBLASLt and
   rocBLAS candidates per shape at run time and caches the result in a CSV.
-- **aiter's `gemm_a16w16_tune.py --with-hipblaslt`** puts hipBLASLt solutions
+- **AITER's `gemm_a16w16_tune.py --with-hipblaslt`** puts hipBLASLt solutions
   in the same race as its asm, triton and other backends (chapter 06). The
   winner's `solidx` goes into `bf16_tuned_gemm.csv` with
   `libtype=hipblaslt`.
@@ -383,13 +383,13 @@ TensileLite then:
 3. Benchmarks each one on your GPU.
 4. Writes library logic that hipBLASLt can load.
 
-This is the "handcraft by search" half of AMD's approach. aiter's `.co`
+This is the "handcraft by search" half of AMD's approach. AITER's `.co`
 kernels are the "handcraft by hand" half. Both end up with the same loop
 structure you traced in chapter 06.
 
 ## 6. Summary: The AMD GEMM Playbook
 
-| Technique | aiter asm (ch. 06) | TensileLite parameter |
+| Technique | AITER asm (ch. 06) | TensileLite parameter |
 |-----------|-------------------|-----------------------|
 | Big per-wave tiles, 1 wave per SIMD | 16×128 per wave, 512 registers | `MatrixInstruction` WaveTile, `MaxOccupancy` |
 | Direct-to-LDS | `buffer_load_dword … lds` | `DirectToLds` |
