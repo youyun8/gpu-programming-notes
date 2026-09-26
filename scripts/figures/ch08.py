@@ -14,7 +14,7 @@ def fig_pipeline(name):
         s.rect(x, 36, 200, 30 + 24 * len(items), fill=f"f-{role}" if role != "ink" else "fig-panel",
                stroke=f"s-{role}", sw=1.2, rx=6)
         for i, it in enumerate(items):
-            s.text(x + 14, 58 + i * 24, it, anchor="start", size="small", mono=it.endswith(("md", "svg", "/",
+            s.text(x + 14, 63 + i * 24, it, anchor="start", size="small", mono=it.endswith(("md", "svg", "/",
                                                                                               "yml")))
     s.arrow(222, 100, 258, 100, role="a")
     s.arrow(462, 100, 498, 100, role="c")

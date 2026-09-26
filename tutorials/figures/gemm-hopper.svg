@@ -29,7 +29,7 @@
 <text x="645" y="166.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">accumulators</text>
 <text x="645" y="183.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">in registers</text>
 <line x1="550" y1="175" x2="588" y2="175" class="s-d" stroke-width="1.4" marker-end="url(#gemm-hopper-ah-d)"/>
-<text x="430" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">per stage: a "full" mbarrier (TMA bytes arrived) and an "empty" one (stage consumed)</text>
+<text x="410" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">per stage: a "full" mbarrier (TMA bytes arrived) and an "empty" one (stage consumed)</text>
 <text x="360" y="235" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Producer and consumers sync per stage with mbarriers (transaction counts), not __syncthreads();</text>
 <text x="360" y="255" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">the MMA is asynchronous and wide (m64 nN k16 per warpgroup), so issue slots stay free.</text>
 </svg>

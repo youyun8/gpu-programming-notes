@@ -21,7 +21,7 @@ def fig_hierarchy(name):
     wx, wy = 250, 40
     s.rect(wx - 8, wy - 8, 200, 150, fill="f-c", stroke="s-c", sw=1.2, rx=6)
     for w in range(4):
-        y = wy + w * 32
+        y = wy + 8 + w * 32  # the four rows centred in the block panel
         s.text(wx + 4, y + 11, f"warp {w}", anchor="start", size="small")
         for t in range(32):
             s.rect(wx + 56 + t * 4, y + 4, 4, 14, fill="f-a2" if (w == 1 and t == 5) else "f-a", stroke="s-a",
@@ -86,16 +86,18 @@ def fig_indexing(name):
         for c in range(16):
             w = (r * 16 + c) // 32
             s.rect(wx + c * c2, 50 + r * c2, c2, c2, fill=colors[w], stroke="s-line", sw=0.2)
-    s.text(wx + 56, 50 + 16 * c2 + 14, "16 × 16: a warp = 2 rows", size="small")
+    s.text(wx + 56, 50 + 16 * c2 + 16, "16 × 16 block:", size="small")
+    s.text(wx + 56, 50 + 16 * c2 + 33, "a warp = 2 rows", size="small")
     x2 = wx + 140
     c3 = 3.5
     for r in range(8):
         for c in range(32):
             w = (r * 32 + c) // 32
             s.rect(x2 + c * c3, 50 + r * c3 * 2, c3, c3 * 2, fill=colors[w], stroke="s-line", sw=0.2)
-    s.text(x2 + 56, 50 + 16 * c3 + 14, "32 × 8: a warp = 1 row", size="small")
-    s.text(wx + 125, 200, "τ = t_x + B_x t_y", size="small")
-    s.text(wx + 125, 220, "warp = ⌊τ / 32⌋,  lane = τ mod 32", size="small")
+    s.text(x2 + 56, 50 + 16 * c2 + 16, "32 × 8 block:", size="small")
+    s.text(x2 + 56, 50 + 16 * c2 + 33, "a warp = 1 row", size="small")
+    s.text(wx + 125, 226, "τ = t_x + B_x t_y", size="small")
+    s.text(wx + 125, 246, "warp = ⌊τ / 32⌋,  lane = τ mod 32", size="small")
     return s
 
 

@@ -202,5 +202,5 @@
 <text x="480" y="242" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">16 lanes read 16 consecutive</text>
 <text x="480" y="260" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">words → no bank conflicts,</text>
 <text x="480" y="278" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">coalesced stores of C.</text>
-<text x="380" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">tx = 5 picks columns 5, 21, 37, 53</text>
+<text x="426" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">tx = 5 picks columns 5, 21, 37, 53</text>
 </svg>

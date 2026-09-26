@@ -271,7 +271,7 @@ def fig_pipeline(name):
             else:
                 sl = st + ((stage - st) % stages)
                 s.box(x0 + st * cw + 4, y, cw - 8, 34, f"copy {sl}", role="a", size="small", dash="4 2")
-    s.text(x0, 200, "red lines: __pipeline_wait_prior(1) + __syncthreads()", anchor="start", size="small",
+    s.text(x0 + 4, 200, "red lines: __pipeline_wait_prior(1) + __syncthreads()", anchor="start", size="small",
            role="hl")
     for st in range(6):
         s.line(x0 + st * cw + 2, 44, x0 + st * cw + 2, 184, stroke="s-hl", sw=1.6)
@@ -570,9 +570,10 @@ def fig_ldmatrix(name):
              "",
              ".trans delivers the transpose: on B stored",
              "k-major, one x4 gives b0, b1 of two n8 tiles."]
+    # One note line per tile row, so the text sits on the same baselines as the lane numbers.
     for i, t in enumerate(notes):
         if t:
-            s.text(405, 80 + i * 22, t, anchor="start", size="small")
+            s.text(405, y0 + (i + 2) * cell + cell / 2, t, anchor="start", size="small")
     return s
 
 
@@ -615,7 +616,7 @@ def fig_hopper(name):
         s.arrow(269 + i * 94, 90, 300 + i * 50, 148, role="d", sw=1)
     s.box(590, 150, 110, 50, "accumulators\nin registers", role="d", fill="f-d2", size="small")
     s.arrow(550, 175, 588, 175, role="d")
-    s.text(430, 20, "per stage: a \"full\" mbarrier (TMA bytes arrived) and an \"empty\" one (stage consumed)",
+    s.text(226 + (stages * 94 - 8) / 2, 20, "per stage: a \"full\" mbarrier (TMA bytes arrived) and an \"empty\" one (stage consumed)",
            size="small", role="muted")
     s.text(360, 235, "Producer and consumers sync per stage with mbarriers (transaction counts), not __syncthreads();",
            size="small")

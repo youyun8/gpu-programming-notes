@@ -104,8 +104,9 @@ def fig_transpose(name):
     s.text(sx + 72, sy - 14, "tile[32][32 + 1] (shared)", size="small", bold=True)
     s.text(sx + 9 * 16 + 12, sy + 64, "pad", size="small", role="muted", rotate=-90)
     s.arrow(ix + 8 * c + 10, iy + 42, sx - 6, sy + 30, role="a")
-    s.text(ix + 8 * c + 14, iy + 72, "coalesced", size="small", role="a", anchor="start")
-    s.text(ix + 8 * c + 14, iy + 88, "row reads", size="small", role="a", anchor="start")
+    # Both arrow captions: centred under their arrow, on the same two baselines.
+    s.text((ix + 8 * c + 10 + sx - 6) / 2, 148, "coalesced", size="small", role="a")
+    s.text((ix + 8 * c + 10 + sx - 6) / 2, 164, "row reads", size="small", role="a")
     s.arrow(sx + 64, sy + 8, sx + 64, sy + 120, role="c", dash="4 3")
     s.text(sx + 70, sy + 150, "read down a column:", size="small", role="c")
     s.text(sx + 70, sy + 166, "conflict-free thanks to the pad", size="small", role="c")
@@ -115,7 +116,8 @@ def fig_transpose(name):
     s.text(ox + 56, oy - 30, "out (C × R)", size="small", bold=True)
     s.text(ox + 56, oy - 14, "tile (bx, by)", size="small", role="b")
     s.arrow(sx + 8 * 16 + 30, sy + 90, ox - 6, oy + 70, role="b")
-    s.text(ox - 72, oy + 110, "coalesced row writes", size="small", role="b")
+    s.text((sx + 8 * 16 + 30 + ox - 6) / 2, 148, "coalesced", size="small", role="b")
+    s.text((sx + 8 * 16 + 30 + ox - 6) / 2, 164, "row writes", size="small", role="b")
     s.text(360, 262, "Both global accesses walk along rows; the transposition happens in shared memory.",
            size="small", role="muted")
     return s

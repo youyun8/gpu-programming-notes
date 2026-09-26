@@ -56,6 +56,6 @@
 <text x="400" y="199.41" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">32 × 32 tiling</text>
 <circle cx="475.71" cy="169.83" r="4.5" class="k-c" stroke-width="1"/>
 <text x="485.71" y="183.83" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">128 × 128 tile</text>
-<text x="109.79" y="46" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">memory-bound</text>
+<text x="109.79" y="50.93" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">memory-bound</text>
 <text x="602.82" y="135.89" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">compute-bound</text>
 </svg>

@@ -4,31 +4,32 @@ from .svg import Svg
 
 def fig_model(name):
     s = Svg(name, 720, 330 + 14, "CUDA programs threads; Triton programs blocks and lets the compiler map them to threads")
+    # Each column is left-aligned: title, threads or block, code and notes share one left edge.
     # CUDA side
-    x0, y0 = 40, 50
-    s.text(x0 + 140, 28, "CUDA: one thread, scalar code", size="small", bold=True)
+    x0, y0 = 24, 50
+    s.text(x0, 28, "CUDA: one thread, scalar code", anchor="start", size="small", bold=True)
     for i in range(8):
         s.box(x0 + i * 35, y0, 30, 30, f"t{i}", role="a", size="tiny")
-    s.text(x0 + 140, y0 + 52, "i = blockIdx.x * blockDim.x + threadIdx.x", size="small", mono=True)
-    s.text(x0 + 140, y0 + 72, "if (i < n) out[i] = x[i] + y[i];", size="small", mono=True)
-    s.text(x0 + 140, y0 + 100, "you choose: thread ↔ element map,", size="small", role="muted")
-    s.text(x0 + 140, y0 + 118, "shared memory, barriers, vector widths", size="small", role="muted")
+    s.text(x0, y0 + 52, "i = blockIdx.x * blockDim.x + threadIdx.x", anchor="start", size="small", mono=True)
+    s.text(x0, y0 + 72, "if (i < n) out[i] = x[i] + y[i];", anchor="start", size="small", mono=True)
+    s.text(x0, y0 + 100, "you choose: thread ↔ element map,", anchor="start", size="small", role="muted")
+    s.text(x0, y0 + 118, "shared memory, barriers, vector widths", anchor="start", size="small", role="muted")
     # Triton side
-    x1 = 366
-    s.text(x1 + 169, 28, "Triton: one program, block-level code", size="small", bold=True)
-    s.rect(x1, y0, 338, 30, fill="f-c", stroke="s-c", sw=1.4, rx=4)
-    s.text(x1 + 169, y0 + 15, "offs = pid * BLOCK + tl.arange(0, BLOCK)", size="small", mono=True)
-    s.text(x1 + 169, y0 + 52, "x = tl.load(x_ptr + offs, mask=m)", size="small", mono=True)
-    s.text(x1 + 169, y0 + 72, "tl.store(out_ptr + offs, x + y, mask=m)", size="small", mono=True)
-    s.text(x1 + 169, y0 + 100, "the compiler chooses: layout of the block", size="small", role="muted")
-    s.text(x1 + 169, y0 + 118, "over threads, vector loads, shared memory", size="small", role="muted")
-    s.line(353, 36, 353, 186, stroke="s-line", sw=1, dash="4 3")
+    x1 = 372
+    s.text(x1, 28, "Triton: one program, block-level code", anchor="start", size="small", bold=True)
+    s.rect(x1, y0, 332, 30, fill="f-c", stroke="s-c", sw=1.4, rx=4)
+    s.text(x1 + 10, y0 + 15, "offs = pid * BLOCK + tl.arange(0, BLOCK)", anchor="start", size="small", mono=True)
+    s.text(x1, y0 + 52, "x = tl.load(x_ptr + offs, mask=m)", anchor="start", size="small", mono=True)
+    s.text(x1, y0 + 72, "tl.store(out_ptr + offs, x + y, mask=m)", anchor="start", size="small", mono=True)
+    s.text(x1, y0 + 100, "the compiler chooses: layout of the block", anchor="start", size="small", role="muted")
+    s.text(x1, y0 + 118, "over threads, vector loads, shared memory", anchor="start", size="small", role="muted")
+    s.line(358, 18, 358, 186, stroke="s-line", sw=1, dash="4 3")
     # Mapping strip
     y2 = 222
     s.text(360, y2 - 18, "one Triton program of BLOCK = 1024 elements, num_warps = 4 (128 threads)",
            size="small")
     for w in range(4):
-        s.box(60 + w * 150, y2, 144, 40, f"warp {w}\nelements {256 * w}–{256 * w + 255}", role="b", size="small")
+        s.box(63 + w * 150, y2, 144, 40, f"warp {w}\nelements {256 * w}–{256 * w + 255}", role="b", size="small")
     s.text(360, y2 + 62, "each thread gets 8 elements, e.g. two 16-byte (float4) chunks: coalesced and vectorised",
            size="small", role="muted")
     s.text(360, y2 + 82, "The program id is the block index; there is no threadIdx in the language.",
@@ -40,7 +41,7 @@ def fig_pointer_block(name):
     s = Svg(name, 720, 362, "A 2-D block of pointers: broadcast a column of row offsets against a row of columns")
     x0, y0, c = 300, 76, 38
     rows, cols = 4, 5
-    s.text(x0 - 150, y0 - 28, "rows[:, None] * S", size="small", mono=True)
+    s.text(x0 - 150, y0 - 50, "rows[:, None] * S", size="small", mono=True)
     for r in range(rows):
         s.box(x0 - 176, y0 + r * c, 52, c - 6, f"{r}·S", role="a", size="small")
     s.text(x0 + cols * c / 2 - 3, y0 - 50, "cols[None, :]", size="small", mono=True)

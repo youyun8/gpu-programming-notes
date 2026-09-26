@@ -16,9 +16,9 @@ def fig_workflow(name):
     for i, (title, body, role) in enumerate(steps):
         x = x0 + i * (w + gap)
         s.rect(x, y, w, h, fill="fig-paper" if role == "muted" else f"f-{role}", stroke=f"s-{role}", sw=1.4, rx=6)
-        s.text(x + w / 2, y + 18, title, size="small", bold=True)
+        s.text(x + w / 2, y + 20, title, size="small", bold=True)
         for j, ln in enumerate(body.split("\n")):
-            s.text(x + w / 2, y + 44 + j * 17, ln, size="small")
+            s.text(x + w / 2, y + 46 + j * 17, ln, size="small")
         if i < 4:
             s.arrow(x + w + 2, y + h / 2, x + w + gap - 2, y + h / 2, role="muted", sw=1.2)
     # loop back
@@ -103,9 +103,11 @@ def fig_roofline(name):
            role="muted")
     s.circle(px(64), py(15.0), 6, fill="k-d")
     s.text(px(64), py(15.0) + 22, "polynomial: 64 flop/B", size="small", role="d")
-    s.circle(px(0.5), py(0.02), 6, fill="k-hl")
-    s.text(px(0.5) + 12, py(0.02) - 8, "latency-bound:", anchor="start", size="small", role="hl")
-    s.text(px(0.5) + 12, py(0.02) + 9, "far below both roofs", anchor="start", size="small", role="hl")
+    # Its two label lines share baselines with the first two lines of the copies label.
+    ly = py(1.5 * 0.02 * 0.9) + 14
+    s.circle(px(0.5), ly + 8.5, 6, fill="k-hl")
+    s.text(px(0.5) + 12, ly, "latency-bound:", anchor="start", size="small", role="hl")
+    s.text(px(0.5) + 12, ly + 17, "far below both roofs", anchor="start", size="small", role="hl")
     s.text(360, 376, "The distance from a point to the roof above it is the headroom; the roof says which unit.",
            size="small", role="muted")
     return s

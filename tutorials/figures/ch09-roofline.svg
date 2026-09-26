@@ -29,8 +29,8 @@
 <text x="135.72" y="284.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">not by TFLOP/s</text>
 <circle cx="516.29" cy="77.79" r="6" class="k-d" stroke-width="1"/>
 <text x="516.29" y="99.79" text-anchor="middle" dominant-baseline="central" class="fig-txt t-d fig-small">polynomial: 64 flop/B</text>
-<circle cx="280.28" cy="244.54" r="6" class="k-hl" stroke-width="1"/>
-<text x="292.28" y="236.54" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">latency-bound:</text>
-<text x="292.28" y="253.54" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">far below both roofs</text>
+<circle cx="280.28" cy="259.48" r="6" class="k-hl" stroke-width="1"/>
+<text x="292.28" y="250.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">latency-bound:</text>
+<text x="292.28" y="267.98" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">far below both roofs</text>
 <text x="360" y="376" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">The distance from a point to the roof above it is the headroom; the roof says which unit.</text>
 </svg>

@@ -4,22 +4,22 @@
 <rect x="0" y="0" width="720" height="250" class="fig-paper"/>
 <text x="120" y="24" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small fig-bold">repository</text>
 <rect x="20" y="36" width="200" height="150" rx="6" class="fig-panel s-ink" stroke-width="1.2"/>
-<text x="34" y="58" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">README.md</text>
-<text x="34" y="82" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">tutorials/*.md</text>
-<text x="34" y="106" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">tutorials/figures/</text>
-<text x="34" y="130" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">leetgpu/, tensara/</text>
-<text x="34" y="154" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">mkdocs.yml</text>
+<text x="34" y="63" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">README.md</text>
+<text x="34" y="87" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">tutorials/*.md</text>
+<text x="34" y="111" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">tutorials/figures/</text>
+<text x="34" y="135" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">leetgpu/, tensara/</text>
+<text x="34" y="159" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">mkdocs.yml</text>
 <text x="360" y="24" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small fig-bold">scripts/build_site.py</text>
 <rect x="260" y="36" width="200" height="126" rx="6" class="f-a s-a" stroke-width="1.2"/>
-<text x="274" y="58" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">pages + solution sources</text>
-<text x="274" y="82" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">inline SVG figures</text>
-<text x="274" y="106" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">rewritten links</text>
-<text x="274" y="130" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">generated nav</text>
+<text x="274" y="63" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">pages + solution sources</text>
+<text x="274" y="87" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">inline SVG figures</text>
+<text x="274" y="111" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">rewritten links</text>
+<text x="274" y="135" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">generated nav</text>
 <text x="600" y="24" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small fig-bold">mkdocs build</text>
 <rect x="500" y="36" width="200" height="102" rx="6" class="f-c s-c" stroke-width="1.2"/>
-<text x="514" y="58" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">build/site/</text>
-<text x="514" y="82" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">static HTML, search</text>
-<text x="514" y="106" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">KaTeX, fonts vendored</text>
+<text x="514" y="63" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">build/site/</text>
+<text x="514" y="87" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">static HTML, search</text>
+<text x="514" y="111" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">KaTeX, fonts vendored</text>
 <line x1="222" y1="100" x2="258" y2="100" class="s-a" stroke-width="1.4" marker-end="url(#ch08-pipeline-ah-a)"/>
 <line x1="462" y1="100" x2="498" y2="100" class="s-c" stroke-width="1.4" marker-end="url(#ch08-pipeline-ah-c)"/>
 <text x="360" y="200" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">scripts/build_figures.py regenerates the SVGs from Python; CI checks that both the figures</text>

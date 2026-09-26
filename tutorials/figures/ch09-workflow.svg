@@ -3,29 +3,29 @@
 <defs><marker id="ch09-workflow-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch09-workflow-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch09-workflow-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch09-workflow-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch09-workflow-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch09-workflow-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch09-workflow-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
 <rect x="0" y="0" width="720" height="330" class="fig-paper"/>
 <rect x="22" y="60" width="124" height="84" rx="6" class="fig-paper s-muted" stroke-width="1.4"/>
-<text x="84" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">1. Time it</text>
-<text x="84" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">CUDA events;</text>
-<text x="84" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">keep a baseline</text>
+<text x="84" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">1. Time it</text>
+<text x="84" y="106" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">CUDA events;</text>
+<text x="84" y="123" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">keep a baseline</text>
 <line x1="148" y1="102" x2="158" y2="102" class="s-muted" stroke-width="1.2" marker-end="url(#ch09-workflow-ah-muted)"/>
 <rect x="160" y="60" width="124" height="84" rx="6" class="f-a s-a" stroke-width="1.4"/>
-<text x="222" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">2. Timeline</text>
-<text x="222" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Nsight Systems:</text>
-<text x="222" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">where is time?</text>
+<text x="222" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">2. Timeline</text>
+<text x="222" y="106" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Nsight Systems:</text>
+<text x="222" y="123" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">where is time?</text>
 <line x1="286" y1="102" x2="296" y2="102" class="s-muted" stroke-width="1.2" marker-end="url(#ch09-workflow-ah-muted)"/>
 <rect x="298" y="60" width="124" height="84" rx="6" class="f-b s-b" stroke-width="1.4"/>
-<text x="360" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">3. One kernel</text>
-<text x="360" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Nsight Compute:</text>
-<text x="360" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">speed of light</text>
+<text x="360" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">3. One kernel</text>
+<text x="360" y="106" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Nsight Compute:</text>
+<text x="360" y="123" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">speed of light</text>
 <line x1="424" y1="102" x2="434" y2="102" class="s-muted" stroke-width="1.2" marker-end="url(#ch09-workflow-ah-muted)"/>
 <rect x="436" y="60" width="124" height="84" rx="6" class="f-d s-d" stroke-width="1.4"/>
-<text x="498" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">4. Diagnose</text>
-<text x="498" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">limiter, stall,</text>
-<text x="498" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">source line</text>
+<text x="498" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">4. Diagnose</text>
+<text x="498" y="106" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">limiter, stall,</text>
+<text x="498" y="123" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">source line</text>
 <line x1="562" y1="102" x2="572" y2="102" class="s-muted" stroke-width="1.2" marker-end="url(#ch09-workflow-ah-muted)"/>
 <rect x="574" y="60" width="124" height="84" rx="6" class="f-c s-c" stroke-width="1.4"/>
-<text x="636" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">5. Fix one thing</text>
-<text x="636" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">then measure</text>
-<text x="636" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">again</text>
+<text x="636" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">5. Fix one thing</text>
+<text x="636" y="106" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">then measure</text>
+<text x="636" y="123" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">again</text>
 <path d="M636.0,146 L636.0,180 L84.0,180 L84.0,148" class="fig-none s-c" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#ch09-workflow-ah-c)"/>
 <text x="360" y="194" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small">repeat until the kernel sits near a roof, or the time is spent elsewhere</text>
 <text x="40" y="238" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Timeline questions:</text>

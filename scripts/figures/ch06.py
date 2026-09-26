@@ -59,7 +59,7 @@ def fig_interleave(name):
         start = max(st, busy_until)
         s.rect(x0 + start * unit, 90, 3 * unit - 3, 24, fill="f-d2", stroke="s-d", sw=0.8, rx=2)
         busy_until = start + 3
-    s.text(x0 - 10, 150, "legend", anchor="end", size="small", role="muted")
+    s.text(x0 - 10, 149, "legend", anchor="end", size="small", role="muted")
     for i, (k, v) in enumerate(names.items()):
         s.rect(x0 + i * 140, 140, 18, 18, fill=f"f-{roles[k]}2" if k == "M" else f"f-{roles[k]}",
                stroke=f"s-{roles[k]}", sw=0.8, rx=2)

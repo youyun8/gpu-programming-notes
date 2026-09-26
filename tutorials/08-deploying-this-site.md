@@ -220,7 +220,10 @@ Figures are not drawn by hand: each one is a Python function in
 if they are stale. `scripts/check_figures.py` renders every figure in
 headless Chromium and fails when a label overlaps another label, sticks out
 of the figure, is crossed by a line or a box border, or is smaller than
-11 px; `make figures` runs it too. A label that has to sit on a grid or a
+11 px. It also fails on misaligned labels: text that is off-centre in the
+box that holds it or under the box it labels, and labels in the same box
+(or both outside any box) that are almost, but not exactly, on one column
+or one baseline. `make figures` runs it too. A label that has to sit on a grid or a
 line can be given an opaque background with `plate=True`. Pages in a sub-directory of `tutorials/` (such as
 `gemm/`) appear in the navigation after the chapter named in
 `TUTORIAL_SECTIONS` in `scripts/build_site.py`.

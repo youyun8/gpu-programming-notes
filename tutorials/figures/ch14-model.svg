@@ -2,48 +2,48 @@
 <title>CUDA programs threads; Triton programs blocks and lets the compiler map them to threads</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
 <defs><marker id="ch14-model-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch14-model-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch14-model-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch14-model-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch14-model-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch14-model-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch14-model-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
 <rect x="0" y="0" width="720" height="344" class="fig-paper"/>
-<text x="180" y="28" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">CUDA: one thread, scalar code</text>
-<rect x="40" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="55" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t0</text>
-<rect x="75" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="90" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t1</text>
-<rect x="110" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="125" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t2</text>
-<rect x="145" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="160" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t3</text>
-<rect x="180" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="195" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t4</text>
-<rect x="215" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="230" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t5</text>
-<rect x="250" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="265" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t6</text>
-<rect x="285" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
-<text x="300" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t7</text>
-<text x="180" y="102" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">i = blockIdx.x * blockDim.x + threadIdx.x</text>
-<text x="180" y="122" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">if (i &lt; n) out[i] = x[i] + y[i];</text>
-<text x="180" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">you choose: thread ↔ element map,</text>
-<text x="180" y="168" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">shared memory, barriers, vector widths</text>
-<text x="535" y="28" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Triton: one program, block-level code</text>
-<rect x="366" y="50" width="338" height="30" rx="4" class="f-c s-c" stroke-width="1.4"/>
-<text x="535" y="65" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">offs = pid * BLOCK + tl.arange(0, BLOCK)</text>
-<text x="535" y="102" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">x = tl.load(x_ptr + offs, mask=m)</text>
-<text x="535" y="122" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">tl.store(out_ptr + offs, x + y, mask=m)</text>
-<text x="535" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">the compiler chooses: layout of the block</text>
-<text x="535" y="168" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">over threads, vector loads, shared memory</text>
-<line x1="353" y1="36" x2="353" y2="186" class="s-line" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="24" y="28" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">CUDA: one thread, scalar code</text>
+<rect x="24" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="39" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t0</text>
+<rect x="59" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="74" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t1</text>
+<rect x="94" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="109" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t2</text>
+<rect x="129" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="144" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t3</text>
+<rect x="164" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="179" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t4</text>
+<rect x="199" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="214" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t5</text>
+<rect x="234" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="249" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t6</text>
+<rect x="269" y="50" width="30" height="30" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="284" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t7</text>
+<text x="24" y="102" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">i = blockIdx.x * blockDim.x + threadIdx.x</text>
+<text x="24" y="122" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">if (i &lt; n) out[i] = x[i] + y[i];</text>
+<text x="24" y="150" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">you choose: thread ↔ element map,</text>
+<text x="24" y="168" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">shared memory, barriers, vector widths</text>
+<text x="372" y="28" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Triton: one program, block-level code</text>
+<rect x="372" y="50" width="332" height="30" rx="4" class="f-c s-c" stroke-width="1.4"/>
+<text x="382" y="65" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">offs = pid * BLOCK + tl.arange(0, BLOCK)</text>
+<text x="372" y="102" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">x = tl.load(x_ptr + offs, mask=m)</text>
+<text x="372" y="122" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">tl.store(out_ptr + offs, x + y, mask=m)</text>
+<text x="372" y="150" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">the compiler chooses: layout of the block</text>
+<text x="372" y="168" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">over threads, vector loads, shared memory</text>
+<line x1="358" y1="18" x2="358" y2="186" class="s-line" stroke-width="1" stroke-dasharray="4 3"/>
 <text x="360" y="204" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">one Triton program of BLOCK = 1024 elements, num_warps = 4 (128 threads)</text>
-<rect x="60" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
-<text x="132" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 0</text>
-<text x="132" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 0–255</text>
-<rect x="210" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
-<text x="282" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 1</text>
-<text x="282" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 256–511</text>
-<rect x="360" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
-<text x="432" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 2</text>
-<text x="432" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 512–767</text>
-<rect x="510" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
-<text x="582" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 3</text>
-<text x="582" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 768–1023</text>
+<rect x="63" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="135" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 0</text>
+<text x="135" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 0–255</text>
+<rect x="213" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="285" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 1</text>
+<text x="285" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 256–511</text>
+<rect x="363" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="435" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 2</text>
+<text x="435" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 512–767</text>
+<rect x="513" y="222" width="144" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="585" y="233.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 3</text>
+<text x="585" y="250.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">elements 768–1023</text>
 <text x="360" y="284" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">each thread gets 8 elements, e.g. two 16-byte (float4) chunks: coalesced and vectorised</text>
 <text x="360" y="304" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">The program id is the block index; there is no threadIdx in the language.</text>
 </svg>

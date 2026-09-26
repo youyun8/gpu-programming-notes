@@ -99,7 +99,7 @@ def fig_register_tile(name):
     s.text(x, 242, "16 lanes read 16 consecutive", anchor="start", size="small")
     s.text(x, 260, "words → no bank conflicts,", anchor="start", size="small")
     s.text(x, 278, "coalesced stores of C.", anchor="start", size="small")
-    s.text(fx + 2 * cell, 20, "tx = 5 picks columns 5, 21, 37, 53", size="small", role="b")
+    s.text(bx0 + 32 * cw, 20, "tx = 5 picks columns 5, 21, 37, 53", size="small", role="b")
     return s
 
 

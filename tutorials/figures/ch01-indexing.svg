@@ -336,7 +336,8 @@
 <rect x="531" y="155" width="7" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
 <rect x="538" y="155" width="7" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
 <rect x="545" y="155" width="7" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
-<text x="496" y="176" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">16 × 16: a warp = 2 rows</text>
+<text x="496" y="178" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">16 × 16 block:</text>
+<text x="496" y="195" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">a warp = 2 rows</text>
 <rect x="580" y="50" width="3.5" height="7" rx="0" class="f-a s-line" stroke-width="0.2"/>
 <rect x="583.5" y="50" width="3.5" height="7" rx="0" class="f-a s-line" stroke-width="0.2"/>
 <rect x="587" y="50" width="3.5" height="7" rx="0" class="f-a s-line" stroke-width="0.2"/>
@@ -593,7 +594,8 @@
 <rect x="681.5" y="99" width="3.5" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
 <rect x="685" y="99" width="3.5" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
 <rect x="688.5" y="99" width="3.5" height="7" rx="0" class="f-d2 s-line" stroke-width="0.2"/>
-<text x="636" y="120" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">32 × 8: a warp = 1 row</text>
-<text x="565" y="200" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">τ = t<tspan baseline-shift="sub" font-size="75%">x</tspan> + B<tspan baseline-shift="sub" font-size="75%">x</tspan> t<tspan baseline-shift="sub" font-size="75%">y</tspan></text>
-<text x="565" y="220" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp = ⌊τ / 32⌋,  lane = τ mod 32</text>
+<text x="636" y="178" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">32 × 8 block:</text>
+<text x="636" y="195" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">a warp = 1 row</text>
+<text x="565" y="226" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">τ = t<tspan baseline-shift="sub" font-size="75%">x</tspan> + B<tspan baseline-shift="sub" font-size="75%">x</tspan> t<tspan baseline-shift="sub" font-size="75%">y</tspan></text>
+<text x="565" y="246" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp = ⌊τ / 32⌋,  lane = τ mod 32</text>
 </svg>

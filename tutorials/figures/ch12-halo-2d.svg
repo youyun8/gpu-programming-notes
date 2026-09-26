@@ -490,16 +490,16 @@
 <rect x="159" y="85" width="77" height="77" rx="0" class="fig-none s-hl" stroke-width="2"/>
 <rect x="192" y="118" width="11" height="11" rx="0" class="f-hl2 s-hl" stroke-width="1"/>
 <text x="181" y="290" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">shared tile[(16 + 2R)][(16 + 2R) + 1]</text>
-<text x="340" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Blue:</text>
-<text x="340" y="57" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">inputs at the block's 16 × 16 output positions</text>
-<text x="340" y="78" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Orange:</text>
-<text x="340" y="95" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">halo: R rows and columns on each side</text>
-<text x="340" y="116" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Red:</text>
-<text x="340" y="133" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">the (2R + 1)² window of one output</text>
-<text x="340" y="192" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Loads per block:</text>
-<text x="340" y="209" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(16 + 2R)² = 484 for R = 3, i.e. 1.9 per output</text>
-<text x="340" y="230" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Naive:</text>
-<text x="340" y="247" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(2R + 1)² = 49 loads per output, served by L1/L2</text>
-<text x="340" y="268" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Filter:</text>
-<text x="340" y="285" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">__constant__, one tap for all lanes (broadcast)</text>
+<text x="340" y="45" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Blue:</text>
+<text x="340" y="62" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">inputs at the block's 16 × 16 output positions</text>
+<text x="340" y="83" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Orange:</text>
+<text x="340" y="100" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">halo: R rows and columns on each side</text>
+<text x="340" y="121" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Red:</text>
+<text x="340" y="138" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">the (2R + 1)² window of one output</text>
+<text x="340" y="197" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Loads per block:</text>
+<text x="340" y="214" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(16 + 2R)² = 484 for R = 3, i.e. 1.9 per output</text>
+<text x="340" y="235" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Naive:</text>
+<text x="340" y="252" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(2R + 1)² = 49 loads per output, served by L1/L2</text>
+<text x="340" y="273" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Filter:</text>
+<text x="340" y="290" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">__constant__, one tap for all lanes (broadcast)</text>
 </svg>

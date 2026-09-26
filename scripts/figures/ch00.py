@@ -54,7 +54,7 @@ def fig_roofline(name):
             s.text(px(i) + 10, py(p) + 16, label, anchor="start", size="small", role=role, plate=True)
         elif label:
             s.text(px(i) + 10, py(p) + 14, label, anchor="start", size="small", role=role)
-    s.text(px(1 / 12) + 2, y1 + 16, "memory-bound", anchor="start", size="small", role="muted")
+    s.text(px(1 / 12) + 2, py(1000), "memory-bound", anchor="start", size="small", role="muted")
     s.text(px(250), py(60), "compute-bound", size="small", role="muted")
     return s
 

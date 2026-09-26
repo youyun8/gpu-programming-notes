@@ -145,8 +145,8 @@
 <text x="302" y="26" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">tile[32][32 + 1] (shared)</text>
 <text x="386" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small" transform="rotate(-90 386 104)">pad</text>
 <line x1="152" y1="102" x2="224" y2="70" class="s-a" stroke-width="1.4" marker-end="url(#ch02-transpose-ah-a)"/>
-<text x="156" y="132" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">coalesced</text>
-<text x="156" y="148" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">row reads</text>
+<text x="188" y="148" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small">coalesced</text>
+<text x="188" y="164" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small">row reads</text>
 <line x1="294" y1="48" x2="294" y2="160" class="s-c" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#ch02-transpose-ah-c)"/>
 <text x="300" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small">read down a column:</text>
 <text x="300" y="206" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small">conflict-free thanks to the pad</text>
@@ -218,6 +218,7 @@
 <text x="576" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">out (C × R)</text>
 <text x="576" y="46" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">tile (bx, by)</text>
 <line x1="388" y1="130" x2="514" y2="130" class="s-b" stroke-width="1.4" marker-end="url(#ch02-transpose-ah-b)"/>
-<text x="448" y="170" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">coalesced row writes</text>
+<text x="451" y="148" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">coalesced</text>
+<text x="451" y="164" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small">row writes</text>
 <text x="360" y="262" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">Both global accesses walk along rows; the transposition happens in shared memory.</text>
 </svg>

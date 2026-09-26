@@ -301,13 +301,13 @@
 <rect x="60" y="60" width="288" height="288" rx="0" class="fig-none s-ink" stroke-width="1.2"/>
 <text x="204" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">16 × 16 A tile in shared memory</text>
 <text x="204" y="46" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">number = lane giving the row address</text>
-<text x="405" y="80" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Lanes 8q … 8q+7 point at the 8 rows</text>
-<text x="405" y="102" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(16 bytes each) of matrix q. Register q of</text>
-<text x="405" y="124" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">lane l receives row l / 4, halves 2(l % 4)</text>
-<text x="405" y="146" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">and 2(l % 4) + 1 of matrix q.</text>
-<text x="405" y="190" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">In this order the four registers are exactly</text>
-<text x="405" y="212" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">a0–a3 of mma.m16n8k16: one instruction</text>
-<text x="405" y="234" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">loads a whole A fragment.</text>
-<text x="405" y="278" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">.trans delivers the transpose: on B stored</text>
-<text x="405" y="300" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">k-major, one x4 gives b0, b1 of two n8 tiles.</text>
+<text x="405" y="105" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Lanes 8q … 8q+7 point at the 8 rows</text>
+<text x="405" y="123" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(16 bytes each) of matrix q. Register q of</text>
+<text x="405" y="141" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">lane l receives row l / 4, halves 2(l % 4)</text>
+<text x="405" y="159" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">and 2(l % 4) + 1 of matrix q.</text>
+<text x="405" y="195" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">In this order the four registers are exactly</text>
+<text x="405" y="213" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">a0–a3 of mma.m16n8k16: one instruction</text>
+<text x="405" y="231" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">loads a whole A fragment.</text>
+<text x="405" y="267" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">.trans delivers the transpose: on B stored</text>
+<text x="405" y="285" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">k-major, one x4 gives b0, b1 of two n8 tiles.</text>
 </svg>

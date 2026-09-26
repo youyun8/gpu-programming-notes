@@ -52,8 +52,8 @@ def fig_halo_2d(name):
              ("Filter", "__constant__, one tap for all lanes (broadcast)")]
     for i, (a, b) in enumerate(notes):
         if a:
-            s.text(x, 40 + i * 38, a + ":", anchor="start", size="small", bold=True)
-            s.text(x, 40 + i * 38 + 17, b, anchor="start", size="small")
+            s.text(x, 45 + i * 38, a + ":", anchor="start", size="small", bold=True)
+            s.text(x, 45 + i * 38 + 17, b, anchor="start", size="small")
     return s
 
 

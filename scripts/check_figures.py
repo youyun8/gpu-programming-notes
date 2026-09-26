@@ -11,7 +11,10 @@ Each SVG is rendered in headless Chromium at its natural size and every
 - sticks out of the figure,
 - is crossed by a line, an arrow or the border of a box (text inside a box
   must fit inside it), or
-- uses a font smaller than MIN_FONT_PX.
+- uses a font smaller than MIN_FONT_PX, or
+- is misaligned: not centred in the box that holds it, not centred under
+  (or over) the box it labels, or almost but not exactly in line with its
+  neighbours (a column of labels, or a row of labels on one baseline).
 
 Set CHROMIUM=/path/to/chrome to use a specific browser binary.
 """
@@ -24,6 +27,8 @@ FIGURES = ROOT / "tutorials" / "figures"
 MIN_FONT_PX = 11.0
 GAP = 2.0   # minimum distance between two labels, px
 EDGE = 6.0  # minimum distance from a label to the figure's edge, px
+CENTER_TOL = 1.5    # a centred label may be this far off the centre of its box, px
+NEAR_MISS = (0.5, 6.0)  # anchors this far apart look like a failed attempt to align, px
 
 # Runs in the page: collect label boxes (ink approximated by trimming the line box),
 # the segments of every stroked line / path, and the rectangles with a visible border.
@@ -45,7 +50,12 @@ MEASURE_JS = r"""
     // For line crossings use the label's own (possibly rotated) frame: local bbox + page->local matrix.
     const bb = t.getBBox(), inv = t.getScreenCTM().inverse();
     const tv = bb.height * 0.12;
-    texts.push({s: t.textContent, size, i: order(t),
+    const ap = svg.createSVGPoint();
+    ap.x = parseFloat(t.getAttribute('x')); ap.y = parseFloat(t.getAttribute('y'));
+    const aq = ap.matrixTransform(t.getScreenCTM());
+    texts.push({s: t.textContent, size, i: order(t), rotated,
+                anchor: t.getAttribute('text-anchor') || 'start',
+                ax: aq.x - origin.left, ay: aq.y - origin.top,
                 x0: r.x0 + trimH, x1: r.x1 - trimH, y0: r.y0 + trimV, y1: r.y1 - trimV,
                 local: {x0: bb.x, x1: bb.x + bb.width, y0: bb.y + tv, y1: bb.y + bb.height - tv},
                 inv: [inv.a, inv.b, inv.c, inv.d, inv.e, inv.f], ox: origin.left, oy: origin.top});
@@ -172,6 +182,90 @@ def check(page, path):
             if d["i"] > hidden_below and overlap(d, t):
                 problems.append(f"{label} overlaps a marker dot")
                 break
+    return problems + alignment(m)
+
+
+def contains(r, t, pad=0.0):
+    return r["x0"] - pad <= t["x0"] and t["x1"] <= r["x1"] + pad and r["y0"] - pad <= t["y0"] and t["y1"] <= r["y1"] + pad
+
+
+def alignment(m):
+    """Misaligned labels: off-centre in (or under) a box, or near misses between neighbours."""
+    problems = []
+    texts = [t for t in m["texts"] if not t["rotated"]]
+    rects = [r for r in m["rects"] if r["x1"] - r["x0"] > 4 and r["y1"] - r["y0"] > 4]
+
+    def label(t):
+        return repr(t["s"][:40])
+
+    # 1. Labels inside a box that holds nothing but labels: centred horizontally (when
+    #    anchored in the middle) and, as a stack, vertically.
+    for r in rects:
+        inner = [t for t in texts if contains(r, t)]
+        if not inner:
+            continue
+        others = [q for q in rects if q is not r and contains(r, q) and not contains(q, r)]
+        segs = [s for s in m["segs"] if s["kind"] != "thin" and all(
+            r["x0"] < x < r["x1"] and r["y0"] < y < r["y1"] for x, y in (s["a"], s["b"]))]
+        dots = [d for d in m["dots"] if contains(r, d)]
+        if others or segs or dots:
+            continue
+        cx, cy = (r["x0"] + r["x1"]) / 2, (r["y0"] + r["y1"]) / 2
+        if all(t["anchor"] == "middle" for t in inner):
+            columns = {round(t["ax"]) for t in inner}
+            if len(columns) == 1:  # one centred column (side-by-side labels are laid out on purpose)
+                for t in inner:
+                    if abs(t["ax"] - cx) > CENTER_TOL:
+                        problems.append(f"{label(t)} is {t['ax'] - cx:+.1f}px off the centre of its box")
+            rows = sorted(inner, key=lambda t: t["ay"])
+            if len(columns) == 1:
+                mid = (rows[0]["ay"] + rows[-1]["ay"]) / 2
+                if abs(mid - cy) > CENTER_TOL + 0.5:
+                    problems.append(f"{label(rows[0])} is {mid - cy:+.1f}px off the vertical centre of its box")
+        elif len({round(t["ax"]) for t in inner}) == 1:
+            # One left- (or right-) aligned column: a one-line box such as a table cell, or a list
+            # of several lines, is centred vertically. (A single title in a tall card is not.)
+            rows = sorted(inner, key=lambda t: t["ay"])
+            mid = (rows[0]["ay"] + rows[-1]["ay"]) / 2
+            if (len(rows) > 1 or r["y1"] - r["y0"] < 2.5 * rows[0]["size"]) and abs(mid - cy) > CENTER_TOL + 0.5:
+                problems.append(f"{label(rows[0])} is {mid - cy:+.1f}px off the vertical centre of its box")
+
+    # 2. A centred caption right above or below a box of similar width labels that box: centre it.
+    for t in texts:
+        if t["anchor"] != "middle":
+            continue
+        w = t["x1"] - t["x0"]
+        for r in rects:
+            rw = r["x1"] - r["x0"]
+            above = 0 <= r["y0"] - t["y1"] <= 14
+            below = 0 <= t["y0"] - r["y1"] <= 14
+            if (above or below) and r["x0"] - 2 <= t["x0"] and t["x1"] <= r["x1"] + 2 and rw < 2.5 * w + 16:
+                if CENTER_TOL < abs(t["ax"] - (r["x0"] + r["x1"]) / 2) < rw / 2:
+                    problems.append(f"{label(t)} is {t['ax'] - (r['x0'] + r['x1']) / 2:+.1f}px off the centre "
+                                    f"of the box {'below' if above else 'above'} it")
+                    break
+
+    # 3. Near misses: labels in the same container (the smallest box holding them, or none)
+    #    that almost share an anchor column or a baseline.
+    def container(t):
+        holders = [r for r in rects if contains(r, t)]
+        return min(holders, key=lambda r: (r["x1"] - r["x0"]) * (r["y1"] - r["y0"]))["i"] if holders else -1
+
+    home = {id(t): container(t) for t in texts}
+    lo, hi = NEAR_MISS
+    for k, t in enumerate(texts):
+        for u in texts[k + 1:]:
+            if home[id(t)] != home[id(u)]:
+                continue
+            if t["anchor"] == u["anchor"] and t["anchor"] != "middle":
+                vgap = max(t["y0"], u["y0"]) - min(t["y1"], u["y1"])
+                if lo < abs(t["ax"] - u["ax"]) < hi and vgap < 40:
+                    problems.append(f"{label(t)} and {label(u)} are almost left/right-aligned "
+                                    f"({abs(t['ax'] - u['ax']):.1f}px apart)")
+            hgap = max(t["x0"], u["x0"]) - min(t["x1"], u["x1"])
+            if lo < abs(t["ay"] - u["ay"]) < hi and 0 < hgap < 60 and abs(t["size"] - u["size"]) < 0.5:
+                problems.append(f"{label(t)} and {label(u)} are almost on one line "
+                                f"({abs(t['ay'] - u['ay']):.1f}px apart)")
     return problems
 
 

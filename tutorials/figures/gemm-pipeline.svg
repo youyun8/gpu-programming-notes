@@ -48,7 +48,7 @@
 <text x="524" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">copy 5</text>
 <rect x="574" y="138" width="84" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
 <text x="616" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">math 5</text>
-<text x="110" y="200" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">red lines: __pipeline_wait_prior(1) + __syncthreads()</text>
+<text x="114" y="200" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">red lines: __pipeline_wait_prior(1) + __syncthreads()</text>
 <line x1="112" y1="44" x2="112" y2="184" class="s-hl" stroke-width="1.6"/>
 <line x1="204" y1="44" x2="204" y2="184" class="s-hl" stroke-width="1.6"/>
 <line x1="296" y1="44" x2="296" y2="184" class="s-hl" stroke-width="1.6"/>
