@@ -1,0 +1,7 @@
+# CPU test runner (tools/cuemu/run_tests.py). Install torch from the CPU-only
+# index first, otherwise pip pulls the multi-GB CUDA build from PyPI:
+#   pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+#   pip install -r requirements-test.txt
+torch==2.14.0
+torchao==0.18.0
+numpy

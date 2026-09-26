@@ -1,0 +1,5 @@
+# Static site (scripts/build_site.py + MkDocs). Pinned below MkDocs 2.0, which
+# drops the plugin/theme system Material for MkDocs relies on.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==12.1

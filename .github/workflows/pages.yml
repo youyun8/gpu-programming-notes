@@ -1,0 +1,54 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Generate pages
+        run: |
+          pip install -r requirements-docs.txt
+          python3 scripts/build_site.py --strict --bundle \
+            --repo-url "${{ github.server_url }}/${{ github.repository }}" \
+            --site-url "${{ steps.pages.outputs.base_url }}/"
+          mkdocs build --strict -f build/mkdocs.yml
+      - name: Offline formats (EPUB, single Markdown file)
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q pandoc
+          mkdir -p build/site/downloads
+          cp build/gpu-programming-notes.md build/site/downloads/
+          pandoc build/gpu-programming-notes.md --resource-path=build/site-src \
+            --toc --metadata title="GPU Programming Notes" -o build/site/downloads/gpu-programming-notes.epub
+          (cd build && zip -qr site/downloads/gpu-programming-notes-html.zip site -x 'site/downloads/*')
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

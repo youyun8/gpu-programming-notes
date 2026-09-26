@@ -14,13 +14,60 @@ jobs:
       - name: Compile all solutions
         run: make check
 
-  index:
-    name: README index up to date
+  test:
+    name: cuemu tests (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [leetgpu, tensara]
+    env:
+      CUEMU_TIMEOUT: "1800"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install clang and Python dependencies
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q clang
+          pip install torch==2.14.0 --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements-test.txt
+      - name: Fetch upstream problem definitions
+        run: scripts/fetch_upstream.sh
+      - name: Run every ${{ matrix.platform }} solution on the CPU emulator
+        run: python3 tools/cuemu/run_tests.py --all --platform ${{ matrix.platform }} -j 4 --json build/${{ matrix.platform }}-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ${{ matrix.platform }}-report
+          path: build/${{ matrix.platform }}-report.json
+
+  amd:
+    name: AMD tutorial code compiles for gfx942
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Device-only compile with stock clang
+        run: |
+          clang++ --version
+          clang++ -x hip -nogpuinc -nogpulib --cuda-device-only --offload-arch=gfx942 \
+                  -O3 -Wall -Werror -S -o mfma_gemm.s tutorials/amd/mfma_gemm.hip
+          grep -c v_mfma_f32_16x16x16_bf16 mfma_gemm.s
+
+  docs:
+    name: README index and site build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Check index
+          python-version: "3.12"
+      - name: Check README index
         run: python3 scripts/build_index.py --check
+      - name: Build site (fails on broken links)
+        run: |
+          pip install -r requirements-docs.txt
+          python3 scripts/build_site.py --strict
+          mkdocs build --strict -f build/mkdocs.yml
