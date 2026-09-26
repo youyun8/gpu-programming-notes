@@ -10,6 +10,7 @@ You do **not** need a local NVIDIA GPU:
 | [Tensara](https://tensara.org) | Submissions are benchmarked on real GPUs (T4, A100, H100, …). |
 | Google Colab / Kaggle | Free T4 GPU; use `!nvcc` in a notebook cell. |
 | Cloud VM (Lambda, RunPod, …) | Needed for Nsight profiling at full fidelity. |
+| This repo's [cuemu](../tools/cuemu/README.md) | Runs any solution on your **CPU** against the official reference tests. Checks correctness only, not speed. |
 
 ## Minimal local toolchain
 

@@ -1,0 +1,210 @@
+# 05 – AMD CDNA3 and MFMA: from CUDA to wave64 matrix cores
+
+Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's
+data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA target `gfx942`). It
+then builds a small bf16 GEMM with the MFMA matrix-core instruction and reads
+the ISA the compiler emits. Chapters 06 and 07 use this vocabulary to take
+apart the hand-written assembly GEMMs in **aiter** and the generated ones in
+**hipBLASLt**.
+
+## 1. Vocabulary map
+
+| CUDA | HIP / AMD | Notes |
+|------|-----------|-------|
+| SM | CU (compute unit) | MI300X: 304 CUs, 38 per XCD, 8 XCDs |
+| warp (32) | **wavefront (64)** | `warpSize == 64` on CDNA; lane masks are 64-bit |
+| shared memory | LDS (local data share) | 64 KiB per CU on gfx942 |
+| registers | VGPRs (per lane), **AGPRs** (per lane, accumulators), SGPRs (per wave, scalar) | up to 512 VGPR+AGPR per lane per wave |
+| tensor cores / `mma.sync` | **MFMA** (`v_mfma_*`) | one instruction per wave, operands spread across 64 lanes |
+| `cp.async` / TMA | `buffer_load … lds` (direct-to-LDS) | global → LDS without passing through VGPRs |
+| `__syncthreads()` | `s_barrier` (+ fences) | |
+| scoreboard | **explicit** `s_waitcnt vmcnt/lgkmcnt` | the compiler (or you, in asm) waits on counters |
+| L2 per GPU | L2 **per XCD** (4 MiB) + 256 MiB Infinity Cache | workgroup→XCD placement matters |
+
+Things that change how you write kernels:
+
+1. **Wave64.** A reduction over a wave needs `log2(64) = 6` steps. Ballots and
+   masks are 64 bits wide. Use `__shfl_xor` with width 64, or DPP / `ds_swizzle`
+   in asm.
+2. **Scalar unit.** Values that are the same across the wave (pointers,
+   loop counters, strides) live in SGPRs. Scalar ALU work runs alongside
+   vector work. `s_load_dword` reads kernel arguments through the scalar cache.
+3. **Explicit memory counters.** Each wave has counters for outstanding
+   operations:
+   - `vmcnt`: vector memory (global and buffer) loads.
+   - `lgkmcnt`: LDS, GDS, constant and message operations.
+   - `expcnt`: exports.
+
+   `s_waitcnt vmcnt(N)` blocks until at most `N` vector loads are still in
+   flight. Loads return in order, so `vmcnt(N)` means "everything except the
+   N most recent has landed". Hand-written kernels pipeline their loads with
+   this.
+4. **Occupancy is set by registers far more than on NVIDIA.** Each SIMD has
+   512 registers per lane to share among its waves:
+   - A kernel that uses all 512 (256 VGPRs + 256 AGPRs) gets **one wave per
+     SIMD**, and so four waves per CU.
+   - The fastest AMD GEMMs are built exactly like that: one fat wave per SIMD,
+     with latency hidden by software pipelining instead of by other waves.
+5. **Workgroups are dispatched round-robin across XCDs.** Workgroup `i` goes
+   to XCD `i % 8`.
+   - Two neighbouring output tiles that share an `A` panel therefore land on
+     different L2s.
+   - hipBLASLt's `WorkGroupMappingXCC` (chapter 07) exists to undo this.
+
+## 2. MFMA: one instruction, one wave, a whole tile
+
+`v_mfma_f32_16x16x16_bf16 D, A, B, C` computes `D = A·B + C` for a 16×16×16
+tile, cooperatively across the 64 lanes of a wave.
+
+| Operand | Size per lane | Which elements lane `l` holds (`l ∈ [0, 64)`) |
+|---------|---------------|-----------------------------------------------|
+| `A` (16×16, bf16) | 4 × bf16 = 2 VGPRs | row `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
+| `B` (16×16, bf16) | 4 × bf16 = 2 VGPRs | col `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
+| `C`/`D` (16×16, fp32) | 4 × fp32 = 4 regs | col `l % 16`, rows `4·(l/16) … 4·(l/16)+3` |
+
+Compare this with the opaque NVIDIA WMMA fragments used in
+[leetgpu/022-gemm](../leetgpu/022-gemm/solution.cu): on AMD the layout is
+documented and hand-written kernels rely on it.
+
+The important consequence is that **the A operand is 4 consecutive k values
+of one row, and so is the B operand when B is stored `[N][K]`.** If both
+matrices are K-contiguous (the "TN" layout, `C = A · Bᵀ`), then every operand
+fetch is one aligned 8-byte read per lane. That is why aiter's asm GEMMs are
+all `_tn_`, and why PyTorch's `nn.Linear` weight layout `[out, in]` is exactly
+right.
+
+Other shapes follow the same idea:
+- `32x32x8`: fewer instructions per FLOP, 16 accumulator registers.
+- `16x16x32` fp8.
+- `v_mfma_f32_16x16x16_f16`.
+- `v_mfma_i32_16x16x32_i8`, and so on.
+
+The authoritative tables are the *CDNA3 ISA* guide and AMD's
+[Matrix Instruction Calculator](https://github.com/ROCm/amd_matrix_instruction_calculator).
+The calculator prints the exact register ↔ element mapping and the cycle
+count for every instruction.
+
+The accumulators can live in **AGPRs** (`a[0:3]`) or VGPRs:
+- AGPRs roughly double the register file available to a wave.
+- Moving between the two costs `v_accvgpr_read/write`.
+- Compilers put accumulators in AGPRs. Hand-written kernels also park
+  *operands* there (chapter 06).
+
+## 3. A teaching kernel
+
+[`tutorials/amd/mfma_gemm.hip`](amd/mfma_gemm.hip) is a complete bf16 TN
+GEMM, about 120 lines of device code plus a host test and timer:
+
+- **Block tile 64×64×32**, 256 threads = 4 waves in a 2×2 layout. Each wave
+  owns 32×32 = 2×2 MFMA tiles.
+- **Global → registers → LDS**. Each thread moves 16 bytes of A and 16 bytes
+  of B per K step. LDS rows are padded to 40 bf16 (80 bytes) so the 16 rows
+  touched by one operand read spread over banks.
+- **Double-buffered LDS, one barrier per step**:
+  1. Issue the global loads for tile `k+1`.
+  2. Run the MFMAs on tile `k` from LDS.
+  3. Write tile `k+1` into the other buffer.
+  4. Barrier.
+
+  The other buffer was last read in the previous iteration, which ended with
+  a barrier, so overwriting it is safe.
+- **Operand fetch** is exactly the table above:
+
+  ```cpp
+  // One MFMA operand: lane l supplies row (l % 16), k = k0 + 4 * (l / 16) .. +3.
+  const uint16_t* p = tile + (row0 + lane % 16) * kLdsStride + k0 + 4 * (lane / 16);
+  return *reinterpret_cast<const Short4*>(p);
+  ```
+- **Epilogue** writes `acc[i][j][r]` to row `4·(lane/16) + r`, column
+  `lane % 16`.
+
+### Compile it without a GPU
+
+You do not need ROCm to look at the ISA. Stock clang ≥ 17 has the AMDGPU
+back end. [`hip_compat.h`](amd/hip_compat.h) supplies the few HIP macros the
+kernel uses:
+
+```bash
+clang++ -x hip -nogpuinc -nogpulib --cuda-device-only --offload-arch=gfx942 \
+        -O3 -S -o mfma_gemm.s tutorials/amd/mfma_gemm.hip
+```
+
+This is the inner loop clang 18 produces (trimmed):
+
+```asm
+.LBB0_6:                                   ; K loop
+	global_load_dwordx4 v[0:3], v[24:25], off    ; next A tile (16 B / lane)
+	global_load_dwordx4 v[4:7], v[22:23], off    ; next B tile
+	...
+	ds_read2_b64 v[22:25], v21 offset1:4         ; A operands for k0 = 0 and 16, fused
+	ds_read2_b64 v[34:37], v21 offset0:160 offset1:164
+	ds_read2_b64 v[26:29], v30 offset1:4         ; B operands
+	ds_read2_b64 v[30:33], v30 offset0:160 offset1:164
+	s_waitcnt lgkmcnt(1)
+	v_mfma_f32_16x16x16_bf16 a[12:15], v[22:23], v[26:27], a[12:15]
+	s_waitcnt lgkmcnt(0)
+	v_mfma_f32_16x16x16_bf16 a[8:11], v[22:23], v[30:31], a[8:11]
+	... 6 more MFMAs ...
+	s_waitcnt vmcnt(1)
+	ds_write_b128 v22, v[0:3]                    ; stage next tile into the other buffer
+	s_waitcnt vmcnt(0)
+	ds_write_b128 v21, v[4:7]
+	...
+	s_barrier
+```
+
+Notice:
+
+1. The accumulators went to AGPRs: `a[0:15]`, `.agpr_count: 16`.
+2. The two 8-byte reads for `k0 = 0` and `k0 = 16` were fused into one
+   `ds_read2_b64` (`offset1:4` is 4 × 8 bytes = 16 bf16 further along).
+3. `s_waitcnt lgkmcnt(1)` lets the first MFMA start while the last LDS read is
+   still in flight.
+4. There are 8 MFMAs per K step against 2 global loads, 4 LDS reads and 2 LDS
+   writes. **This ratio is far too low.**
+   - The MFMA pipe will be starved.
+   - Expect a small fraction of MI300X's roughly 1.3 PFLOP/s dense bf16 peak.
+
+   The rest of this chapter and the next two are about fixing that ratio.
+
+> This kernel is compile-checked for gfx942 in this repo, but it has not been
+> run: there is no AMD GPU in CI. On a ROCm machine,
+> `hipcc -O3 --offload-arch=gfx942 tutorials/amd/mfma_gemm.hip -o mfma_gemm && ./mfma_gemm 4096 4096 4096`
+> runs the built-in check against an fp64 CPU reference and prints TFLOP/s.
+
+## 4. What a fast GEMM does differently
+
+Each step below is visible in chapter 06's disassembly:
+
+| Step | Change | Effect |
+|------|--------|--------|
+| 1 | **Bigger tiles per wave** (e.g. 16×128 or 64×64 per wave, 128×128–256×256 per workgroup) | More MFMAs per byte loaded; accumulators grow to 128–256 registers |
+| 2 | **Direct-to-LDS loads** (`buffer_load_dword … lds`) | Global data is written straight into LDS. No VGPR staging, no `ds_write`, fewer instructions and registers |
+| 3 | **Skip LDS for operands a wave does not share** | If each wave owns distinct columns of B, it can load B straight into registers. The weights are pre-shuffled offline into MFMA operand order (`bpreshuffle`) |
+| 4 | **Software pipelining with counters** | Keep 2–3 K steps of loads in flight and wait with `s_waitcnt vmcnt(N)` where `N` is the number of loads issued since, instead of `vmcnt(0)` |
+| 5 | **Interleave everything with MFMAs** | An MFMA occupies the matrix pipe for several cycles. Issuing one load, LDS read or address update between consecutive MFMAs hides their issue cost completely. Compilers do this poorly, which is why the best kernels are asm or generated (TensileLite's `ScheduleIterAlg`) |
+| 6 | **Split-K / Stream-K** for small M·N | Too few output tiles to fill 304 CUs? Split the K loop across workgroups and reduce with atomics or a fix-up pass |
+| 7 | **Cache-aware tile order** | Make workgroups that run concurrently on one XCD share A/B panels in that XCD's L2 |
+
+## 5. Tools you will want
+
+| Tool | Use |
+|------|-----|
+| `llvm-objdump -d --mcpu=gfx942 file.co` | Disassemble a code object (`.co`, `.hsaco`) |
+| `readelf --notes file.co` | Kernel metadata: VGPR/AGPR/SGPR counts, LDS size, kernarg layout |
+| `roc-obj-ls` / `roc-obj-extract` | Pull code objects out of a fat binary / `.so` |
+| `rocprofv3 --kernel-trace --stats` | Kernel times |
+| `rocprofv3 --pmc SQ_INSTS_VALU_MFMA_MOPS_BF16 …` | Hardware counters (MFMA utilisation, LDS bank conflicts `SQ_LDS_BANK_CONFLICT`) |
+| rocprofv3 ATT (thread trace) + Radeon GPU Analyzer / ROCm Compute Viewer | Instruction-level timeline: where each wave stalls |
+| `rocprof-compute` (Omniperf) | Roofline and "speed of light" summaries |
+
+## Exercises
+
+1. Change the teaching kernel to 32×32×8 MFMAs
+   (`__builtin_amdgcn_mfma_f32_32x32x8bf16_1k`). Work out the new operand
+   and accumulator layout with the Matrix Instruction Calculator.
+2. Make each wave compute 32×64 instead of 32×32. How many AGPRs does the
+   compiler report now, and what happens to occupancy?
+3. Replace the register-staged loads with direct-to-LDS loads: use
+   `__builtin_amdgcn_global_load_lds` (clang 19 or newer), or inline asm.
+   Compare the instruction counts in the loop.

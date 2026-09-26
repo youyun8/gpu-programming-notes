@@ -1,0 +1,183 @@
+# 08 – Deploying this site
+
+This repository renders to a static website. It contains:
+- every tutorial;
+- every LeetGPU and Tensara problem page, with the write-up and the complete
+  solution source;
+- the example code.
+
+It can also be exported as offline formats: a zipped HTML site, EPUB, a
+single Markdown file, and a PDF if you have LaTeX. This chapter explains how
+the pipeline works and gives four ways to publish the site.
+
+## 1. How the site is built
+
+```
+repository                       scripts/build_site.py              mkdocs build
+───────────────────────────      ─────────────────────────────      ─────────────────
+README.md                  ──►   build/site-src/index.md      ──►   build/site/index.html
+tutorials/*.md, amd/*.hip  ──►   tutorials/*.md, *-hip.md     ──►   …/tutorials/…
+leetgpu/NNN/README.md      ─┐
+leetgpu/NNN/solution.cu    ─┴►   leetgpu/NNN/index.md         ──►   leetgpu/NNN/index.html
+                                 (+ solution.cu, downloadable)
+mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav)
+```
+
+`scripts/build_site.py` does five things:
+
+1. **Tutorial pages.** Every Markdown file under `tutorials/` becomes a page.
+   Every code file there (`.hip`, `.h`, …) also gets a rendered page with a
+   download link.
+2. **Problem pages.** Every problem folder becomes one page:
+   - the README's front matter is removed;
+   - the write-up follows;
+   - then `## Solution: solution.cu` with the full source (line numbers and a
+     copy button), a download link and a "view on GitHub" link.
+3. **Index pages.** It builds `leetgpu/index.md` and `tensara/index.md`, with
+   problem tables grouped by difficulty.
+4. **Links.** It rewrites relative links so that they work on the site:
+   - a link to a problem folder goes to its page;
+   - a link to a `README.md` goes to the `index.md` it became;
+   - a link to a source file publishes that file verbatim.
+
+   With `--strict`, any broken link fails the build.
+5. **Navigation.** It generates `build/mkdocs.yml`. That file inherits the
+   theme and Markdown extensions from the root `mkdocs.yml` and adds the full
+   navigation tree.
+
+The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
+It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
+plugin system Material depends on.
+
+### What is *not* published
+
+- **Problem statements.** LeetGPU's challenge texts are CC BY-NC-ND, and
+  Tensara's problem repository has no license, so this repository never
+  copies them.
+  - Each page links to the official statement.
+  - The pages contain only my own summaries and code.
+  - Keep it that way when you deploy: `scripts/fetch_upstream.sh` clones the
+    upstream definitions into `.upstream/`, which is git-ignored and never
+    read by the site builder.
+- **aiter / hipBLASLt sources.** They are MIT licensed, but chapters 06–07
+  only quote short excerpts and link to the upstream repositories.
+
+## 2. Build and preview locally
+
+```bash
+python3 -m venv .venv && . .venv/bin/activate
+pip install -r requirements-docs.txt
+
+python3 scripts/build_site.py --strict        # -> build/site-src/, build/mkdocs.yml
+mkdocs serve -f build/mkdocs.yml              # http://127.0.0.1:8000, live reload
+mkdocs build --strict -f build/mkdocs.yml     # -> build/site/ (plain static files)
+```
+
+`make serve` and `make site` wrap the same commands.
+
+`mkdocs serve` watches `build/site-src/`, not the repository. After editing
+a tutorial or a solution, run `scripts/build_site.py` again and the preview
+reloads.
+
+`build/site/` is completely static: HTML, CSS, JS, a client-side search index
+and the solution files. Any web server can host it, and you can open it
+straight from disk.
+
+## 3. Option A – GitHub Pages (automatic, recommended)
+
+`.github/workflows/pages.yml` builds and deploys on every push to `main`.
+
+1. On GitHub, go to **Settings → Pages → Build and deployment** and set
+   **Source** to **GitHub Actions**.
+   - Pages on a *private* repository needs a paid plan (Pro, Team or
+     Enterprise). On the free plan, make the repository public first.
+2. Push to `main`, or run the workflow by hand from **Actions → Deploy site →
+   Run workflow**.
+3. The workflow's `deploy` job prints the URL, for example
+   `https://<user>.github.io/gpu-programming-notes/`.
+
+The workflow runs these steps:
+
+```yaml
+- uses: actions/configure-pages@v5          # gives the public base URL
+- run: python3 scripts/build_site.py --strict --bundle --site-url "<base_url>/" ...
+- run: mkdocs build --strict -f build/mkdocs.yml
+- run: pandoc ... -o build/site/downloads/gpu-programming-notes.epub   # offline formats
+- uses: actions/upload-pages-artifact@v3    # path: build/site
+- uses: actions/deploy-pages@v4
+```
+
+To use a **custom domain**:
+1. Add it under **Settings → Pages**.
+2. Create the DNS record: a `CNAME` pointing to `<user>.github.io`.
+
+`configure-pages` then reports the new base URL, and the sitemap and
+canonical links follow it automatically.
+
+## 4. Option B – `mkdocs gh-deploy` (manual, no Actions)
+
+```bash
+python3 scripts/build_site.py --strict --site-url https://<user>.github.io/gpu-programming-notes/
+mkdocs gh-deploy -f build/mkdocs.yml --force
+```
+
+This builds the site and force-pushes it to a `gh-pages` branch. Then set
+**Settings → Pages → Source** to *Deploy from a branch*, choose `gh-pages`
+and `/ (root)`.
+
+Do not use this together with Option A, because they fight over the Pages
+source.
+
+## 5. Option C – any static host
+
+Upload the `build/site/` folder:
+
+| Host | How |
+|------|-----|
+| Netlify | Build command `pip install -r requirements-docs.txt && python3 scripts/build_site.py --strict && mkdocs build -f build/mkdocs.yml`; publish directory `build/site` |
+| Cloudflare Pages | Same build command and output directory; set `PYTHON_VERSION=3.12` |
+| Vercel | Same, with "Other" framework preset |
+| Your own server | `rsync -av --delete build/site/ user@host:/var/www/gpu-notes/`, then serve with nginx/caddy |
+| Anywhere, quickly | `python3 -m http.server -d build/site 8000` |
+
+If the site lives under a sub-path (`https://host/notes/`), pass
+`--site-url https://host/notes/`. MkDocs uses relative URLs, so the pages
+work either way; `site_url` only affects the sitemap and canonical links.
+
+## 6. Option D – offline formats
+
+| Format | Command | Notes |
+|--------|---------|-------|
+| Zipped HTML | `cd build && zip -r gpu-notes-html.zip site` | Unzip, open `site/index.html`. Search works offline too |
+| Single Markdown | `python3 scripts/build_site.py --bundle` → `build/gpu-programming-notes.md` | All tutorials and problems, in navigation order. Inter-page links become plain text |
+| EPUB | `pandoc build/gpu-programming-notes.md --resource-path=build/site-src --toc -o gpu-notes.epub` | No LaTeX needed; good on e-readers and tablets |
+| PDF | `pandoc build/gpu-programming-notes.md --resource-path=build/site-src --toc --pdf-engine=xelatex -V geometry:margin=2cm -V mainfont="DejaVu Serif" -V monofont="DejaVu Sans Mono" -o gpu-notes.pdf` | Needs a TeX distribution (`texlive-xetex`). Long code lines wrap poorly; landscape (`-V geometry:landscape`) helps |
+| Print single pages | Browser **Print → Save as PDF** on any page | Material's print stylesheet hides navigation |
+
+The Pages workflow publishes the zipped HTML, the single Markdown file and
+the EPUB under `downloads/` on the deployed site.
+
+## 7. Keeping the site honest: CI
+
+`.github/workflows/ci.yml` runs on every push, and a red CI means the site
+would publish something broken or wrong:
+
+| Job | What it guarantees |
+|-----|--------------------|
+| `nvcc compile check` | Every `solution.cu` compiles with the real CUDA toolkit |
+| `cuemu tests (leetgpu / tensara)` | Every solution produces correct results against the platforms' reference implementations, on the CPU emulator (see [tools/cuemu](../tools/cuemu/README.md)) |
+| `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
+| `README index and site build` | The README tables are current and the site builds with no broken links |
+
+## 8. Adding content later
+
+```bash
+scripts/fetch_upstream.sh && python3 scripts/sync_problems.py   # scaffold new upstream problems
+# ...solve, write the README (status: solved)...
+python3 tools/cuemu/run_tests.py leetgpu/NNN-new-problem        # test on CPU
+python3 scripts/build_index.py                                  # refresh README tables
+git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pages redeploys
+```
+
+A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
+in `tutorials/README.md`. The navigation is generated.

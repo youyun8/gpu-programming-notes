@@ -48,5 +48,5 @@ something uniform across the warp (e.g. `warp_id`) when possible.
 
 ## Practice
 
-- [LeetGPU – Vector Addition](../leetgpu/001-vector-addition)
+- [LeetGPU – Vector Addition](../leetgpu/001-vector-add/)
 - [Tensara – Vector Addition](../tensara/vector-addition)
