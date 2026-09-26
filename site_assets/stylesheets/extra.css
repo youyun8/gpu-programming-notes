@@ -124,3 +124,12 @@
   .hero { margin: -.8em -.8em 1.5em; padding: 2em 1.2em; }
   .md-typeset .hero h1 { font-size: 1.7rem; }
 }
+
+/* ---------- full-width layout -------------------------------------------- */
+/* The right-hand table of contents is integrated into the left sidebar
+   (toc.integrate), and the content column uses the full window width so
+   that solution code is shown without horizontal scrolling where possible. */
+.md-grid { max-width: none; }
+.md-main__inner { margin-left: .6rem; margin-right: .6rem; }
+.md-content { max-width: none; }
+.md-typeset .highlight, .md-typeset pre { max-width: 100%; }
