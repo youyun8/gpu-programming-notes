@@ -23,6 +23,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 BUILD = ROOT / "build"
 OUT = BUILD / "site-src"
+ZH_ROOT = ROOT / "locale" / "zh-Hant"
+ZH_SUFFIX = "zh-Hant"
 PLATFORMS = {"leetgpu": "LeetGPU", "tensara": "Tensara"}
 DIFFICULTIES = ["easy", "medium", "hard"]
 STATUS_ICONS = {"solved": "✅", "wip": "🚧", "todo": "⬜"}
@@ -35,15 +37,16 @@ TUTORIAL_SECTIONS = {"gemm": ("04.x GEMM Deep Dive", "04-")}
 # A sub-directory section goes into the part of the chapter it follows.
 # Parts, in reading order; chapters appear in the order of their prefixes here, not by number.
 TUTORIAL_PARTS = [
-    ("Part I · CUDA Foundations", ("00-", "01-", "02-", "03-", "09-")),
+    ("Part I · Foundations", ("00-", "01-", "02-", "03-", "09-")),
     ("Part II · Parallel Patterns", ("10-", "11-", "12-", "13-")),
     ("Part III · Matrix Multiplication", ("04-",)),
-    ("Part IV · AMD GPUs", ("05-", "06-", "07-")),
-    ("Part V · Tools & Publishing", ("14-", "08-")),
+    ("Part IV · Portable Model Kernels", ("14-", "15-")),
+    ("Part V · AMD Production Kernels", ("05-", "06-", "07-", "16-")),
+    ("Part VI · Publishing", ("08-",)),
 ]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
-# A figure: an SVG image alone on its line. The site inlines it (see inline_figures).
-FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.svg)\)[ \t]*$", re.M)
+# A figure is an image alone on its line. SVG is inlined so its palette follows the theme.
+FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.(?:svg|png|jpe?g|webp))\)[ \t]*$", re.M | re.I)
 
 
 def parse_front_matter(text: str):
@@ -73,6 +76,16 @@ def site_path(repo_path: Path) -> Path:
     return rel
 
 
+def translated_source(source: Path) -> Path:
+    """Return the Traditional Chinese source that mirrors a repository file."""
+    return ZH_ROOT / source.relative_to(ROOT)
+
+
+def translated_page(page: Path) -> Path:
+    """Return the suffix-style page name consumed by mkdocs-static-i18n."""
+    return page.with_name(f"{page.stem}.{ZH_SUFFIX}{page.suffix}")
+
+
 
 HOME_TEMPLATE = """---
 hide:
@@ -84,8 +97,8 @@ hide:
 
 # GPU Programming Notes
 
-From your first CUDA kernel to reading the hand-written assembly of AMD's
-fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara problem.
+From your first CUDA kernel to Triton, Kimi K3, and AMD production kernels,
+with a worked, tested solution to every LeetGPU and Tensara problem.
 
 [Start the tutorials](tutorials/index.md){{ .md-button .md-button--primary }}
 [Browse problems](leetgpu/index.md){{ .md-button }}
@@ -134,10 +147,10 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     ---
 
-    CDNA3 and MFMA, an instruction-by-instruction teardown of AITER's asm GEMM,
-    and how hipBLASLt/TensileLite generates thousands of kernels.
+    CDNA3 and MFMA, AITER assembly, hipBLASLt/TensileLite, and FlyDSL's
+    quantized Kimi K3 MoE path.
 
-    [:octicons-arrow-right-24: Chapters 05–07](tutorials/05-amd-cdna3-mfma.md)
+    [:octicons-arrow-right-24: Chapters 05–07 and 16](tutorials/05-amd-cdna3-mfma.md)
 
 -   :material-code-braces:{{ .lg .middle }} **LeetGPU: {leetgpu} Problems**
 
@@ -168,10 +181,10 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     ---
 
-    The same kernels at block level in Python: fused softmax, an autotuned
-    matmul and FlashAttention.
+    Block-level Python from fused softmax and FlashAttention to Quark
+    quantization, serving caches, and recurrent Kimi Delta Attention.
 
-    [:octicons-arrow-right-24: Chapter 14](tutorials/14-triton.md)
+    [:octicons-arrow-right-24: Chapters 14–15](tutorials/14-triton.md)
 
 -   :material-rocket-launch:{{ .lg .middle }} **Deploy Your Own Copy**
 
@@ -193,6 +206,112 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
    you whether the kernel is memory- or compute-bound.
 5. **Pitfalls** and **verification**: what goes wrong, and how the solution was tested.
 6. **Solution**: the complete source, with line numbers.
+"""
+
+
+HOME_TEMPLATE_ZH_HANT = """---
+hide:
+  - navigation
+  - toc
+---
+
+<div class="hero" markdown>
+
+# GPU 程式設計筆記
+
+從第一個 CUDA kernel，一路學到 Triton、Kimi K3 與 AMD 生產環境 kernel。
+網站也收錄每一題 LeetGPU 與 Tensara 的完整解法與測試。
+
+[開始學習](tutorials/index.md){{ .md-button .md-button--primary }}
+[瀏覽題目](leetgpu/index.md){{ .md-button }}
+[依主題查找](tags.md){{ .md-button }}
+
+<div class="stats">
+<div><b>{total}</b>題已完成</div>
+<div><b>{chapters}</b>個教學章節</div>
+<div><b>100%</b>通過參考測試</div>
+</div>
+
+</div>
+
+## 建議學習路徑
+
+<div class="grid cards" markdown>
+
+-   :material-school:{{ .lg .middle }} **基礎觀念**
+
+    ---
+
+    了解執行模型、記憶體階層、平行歸約與效能分析。
+
+    [:octicons-arrow-right-24: 第 00–03、09 章](tutorials/index.md)
+
+-   :material-vector-combine:{{ .lg .middle }} **平行運算模式**
+
+    ---
+
+    學習 warp 指令、scan、stencil，以及 FlashAttention 的線上 softmax。
+
+    [:octicons-arrow-right-24: 第 10–13 章](tutorials/10-warp-primitives.md)
+
+-   :material-matrix:{{ .lg .middle }} **矩陣乘法**
+
+    ---
+
+    從 tiled GEMM 到 `cp.async`、Stream-K 與 tensor core。
+
+    [:octicons-arrow-right-24: 第 04、04.x 章](tutorials/04-tiled-matmul.md)
+
+-   :material-language-python:{{ .lg .middle }} **Triton 與模型 kernel**
+
+    ---
+
+    從區塊層級程式設計，進入 Quark 量化、SGLang 快取與 Kimi Delta Attention。
+
+    [:octicons-arrow-right-24: 第 14–15 章](tutorials/14-triton.md)
+
+-   :material-chip:{{ .lg .middle }} **AMD 生產環境 kernel**
+
+    ---
+
+    CDNA3、MFMA、AITER、hipBLASLt，以及 FlyDSL 的 Kimi K3 MoE 路徑。
+
+    [:octicons-arrow-right-24: 第 05–07、16 章](tutorials/05-amd-cdna3-mfma.md)
+
+-   :material-code-braces:{{ .lg .middle }} **LeetGPU：{leetgpu} 題**
+
+    ---
+
+    從逐元素運算，到 attention、排序、FFT 與完整 transformer block。
+
+    [:octicons-arrow-right-24: 題目索引](leetgpu/index.md)
+
+-   :material-lightning-bolt:{{ .lg .middle }} **Tensara：{tensara} 題**
+
+    ---
+
+    包含 MXFP4、MXFP8 與 NVFP4 量化 GEMM 的效能導向題目。
+
+    [:octicons-arrow-right-24: 題目索引](tensara/index.md)
+
+-   :material-rocket-launch:{{ .lg .middle }} **部署自己的版本**
+
+    ---
+
+    發布到 GitHub Pages 或靜態主機，也可匯出 EPUB 與單一 Markdown。
+
+    [:octicons-arrow-right-24: 第 08 章](tutorials/08-deploying-this-site.md)
+
+</div>
+
+## 每一題的固定結構
+
+1. **題目**：用簡單文字說明工作、形狀與資料型別。
+2. **數學定義**：列出公式，並在表格中定義每個符號。
+3. **平行方法**：說明 thread、block 與 warp 如何分工。
+4. **成本分析**：計算 FLOP、資料量與算術強度。
+5. **常見錯誤與驗證**：解釋容易出錯之處與測試方式。
+6. **完整解答**：附上可下載、含行號的原始碼。
 """
 
 
@@ -294,22 +413,33 @@ class SiteBuilder:
         return "".join(p if p.startswith("```") else LINK_RE.sub(repl, p) for p in parts)
 
     def inline_figures(self, text: str, source: Path) -> str:
-        """Replace SVG figures (`![caption](figures/x.svg)` on a line of its own) by inline SVG.
+        """Replace standalone images with accessible, IEEE-style numbered figures.
 
-        Inlined, the SVG's classes pick up the site's --fig-* colour properties, so figures
-        follow the light/dark scheme (on GitHub the same line renders as a plain image).
-        The caption becomes a <figcaption>; `code` spans are kept, $math$ is left to KaTeX.
+        SVG classes pick up the site's --fig-* colour properties after inlining. Raster
+        images remain ordinary image elements. Numbering restarts on each page, like a
+        self-contained technical article. `code` spans are kept; $math$ is left to KaTeX.
         """
+        figure_number = 0
 
         def repl(m):
+            nonlocal figure_number
+            figure_number += 1
             path = (source.parent / m.group(2)).resolve()
             if not path.exists():
                 self.warnings.append(f"{source.relative_to(ROOT)}: missing figure {m.group(2)}")
                 return m.group(0)
-            svg = re.sub(r"<\?xml[^>]*\?>", "", path.read_text()).strip()
-            svg = " ".join(line.strip() for line in svg.splitlines())
+            if path.suffix.lower() == ".svg":
+                visual = re.sub(r"<\?xml[^>]*\?>", "", path.read_text()).strip()
+                visual = " ".join(line.strip() for line in visual.splitlines())
+                visual = re.sub(r"<svg\b", f'<svg role="img" aria-labelledby="figure-{figure_number}-caption"', visual, count=1)
+            else:
+                self.static_files.add(path)
+                visual = f'<img src="{html.escape(m.group(2), quote=True)}" alt="">'
             caption = re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(m.group(1), quote=False))
-            return f'<figure class="diagram">{svg}<figcaption>{caption}</figcaption></figure>'
+            label = f"Fig. {figure_number}."
+            return (f'<figure class="diagram" id="figure-{figure_number}">{visual}'
+                    f'<figcaption id="figure-{figure_number}-caption">'
+                    f'<span class="fig-label">{label}</span> {caption}</figcaption></figure>')
 
         parts = re.split(r"(```.*?```)", text, flags=re.S)
         return "".join(p if p.startswith("```") else FIGURE_RE.sub(repl, p) for p in parts)
@@ -335,13 +465,29 @@ class SiteBuilder:
             about = about.replace(f"@@{platform}@@", f"See the [{name} index]({platform}/index.md).")
         self.write(Path("about.md"), about)
 
+        zh_readme = translated_source(ROOT / "README.md")
+        if zh_readme.exists():
+            zh_text = zh_readme.read_text()
+            for tag, platform in (("LEETGPU", "leetgpu"), ("TENSARA", "tensara")):
+                zh_text = re.sub(rf"<!-- BEGIN {tag} INDEX -->.*?<!-- END {tag} INDEX -->",
+                                 f"@@{platform}@@", zh_text, flags=re.S)
+            zh_about_page = translated_page(Path("about.md"))
+            zh_about = self.rewrite_links(zh_text, ROOT / "README.md", zh_about_page)
+            zh_about = zh_about.replace("@@leetgpu@@", "請見 [LeetGPU 索引](leetgpu/index.md)。")
+            zh_about = zh_about.replace("@@tensara@@", "請見 [Tensara 索引](tensara/index.md)。")
+            self.write(zh_about_page, zh_about)
+        else:
+            self.warnings.append("README.md: missing Traditional Chinese translation")
+
         counts = {p: sum(1 for d in (ROOT / p).iterdir() if (d / "README.md").exists()) for p in PLATFORMS}
         chapters = len([p for p in (ROOT / "tutorials").glob("[0-9][0-9]-*.md")])
         self.write(Path("index.md"), HOME_TEMPLATE.format(
             leetgpu=counts["leetgpu"], tensara=counts["tensara"], total=sum(counts.values()), chapters=chapters))
+        self.write(translated_page(Path("index.md")), HOME_TEMPLATE_ZH_HANT.format(
+            leetgpu=counts["leetgpu"], tensara=counts["tensara"], total=sum(counts.values()), chapters=chapters))
 
     def tutorials(self):
-        nav, code_nav = [], []
+        nav, code_nav = [], {}
         section_nav = {}  # sub-directory -> its pages (README first)
         tdir = ROOT / "tutorials"
         for src in sorted(tdir.rglob("*")):
@@ -351,6 +497,14 @@ class SiteBuilder:
             if src.suffix == ".md":
                 text = self.inline_figures(src.read_text(), src)
                 self.write(page, self.rewrite_links(text, src, page))
+                zh_src = translated_source(src)
+                if zh_src.exists():
+                    zh_page = translated_page(page)
+                    zh_text = self.inline_figures(zh_src.read_text(), src)
+                    self.write(zh_page, self.rewrite_links(zh_text, src, zh_page))
+                else:
+                    self.warnings.append(
+                        f"{src.relative_to(ROOT)}: missing Traditional Chinese translation")
             elif src.suffix in CODE_LANGUAGES:
                 lang = CODE_LANGUAGES[src.suffix]
                 self.static_files.add(src)
@@ -362,7 +516,20 @@ class SiteBuilder:
                 self.static_files.add(src)
                 continue
             if src.suffix in CODE_LANGUAGES:
-                code_nav.append({src.relative_to(tdir).as_posix(): page.as_posix()})
+                rel = src.relative_to(tdir)
+                if rel.parts[:2] == ("examples", "14-triton"):
+                    group = "Chapter 14 · Triton Fundamentals"
+                elif rel.parts[:2] == ("examples", "15-triton-k3"):
+                    group = "Chapter 15 · Triton Model Kernels"
+                elif rel.parts[:1] == ("examples",):
+                    group = "Chapters 09–13 · CUDA Examples"
+                elif rel.parts[:1] == ("gemm",):
+                    group = "Chapter 04.x · GEMM Programs"
+                elif rel.parts[:1] == ("amd",):
+                    group = "AMD Examples"
+                else:
+                    group = "Other Examples"
+                code_nav.setdefault(group, []).append({rel.as_posix(): page.as_posix()})
             elif src.parent == tdir:
                 if src.name != "README.md":
                     nav.append(page.as_posix())
@@ -395,10 +562,12 @@ class SiteBuilder:
             if not parts or title not in parts[-1]:
                 parts.append({title: []})
             parts[-1][title].extend(items)
-        return loose + parts + ([{"Example Code": code_nav}] if code_nav else [])
+        code_sections = [{title: pages} for title, pages in code_nav.items()]
+        return loose + parts + ([{"Example Code": code_sections}] if code_sections else [])
 
     def problems(self, platform: str):
         rows = {d: [] for d in DIFFICULTIES}
+        rows_zh = {d: [] for d in DIFFICULTIES}
         nav = {d: [] for d in DIFFICULTIES}
         for pdir in sorted((ROOT / platform).iterdir()):
             readme = pdir / "README.md"
@@ -438,6 +607,50 @@ class SiteBuilder:
             chips = " ".join(f'<span class="chip">{t}</span>' for t in tags) or "–"
             rows[difficulty].append(
                 f"| [{title}]({pdir.name}/index.md) | {chips} | [:octicons-link-external-16:]({meta.get('url', '')}) |")
+
+            zh_readme = translated_source(readme)
+            if zh_readme.exists():
+                zh_meta, zh_body = parse_front_matter(zh_readme.read_text())
+                zh_title = zh_meta.get("title", title)
+                zh_body = re.sub(r"^\*\*(?:Platform|平台)：?\*\*.*\n", "", zh_body.strip(),
+                                 count=1, flags=re.M)
+                zh_body = re.sub(r"^# .*\n", "", zh_body, count=1)
+                zh_page = translated_page(page)
+                zh_header = [
+                    '<div class="problem-meta" markdown>',
+                    f'<span class="badge {platform}">{PLATFORMS[platform]}</span>'
+                    f'<span class="badge {difficulty}">{difficulty}</span>',
+                    " ".join(f'<span class="chip">{t}</span>' for t in tags),
+                    '<span class="spacer"></span>',
+                    f'[:octicons-link-external-16: 官方題目]({meta.get("url", "")}){{ .md-button }}',
+                ]
+                for source_file in sources:
+                    zh_header.append(
+                        f"[:material-download: {source_file.name}]({source_file.name}){{ .md-button }}")
+                zh_header.append("</div>")
+                zh_parts = [
+                    "---", f"title: {json.dumps(zh_title)}", "hide:", "  - tags",
+                    f"description: {json.dumps(PLATFORMS[platform] + ' ' + zh_title)}",
+                    "tags:", *[f"  - {tag}" for tag in tags], "---", "", f"# {zh_title}", "",
+                    *zh_header, "", self.rewrite_links(zh_body, readme, zh_page), "",
+                ]
+                for source_file in sources:
+                    language = CODE_LANGUAGES[source_file.suffix]
+                    lines = source_file.read_text().count("\n") + 1
+                    zh_parts += [
+                        f"## 完整解答：`{source_file.name}`", "",
+                        f"{lines} 行 · [下載]({source_file.name}) · "
+                        f"[在 GitHub 檢視]({self.repo_url}/blob/main/{source_file.relative_to(ROOT).as_posix()})",
+                        "", f"````{language} linenums=\"1\" title=\"{source_file.relative_to(ROOT).as_posix()}\"",
+                        source_file.read_text().rstrip(), "````", "",
+                    ]
+                self.write(zh_page, "\n".join(zh_parts))
+                rows_zh[difficulty].append(
+                    f"| [{zh_title}]({pdir.name}/index.md) | {chips} | "
+                    f"[:octicons-link-external-16:]({meta.get('url', '')}) |")
+            else:
+                self.warnings.append(
+                    f"{readme.relative_to(ROOT)}: missing Traditional Chinese translation")
             nav[difficulty].append(page.as_posix())
         count = sum(len(v) for v in rows.values())
         summary = " ".join(f'<span class="badge {d}">{len(rows[d])} {d}</span>' for d in DIFFICULTIES if rows[d])
@@ -453,6 +666,27 @@ class SiteBuilder:
             out += [f"## {d.capitalize()} ({len(rows[d])})", "", "| Problem | Topics | Statement |",
                     "|---|---|:-:|", *rows[d], ""]
         self.write(Path(platform) / "index.md", "\n".join(out))
+        zh_summary = " ".join(
+            f'<span class="badge {d}">{len(rows_zh[d])} {d}</span>'
+            for d in DIFFICULTIES if rows_zh[d])
+        zh_out = [
+            f"# {PLATFORMS[platform]}", "",
+            f"**共 {count} 題，全部已有解答並通過測試。** {zh_summary}", "",
+            "每一頁都包含簡明題意、完整符號表、平行化方法、成本分析、"
+            "常見錯誤與完整原始碼。本站不重製原始題目；請使用 "
+            ":octicons-link-external-16: 連結前往官方頁面。", "",
+            "也可以在[主題索引](../tags.md)中依技術與領域查找。", "",
+        ]
+        difficulty_names = {"easy": "初階", "medium": "中階", "hard": "進階"}
+        for difficulty in DIFFICULTIES:
+            if not rows_zh[difficulty]:
+                continue
+            zh_out += [
+                f"## {difficulty_names[difficulty]}（{len(rows_zh[difficulty])} 題）", "",
+                "| 題目 | 主題 | 官方頁面 |", "|---|---|:-:|",
+                *rows_zh[difficulty], "",
+            ]
+        self.write(translated_page(Path(platform) / "index.md"), "\n".join(zh_out))
         return nav
 
     def tools(self):
@@ -460,6 +694,13 @@ class SiteBuilder:
         for readme in sorted((ROOT / "tools").glob("*/README.md")):
             page = site_path(readme)
             self.write(page, self.rewrite_links(readme.read_text(), readme, page))
+            zh_readme = translated_source(readme)
+            if zh_readme.exists():
+                zh_page = translated_page(page)
+                self.write(zh_page, self.rewrite_links(zh_readme.read_text(), readme, zh_page))
+            else:
+                self.warnings.append(
+                    f"{readme.relative_to(ROOT)}: missing Traditional Chinese translation")
             pages.append(page.as_posix())
         return pages
 
@@ -467,6 +708,9 @@ class SiteBuilder:
         shutil.copytree(ROOT / "site_assets", OUT / "assets", dirs_exist_ok=True)
         self.write(Path("tags.md"), "# Topics\n\nEvery problem page is tagged by technique and domain.\n\n"
                                     "<!-- material/tags -->\n")
+        self.write(translated_page(Path("tags.md")),
+                   "# 主題索引\n\n每一題都依照使用的技術與應用領域加上標籤。\n\n"
+                   "<!-- material/tags -->\n")
         for src in sorted(self.static_files):
             dest = OUT / src.relative_to(ROOT)
             dest.parent.mkdir(parents=True, exist_ok=True)

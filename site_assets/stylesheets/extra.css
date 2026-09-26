@@ -1,23 +1,26 @@
 /* ---------- palette ---------------------------------------------------- */
 :root {
-  --md-primary-fg-color: #1f2a44;
-  --md-primary-fg-color--light: #2d3b5e;
-  --md-primary-fg-color--dark: #151d30;
-  --md-accent-fg-color: #76b900;          /* NVIDIA-ish green accent */
+  --md-primary-fg-color: #172554;
+  --md-primary-fg-color--light: #263b7a;
+  --md-primary-fg-color--dark: #0f172a;
+  --md-accent-fg-color: #16a34a;
   --gn-amd: #ed1c24;
   --gn-easy: #2e9d57;
   --gn-medium: #d98e04;
   --gn-hard: #d64545;
   --gn-card-border: rgba(31, 42, 68, .12);
-  --gn-hero-from: #1f2a44;
-  --gn-hero-to: #34507a;
+  --gn-hero-from: #0f172a;
+  --gn-hero-to: #1d4ed8;
+  --gn-text-scale: 1;
+  --gn-line-height: 1.72;
+  --gn-content-width: 82rem;
 }
 [data-md-color-scheme="slate"] {
   --md-default-bg-color: #12161f;
   --md-code-bg-color: #1a1f2b;
   --gn-card-border: rgba(255, 255, 255, .10);
-  --gn-hero-from: #151d30;
-  --gn-hero-to: #243a5c;
+  --gn-hero-from: #090e1a;
+  --gn-hero-to: #172554;
   /* The navy primary is unreadable on the dark background: use a light
      blue for links and the active navigation entry. */
   --md-typeset-a-color: #8ab4f8;
@@ -28,8 +31,19 @@
   font-weight: 600;
 }
 
-/* ---------- typography --------------------------------------------------- */
-.md-typeset { font-size: .78rem; line-height: 1.7; }
+/* ---------- typography and reader preferences ---------------------------- */
+html[data-reading-scale="sm"] { --gn-text-scale: .9; }
+html[data-reading-scale="md"] { --gn-text-scale: 1; }
+html[data-reading-scale="lg"] { --gn-text-scale: 1.12; }
+html[data-reading-scale="xl"] { --gn-text-scale: 1.25; }
+html[data-reading-spacing="compact"] { --gn-line-height: 1.5; }
+html[data-reading-spacing="normal"] { --gn-line-height: 1.72; }
+html[data-reading-spacing="relaxed"] { --gn-line-height: 1.95; }
+html[data-reading-width="narrow"] { --gn-content-width: 54rem; }
+html[data-reading-width="standard"] { --gn-content-width: 82rem; }
+html[data-reading-width="wide"] { --gn-content-width: none; }
+.md-typeset { font-size: calc(.82rem * var(--gn-text-scale)); line-height: var(--gn-line-height); }
+html[lang="zh-Hant"] .md-typeset { line-height: max(1.8, var(--gn-line-height)); letter-spacing: .012em; }
 .md-typeset h1 { font-weight: 700; color: var(--md-default-fg-color); letter-spacing: -.01em; }
 .md-typeset h2 {
   font-weight: 650; margin-top: 2.2em; padding-bottom: .3em;
@@ -117,7 +131,7 @@
 }
 
 /* ---------- misc ------------------------------------------------------------------ */
-.md-header { box-shadow: none; }
+.md-header { box-shadow: 0 1px 0 var(--gn-card-border); }
 .md-tabs { background: var(--md-primary-fg-color--dark); }
 .md-typeset .admonition, .md-typeset details { border-radius: 8px; font-size: .74rem; }
 @media screen and (max-width: 44.9375em) {
@@ -125,13 +139,15 @@
   .md-typeset .hero h1 { font-size: 1.7rem; }
 }
 
-/* ---------- full-width layout -------------------------------------------- */
-/* The right-hand table of contents is integrated into the left sidebar
-   (toc.integrate), and the content column uses the full window width so
-   that solution code is shown without horizontal scrolling where possible. */
+/* ---------- adjustable layout --------------------------------------------- */
 .md-grid { max-width: none; }
 .md-main__inner { margin-left: .6rem; margin-right: .6rem; }
-.md-content { max-width: none; }
+.md-content {
+  max-width: var(--gn-content-width);
+  margin-left: auto;
+  margin-right: auto;
+  transition: max-width .2s ease;
+}
 .md-typeset .highlight, .md-typeset pre { max-width: 100%; }
 
 /* ---------- figures ------------------------------------------------------------ */
@@ -168,6 +184,91 @@
   display: block; margin: 0 auto; max-width: 100%; height: auto; min-width: 600px;  /* phones scroll the figure instead of shrinking its text */
 }
 .md-typeset figure.diagram figcaption {
-  max-width: none; margin: .7em auto 0; font-size: .7rem; line-height: 1.5;
+  max-width: 52rem; margin: .8em auto 0; font-size: .72rem; line-height: 1.5;
   color: var(--md-default-fg-color--light); text-align: center;
+}
+.md-typeset figure.diagram .fig-label {
+  color: var(--md-default-fg-color);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ---------- floating reading controls ------------------------------------- */
+.reading-controls {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 20;
+  font-family: var(--md-text-font);
+}
+.reading-controls__toggle {
+  float: right;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--md-primary-fg-color);
+  box-shadow: 0 5px 18px rgba(0, 0, 0, .24);
+  cursor: pointer;
+  font-weight: 750;
+}
+.reading-controls__panel {
+  width: min(21rem, calc(100vw - 2rem));
+  margin-bottom: .7rem;
+  padding: 1rem;
+  border: 1px solid var(--gn-card-border);
+  border-radius: 14px;
+  color: var(--md-default-fg-color);
+  background: var(--md-default-bg-color);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .2);
+}
+.reading-controls__panel > strong {
+  display: block;
+  margin-bottom: .65rem;
+  font-size: .85rem;
+}
+.reading-controls__group {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  align-items: center;
+  gap: .45rem;
+  margin: .5rem 0;
+  font-size: .68rem;
+}
+.reading-controls__choices {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  overflow: hidden;
+  border: 1px solid var(--gn-card-border);
+  border-radius: 7px;
+}
+.reading-controls__choices button {
+  min-height: 1.8rem;
+  padding: .2rem .35rem;
+  border: 0;
+  border-right: 1px solid var(--gn-card-border);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+.reading-controls__choices button:last-child { border-right: 0; }
+.reading-controls__choices button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--md-primary-fg-color);
+}
+.reading-controls__language {
+  display: block;
+  margin-top: .8rem;
+  padding-top: .7rem;
+  border-top: 1px solid var(--gn-card-border);
+  font-size: .7rem;
+  font-weight: 650;
+  text-align: center;
+}
+@media screen and (max-width: 44.9375em) {
+  .reading-controls { right: .7rem; bottom: .7rem; }
+  .reading-controls__panel { max-height: calc(100vh - 5rem); overflow-y: auto; }
 }
