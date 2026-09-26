@@ -78,6 +78,11 @@ jobs:
         run: python3 scripts/build_index.py --check
       - name: Check that the figures are current
         run: python3 scripts/build_figures.py --check
+      - name: Check that every figure label is legible (no overlaps, no clipping)
+        run: |
+          pip install playwright
+          python3 -m playwright install --with-deps chromium
+          python3 scripts/check_figures.py
       - name: Build site (fails on broken links)
         run: |
           pip install -r requirements-docs.txt

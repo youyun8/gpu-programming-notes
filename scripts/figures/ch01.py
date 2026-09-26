@@ -7,6 +7,10 @@ def fig_hierarchy(name):
     # grid of blocks
     s.text(120, 22, "software: one kernel launch", size="small", bold=True)
     gx, gy, bw, bh = 20, 40, 60, 40
+    wx, wy = 250, 40
+    # zoom lines first, so that the blocks drawn on top hide them
+    s.line(gx + 2 * bw + 6, gy + bh + 6, wx - 8, wy - 8, stroke="s-c", sw=0.8, dash="3 3")
+    s.line(gx + 2 * bw + 6, gy + 2 * bh + 6, wx - 8, wy + 142, stroke="s-c", sw=0.8, dash="3 3")
     for r in range(3):
         for c in range(3):
             hl = (r, c) == (1, 1)
@@ -16,8 +20,6 @@ def fig_hierarchy(name):
     # block expanded into warps
     wx, wy = 250, 40
     s.rect(wx - 8, wy - 8, 200, 150, fill="f-c", stroke="s-c", sw=1.2, rx=6)
-    s.line(gx + 2 * bw + 6, gy + bh + 6, wx - 8, wy - 8, stroke="s-c", sw=0.8, dash="3 3")
-    s.line(gx + 2 * bw + 6, gy + 2 * bh + 6, wx - 8, wy + 142, stroke="s-c", sw=0.8, dash="3 3")
     for w in range(4):
         y = wy + w * 32
         s.text(wx + 4, y + 11, f"warp {w}", anchor="start", size="small")
@@ -77,7 +79,7 @@ def fig_indexing(name):
            size="small", role="hl")
     # warp formation
     wx = 440
-    s.text(wx + 120, 22, "warps of a 16 × 16 block vs a 32 × 8 block", size="small", bold=True)
+    s.text(wx + 125, 22, "warps: 16 × 16 vs 32 × 8 block", size="small", bold=True)
     c2 = 7
     colors = ["f-a", "f-b", "f-c", "f-d", "f-a2", "f-b2", "f-c2", "f-d2"]
     for r in range(16):
@@ -92,12 +94,13 @@ def fig_indexing(name):
             w = (r * 32 + c) // 32
             s.rect(x2 + c * c3, 50 + r * c3 * 2, c3, c3 * 2, fill=colors[w], stroke="s-line", sw=0.2)
     s.text(x2 + 56, 50 + 16 * c3 + 14, "32 × 8: a warp = 1 row", size="small")
-    s.text(wx + 120, 200, "τ = t_x + B_x t_y,   warp = ⌊τ / 32⌋,   lane = τ mod 32", size="small")
+    s.text(wx + 125, 200, "τ = t_x + B_x t_y", size="small")
+    s.text(wx + 125, 220, "warp = ⌊τ / 32⌋,  lane = τ mod 32", size="small")
     return s
 
 
 def fig_latency_hiding(name):
-    s = Svg(name, 720, 290, "Latency hiding: the scheduler issues from whichever warp is ready")
+    s = Svg(name, 720, 320, "Latency hiding: the scheduler issues from whichever warp is ready")
     x0, unit = 110, 14
     lat = 12  # memory latency in units
     end = 42  # right edge of the plot, in units
@@ -116,11 +119,11 @@ def fig_latency_hiding(name):
     s.text(x0, 90, "several warps: their compute fills the gaps", anchor="start", size="small", bold=True)
     for w in range(6):
         warp_row(102 + w * 22, f"warp {w}", 2 * w)
-    s.legend(x0 + 385, 24, [("f-c2", "c", "issuing")])
-    s.legend(x0 + 470, 24, [("f-b", "b", "waiting for memory")])
-    s.text(360, 252, "Little's law: bytes in flight = bandwidth × latency, so enough warps", size="small",
+    s.legend(x0, 256, [("f-c2", "c", "issuing instructions")])
+    s.legend(x0 + 200, 256, [("f-b", "b", "waiting for memory")])
+    s.text(360, 284, "Little's law: bytes in flight = bandwidth × latency, so enough warps", size="small",
            role="muted")
-    s.text(360, 270, "(or enough independent loads per warp) must be resident.", size="small", role="muted")
+    s.text(360, 302, "(or enough independent loads per warp) must be resident.", size="small", role="muted")
     return s
 
 

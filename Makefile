@@ -34,6 +34,7 @@ gemm-test:
 # Regenerate the tutorial figures (tutorials/figures/*.svg) from scripts/figures/
 figures:
 	python3 scripts/build_figures.py
+	python3 scripts/check_figures.py
 
 index:
 	python3 scripts/build_index.py

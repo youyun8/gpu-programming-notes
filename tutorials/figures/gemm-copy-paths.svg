@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" class="fig-svg" role="img">
-<title>Three ways from global to shared memory</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<title>Three ways from global to shared memory</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
 <defs><marker id="gemm-copy-paths-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="gemm-copy-paths-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="gemm-copy-paths-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="gemm-copy-paths-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="gemm-copy-paths-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="gemm-copy-paths-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="gemm-copy-paths-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
 <rect x="0" y="0" width="720" height="300" class="fig-paper"/>
 <text x="120" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Ampere and older</text>
 <text x="360" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">cp.async (sm_80+)</text>
 <text x="600" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">TMA (sm_90+)</text>
-<rect x="60" y="40" width="120" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
+<rect x="35" y="40" width="170" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
 <text x="120" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">global (L2 / DRAM)</text>
-<rect x="60" y="110" width="120" height="34" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<rect x="35" y="110" width="170" height="34" rx="4" class="f-d s-d" stroke-width="1.2"/>
 <text x="120" y="127" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">registers</text>
-<rect x="60" y="180" width="120" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<rect x="35" y="180" width="170" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
 <text x="120" y="197" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">shared memory</text>
 <line x1="120" y1="74" x2="120" y2="110" class="s-ink" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-ink)"/>
 <line x1="120" y1="144" x2="120" y2="180" class="s-ink" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-ink)"/>
@@ -17,26 +17,26 @@
 <text x="128" y="162" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">STS</text>
 <text x="120" y="236" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2 instructions per chunk,</text>
 <text x="120" y="254" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">registers held while in flight</text>
-<rect x="300" y="40" width="120" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
+<rect x="275" y="40" width="170" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
 <text x="360" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">global (L2 / DRAM)</text>
-<rect x="300" y="110" width="120" height="34" rx="4" class="f-line s-line" stroke-width="1.2"/>
+<rect x="275" y="110" width="170" height="34" rx="4" class="f-line s-line" stroke-width="1.2"/>
 <text x="360" y="127" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">L1 (.ca) or bypass (.cg)</text>
-<rect x="300" y="180" width="120" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<rect x="275" y="180" width="170" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
 <text x="360" y="197" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">shared memory</text>
 <line x1="360" y1="74" x2="360" y2="110" class="s-a" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-a)"/>
 <line x1="360" y1="144" x2="360" y2="180" class="s-a" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-a)"/>
 <text x="368" y="92" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">cp.async</text>
 <text x="360" y="236" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">per-thread 4/8/16-byte copies,</text>
 <text x="360" y="254" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">no registers; wait per group</text>
-<rect x="540" y="40" width="120" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
+<rect x="515" y="40" width="170" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
 <text x="600" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">global (L2 / DRAM)</text>
-<rect x="540" y="110" width="120" height="34" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<rect x="515" y="110" width="170" height="34" rx="4" class="f-b s-b" stroke-width="1.2"/>
 <text x="600" y="127" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">TMA unit (per SM)</text>
-<rect x="540" y="180" width="120" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<rect x="515" y="180" width="170" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
 <text x="600" y="197" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">shared memory</text>
 <line x1="600" y1="74" x2="600" y2="110" class="s-b" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-b)"/>
 <line x1="600" y1="144" x2="600" y2="180" class="s-b" stroke-width="1.4" marker-end="url(#gemm-copy-paths-ah-b)"/>
 <text x="608" y="92" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">whole tile</text>
-<text x="600" y="236" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">one thread issues a 2-D tile copy;</text>
-<text x="600" y="254" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">completion counted on an mbarrier</text>
+<text x="600" y="236" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">one thread issues a whole</text>
+<text x="600" y="254" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2-D tile; an mbarrier counts it</text>
 </svg>

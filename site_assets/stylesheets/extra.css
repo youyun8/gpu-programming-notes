@@ -165,7 +165,7 @@
   border: 1px solid var(--gn-card-border); border-radius: 10px; background: var(--fig-paper);
 }
 .md-typeset figure.diagram svg {
-  display: block; margin: 0 auto; max-width: 100%; height: auto; min-width: 460px;
+  display: block; margin: 0 auto; max-width: 100%; height: auto; min-width: 600px;  /* phones scroll the figure instead of shrinking its text */
 }
 .md-typeset figure.diagram figcaption {
   max-width: none; margin: .7em auto 0; font-size: .7rem; line-height: 1.5;

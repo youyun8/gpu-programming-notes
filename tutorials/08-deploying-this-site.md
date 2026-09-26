@@ -199,7 +199,11 @@ Figures are not drawn by hand: each one is a Python function in
 `scripts/figures/<chapter>.py` that uses the small SVG helper in
 `scripts/figures/svg.py`. Run `python3 scripts/build_figures.py` (or
 `make figures`) after editing one and commit the regenerated SVGs; CI fails
-if they are stale. Pages in a sub-directory of `tutorials/` (such as
+if they are stale. `scripts/check_figures.py` renders every figure in
+headless Chromium and fails when a label overlaps another label, sticks out
+of the figure, is crossed by a line or a box border, or is smaller than
+11 px; `make figures` runs it too. A label that has to sit on a grid or a
+line can be given an opaque background with `plate=True`. Pages in a sub-directory of `tutorials/` (such as
 `gemm/`) appear in the navigation after the chapter named in
 `TUTORIAL_SECTIONS` in `scripts/build_site.py`.
 

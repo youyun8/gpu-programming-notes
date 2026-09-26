@@ -3,7 +3,7 @@ from .svg import Svg
 
 
 def fig_memory_levels(name):
-    s = Svg(name, 720, 290, "Memory hierarchy of an A100: each level is larger and slower")
+    s = Svg(name, 720, 292, "Memory hierarchy of an A100: each level is larger and slower")
     levels = [("registers", "per thread", "~1 cycle", "256 KB / SM", "d"),
               ("shared memory / L1", "per block / per SM", "~20–30 cycles", "192 KB / SM", "c"),
               ("L2 cache", "whole GPU", "~200 cycles", "40 MB", "a"),
@@ -20,8 +20,8 @@ def fig_memory_levels(name):
     s.text(470, 12, "latency", anchor="start", size="small", bold=True)
     s.text(600, 12, "size", anchor="start", size="small", bold=True)
     s.arrow(700, 30, 700, 230, role="muted")
-    s.text(360, 262, "Bandwidth drops with every level: DRAM delivers ~1.5 TB/s, an order of magnitude less than the "
-           "SMs can consume.", size="small", role="muted")
+    s.text(360, 258, "Bandwidth drops with every level: DRAM delivers ~1.5 TB/s,", size="small", role="muted")
+    s.text(360, 276, "an order of magnitude less than the SMs can consume.", size="small", role="muted")
     return s
 
 
@@ -65,7 +65,7 @@ def fig_coalescing(name):
 
 
 def fig_bank_conflicts(name):
-    s = Svg(name, 720, 300, "Reading a column of a 32 × 32 tile: without and with padding")
+    s = Svg(name, 720, 318, "Reading a column of a 32 × 32 tile: without and with padding")
     cell = 7
     for idx, (pad, title) in enumerate([(0, "float tile[32][32]"), (1, "float tile[32][33]")]):
         x0 = 40 + idx * 350
@@ -82,8 +82,8 @@ def fig_bank_conflicts(name):
         s.rect(x0, y0, 32 * cell, 32 * cell, fill="fig-none", stroke="s-ink", sw=1)
         s.text(x0 + 16 * cell, y0 - 10, "bank 0 → 31", size="small", role="muted")
         s.text(x0 - 6, y0 + 16 * cell, "row", anchor="end", size="small", role="muted")
-        verdict = "column 3: all 32 rows in bank 3 → 32-way conflict" if pad == 0 else \
-            "column 3: row r in bank (r + 3) mod 32 → conflict-free"
+        verdict = "all 32 rows in bank 3: 32-way conflict" if pad == 0 else \
+            "row r in bank (r + 3) mod 32: no conflict"
         s.text(x0 + 16 * cell, y0 + 32 * cell + 18, verdict, size="small", role="hl" if pad == 0 else "c")
     return s
 
@@ -102,7 +102,7 @@ def fig_transpose(name):
             s.rect(sx + cc * 16, sy + r * 16, 16, 16, fill="f-c" if cc < 8 else "fig-panel", stroke="s-line", sw=0.4)
     s.rect(sx, sy, 8 * 16, 8 * 16, fill="fig-none", stroke="s-c", sw=1.4)
     s.text(sx + 72, sy - 14, "tile[32][32 + 1] (shared)", size="small", bold=True)
-    s.text(sx + 8 * 16 + 18, sy + 64, "pad", size="small", role="muted", rotate=-90)
+    s.text(sx + 9 * 16 + 12, sy + 64, "pad", size="small", role="muted", rotate=-90)
     s.arrow(ix + 8 * c + 10, iy + 42, sx - 6, sy + 30, role="a")
     s.text(ix + 8 * c + 14, iy + 72, "coalesced", size="small", role="a", anchor="start")
     s.text(ix + 8 * c + 14, iy + 88, "row reads", size="small", role="a", anchor="start")

@@ -52,7 +52,7 @@ def fig_block_tiling(name):
 
 
 def fig_register_tile(name):
-    s = Svg(name, 700, 330, "Register tiling: one thread's outer product per k step")
+    s = Svg(name, 700, 356, "Register tiling: one thread's outer product per k step")
     # B row in shared memory
     cw = 5.5
     bx0, by0 = 250, 34
@@ -90,12 +90,12 @@ def fig_register_tile(name):
     s.text(fx - 20, fy + 2 * cell, "×", size="big", bold=True)
     s.text(fx + 2 * cell, fy + 4 * cell + 18, "acc[4][4]: 16 registers", size="small", role="c")
     # notes
-    x = 490
+    x = 480
     s.text(x, 130, "Per k step, thread (tx, ty):", anchor="start", size="small", bold=True)
     s.text(x, 152, "• 4 loads of A, 4 loads of B", anchor="start", size="small")
     s.text(x, 172, "• 16 FMAs: acc[i][j] += a_i b_j", anchor="start", size="small")
     s.text(x, 192, "• FMAs / load = 16 / 8 = 2", anchor="start", size="small")
-    s.text(x, 222, "Stride-16 ownership (tx + 16j):", anchor="start", size="small", bold=True)
+    s.text(x, 222, "Stride-16 ownership:", anchor="start", size="small", bold=True)
     s.text(x, 242, "16 lanes read 16 consecutive", anchor="start", size="small")
     s.text(x, 260, "words → no bank conflicts,", anchor="start", size="small")
     s.text(x, 278, "coalesced stores of C.", anchor="start", size="small")
@@ -120,6 +120,6 @@ def fig_ladder(name):
         xb = x0 + (x1 - x0) * hi / 100
         s.rect(x0, y + 4, xb - x0, 16, fill=f"f-{roles[i]}", stroke="", sw=0)
         s.rect(xa, y, xb - xa, 24, fill=f"f-{roles[i]}2", stroke=f"s-{roles[i]}", sw=1.2, rx=3)
-        s.text(xb + 6, y + 12, f"{lo}–{hi} %", anchor="start", size="small", role=roles[i])
+        s.text(xb + 6, y + 12, f"{lo}–{hi} %", anchor="start", size="small", role=roles[i], plate=True)
     s.text((x0 + x1) / 2, 246, "fraction of cuBLAS FP32 throughput (typical range)", size="small", role="muted")
     return s

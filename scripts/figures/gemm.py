@@ -57,7 +57,7 @@ def fig_hierarchy(name):
     s.text(x4 + 56, y0 - 16, "one lane (registers)", size="small", role="muted")
     s.text(x4 + 56, y0 + 160, "8 × 8 accumulators:", size="small")
     s.text(x4 + 56, y0 + 176, "a 4 × 4 patch per sub-tile", size="small")
-    s.text(x4 + 56, y0 + 192, "(tensor cores: MMA fragments)", size="small", role="muted")
+    s.text(x4 + 56, y0 + 192, "(tensor cores: fragments)", size="small", role="muted")
     s.line(x3 + 8.75, y0 + 2 * 8.75, x4, y0 + 14, stroke="s-d", sw=0.8, dash="3 3")
     s.line(x3 + 8.75, y0 + 3 * 8.75, x4, y0 + 14 + 8 * c4, stroke="s-d", sw=0.8, dash="3 3")
     s.text(370, 270, "Each level re-uses what the level above staged: global → shared → registers.",
@@ -89,13 +89,14 @@ def fig_thread_map(name):
         for hc in range(2):
             s.rect(x0 + 64 * hc * cell, y0 + 64 * hr * cell, 64 * cell, 8 * cell, fill="fig-none", stroke="s-a",
                    sw=1.4, extra=' stroke-dasharray="4 2"')
-    s.brace_h(x0, x0 + 64 * cell, y0 - 12, "64 = 16 threads × 4", up=True)
+    s.brace_h(x0, x0 + 64 * cell, y0 - 12, "64", up=True)
     s.brace_h(x0 + 64 * cell, x0 + size, y0 - 12, "64", up=True)
     s.text(x0 + size / 2, y0 + size + 18, "block tile 128 × 128 (C)", size="small")
     x = 330
     s.legend(x, 70, [("f-hl2", "hl", "thread (tx = 2, ty = 1): four 4 × 4 patches"),
                      ("fig-none", "a", "warp 0 (tx = 0..15, ty = 0..1)")])
-    notes = ["Thread (tx, ty) owns rows 4ty..4ty+3 and 64+4ty..",
+    notes = ["16 threads × 4 columns = 64 per half of the tile.",
+             "Thread (tx, ty) owns rows 4ty..4ty+3 and 64+4ty..",
              "and columns 4tx..4tx+3 and 64+4tx..",
              "",
              "Fragment loads per k step: a_s[kk][4ty], a_s[kk][64+4ty],",
@@ -190,7 +191,7 @@ def fig_double_buffer(name):
 
 
 def fig_buffer_rotation(name):
-    s = Svg(name, 720, 210, "Who reads and writes which buffer at each step (double buffering)")
+    s = Svg(name, 720, 222, "Who reads and writes which buffer at each step (double buffering)")
     x0, cw = 170, 120
     s.text(x0 - 10, 40, "step", anchor="end", size="small", bold=True)
     for sidx in range(4):
@@ -206,8 +207,8 @@ def fig_buffer_rotation(name):
     for sidx in range(4):
         x = x0 + (sidx + 1) * cw
         s.line(x, 52, x, 172, stroke="s-hl", sw=2)
-    s.text(x0 + 2 * cw, 190, "red: the one __syncthreads() per step; a buffer is rewritten only after the barrier "
-           "that ends its last read", size="small")
+    s.text(x0 + 2 * cw, 190, "Red: the one __syncthreads() per step. A buffer is rewritten only after", size="small")
+    s.text(x0 + 2 * cw, 208, "the barrier that ends its last read.", size="small")
     return s
 
 
@@ -221,9 +222,9 @@ def fig_copy_paths(name):
         s.text(x + 100, 22, title, bold=True, size="small")
     # classic
     x = 20
-    s.box(x + 40, 40, 120, 34, "global (L2 / DRAM)", role="muted", size="small")
-    s.box(x + 40, 110, 120, 34, "registers", role="d", size="small")
-    s.box(x + 40, 180, 120, 34, "shared memory", role="c", size="small")
+    s.box(x + 15, 40, 170, 34, "global (L2 / DRAM)", role="muted", size="small")
+    s.box(x + 15, 110, 170, 34, "registers", role="d", size="small")
+    s.box(x + 15, 180, 170, 34, "shared memory", role="c", size="small")
     s.arrow(x + 100, 74, x + 100, 110, role="ink")
     s.arrow(x + 100, 144, x + 100, 180, role="ink")
     s.text(x + 108, 92, "LDG (via L1)", anchor="start", size="small")
@@ -232,9 +233,9 @@ def fig_copy_paths(name):
     s.text(x + 100, 254, "registers held while in flight", size="small")
     # cp.async
     x = 260
-    s.box(x + 40, 40, 120, 34, "global (L2 / DRAM)", role="muted", size="small")
-    s.box(x + 40, 110, 120, 34, "L1 (.ca) or bypass (.cg)", role="line", size="small")
-    s.box(x + 40, 180, 120, 34, "shared memory", role="c", size="small")
+    s.box(x + 15, 40, 170, 34, "global (L2 / DRAM)", role="muted", size="small")
+    s.box(x + 15, 110, 170, 34, "L1 (.ca) or bypass (.cg)", role="line", size="small")
+    s.box(x + 15, 180, 170, 34, "shared memory", role="c", size="small")
     s.arrow(x + 100, 74, x + 100, 110, role="a")
     s.arrow(x + 100, 144, x + 100, 180, role="a")
     s.text(x + 108, 92, "cp.async", anchor="start", size="small", role="a")
@@ -242,14 +243,14 @@ def fig_copy_paths(name):
     s.text(x + 100, 254, "no registers; wait per group", size="small")
     # TMA
     x = 500
-    s.box(x + 40, 40, 120, 34, "global (L2 / DRAM)", role="muted", size="small")
-    s.box(x + 40, 110, 120, 34, "TMA unit (per SM)", role="b", size="small")
-    s.box(x + 40, 180, 120, 34, "shared memory", role="c", size="small")
+    s.box(x + 15, 40, 170, 34, "global (L2 / DRAM)", role="muted", size="small")
+    s.box(x + 15, 110, 170, 34, "TMA unit (per SM)", role="b", size="small")
+    s.box(x + 15, 180, 170, 34, "shared memory", role="c", size="small")
     s.arrow(x + 100, 74, x + 100, 110, role="b")
     s.arrow(x + 100, 144, x + 100, 180, role="b")
     s.text(x + 108, 92, "whole tile", anchor="start", size="small", role="b")
-    s.text(x + 100, 236, "one thread issues a 2-D tile copy;", size="small")
-    s.text(x + 100, 254, "completion counted on an mbarrier", size="small")
+    s.text(x + 100, 236, "one thread issues a whole", size="small")
+    s.text(x + 100, 254, "2-D tile; an mbarrier counts it", size="small")
     return s
 
 
@@ -270,7 +271,8 @@ def fig_pipeline(name):
             else:
                 sl = st + ((stage - st) % stages)
                 s.box(x0 + st * cw + 4, y, cw - 8, 34, f"copy {sl}", role="a", size="small", dash="4 2")
-    s.text(x0 - 10, 200, "wait_prior(1)", anchor="end", size="small", mono=True, role="hl")
+    s.text(x0, 200, "red lines: __pipeline_wait_prior(1) + __syncthreads()", anchor="start", size="small",
+           role="hl")
     for st in range(6):
         s.line(x0 + st * cw + 2, 44, x0 + st * cw + 2, 184, stroke="s-hl", sw=1.6)
     s.text(20, 230, "Before step s: wait until at most kStages − 2 = 1 group is pending (slice s has landed), barrier,",
@@ -284,24 +286,23 @@ def fig_pipeline(name):
 # 04: warp tiling
 # ----------------------------------------------------------------------------------------
 def fig_warp_tile(name):
-    s = Svg(name, 720, 330, "Warp tiling in 04-warp-tiling.cu")
-    x0, y0, sc = 30, 40, 1.9   # block tile 128 x 128 at 1.9 px
+    s = Svg(name, 720, 440, "Warp tiling in 04-warp-tiling.cu")
+    x0, y0, sc = 56, 40, 1.7   # block tile 128 x 128 at 1.7 px
     bs = 128 * sc
+    zx, zy, zs = 312, 30, 5.6  # zoom of warp 6: 32 wide -> 179, 64 tall -> 358
+    # zoom lines first: the warp tiles drawn on top hide them
+    s.line(x0 + 3 * 32 * sc, y0 + 64 * sc, zx, zy, stroke="s-hl", sw=0.8, dash="3 3")
+    s.line(x0 + 3 * 32 * sc, y0 + bs, zx, zy + 64 * zs, stroke="s-hl", sw=0.8, dash="3 3")
     colors = ["f-a", "f-b", "f-c", "f-d", "f-b", "f-c", "f-d", "f-a"]
     for w in range(8):
         wm, wn = w // 4, w % 4
         s.rect(x0 + wn * 32 * sc, y0 + wm * 64 * sc, 32 * sc, 64 * sc, fill=colors[w], stroke="s-line", sw=0.8)
-        s.text(x0 + wn * 32 * sc + 16 * sc, y0 + wm * 64 * sc + 32 * sc, f"warp {w}", size="small")
+        s.text(x0 + wn * 32 * sc + 16 * sc, y0 + wm * 64 * sc + 32 * sc, f"w{w}", size="small", mono=True)
     s.rect(x0, y0, bs, bs, fill="fig-none", stroke="s-ink", sw=1.4)
-    hw = 6
     s.rect(x0 + 2 * 32 * sc, y0 + 64 * sc, 32 * sc, 64 * sc, fill="fig-none", stroke="s-hl", sw=2)
     s.brace_h(x0, x0 + 32 * sc, y0 - 10, "32", up=True)
-    s.brace_v(x0 - 8, y0, y0 + 64 * sc, "64")
-    s.text(x0 + bs / 2, y0 + bs + 18, "block tile 128 × 128: 2 × 4 warps", size="small")
+    s.brace_v(x0 - 10, y0, y0 + 64 * sc, "64")
     # zoom of warp 6
-    zx, zy, zs = 380, 40, 3.8  # 32 wide -> 121.6, 64 tall -> 243
-    s.line(x0 + 3 * 32 * sc, y0 + 64 * sc, zx, zy, stroke="s-hl", sw=0.8, dash="3 3")
-    s.line(x0 + 3 * 32 * sc, y0 + bs, zx, zy + 64 * zs, stroke="s-hl", sw=0.8, dash="3 3")
     for im in range(2):
         for jn in range(2):
             sx, sy = zx + jn * 16 * zs, zy + im * 32 * zs
@@ -310,20 +311,21 @@ def fig_warp_tile(name):
             for lm in range(8):
                 for ln in range(4):
                     lane = 4 * lm + ln
-                    hl = lane == 9
-                    s.rect(sx + ln * 4 * zs, sy + lm * 4 * zs, 4 * zs, 4 * zs, fill="f-hl2" if hl else "fig-none",
-                           stroke="s-line", sw=0.4)
+                    s.rect(sx + ln * 4 * zs, sy + lm * 4 * zs, 4 * zs, 4 * zs,
+                           fill="f-hl2" if lane == 9 else "fig-none", stroke="s-line", sw=0.4)
                     if im == 0 and jn == 0:
                         s.text(sx + ln * 4 * zs + 2 * zs, sy + lm * 4 * zs + 2 * zs, str(lane), size="tiny",
-                               mono=True, role="muted")
+                               mono=True)
     s.rect(zx, zy, 32 * zs, 64 * zs, fill="fig-none", stroke="s-hl", sw=2)
-    s.text(zx + 16 * zs, zy + 64 * zs + 18, "warp tile 64 × 32", size="small")
-    notes = ["2 × 2 sub-tiles of 32 × 16;", "lanes form an 8 × 4 grid,", "4 × 4 outputs per lane", "per sub-tile.",
-             "", "Lane 9 (red) owns 4 patches:", "rows 4·(9/4) + {0, 32}, cols",
-             "4·(9%4) + {0, 16} (+0..3).", "", "Per k: 2 float4 of A and", "2 float4 of B per lane."]
+    s.text(zx + 16 * zs, zy + 64 * zs + 18, "warp tile of w6: 64 × 32", size="small")
+    s.text(x0 + bs / 2, y0 + bs + 18, "block tile 128 × 128", size="small", plate=True)
+    s.text(x0 + bs / 2, y0 + bs + 38, "8 warps (w0–w7) in a 2 × 4 grid", size="small", plate=True)
+    notes = ["2 × 2 sub-tiles of 32 × 16.", "In each, the 32 lanes form an", "8 × 4 grid of 4 × 4 patches",
+             "(numbers: lane ids).", "", "Lane 9 (red) owns 4 patches:", "rows 4·⌊9/4⌋ + {0, 32} + i,",
+             "cols 4·(9 mod 4) + {0, 16} + j,", "i, j = 0 … 3.", "", "Per k step: 2 float4 of A and", "2 float4 of B per lane."]
     for i, t in enumerate(notes):
         if t:
-            s.text(530, 60 + i * 20, t, anchor="start", size="small")
+            s.text(508, 50 + i * 21, t, anchor="start", size="small")
     return s
 
 
@@ -382,7 +384,7 @@ def fig_tile_order(name):
 # 06: split-K and Stream-K
 # ----------------------------------------------------------------------------------------
 def fig_split_k(name):
-    s = Svg(name, 720, 270, "Split-K: one output tile computed by S blocks over disjoint K ranges")
+    s = Svg(name, 720, 310, "Split-K: one output tile computed by S blocks over disjoint K ranges")
     ax, ay = 30, 110
     kw, th = 320, 50
     S = 4
@@ -393,26 +395,24 @@ def fig_split_k(name):
         s.text(ax + z * kw / S + kw / S / 2, ay + th / 2, f"K_{z}", size="small")
     s.text(ax + kw / 2, ay - 14, "A row panel (128 × K), split into S = 4 ranges", size="small")
     s.brace_h(ax, ax + kw, ay + th + 12, "K", size="small")
-    # partial tiles
-    px, py = 385, 40
+    # partial tiles: a stack of cards, each label in the strip that stays visible
+    px, py, step, card = 395, 40, 26, 100
     for z in range(S):
-        s.box(px + z * 18, py + z * 18, 70, 70, "", role=roles[z])
-        s.text(px + z * 18 + 35, py + z * 18 + 35, f"z = {z}", size="small")
-    s.text(px + 62, py + 150, "S partial 128 × 128 tiles", size="small")
-    s.arrow(ax + kw + 10, ay + th / 2, px - 10, py + 60, role="muted")
-    s.text(px + 190, py + 50, "Σ", size="big", bold=True)
-    s.box(px + 215, py + 20, 70, 70, "C tile", role="c", fill="f-c2", size="small")
-    s.arrow(px + 170, py + 60, px + 212, py + 55, role="ink")
-    s.text(px + 250, py + 110, "atomicAdd, or", size="small")
-    s.text(px + 250, py + 126, "workspace + reduce", size="small")
-    s.text(360, 225, "grid = (tiles_n, tiles_m, S): S times more blocks for the same tile count;",
+        s.box(px + z * step, py + z * step, card, card, "", role=roles[z])
+        s.text(px + z * step + 8, py + z * step + 13, f"z = {z}", anchor="start", size="small")
+    s.text(px + 90, py + 3 * step + card + 18, "S partial 128 × 128 tiles", size="small")
+    s.arrow(ax + kw + 10, ay + th / 2, px - 10, py + 70, role="muted")
+    s.arrow(px + 3 * step + card + 6, py + 90, px + 3 * step + card + 40, py + 90, role="ink")
+    s.box(px + 3 * step + card + 44, py + 60, 80, 60, "C tile", role="c", fill="f-c2", size="small")
+    s.text(360, 268, "grid = (tiles_n, tiles_m, S): S times more blocks for the same tiles; each does K / S",
            size="small")
-    s.text(360, 245, "each does K / S of the work, plus the cost of combining S partial tiles.", size="small")
+    s.text(360, 288, "of the work, and the S partial tiles are summed (atomicAdd, or a workspace + a reduction).",
+           size="small")
     return s
 
 
 def fig_wave_quantization(name):
-    s = Svg(name, 720, 305, "9 equal tiles on 4 SMs: data-parallel vs Stream-K")
+    s = Svg(name, 720, 322, "9 equal tiles on 4 SMs: data-parallel vs Stream-K")
     x0, unit, rh = 120, 40, 26
     roles = ["a", "b", "c", "d", "hl", "a", "b", "c", "d"]
     # data parallel: tile t on SM t%4 in wave t//4, each tile takes 4 units
@@ -443,7 +443,7 @@ def fig_wave_quantization(name):
             it = seg_end
     s.line(x0 + 9 * unit, y1 - 4, x0 + 9 * unit, y1 + 4 * rh, stroke="s-c", sw=1.4, dash="4 3")
     s.text(x0 + 9 * unit + 4, y1 + 2 * rh, "9 units (+ fix-up)", anchor="start", size="small", role="c")
-    s.text(x0, y1 + 4 * rh + 14, "dashed: a partial tile (contributor) that goes through the workspace",
+    s.text(x0, y1 + 4 * rh + 14, "dashed: a partial tile, passed on through the workspace",
            anchor="start", size="small", role="muted")
     return s
 
@@ -464,8 +464,8 @@ def fig_stream_k_ranges(name):
         a, b = bounds[g], bounds[g + 1]
         s.box(x0 + a * unit + 1, y2, (b - a) * unit - 2, 26, f"block {g}: iterations {a}–{b - 1}", role="ink",
               size="small")
-        s.line(x0 + a * unit, y - 4, x0 + a * unit, y2 + 30, stroke="s-ink", sw=1, dash="2 2")
-    s.line(x0 + iters * unit, y - 4, x0 + iters * unit, y2 + 30, stroke="s-ink", sw=1, dash="2 2")
+        s.line(x0 + a * unit, y + 30, x0 + a * unit, y2 + 30, stroke="s-ink", sw=1, dash="2 2")
+    s.line(x0 + iters * unit, y + 30, x0 + iters * unit, y2 + 30, stroke="s-ink", sw=1, dash="2 2")
     notes = [
         "block 0: tile 0 whole → store; tile 1 up to iteration 12 → contributor (workspace[0], flag[0]).",
         "block 1: finishes tile 1 → owner: waits for flag[0], adds workspace[0], stores; tile 2 whole → store;",
@@ -480,66 +480,64 @@ def fig_stream_k_ranges(name):
 # 07: tensor cores
 # ----------------------------------------------------------------------------------------
 def fig_mma_layout(name):
-    s = Svg(name, 720, 385, "Register layout of mma.sync.m16n8k16 (FP16 A/B, FP32 C/D)")
-    cell = 17
-    ax, ay = 40, 60
+    s = Svg(name, 740, 430, "Register layout of mma.sync.m16n8k16 (FP16 A/B, FP32 C/D)")
+    cell = 19
     lane_hl = 5  # g = 1, t = 1
     g, t = lane_hl // 4, lane_hl % 4
-    # A 16 x 16
-    def a_reg(r, c):
-        return (r >= 8) + 2 * (c >= 8)
+    y0 = 66
+    # A 16 x 16: quadrants = registers a0..a3
+    ax = 24
     shades = ["f-a", "f-a2", "f-b", "f-b2"]
     for r in range(16):
         for c in range(16):
-            reg = a_reg(r, c)
-            mine = (r % 8 == g) and (c % 8) // 2 == t
-            s.rect(ax + c * cell, ay + r * cell, cell, cell, fill="f-hl2" if mine else shades[reg], stroke="s-line",
-                   sw=0.4)
-    for r in range(16):
-        for c in range(16):
-            if (r % 8 == g) and (c % 8) // 2 == t:
-                s.text(ax + c * cell + cell / 2, ay + r * cell + cell / 2, f"a{a_reg(r, c)}", size="small",
-                       mono=True)
-    s.rect(ax, ay, 16 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
-    s.line(ax + 8 * cell, ay, ax + 8 * cell, ay + 16 * cell, stroke="s-ink", sw=1)
-    s.line(ax, ay + 8 * cell, ax + 16 * cell, ay + 8 * cell, stroke="s-ink", sw=1)
-    s.text(ax + 8 * cell, ay - 30, "A: 16 × 16 (row-major fragment)", size="small", bold=True)
-    s.text(ax + 8 * cell, ay - 14, "k →", size="small", role="muted")
+            reg = (r >= 8) + 2 * (c >= 8)
+            s.rect(ax + c * cell, y0 + r * cell, cell, cell, fill=shades[reg], stroke="s-line", sw=0.4)
     for q, (qx, qy) in enumerate([(0, 0), (0, 1), (1, 0), (1, 1)]):
-        s.text(ax + qx * 8 * cell + 4 * cell, ay + qy * 8 * cell + 8 * cell - 8, f"reg a{q}", size="small",
-               role="muted")
+        # lane 5's pair of halves in this register: row g (+8), columns 2t, 2t+1 (+8)
+        rx, ry = ax + (8 * qx + 2 * t) * cell, y0 + (8 * qy + g) * cell
+        s.rect(rx, ry, 2 * cell, cell, fill="f-hl2", stroke="s-hl", sw=1.2)
+        s.text(rx + cell, ry + cell / 2, f"a{q}", size="small", mono=True)
+        s.text(ax + qx * 8 * cell + 4 * cell, y0 + qy * 8 * cell + 5.5 * cell, f"register a{q}", size="small",
+               plate=True)
+    s.rect(ax, y0, 16 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
+    s.line(ax + 8 * cell, y0, ax + 8 * cell, y0 + 16 * cell, stroke="s-ink", sw=1)
+    s.line(ax, y0 + 8 * cell, ax + 16 * cell, y0 + 8 * cell, stroke="s-ink", sw=1)
+    s.text(ax + 8 * cell, y0 - 36, "A: 16 × 16 (m × k)", size="small", bold=True)
+    s.text(ax + 8 * cell, y0 - 16, "k →", size="small", role="muted")
     # B 16 x 8
-    bx, by = 380, 60
+    bx = 380
     for r in range(16):
         for c in range(8):
-            reg = r >= 8
-            mine = c == g and (r % 8) // 2 == t
-            s.rect(bx + c * cell, by + r * cell, cell, cell, fill="f-hl2" if mine else ("f-b" if reg else "f-b2"),
-                   stroke="s-line", sw=0.4)
-            if mine:
-                s.text(bx + c * cell + cell / 2, by + r * cell + cell / 2, f"b{int(reg)}", size="small", mono=True)
-    s.rect(bx, by, 8 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
-    s.text(bx + 4 * cell, by - 30, "B: 16 × 8 (k × n)", size="small", bold=True)
+            s.rect(bx + c * cell, y0 + r * cell, cell, cell, fill="f-b" if r >= 8 else "f-b2", stroke="s-line", sw=0.4)
+    for q in range(2):
+        rx, ry = bx + g * cell, y0 + (8 * q + 2 * t) * cell
+        s.rect(rx, ry, cell, 2 * cell, fill="f-hl2", stroke="s-hl", sw=1.2)
+        s.text(rx + cell / 2, ry + cell, f"b{q}", size="tiny", mono=True)
+    s.rect(bx, y0, 8 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
+    s.text(bx + 4 * cell, y0 - 36, "B: 16 × 8 (k × n)", size="small", bold=True)
+    s.text(bx + 4 * cell, y0 - 16, "n →", size="small", role="muted")
     # C 16 x 8
-    cx, cy = 560, 60
+    cx = 556
     for r in range(16):
         for c in range(8):
-            mine = r % 8 == g and c // 2 == t
-            s.rect(cx + c * cell, cy + r * cell, cell, cell, fill="f-hl2" if mine else "f-c", stroke="s-line", sw=0.4)
-            if mine:
-                s.text(cx + c * cell + cell / 2, cy + r * cell + cell / 2, f"d{2 * (r >= 8) + c % 2}", size="small",
-                       mono=True)
-    s.rect(cx, cy, 8 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
-    s.text(cx + 4 * cell, cy - 30, "C / D: 16 × 8, FP32", size="small", bold=True)
-    s.text(360, 345, f"Red: what lane {lane_hl} holds (g = lane / 4 = {g}, t = lane % 4 = {t}).", size="small")
-    s.text(360, 365, "Each 32-bit a/b register packs two FP16 values, the lower column (or row of B) first.",
+            s.rect(cx + c * cell, y0 + r * cell, cell, cell, fill="f-c", stroke="s-line", sw=0.4)
+    for h in range(2):
+        for j in range(2):
+            rx, ry = cx + (2 * t + j) * cell, y0 + (g + 8 * h) * cell
+            s.rect(rx, ry, cell, cell, fill="f-hl2", stroke="s-hl", sw=1.2)
+            s.text(rx + cell / 2, ry + cell / 2, f"d{2 * h + j}", size="tiny", mono=True)
+    s.rect(cx, y0, 8 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
+    s.text(cx + 4 * cell, y0 - 36, "C / D: 16 × 8, FP32", size="small", bold=True)
+    s.text(cx + 4 * cell, y0 - 16, "n →", size="small", role="muted")
+    s.text(370, 390, f"Red: what lane {lane_hl} holds (g = lane / 4 = {g}, t = lane % 4 = {t}).", size="small")
+    s.text(370, 410, "Each 32-bit a/b register packs two FP16 values, the lower index in the low half.",
            size="small")
     return s
 
 
 def fig_ldmatrix(name):
-    s = Svg(name, 720, 300, "ldmatrix.x4: 32 row addresses in, four 8 × 8 fragments out")
-    cell = 13
+    s = Svg(name, 720, 380, "ldmatrix.x4: 32 row addresses in, four 8 × 8 fragments out")
+    cell = 18
     x0, y0 = 60, 60
     roles = ["a", "b", "c", "d"]
     pos = [(0, 0), (0, 1), (1, 0), (1, 1)]  # (col block, row block) for A m16k16: q=0 rows0-7 k0-7 ...
@@ -548,7 +546,8 @@ def fig_ldmatrix(name):
             for c in range(8):
                 s.rect(x0 + (kb * 8 + c) * cell, y0 + (rb * 8 + r) * cell, cell, cell, fill=f"f-{roles[q]}",
                        stroke="s-line", sw=0.3)
-        s.text(x0 + (kb * 8 + 4) * cell, y0 + (rb * 8 + 4) * cell, f"matrix {q}", size="small", bold=True)
+        s.text(x0 + (kb * 8 + 4) * cell, y0 + (rb * 8 + 4) * cell, f"matrix {q}", size="small", bold=True,
+               plate=True)
         for r in range(8):
             lane = 8 * q + r
             if kb == 0:
@@ -559,8 +558,7 @@ def fig_ldmatrix(name):
                        size="small", mono=True, role=roles[q])
     s.rect(x0, y0, 16 * cell, 16 * cell, fill="fig-none", stroke="s-ink", sw=1.2)
     s.text(x0 + 8 * cell, y0 - 30, "16 × 16 A tile in shared memory", size="small", bold=True)
-    s.text(x0 + 8 * cell, y0 - 14, "numbers: the lane that supplies each row's address", size="small",
-           role="muted")
+    s.text(x0 + 8 * cell, y0 - 14, "number = lane giving the row address", size="small", role="muted")
     notes = ["Lanes 8q … 8q+7 point at the 8 rows",
              "(16 bytes each) of matrix q. Register q of",
              "lane l receives row l / 4, halves 2(l % 4)",
@@ -574,7 +572,7 @@ def fig_ldmatrix(name):
              "k-major, one x4 gives b0, b1 of two n8 tiles."]
     for i, t in enumerate(notes):
         if t:
-            s.text(330, 70 + i * 20, t, anchor="start", size="small")
+            s.text(405, 80 + i * 22, t, anchor="start", size="small")
     return s
 
 
@@ -609,12 +607,12 @@ def fig_hopper(name):
     s.box(30, 40, 150, 50, "TMA\n(1 thread issues)", role="b", size="small")
     stages = 4
     for i in range(stages):
-        s.box(240 + i * 80, 40, 70, 50, f"stage {i}\nA + B tiles", role="c" if i != 1 else "a", size="small")
-    s.arrow(180, 65, 238, 65, role="b")
+        s.box(226 + i * 94, 40, 86, 50, f"stage {i}\nA + B tiles", role="c" if i != 1 else "a", size="small")
+    s.arrow(180, 65, 224, 65, role="b")
     s.box(240, 150, 310, 50, "warpgroup = 4 warps: wgmma.mma_async\n"
           "B (and A) read straight from shared memory", role="d", size="small")
     for i in range(stages):
-        s.arrow(275 + i * 80, 90, 300 + i * 50, 148, role="d", sw=1)
+        s.arrow(269 + i * 94, 90, 300 + i * 50, 148, role="d", sw=1)
     s.box(590, 150, 110, 50, "accumulators\nin registers", role="d", fill="f-d2", size="small")
     s.arrow(550, 175, 588, 175, role="d")
     s.text(430, 20, "per stage: a \"full\" mbarrier (TMA bytes arrived) and an \"empty\" one (stage consumed)",

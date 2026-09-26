@@ -4,7 +4,7 @@ from .svg import Svg
 
 def fig_pipeline(name):
     s = Svg(name, 720, 250, "From the repository to a static site")
-    cols = [("repository", ["README.md", "tutorials/*.md", "tutorials/figures/*.svg", "leetgpu/, tensara/",
+    cols = [("repository", ["README.md", "tutorials/*.md", "tutorials/figures/", "leetgpu/, tensara/",
                             "mkdocs.yml"], "ink", 20),
             ("scripts/build_site.py", ["pages + solution sources", "inline SVG figures", "rewritten links",
                                        "generated nav"], "a", 260),

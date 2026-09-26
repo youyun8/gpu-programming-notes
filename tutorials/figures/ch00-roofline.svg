@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" width="720" height="400" class="fig-svg" role="img">
-<title>Roofline of an A100 (FP32 and FP16 tensor cores) with kernels from this site</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<title>Roofline of an A100 (FP32 and FP16 tensor cores) with kernels from this site</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
 <defs><marker id="ch00-roofline-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch00-roofline-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch00-roofline-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch00-roofline-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch00-roofline-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch00-roofline-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch00-roofline-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
 <rect x="0" y="0" width="720" height="400" class="fig-paper"/>
 <line x1="90" y1="350" x2="90" y2="30" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
@@ -25,34 +25,37 @@
 <line x1="647.14" y1="350" x2="647.14" y2="30" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
 <line x1="690" y1="350" x2="690" y2="30" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
 <text x="690" y="364" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1024</text>
-<line x1="90" y1="325.92" x2="690" y2="325.92" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
-<text x="82" y="325.92" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0.1</text>
-<line x1="90" y1="245.92" x2="690" y2="245.92" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
-<text x="82" y="245.92" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
-<line x1="90" y1="165.92" x2="690" y2="165.92" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
-<text x="82" y="165.92" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">10</text>
-<line x1="90" y1="85.92" x2="690" y2="85.92" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
-<text x="82" y="85.92" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">100</text>
+<line x1="90" y1="329.07" x2="690" y2="329.07" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
+<text x="82" y="329.07" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0.1</text>
+<line x1="90" y1="259.53" x2="690" y2="259.53" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
+<text x="82" y="259.53" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<line x1="90" y1="190" x2="690" y2="190" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
+<text x="82" y="190" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">10</text>
+<line x1="90" y1="120.47" x2="690" y2="120.47" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
+<text x="82" y="120.47" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">100</text>
+<line x1="90" y1="50.93" x2="690" y2="50.93" class="s-line" stroke-width="0.4" stroke-dasharray="2 3"/>
+<text x="82" y="50.93" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">1000</text>
 <rect x="90" y="30" width="600" height="320" rx="0" class="fig-none s-ink" stroke-width="1"/>
 <text x="390" y="384" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">arithmetic intensity I (flop / byte, log scale)</text>
 <text x="24" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small" transform="rotate(-90 24 190)">TFLOP/s (log scale)</text>
-<path d="M90.0,326.9 L589.2,46.4 L690,46.4" class="fig-none s-d" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
-<path d="M90.0,326.9 L417.8,142.7 L690,142.7" class="fig-none s-a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
-<text x="684" y="132.71" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">FP32 peak ≈ 19.5 TFLOP/s</text>
-<text x="684" y="36.39" text-anchor="end" dominant-baseline="central" class="fig-txt t-d fig-small">FP16 tensor-core peak ≈ 312 TFLOP/s</text>
-<text x="196.52" y="251.05" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small" transform="rotate(-28 196.52 251.05)">memory roof: I · β (β ≈ 1.55 TB/s)</text>
-<line x1="417.79" y1="142.71" x2="417.79" y2="350" class="s-a" stroke-width="0.8" stroke-dasharray="3 3"/>
+<path d="M90.0,329.9 L589.2,86.1 L690,86.1" class="fig-none s-d" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6 4"/>
+<path d="M90.0,329.9 L417.8,169.8 L690,169.8" class="fig-none s-a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="684" y="159.83" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">FP32 peak ≈ 19.5 TFLOP/s</text>
+<text x="684" y="74.11" text-anchor="end" dominant-baseline="central" class="fig-txt t-d fig-small">FP16 tensor-core peak ≈ 312 TFLOP/s</text>
+<text x="102" y="135.89" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">memory roof: I · β  (β ≈ 1.55 TB/s)</text>
+<text x="102" y="152.17" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">(the sloped blue line)</text>
+<line x1="417.79" y1="169.83" x2="417.79" y2="350" class="s-a" stroke-width="0.8" stroke-dasharray="3 3"/>
 <text x="421.79" y="340" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">I* ≈ 13</text>
-<circle cx="107.79" cy="316.91" r="4.5" class="k-hl" stroke-width="1"/>
-<text x="115.79" y="346.91" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">vector add</text>
-<circle cx="132.86" cy="302.83" r="4.5" class="k-hl" stroke-width="1"/>
-<text x="140.86" y="314.83" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">y = 2x</text>
-<circle cx="175.71" cy="278.74" r="4.5" class="k-b" stroke-width="1"/>
-<text x="183.71" y="290.74" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">naive matmul (no reuse)</text>
-<circle cx="390" cy="158.33" r="4.5" class="k-b" stroke-width="1"/>
-<text x="398" y="170.33" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">32 × 32 tiling</text>
-<circle cx="475.71" cy="142.71" r="4.5" class="k-c" stroke-width="1"/>
-<text x="483.71" y="154.71" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">128 × 128 tile</text>
+<circle cx="107.79" cy="321.24" r="4.5" class="k-hl" stroke-width="1"/>
+<circle cx="132.86" cy="309" r="4.5" class="k-hl" stroke-width="1"/>
+<text x="142.86" y="323" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">vector add (1/12), y = 2x (1/8)</text>
+<circle cx="175.71" cy="288.07" r="4.5" class="k-b" stroke-width="1"/>
+<text x="185.71" y="302.07" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">naive matmul (no reuse)</text>
+<circle cx="390" cy="183.41" r="4.5" class="k-b" stroke-width="1"/>
+<rect x="400" y="190.31" width="126.48" height="18.2" rx="3" class="fig-plate"/>
+<text x="400" y="199.41" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">32 × 32 tiling</text>
+<circle cx="475.71" cy="169.83" r="4.5" class="k-c" stroke-width="1"/>
+<text x="485.71" y="183.83" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">128 × 128 tile</text>
 <text x="109.79" y="46" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">memory-bound</text>
-<text x="589.02" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">compute-bound</text>
+<text x="602.82" y="135.89" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">compute-bound</text>
 </svg>

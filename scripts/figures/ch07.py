@@ -5,7 +5,7 @@ from .svg import Svg
 def fig_macro_tile(name):
     s = Svg(name, 720, 330, "MatrixInstruction [32, 32, 1, 2,  1,  4, 1,  2, 2] as nested tiles")
     sc = 1.0
-    x0, y0 = 40, 50
+    x0, y0 = 60, 50
     # macro tile 256 (M) x 128 (N)
     s.rect(x0, y0, 128 * sc * 1.6, 256 * sc, fill="fig-panel", stroke="s-ink", sw=1.4)
     W = 128 * 1.6
@@ -18,10 +18,10 @@ def fig_macro_tile(name):
                    sw=1)
             for i in range(4):
                 s.rect(wx + 8, wy + 6 + i * 30, W / 2 - 16, 26, fill="fig-none", stroke="s-line", sw=0.8, rx=2)
-            s.text(wx + W / 4, wy + 64, f"wave {2 * wm + wn}", size="small", bold=True)
+            s.text(wx + W / 4, wy + 64, f"wave {2 * wm + wn}", size="small", bold=True, plate=True)
     s.brace_h(x0, x0 + W, y0 - 12, "MT1 = 32·2·1·2 = 128 (N)", up=True)
     s.brace_v(x0 - 8, y0, y0 + 256, "")
-    s.text(x0 - 14, y0 + 128, "MT0 = 256 (M)", size="small", rotate=-90)
+    s.text(x0 - 26, y0 + 128, "MT0 = 256 (M)", size="small", rotate=-90)
     # explanation column
     tx = 300
     rows = [("MFMA  32 × 32 × 1, 2 blocks", "one instruction: 32 (M) × 64 (N)", "line"),
@@ -63,15 +63,15 @@ def fig_xcd_remap(name):
 
 def fig_tuning_flow(name):
     s = Svg(name, 720, 190, "Offline tuning of hipBLASLt")
-    steps = [("1. log", "HIPBLASLT_LOG_MASK=32\nrecords bench commands", "a"),
+    steps = [("1. log", "HIPBLASLT_LOG_MASK=32\nprints bench commands", "a"),
              ("2. tune", "hipblaslt-bench with\nHIPBLASLT_TUNING_FILE", "b"),
              ("3. use", "HIPBLASLT_TUNING_\nOVERRIDE_FILE", "c")]
     for i, (t, d, role) in enumerate(steps):
-        x = 30 + i * 240
-        s.text(x + 90, 30, t, size="small", bold=True)
-        s.box(x, 44, 180, 60, d, role=role, size="small", mono=False)
+        x = 15 + i * 240
+        s.text(x + 100, 30, t, size="small", bold=True)
+        s.box(x, 44, 200, 64, d, role=role, size="small", mono=False)
         if i < 2:
-            s.arrow(x + 182, 74, x + 238, 74, role="ink")
+            s.arrow(x + 202, 76, x + 238, 76, role="ink")
     s.text(360, 140, "The tuning file maps each GEMM shape to a solution index, which is only valid for the",
            size="small")
     s.text(360, 158, "same library build and GPU architecture: re-tune after upgrading ROCm.", size="small",

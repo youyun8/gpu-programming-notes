@@ -45,11 +45,12 @@ def _style() -> str:
         rules.append(f".f-{role}2{{fill:var(--fig-{role}-mid,{mid})}}")
         rules.append(f".k-{role}{{fill:var(--fig-{role},{strong})}}")  # solid fill (markers, dots)
     rules += [
-        ".fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}",
-        ".fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}",
-        ".fig-small{font-size:12px}",
-        ".fig-tiny{font-size:9.5px}",
-        ".fig-big{font-size:16px}",
+        ".fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}",
+        ".fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}",
+        ".fig-small{font-size:13px}",
+        ".fig-tiny{font-size:11px}",
+        ".fig-big{font-size:17px}",
+        f".fig-plate{{fill:var(--fig-paper,{PAPER});fill-opacity:.92}}",
         ".fig-bold{font-weight:600}",
         ".fig-it{font-style:italic}",
     ]
@@ -137,8 +138,20 @@ class Svg:
         cls = " ".join(c for c in (fill, stroke) if c)
         self.add(f'<circle cx="{_f(cx)}" cy="{_f(cy)}" r="{_f(r)}" class="{cls}" stroke-width="{_f(sw)}"/>')
 
+    FONT_PX = {None: 15, "small": 13, "tiny": 11, "big": 17}
+
     def text(self, x, y, s, role="ink", anchor="middle", size=None, bold=False, mono=False, italic=False,
-             rotate=None, baseline="central", plain=False):
+             rotate=None, baseline="central", plain=False, plate=False):
+        """A label. plate=True puts an opaque background under it (for labels on top of grids or lines)."""
+        if str(s) == "":
+            return
+        if plate:
+            px = self.FONT_PX[size]
+            w = len(str(s)) * px * (0.56 if mono else 0.64) + 10
+            h = px * 1.4
+            left = x - w / 2 if anchor == "middle" else (x - w if anchor == "end" else x)
+            self.add(f'<rect x="{_f(left)}" y="{_f(y - h / 2)}" width="{_f(w)}" height="{_f(h)}" rx="3" '
+                     f'class="fig-plate"/>')
         cls = ["fig-mono" if mono else "fig-txt", f"t-{role}"]
         if size == "small":
             cls.append("fig-small")
@@ -162,7 +175,7 @@ class Svg:
         self.rect(x, y, w, h, fill=fill, stroke=f"s-{role}", sw=sw, rx=rx, extra=extra)
         if label != "":
             lines = str(label).split("\n")
-            lh = 13 if size == "small" else 17
+            lh = {"small": 17, "tiny": 14}.get(size, 20)
             y0 = y + h / 2 - (len(lines) - 1) * lh / 2
             for i, ln in enumerate(lines):
                 self.text(x + w / 2, y0 + i * lh, ln, role=text_role or "ink", size=size, bold=bold, mono=mono)

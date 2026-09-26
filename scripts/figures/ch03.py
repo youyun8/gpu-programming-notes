@@ -70,9 +70,10 @@ def fig_two_level(name):
         s.box(bx, 90, 130, 36, f"block {b}: registers", role="c", size="small")
         for k in range(3):
             s.line(bx + 20 + k * 45, 52, bx + 30 + k * 35, 90, stroke="s-a", sw=0.6)
-        s.box(bx + 25, 150, 80, 30, "blockReduce", role="d", size="small")
+        s.box(bx + 10, 150, 110, 30, "blockReduce", role="d", size="small")
         s.arrow(bx + 65, 126, bx + 65, 150, role="d", sw=1)
         s.arrow(bx + 65, 180, 360, 210, role="b", sw=1)
     s.box(300, 210, 120, 30, "total", role="b", fill="f-b2", size="small", bold=True)
-    s.text(470, 224, "atomicAdd, or a second 1-block kernel", anchor="start", size="small", role="b")
+    s.text(440, 218, "atomicAdd, or a second", anchor="start", size="small", role="b")
+    s.text(440, 234, "kernel with one block", anchor="start", size="small", role="b")
     return s
