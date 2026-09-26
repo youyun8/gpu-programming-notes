@@ -1,5 +1,8 @@
 # 08 – Deploying This Site
 
+> **Part V · Tools & Publishing** · Prerequisites: none (Python, Git) ·
+> Back to: [Tutorials index](README.md)
+
 This repository renders to a static website. It contains:
 - every tutorial;
 - every LeetGPU and Tensara problem page, with the write-up and the complete
@@ -9,6 +12,17 @@ This repository renders to a static website. It contains:
 It can also be exported as offline formats: a zipped HTML site, EPUB, a
 single Markdown file, and a PDF if you have LaTeX. This chapter explains how
 the pipeline works and gives four ways to publish the site.
+
+**You will learn**
+
+- how `scripts/build_site.py` turns the repository into MkDocs sources
+  (pages, navigation, figures, links), and what it deliberately leaves out;
+- how to build and preview the site locally;
+- four ways to publish it: GitHub Pages via Actions, `mkdocs gh-deploy`, any
+  static host, and offline formats (HTML zip, EPUB, PDF);
+- what CI checks before anything is published;
+- how to add problems, chapters and figures, and how math and code are
+  rendered.
 
 ## 1. How the Site Is Built
 
@@ -23,7 +37,9 @@ leetgpu/NNN/solution.cu    ─┴►   leetgpu/NNN/index.md         ──►   
 mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav)
 ```
 
-`scripts/build_site.py` does six things:
+![How the repository becomes a static site](figures/ch08-pipeline.svg)
+
+`scripts/build_site.py` does seven things:
 
 1. **Tutorial pages.** Every Markdown file under `tutorials/` becomes a page.
    Every code file there (`.hip`, `.h`, …) also gets a rendered page with a
@@ -48,12 +64,18 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 6. **Static assets.** It copies `site_assets/` to `assets/` in the site:
    the stylesheet, the favicon, the KaTeX loader and the vendored KaTeX and
    font files (section 9).
+7. **Figures.** A tutorial line that holds nothing but a Markdown image of
+   an SVG from `tutorials/figures/` is replaced by the SVG itself, inside a
+   `<figure>` with the caption. Inlined, the figure's colours come from the
+   `--fig-*` CSS properties in `extra.css`, so it follows the light/dark
+   toggle; on GitHub the same line renders as an ordinary image with the
+   light colours.
 
 The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
 plugin system Material depends on.
 
-### What Is *Not* Published
+### 1.1 What Is *Not* Published
 
 - **Problem statements.** LeetGPU's challenge texts are CC BY-NC-ND, and
   Tensara's problem repository has no license, so this repository never
@@ -168,10 +190,13 @@ would publish something broken or wrong:
 
 | Job | What it guarantees |
 |-----|--------------------|
-| `nvcc compile check` | Every `solution.cu` compiles with the real CUDA toolkit |
+| `nvcc compile check` | Every `solution.cu`, every GEMM tutorial program and every example program compiles with the real CUDA toolkit |
 | `cuemu tests (leetgpu / tensara)` | Every solution produces correct results against the platforms' reference implementations, on the CPU emulator (see [tools/cuemu](../tools/cuemu/README.md)) |
+| `GEMM tutorial programs (cuemu)` | Every program in `tutorials/gemm/` passes its `--test` shapes on the CPU emulator |
+| `Chapter 09-13 example programs (cuemu)` | Every program in `tutorials/examples/` passes its checks on the CPU emulator |
+| `Chapter 14 Triton kernels (interpreter)` | The Triton kernels in `tutorials/examples/14-triton/` match PyTorch in the Triton interpreter |
 | `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
-| `README index and site build` | The README tables are current and the site builds with no broken links |
+| `README index and site build` | The README tables and the figures are current, and the site builds with no broken links |
 
 ## 8. Adding Content Later
 
@@ -183,8 +208,25 @@ python3 scripts/build_index.py                                  # refresh README
 git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pages redeploys
 ```
 
-A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
-in `tutorials/README.md`. The navigation is generated.
+A new tutorial chapter needs a Markdown file in `tutorials/`, a row in
+`tutorials/README.md`, and its number prefix in `TUTORIAL_PARTS` in
+`scripts/build_site.py`, which assigns chapters to parts and orders them
+within a part. The navigation is generated from that.
+
+Figures are not drawn by hand: each one is a Python function in
+`scripts/figures/<chapter>.py` that uses the small SVG helper in
+`scripts/figures/svg.py`. Run `python3 scripts/build_figures.py` (or
+`make figures`) after editing one and commit the regenerated SVGs; CI fails
+if they are stale. `scripts/check_figures.py` renders every figure in
+headless Chromium and fails when a label overlaps another label, sticks out
+of the figure, is crossed by a line or a box border, or is smaller than
+11 px. It also fails on misaligned labels: text that is off-centre in the
+box that holds it or under the box it labels, and labels in the same box
+(or both outside any box) that are almost, but not exactly, on one column
+or one baseline. `make figures` runs it too. A label that has to sit on a grid or a
+line can be given an opaque background with `plate=True`. Pages in a sub-directory of `tutorials/` (such as
+`gemm/`) appear in the navigation after the chapter named in
+`TUTORIAL_SECTIONS` in `scripts/build_site.py`.
 
 ## 9. How Math and Code Are Rendered
 
@@ -242,3 +284,15 @@ Rules that keep KaTeX and Markdown from tripping over each other:
 - Check with a browser: `python3 -m http.server -d build/site` and look for
   red KaTeX error text, or count `.katex-error` elements with Playwright.
 
+## Key Takeaways
+
+1. The site is generated: edit the repository (READMEs, tutorials,
+   `scripts/figures/`), never `build/`.
+2. `scripts/build_site.py --strict` and `mkdocs build --strict` fail on broken
+   links and anchors; CI also checks the README index, the figures and their
+   legibility.
+3. GitHub Pages via the included workflow is the zero-maintenance option;
+   the same `build/site/` directory can be served by any static host or
+   zipped for offline use.
+4. Problem statements from the platforms are never copied; only summaries,
+   solutions and links are published.

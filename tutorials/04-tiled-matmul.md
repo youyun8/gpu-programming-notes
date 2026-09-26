@@ -1,5 +1,8 @@
 # 04 – Tiled Matrix Multiplication
 
+> **Part III · Matrix Multiplication** · Prerequisites: [01](01-execution-model.md), [02](02-memory-hierarchy.md) ·
+> Next: [04.x – GEMM Deep Dive](gemm/README.md)
+
 Matrix multiplication is the opposite of the kernels in chapters 01–03: it
 has plenty of arithmetic per byte, so it *can* be compute-bound, but only if
 data is reused from fast memory. This chapter builds the standard
@@ -8,12 +11,26 @@ optimisation ladder:
 1. naive;
 2. shared-memory tiling;
 3. register tiling;
-4. the techniques that get to 80–90 % of cuBLAS.
+4. the techniques that get to 80–90 % of cuBLAS (each with its own page in
+   the [04.x deep dive](gemm/README.md)).
 
 Throughout, $C = AB$ with $A$ of size $M\times K$, $B$ of size $K\times N$
 and $C$ of size $M\times N$, all row-major FP32.
 
+**You will learn**
+
+- why GEMM can be compute-bound, and how much reuse that requires;
+- to analyse a kernel's traffic at every level (DRAM/L2, shared memory,
+  registers) with one formula;
+- block (shared-memory) tiling, including its barriers and bank behaviour;
+- register tiling: the outer-product formulation and why it removes the
+  shared-memory bottleneck;
+- how the epilogue (scaling, bias, activation) fuses into the kernel;
+- the map of the remaining optimisations.
+
 ## 1. The Numbers That Matter
+
+### 1.1 Work and Compulsory Traffic
 
 $$
 C_{ij} = \sum_{k=0}^{K-1} A_{ik} B_{kj}, \qquad
@@ -33,9 +50,33 @@ At $n = 4096$, $I_{\max} \approx 680$ flop/byte, far above any GPU's ridge
 point (chapter 00). The whole game is to get the *actual* intensity, as
 seen from DRAM and from each level of on-chip memory, high enough.
 
+### 1.2 Where the Reuse Comes From
+
+Every element $A_{ik}$ is used $N$ times (once per column of $C$) and every
+$B_{kj}$ is used $M$ times. A kernel that fetches an element from DRAM for
+every use has intensity 1/4 flop/byte; one that fetches it once and reuses
+it from on-chip memory approaches $I_{\max}$. All the techniques in this
+chapter are ways of scheduling the computation so that an element, once
+loaded into a fast memory, is used as many times as possible before it is
+evicted.
+
+A unit of work (a block, a warp or a thread) that owns a
+$T_M\times T_N$ tile of $C$ and walks $K$ needs $T_M$ values of $A$ and $T_N$
+of $B$ per $k$, and does $T_MT_N$ FMAs with them:
+
+$$
+\frac{\text{FMAs}}{\text{values loaded}} = \frac{T_M T_N}{T_M + T_N}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T_M, T_N$ | Rows and columns of $C$ owned by the unit |
+
+This one ratio, applied at each level, explains every result below.
+
 ## 2. Naive Kernel
 
-One thread per output element:
+### 2.1 One Thread per Output
 
 ```cpp
 __global__ void matmulNaive(const float* a, const float* b, float* c, int m, int n, int k) {
@@ -48,7 +89,9 @@ __global__ void matmulNaive(const float* a, const float* b, float* c, int m, int
 }
 ```
 
-Every FMA loads two floats (8 bytes) and does 2 flops:
+### 2.2 Its Intensity
+
+Every FMA loads two floats (8 bytes) and does 2 flops ($T_M = T_N = 1$):
 
 $$
 I_{\text{naive}} = \frac{2}{8} = 0.25\ \frac{\text{flop}}{\text{byte}}
@@ -58,11 +101,20 @@ $$
 |---|---|
 | $I_{\text{naive}}$ | Intensity seen by the load/store units |
 
-Caches rescue some of it (the warp's 32 threads share the row of $A$, and
-neighbouring warps reuse $B$), but the kernel still typically reaches only
-1–5 % of peak.
+### 2.3 What the Caches Do for It
+
+Within a warp (32 consecutive `col`, same `row`), the load of
+`a[row * k + kk]` is the same address for all lanes (one broadcast
+transaction), and the load of `b[kk * n + col]` is 32 consecutive floats
+(coalesced). Neighbouring warps and blocks re-read the same rows of $A$ and
+columns of $B$, and L1/L2 serve many of those re-reads. So the kernel is not
+as slow as 0.25 flop/byte from DRAM would suggest, but it is bound by the
+load instruction rate and L1/L2 bandwidth, and typically reaches only 1–5 %
+of peak.
 
 ## 3. Shared-Memory Tiling
+
+### 3.1 The Idea
 
 Split $C$ into $T\times T$ tiles, one per block of $T\times T$ threads, and
 split the $k$ loop into phases of $T$:
@@ -76,6 +128,10 @@ $$
 | $\mathcal{I}, \mathcal{J}$ | The $T$ rows and $T$ columns of one output tile |
 | $\mathcal{K}_s$ | The $s$-th slice of $T$ reduction indices |
 | $A_{\mathcal{I},\mathcal{K}_s}$, $B_{\mathcal{K}_s,\mathcal{J}}$ | $T\times T$ sub-matrices staged in shared memory |
+
+![Block tiling: a block owns one tile of C and walks the matching row panel of A and column panel of B one slice at a time](figures/ch04-block-tiling.svg)
+
+### 3.2 The Kernel
 
 ```cpp
 constexpr int kTile = 32;
@@ -100,10 +156,29 @@ __global__ void matmulTiled(const float* a, const float* b, float* c, int m, int
 }
 ```
 
+### 3.3 The Two Barriers
+
+Each phase needs two barriers, for two different hazards:
+
+1. **After the loads** (read-after-write): a thread's FMA loop reads tile
+   elements loaded by other threads.
+2. **After the FMAs** (write-after-read): the next phase overwrites the
+   tiles, which slower threads may still be reading.
+
+Removing the second barrier gives results that are right most of the time,
+which is the worst kind of bug. [04.2](gemm/02-double-buffering.md) shows
+how two buffers reduce this to one barrier per phase.
+
+### 3.4 Access Patterns
+
 - Loads of both tiles are coalesced: `threadIdx.x` walks a row of $A$'s
   tile and a row of $B$'s tile.
 - In the inner loop, `a_tile[ty][kk]` is the same address for the whole
   warp (a broadcast), and `b_tile[kk][tx]` reads a row (conflict-free).
+- Zero-filling out-of-range elements keeps the inner loop free of bounds
+  checks: a zero contributes nothing to the sum.
+
+### 3.5 Traffic and the New Bottleneck
 
 Each block loads $2T^2$ floats per phase and performs $T^3$ FMAs with them:
 
@@ -116,19 +191,26 @@ $$
 |---|---|
 | $T$ | Tile width (32 here) |
 | $Q_{\text{tiled}}$ | Bytes loaded from global memory (L2/DRAM) in total |
-| $I_{\text{tiled}}$ | global-memory intensity: global traffic drops by a factor of $T$ |
+| $I_{\text{tiled}}$ | Global-memory intensity: global traffic drops by a factor of $T$ |
 
 With $T = 32$, $I = 8$ flop/byte from L2/DRAM. The new bottleneck is shared
 memory: the inner loop still does **one shared load per FMA** (the
 broadcast of `a_tile` is nearly free, the `b_tile` read is not), and an SM
-can issue far fewer shared loads than FMAs per cycle. This kernel typically
-reaches 10–20 % of peak.
+can issue far fewer shared loads than FMAs per cycle (an A100 SM does 64
+FP32 FMAs per cycle but reads 32 words of shared memory per cycle). This
+kernel typically reaches 10–20 % of peak.
 
 ## 4. Register Tiling
+
+### 4.1 The Outer Product
 
 Give each thread a $t_M\times t_N$ patch of outputs held in registers. For
 each $k$, a thread loads $t_M$ values of $A$ and $t_N$ values of $B$ from
 shared memory and does $t_Mt_N$ FMAs (an outer product):
+
+![Register tiling: per k step a thread loads 4 values of A and 4 of B and does 16 FMAs](figures/ch04-register-tile.svg)
+
+### 4.2 The Numbers
 
 $$
 \frac{\text{FMAs}}{\text{shared loads}} = \frac{t_M t_N}{t_M + t_N}, \qquad
@@ -147,6 +229,11 @@ $$
 | $T = 32$, 1 output per thread | 1 (0.5 counting both loads) | 8 |
 | $64\times64$ block, $4\times4$ per thread | 2 | 16 |
 | $128\times128$ block, $8\times8$ per thread | 4 | 32 |
+
+Both ratios are the reuse formula of section 1.2, at the thread level and
+at the block level.
+
+### 4.3 The Inner Loop
 
 The Tensara matmul pages use the $64\times64$ / $4\times4$ version
 ([Tensara – Matrix Multiplication](../tensara/matrix-multiplication/)). Its
@@ -167,7 +254,7 @@ for (int kk = 0; kk < kTileK; ++kk) {
 }
 ```
 
-Details that matter:
+### 4.4 Details That Matter
 
 - **Transposed $A$ tile** (`a_tile[k][m]`): both operands are then read
   along rows of shared memory.
@@ -180,31 +267,78 @@ Details that matter:
 - **Full unrolling** keeps `acc[4][4]` in registers; a dynamic index would
   force it into local memory.
 
+### 4.5 The Price: Registers
+
+A $t_M\times t_N$ tile needs $t_Mt_N$ accumulators plus $t_M + t_N$ fragment
+registers plus addresses: about 40 registers for $4\times4$, about 120 for
+$8\times8$. More registers per thread means fewer resident warps
+(chapter 01, section 6), which is fine as long as each warp has enough
+independent FMAs to hide latency by itself. Beyond $8\times8$ in FP32, the
+accumulators no longer fit and the compiler spills.
+
 ## 5. The Rest of the Ladder
 
-| Technique | Why it helps |
-|-----------|-----|
-| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments |
-| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two |
-| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous |
-| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse |
-| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 |
-| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU |
-| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow |
+Each technique below has its own page in the
+[GEMM deep dive](gemm/README.md), with a complete program that is tested
+on the CPU emulator:
+
+| Technique | Why it helps | Page |
+|-----------|-----|---|
+| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments | [04.1](gemm/01-vectorized-loads.md) |
+| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two | [04.2](gemm/02-double-buffering.md) |
+| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous | [04.3](gemm/03-async-copies.md) |
+| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse | [04.4](gemm/04-warp-tiling.md) |
+| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 | [04.5](gemm/05-tile-swizzling.md) |
+| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU | [04.6](gemm/06-split-k-stream-k.md) |
+| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow | [04.7](gemm/07-tensor-cores.md) |
 
 A typical progression on one GPU, as a fraction of cuBLAS FP32:
 
 | Kernel | Fraction of cuBLAS |
 |---|---|
 | Naive | 1–5 % |
-| shared-memory tiling | 10–20 % |
+| Shared-memory tiling | 10–20 % |
 | $4\times4$ register tiling | 40–60 % |
 | $8\times8$, `float4`, double buffering, warp tiling | 80–95 % |
+
+![Typical fraction of cuBLAS FP32 throughput reached by each rung of the ladder](figures/ch04-ladder.svg)
 
 Chapters 05–07 continue the story on AMD hardware with matrix-core
 instructions, a hand-written assembly kernel and a kernel generator.
 
-## 6. Checklist
+## 6. Fusing the Epilogue
+
+Real GEMMs rarely stop at $AB$. The general form is
+
+$$
+C \leftarrow f\bigl(\alpha\,AB + \beta\,C + \mathbf{1}\,b^{\mathsf T}\bigr)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $\alpha, \beta$ | Scalars (BLAS convention) |
+| $b$ | A bias vector of length $N$, added to every row |
+| $f$ | An elementwise activation (ReLU, GELU, SiLU, …) |
+
+Everything after the $K$ loop happens while the accumulators are still in
+registers, so it costs almost nothing:
+
+```cpp
+// After the K loop: acc[i][j] holds (AB) for row r_i, column c_j of this thread.
+for (int i = 0; i < 4; ++i)
+    for (int j = 0; j < 4; ++j) {
+        const float v = alpha * acc[i][j] + beta * c[r_i * n + c_j] + bias[c_j];
+        c[r_i * n + c_j] = fmaxf(v, 0.0f);          // ReLU
+    }
+```
+
+Running the same operations as a separate kernel would read and write $C$
+again ($8MN$ bytes). For the skinny GEMMs of LLM inference that extra
+traffic can cost as much as the GEMM itself, which is why libraries expose
+"fused epilogues" ([Tensara – GEMM + ReLU](../tensara/gemm-relu/),
+TensileLite's activation fusions in chapter 07).
+
+## 7. Checklist
 
 - `threadIdx.x` ↔ column, for coalesced $B$ reads and $C$ writes.
 - Zero-fill out-of-range elements when staging edge tiles, instead of
@@ -215,6 +349,56 @@ instructions, a hand-written assembly kernel and a kernel generator.
   (for example a $64\cdot4096 \times 4096$ activation in
   [Tensara – Matmul 3D](../tensara/matmul-3d/)).
 - Accumulate in FP32 even when inputs are FP16/BF16.
+- Check `-Xptxas -v` for spills after every change to the tile sizes.
+
+## Key Takeaways
+
+1. GEMM does $O(n^3)$ work on $O(n^2)$ data; it is compute-bound only if
+   each loaded element is reused many times.
+2. A unit owning a $T_M\times T_N$ tile does $T_MT_N/(T_M+T_N)$ FMAs per
+   value loaded. Apply this at the block level (shared memory) and the
+   thread level (registers).
+3. Shared-memory tiling fixes DRAM traffic but leaves one shared load per
+   FMA; register tiling fixes that.
+4. Barriers protect both directions: data ready (after the loads) and
+   buffer free (after the math).
+5. Fuse the epilogue while the results are in registers.
+
+## Exercises
+
+1. For a $128\times64$ block tile and $8\times4$ thread tile, compute the
+   FMAs per shared load and $I_{\text{L2}}$.
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Thread: $32/12 \approx 2.7$ FMAs per load.
+    Block: $I_{\text{L2}} = 128\cdot64 / (2\cdot192) \approx 21.3$ flop/B.
+
+    </details>
+
+2. Remove the second `__syncthreads()` from `matmulTiled` and run it under
+   cuemu with `CUEMU_REVERSE=1`. What happens, and why is a GPU run not a
+   reliable test?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Fast threads overwrite the tiles while slow ones still read them, so
+    some partial sums use the next slice's data. On a GPU the warps usually
+    stay close enough in time that the error appears only occasionally.
+
+    </details>
+
+3. How many registers do the accumulators of a $16\times8$ FP32 thread
+   tile need? Why is that a problem?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    128 accumulators plus 24 fragment values plus addresses: over 160
+    registers, which limits the SM to 1–2 blocks of 256 threads and usually
+    spills. Tensor cores ([04.7](gemm/07-tensor-cores.md)) are the way to
+    get more work per register.
+
+    </details>
 
 ## Practice
 

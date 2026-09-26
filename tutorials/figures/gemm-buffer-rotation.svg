@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 222" width="720" height="222" class="fig-svg" role="img">
+<title>Who reads and writes which buffer at each step (double buffering)</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="gemm-buffer-rotation-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="gemm-buffer-rotation-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="gemm-buffer-rotation-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="gemm-buffer-rotation-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="gemm-buffer-rotation-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="gemm-buffer-rotation-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="gemm-buffer-rotation-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="222" class="fig-paper"/>
+<text x="160" y="40" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">step</text>
+<text x="230" y="40" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">s = 0</text>
+<text x="350" y="40" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">s = 1</text>
+<text x="470" y="40" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">s = 2</text>
+<text x="590" y="40" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">s = 3</text>
+<text x="160" y="80" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">buffer 0</text>
+<rect x="176" y="60" width="108" height="40" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="230" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">read slice 0</text>
+<rect x="296" y="60" width="108" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="350" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">write slice 2</text>
+<rect x="416" y="60" width="108" height="40" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="470" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">read slice 2</text>
+<rect x="536" y="60" width="108" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="590" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">write slice 4</text>
+<text x="160" y="140" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">buffer 1</text>
+<rect x="176" y="120" width="108" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="230" y="140" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">write slice 1</text>
+<rect x="296" y="120" width="108" height="40" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="350" y="140" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">read slice 1</text>
+<rect x="416" y="120" width="108" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="470" y="140" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">write slice 3</text>
+<rect x="536" y="120" width="108" height="40" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="590" y="140" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">read slice 3</text>
+<line x1="290" y1="52" x2="290" y2="172" class="s-hl" stroke-width="2"/>
+<line x1="410" y1="52" x2="410" y2="172" class="s-hl" stroke-width="2"/>
+<line x1="530" y1="52" x2="530" y2="172" class="s-hl" stroke-width="2"/>
+<line x1="650" y1="52" x2="650" y2="172" class="s-hl" stroke-width="2"/>
+<text x="410" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Red: the one __syncthreads() per step. A buffer is rewritten only after</text>
+<text x="410" y="208" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">the barrier that ends its last read.</text>
+</svg>

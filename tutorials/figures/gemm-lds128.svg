@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" width="720" height="300" class="fig-svg" role="img">
+<title>128-bit shared loads: 8 lanes per wavefront; contiguous vs 32-byte stride</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="gemm-lds128-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="gemm-lds128-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="gemm-lds128-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="gemm-lds128-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="gemm-lds128-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="gemm-lds128-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="gemm-lds128-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="300" class="fig-paper"/>
+<text x="178" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b0–3</text>
+<text x="234" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b4–7</text>
+<text x="290" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b8–11</text>
+<text x="346" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b12–15</text>
+<text x="402" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b16–19</text>
+<text x="458" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b20–23</text>
+<text x="514" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b24–27</text>
+<text x="570" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">b28–31</text>
+<text x="374" y="16" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">32 banks × 4 bytes = one 128-byte wavefront (cell number = lane)</text>
+<text x="140" y="63" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">16-byte stride</text>
+<rect x="150" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="157" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="164" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="171" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="178" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="185" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="192" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="199" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="206" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="213" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="220" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="227" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="234" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="241" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="248" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="255" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="262" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="269" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="276" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="283" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="290" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="297" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="304" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="311" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="318" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="325" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="332" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="339" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="346" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="353" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="360" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="367" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="374" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="381" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="388" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="395" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="402" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="409" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="416" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="423" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="430" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="437" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="444" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="451" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="458" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="465" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="472" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="479" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="486" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="493" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="500" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="507" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="514" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="521" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="528" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="535" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="542" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="549" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="556" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="563" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="570" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="577" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="584" y="52" width="14" height="22" rx="0" class="f-c2 s-line" stroke-width="0.6"/>
+<text x="591" y="63" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<text x="608" y="63" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">1 wavefront</text>
+<text x="140" y="107" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">32-byte stride</text>
+<rect x="150" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="157" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="164" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="171" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="178" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="185" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="192" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="199" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">0</text>
+<rect x="206" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="220" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="234" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="248" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="262" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="269" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="276" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="283" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="290" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="297" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="304" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="311" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">1</text>
+<rect x="318" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="332" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="346" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="360" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="374" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="381" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="388" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="395" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="402" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="409" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="416" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="423" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">2</text>
+<rect x="430" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="444" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="458" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="472" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="486" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="493" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="500" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="507" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="514" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="521" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="528" y="96" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="535" y="107" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">3</text>
+<rect x="542" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="556" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="570" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="584" y="96" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<text x="608" y="107" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">lanes 0–3</text>
+<rect x="150" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="157" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="164" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="171" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="178" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="185" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="192" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="199" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">4</text>
+<rect x="206" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="220" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="234" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="248" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="262" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="269" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="276" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="283" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="290" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="297" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="304" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="311" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">5</text>
+<rect x="318" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="332" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="346" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="360" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="374" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="381" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="388" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="395" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="402" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="409" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="416" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="423" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">6</text>
+<rect x="430" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="444" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="458" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="472" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="486" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="493" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="500" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="507" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="514" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="521" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="528" y="124" width="14" height="22" rx="0" class="f-hl2 s-line" stroke-width="0.6"/>
+<text x="535" y="135" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">7</text>
+<rect x="542" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="556" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="570" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<rect x="584" y="124" width="14" height="22" rx="0" class="fig-paper s-line" stroke-width="0.6"/>
+<text x="608" y="135" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">lanes 4–7</text>
+<text x="140" y="135" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">(second pass)</text>
+<text x="608" y="150" text-anchor="start" dominant-baseline="central" class="fig-txt t-hl fig-small">2 wavefronts</text>
+<text x="20" y="190" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">A 128-bit load is served 8 lanes at a time (8 × 16 B = 128 B, one pass over the 32 banks).</text>
+<text x="20" y="212" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Consecutive lanes on consecutive 16-byte chunks fill each pass exactly: no conflicts.</text>
+<text x="20" y="234" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">With a 32-byte stride (lane l owning columns 8l..8l+7), 8 lanes span 256 bytes and each</text>
+<text x="20" y="256" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">pass needs two wavefronts: a 2-way conflict. Hence the split ownership 4tx and 64 + 4tx.</text>
+</svg>

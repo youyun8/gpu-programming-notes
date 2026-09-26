@@ -1,5 +1,8 @@
 # 07 – hipBLASLt and TensileLite: GEMM Kernels Written by a Program
 
+> **Part IV · AMD GPUs** · Prerequisites: [05](05-amd-cdna3-mfma.md), [06](06-aiter-asm-gemm.md) ·
+> Next: [14 – Triton](14-triton.md) (Part V)
+
 AITER (chapter 06) hand-writes a few dozen GEMM kernels.
 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) ships **thousands**: ROCm's `libhipblaslt` holds one set of code objects per GPU
 architecture, and PyTorch uses it for `torch.matmul` on MI300 by default.
@@ -8,11 +11,17 @@ that takes a list of parameters and emits a complete assembly kernel for
 every combination, and then benchmarks the combinations to decide which to
 ship.
 
-This chapter explains:
-- what those parameters mean;
-- how they map onto the techniques from chapters 05–06;
-- how hipBLASLt picks a kernel at run time;
-- how you tune it for your own shapes.
+**You will learn**
+
+- what a TensileLite *solution* is, and what its main parameters mean:
+  the tile hierarchy (`MatrixInstruction`, `DepthU`), global and local reads,
+  LDS layout, instruction scheduling, work decomposition and tile order;
+- how each parameter corresponds to a technique you saw by hand in
+  chapters 05–06 (and in the NVIDIA pages 04.1–04.7);
+- how to decode a `Cijk_…` kernel name from a profile;
+- how hipBLASLt chooses a kernel at run time, and how to tune that choice
+  for your own shapes;
+- how TensileLite generates, benchmarks and ships kernels.
 
 > **Where the code lives.** hipBLASLt used to be a standalone repository,
 > `ROCm/hipBLASLt`; it is now retired to a `develop_deprecated` branch.
@@ -78,6 +87,8 @@ $$
 
 For the example: $\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$ and
 $\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$, 256 threads.
+
+![MatrixInstruction [32, 32, 1, 2, 1, 4, 1, 2, 2]: MFMA tile, wave tile and macro tile](figures/ch07-macro-tile.svg)
 
 For the gfx942 bf16 kernels you mostly see `16x16x16` or `32x32x8` MFMAs,
 written as `[16,16,16,1, 1, …]`.
@@ -249,6 +260,8 @@ Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
   - `StaggerUMapping` selects which workgroup index drives the offset:
     wg0, wg1, wg2 or the serial ID.
 
+![Default round-robin XCD placement vs a remapping that keeps neighbouring tiles on one XCD](figures/ch07-xcd-remap.svg)
+
 The idea behind WGM is the same as the "grouped" launch order used by
 Triton and CUTLASS. Written in that common form, the serial launch index
 $s$ is mapped to the tile $(w_0', w_1')$ that the workgroup computes:
@@ -352,6 +365,8 @@ export HIPBLASLT_TUNING_OVERRIDE_FILE=tuning.txt
 python my_model.py
 ```
 
+![The three steps of offline tuning](figures/ch07-tuning-flow.svg)
+
 Two warnings apply:
 - Solution indices are only valid for **the same library build and the same
   architecture**. Re-tune after upgrading ROCm.
@@ -401,15 +416,49 @@ structure you traced in chapter 06.
 | L2/XCD-aware tile order | – | `WorkGroupMapping`, `WorkGroupMappingXCC`, `StaggerU` |
 | Per-shape selection | Tuned CSV + heuristic | Library logic + heuristic + offline tuning |
 
+## Key Takeaways
+
+1. A hipBLASLt kernel is one point in a parameter space; the generator turns
+   the parameters into assembly and benchmarking decides which points ship.
+2. `MatrixInstruction` encodes the whole tile hierarchy (MFMA → wave tile →
+   macro tile); `DepthU` is the K step. Bigger wave tiles mean more reuse
+   and more accumulator registers.
+3. PGR, DirectToLds, PLR, LDS padding and `ScheduleIterAlg=3` are the
+   generated versions of prefetching, direct-to-LDS loads, register double
+   buffering, bank-conflict avoidance and MFMA interleaving.
+4. GSU (split-K) and Stream-K fix tile quantization; WGM, WGMXCC and
+   StaggerU make the tile order cache- and channel-friendly, and are cheap
+   run-time arguments.
+5. Selection is a lookup plus a heuristic; offline tuning overrides it for
+   your exact shapes, valid only for one library build and architecture.
+
 ## Exercises
 
 1. Take the `hipblaslt-bench` line for a 4096×4096×4096 bf16 GEMM:
    - Run it with `--algo_method heuristic --requested_solution 10 --print_kernel_info`.
    - Decode the top three kernel names with section 2.
    - Which parameters differ?
+
+    <details markdown="1"><summary>Hint</summary>
+
+    Line the names up fragment by fragment (`MT…`, `MI…`, then the
+    uppercase-letter abbreviations). For a large square GEMM the candidates
+    usually share the MFMA and differ in macro tile, `DepthU`, `PGR`/`PLR`,
+    `WGM` or GSU.
+
+    </details>
 2. Compare `TENSILE_SOLUTION_SELECTION_METHOD=0` and `=2` on
    M ∈ {1, 16, 128, 1000} with N = K = 8192. Explain the differences with the
    wave-quantisation argument from section 1.5.
+
+    <details markdown="1"><summary>Hint</summary>
+
+    For $M = 1$ or 16, $T = \lceil N/\text{MT}_1 \rceil$ is tiny compared
+    with 304 CUs, so the standard library must rely on GSU while Stream-K
+    spreads the $K$ loop of the few tiles over all CUs. For $M = 1000$ the
+    tile count is large and the difference shrinks.
+
+    </details>
 3. On an MI300X, run the same GEMM with `WorkGroupMappingXCC` set to 1 and to
    8, if you can find solutions that differ only in that parameter. Measure the
    L2 hit rate with `rocprofv3 --pmc TCC_HIT_sum TCC_MISS_sum`.

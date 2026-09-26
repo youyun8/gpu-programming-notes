@@ -4,6 +4,7 @@
 Usage:
     python3 tools/cuemu/cuemu.py build path/to/solution.cu -o /tmp/solution.so
     python3 tools/cuemu/cuemu.py translate path/to/solution.cu     # print translated source
+    python3 tools/cuemu/cuemu.py run path/to/program.cu -- ARGS    # build a program with main() and run it
 """
 import argparse
 import hashlib
@@ -21,8 +22,9 @@ DROPPED_INCLUDES = {
     "cuda_runtime.h", "cuda.h", "cuda_runtime_api.h", "cuda_fp16.h", "cuda_bf16.h", "cuda_fp8.h",
     "cuda_fp4.h", "device_launch_parameters.h", "math_constants.h", "device_functions.h",
     "vector_types.h", "sm_20_atomic_functions.h", "cuda_pipeline.h", "mma.h", "cstdint", "stdint.h",
+    "cooperative_groups.h", "cooperative_groups/reduce.h", "cooperative_groups/scan.h",
 }
-UNSUPPORTED_INCLUDES = {"cooperative_groups.h", "cub/cub.cuh", "cublas_v2.h", "cudnn.h"}
+UNSUPPORTED_INCLUDES = {"cub/cub.cuh", "cublas_v2.h", "cudnn.h"}
 
 
 class TranslateError(Exception):
@@ -105,7 +107,27 @@ def _rewrite_launches(src: str) -> str:
         pos = k + 1
 
 
-def translate(src: str) -> str:
+def _inline_local_includes(src: str, base: Path, seen=None) -> str:
+    """Paste `#include "header"` files found next to the source, so they are translated too."""
+    seen = set() if seen is None else seen
+
+    def repl(m):
+        path = (base / m.group(1)).resolve()
+        if not path.is_file():
+            return m.group(0)
+        if path in seen:
+            return f"// [cuemu] already included {m.group(1)}"
+        seen.add(path)
+        text = _inline_local_includes(path.read_text(), path.parent, seen)
+        text = re.sub(r"^\s*#\s*pragma\s+once\s*$", "", text, flags=re.M)
+        return f'#line 1 "{path}"\n{text}\n// [cuemu] end of {m.group(1)}'
+
+    return re.sub(r'^[ \t]*#\s*include\s*"([^"]+)"', repl, src, flags=re.M)
+
+
+def translate(src: str, base: Path = None) -> str:
+    if base is not None:
+        src = _inline_local_includes(src, base)
     src = _strip_includes(src)
     src = _rewrite_extern_shared(src)
     src = _rewrite_launches(src)
@@ -116,13 +138,15 @@ def compiler() -> str:
     return os.environ.get("CUEMU_CXX", "clang++")
 
 
-def build(cu_path: Path, out_path: Path, extra_flags=()) -> Path:
-    translated = translate(Path(cu_path).read_text())
+def build(cu_path: Path, out_path: Path, extra_flags=(), executable=False) -> Path:
+    """Build a shared library (the default) or, with executable=True, a program with its own main()."""
+    translated = translate(Path(cu_path).read_text(), Path(cu_path).resolve().parent)
     with tempfile.TemporaryDirectory() as tmp:
         cpp = Path(tmp) / (Path(cu_path).stem + ".cpp")
-        cpp.write_text(f'#line 1 "{cu_path}"\n' + translated)
+        cpp.write_text(f'#line 1 "{Path(cu_path).resolve()}"\n' + translated)
+        kind = [] if executable else ["-fPIC", "-shared"]
         cmd = [
-            compiler(), "-std=c++20", "-O2", "-fPIC", "-shared", "-fno-strict-aliasing", "-w",
+            compiler(), "-std=c++20", "-O2", *kind, "-fno-strict-aliasing", "-w",
             "-include", str(HEADER), str(cpp), "-o", str(out_path), *extra_flags,
         ]
         result = subprocess.run(cmd, capture_output=True, text=True)
@@ -148,12 +172,20 @@ def main() -> int:
     b.add_argument("-o", "--output", required=True)
     t = sub.add_parser("translate")
     t.add_argument("source")
+    r = sub.add_parser("run")
+    r.add_argument("source")
+    r.add_argument("args", nargs=argparse.REMAINDER, help="program arguments (after --)")
     args = parser.parse_args()
     try:
         if args.cmd == "build":
             build(Path(args.source), Path(args.output))
+        elif args.cmd == "run":
+            with tempfile.TemporaryDirectory() as tmp:
+                exe = build(Path(args.source), Path(tmp) / "program", executable=True)
+                prog_args = args.args[1:] if args.args[:1] == ["--"] else args.args
+                return subprocess.run([str(exe), *prog_args]).returncode
         else:
-            print(translate(Path(args.source).read_text()))
+            print(translate(Path(args.source).read_text(), Path(args.source).resolve().parent))
     except TranslateError as e:
         print(f"cuemu: {e}", file=sys.stderr)
         return 1
