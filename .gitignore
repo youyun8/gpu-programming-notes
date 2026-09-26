@@ -1,0 +1,25 @@
+# Build outputs
+*.o
+*.out
+*.exe
+*.ptx
+*.cubin
+*.fatbin
+build/
+bin/
+
+# Profiler outputs
+*.nsys-rep
+*.ncu-rep
+*.qdrep
+*.sqlite
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
