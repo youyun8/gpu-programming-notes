@@ -370,11 +370,17 @@ def count_leetgpu_cases(upstream_id):
 def load_tensara(slug):
     sys.path.insert(0, str(TENSARA_ENGINE))
     import problem as problem_base  # type: ignore
+    import lowp_reference  # CPU stand-ins for flashinfer / swizzled scaled_mm
+
+    lowp_reference.install()
 
     path = TENSARA_PROBLEMS / "problems" / slug / "def.py"
     src = path.read_text()
     src = re.sub(r"device\s*=\s*['\"]cuda['\"]", 'device="cpu"', src)
     src = src.replace('autocast("cuda"', 'autocast("cpu"').replace(".cuda()", ".cpu()")
+    src = re.sub(r"""\.to\(\s*['"]cuda['"]\s*\)""", ".to('cpu')", src)
+    src = re.sub(r"""torch\.device\(\s*['"]cuda['"]\s*\)""", "torch.device('cpu')", src)
+    src = re.sub(r"""\.type\s*==\s*['"]cuda['"]""", ".type == 'cpu'", src)
     src = src.replace("torch.cuda.synchronize()", "None")
     mod = types.ModuleType("tensara_" + slug.replace("-", "_"))
     exec(compile(src, str(path), "exec"), mod.__dict__)
