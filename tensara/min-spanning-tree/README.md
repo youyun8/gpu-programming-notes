@@ -66,7 +66,7 @@ lightest edge crossing $(S, V\setminus S)$ is always in some MST.
 4. The total is accumulated in `double` by every thread (they all see the
    same values) and thread 0 writes it.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = O(n^2), \qquad Q = 4n^2\ \text{bytes (each row read once)}, \qquad

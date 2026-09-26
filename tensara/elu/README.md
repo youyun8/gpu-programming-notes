@@ -61,7 +61,7 @@ All Tensara elementwise problems share one kernel shape:
 
 
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

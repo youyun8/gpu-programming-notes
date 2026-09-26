@@ -68,7 +68,7 @@ $$
 4. All accumulators are `double`, so rounding does not build up across
    $10^6$ additions; the result is rounded to float once per element.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12N\ \text{bytes}, \qquad W = 2N\ \text{adds (plus } O(N/8)\text{ in the block scans)}, \qquad T_{\min} = \frac{12N}{\beta}

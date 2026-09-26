@@ -54,7 +54,7 @@ inter-block scan machinery is needed.
    $P_{i+w} - P_i$ and keeping the max. A warp `__shfl_xor_sync` max and a
    shared-memory pass over the 32 warp maxima finish the job.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{naive}} = w\,(N - w + 1), \qquad W_{\text{scan}} = O(N), \qquad Q \approx 4N + 4(N+1) + 8(N-w+1) \ \text{bytes}

@@ -42,7 +42,7 @@ $$
 | $m^{(h)}_i$ | row maximum $\max_j s^{(h)}_{ij}$ |
 | $O_{i,h,:}$ | output vector (length $D$) at offset $(iH + h)D$ |
 
-### The transposes are free
+### The Transposes Are Free
 
 The reference transposes $(M, H, D) \to (H, M, D)$ before a batched matmul.
 In memory, row $i$ of head $h$ starts at $(iH + h)D$. Head $h$ is therefore a
@@ -73,7 +73,7 @@ See [Softmax Attention](../006-softmax-attention/) for the per-tile algebra
 and [Multi-Head Attention](../012-multi-head-attention/) for the head-slicing
 details.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 4MNHD, \qquad Q_{\min} = 4\,(2MHD + 2NHD), \qquad I_{\max} = \frac{W}{Q_{\min}} = \frac{MN}{2(M+N)}

@@ -50,7 +50,7 @@ $$
 | $E$ | positional embeddings, $(N+1)\times D$ |
 | $Y$ | output, $B\times(N+1)\times D$ |
 
-### As a GEMM (implicit im2col)
+### As a GEMM (Implicit im2col)
 
 Flatten each patch in $(c, i, j)$ order into a row of length $K = CP^2$. The
 patch matrix $\mathcal P \in \mathbb R^{BN\times K}$ then gives
@@ -78,7 +78,7 @@ pixel: $\mathcal P$ is a pure permutation of the image.
   $b(N+1) + n + 1$, skipping the CLS slot.
 - A tiny kernel writes the $B$ CLS rows $\mathbf{cls} + E_0$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2BN\cdot CP^2\cdot D = 2BCHW\cdot D, \qquad Q_{\min} = 4\bigl(BCHW + DCP^2 + B(N+1)D\bigr)

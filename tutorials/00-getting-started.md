@@ -8,7 +8,7 @@ assume:
 - the shape of a LeetGPU or Tensara submission;
 - how to check errors, time a kernel, and judge whether the time is good.
 
-## 1. Where to run code
+## 1. Where to Run Code
 
 | Option | Notes |
 |--------|-------|
@@ -24,7 +24,7 @@ A sensible loop is:
 2. check it with cuemu (seconds, no GPU);
 3. submit, or run it on Colab for timing.
 
-## 2. The toolchain
+## 2. The Toolchain
 
 ```bash
 nvcc --version                         # CUDA toolkit
@@ -60,7 +60,7 @@ Useful flags:
 | `-Xptxas -v` | Prints registers, shared memory and spills per kernel. |
 | `-std=c++17` | Modern C++ in device code (templates, `constexpr`, lambdas). |
 
-## 3. Anatomy of a submission
+## 3. Anatomy of a Submission
 
 Both platforms give you **device pointers** and call a C-linkage entry
 point. You write the kernel and launch it.
@@ -100,7 +100,7 @@ Some Tensara problems pass a `shape` array that may live on either side;
 `cudaMemcpy(..., cudaMemcpyDefault)` copies it correctly in both cases
 (see [Tensara – Argmax](../tensara/argmax/)).
 
-## 4. Error checking while developing
+## 4. Error Checking While Developing
 
 ```cpp
 #define CUDA_CHECK(call)                                                     \
@@ -123,7 +123,7 @@ error on the *next* synchronizing call, which may be far from the bug.
 `compute-sanitizer ./app` (memcheck, racecheck, synccheck) pinpoints
 out-of-bounds accesses and shared-memory races.
 
-## 5. Timing a kernel
+## 5. Timing a Kernel
 
 Use CUDA events. They are recorded on the GPU's stream, so they measure
 GPU time, not launch overhead:
@@ -212,7 +212,7 @@ barriers. It says nothing about speed, and since blocks run one at a time
 it cannot find races *between* blocks; use `compute-sanitizer` on a real
 GPU for those.
 
-## 7. Checklist before submitting
+## 7. Checklist Before Submitting
 
 - [ ] Signature copied exactly (order, `int` vs `size_t`, `const`).
 - [ ] Every thread guards its index (`if (idx < n)`), including the last

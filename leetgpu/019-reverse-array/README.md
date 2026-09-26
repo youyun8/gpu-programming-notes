@@ -57,7 +57,7 @@ $x_{j-31}, \dots, x_j$ (descending, but still the same 128-byte segment).
 The hardware coalesces by address set, not by order, so both halves are
 fully coalesced.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2 \cdot 4N \ \text{bytes}, \qquad T_{\min} = \frac{8N}{\beta}

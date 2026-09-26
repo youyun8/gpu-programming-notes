@@ -46,7 +46,7 @@ $$
 | $p_{rj}$ | attention weight; each row sums to 1 |
 | $O_{rc}$ | output element (`output[r*d + c]`) |
 
-### Online softmax over key tiles
+### Online Softmax over Key Tiles
 
 Process the keys in tiles $\mathcal{T}_1, \mathcal{T}_2, \dots$ of 32 keys.
 After each tile, update the running max $m$, denominator $\ell$, and
@@ -75,7 +75,7 @@ vector-valued payload $\mathbf a$ that is rescaled by the same $\alpha$.
 
 ## Approach
 
-### Work mapping
+### Work Mapping
 
 | Level | Responsibility |
 |---|---|
@@ -83,7 +83,7 @@ vector-valued payload $\mathbf a$ that is rescaled by the same $\alpha$.
 | Warp | one query row $r$ |
 | Lane $\ell$ | scores key $\ell$ of the tile; owns output columns $\ell, \ell+32, \ell+64, \ell+96$ |
 
-### Per tile
+### Per Tile
 
 1. **Stage.** `__syncthreads()`, then the block copies 32 rows of $K$ and $V$
    into shared memory (`k_tile`, `v_tile`), zero-filling past $N$. A second
@@ -98,14 +98,14 @@ vector-valued payload $\mathbf a$ that is rescaled by the same $\alpha$.
    lane $j$ with `__shfl_sync(…, p, j)`. Every lane then does
    $a_c \mathrel{+}= p_j V_{jc}$ for its 4 columns.
 
-### Bank-conflict avoidance
+### Bank-Conflict Avoidance
 
 In step 2, lane $\ell$ reads `k_tile[ℓ][c]` for the same $c$ as all other
 lanes, i.e. a column of the tile. With a row pitch of 128 floats, all lanes
 would hit bank $c \bmod 32$. The pitch is therefore **129** (odd), which
 spreads the 32 lanes over 32 banks.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 4MNd, \qquad

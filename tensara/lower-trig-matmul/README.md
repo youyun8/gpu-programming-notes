@@ -56,7 +56,7 @@ A specialised copy of the shared SGEMM (`triMatmul`):
 Everything else (64 × 64 tile, 16-wide K slices, 4 × 4 per thread) is the
 shared kernel described below.
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -98,7 +98,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{dense}} = 2N^3, \qquad

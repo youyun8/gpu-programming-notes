@@ -40,7 +40,7 @@ $$
 Stability, meaning that equal digits keep their previous relative order, is
 what makes this induction work.
 
-### One pass: where does each key go?
+### One Pass: Where Does Each Key Go?
 
 Split the input into tiles of $T = 2048$ keys. Let $c_{d,t}$ count keys with
 digit $d$ in tile $t$. The destination of a key $u$ at position $q$ inside
@@ -89,7 +89,7 @@ Per pass (4 passes, ping-ponging between `output` and a temporary buffer):
 
 After 4 passes (an even number), the result is back in `output`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx P\,\bigl(\underbrace{4N}_{\text{count}} + \underbrace{4N + 4N}_{\text{scatter r/w}}\bigr) + 8N = 56N \ \text{bytes}, \qquad P = 4

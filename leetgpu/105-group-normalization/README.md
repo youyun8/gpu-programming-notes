@@ -62,7 +62,7 @@ contiguous row.
 3. Second pass: $y = (x - \mu)\cdot\text{rstd}\cdot\gamma_c + \beta_c$, with
    $c = g\frac CG + \lfloor i/(HW)\rfloor$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12\,NCHW\ \text{bytes} \quad(\text{read twice, write once}), \qquad \text{parallelism} = N\cdot G\ \text{blocks}

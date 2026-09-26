@@ -63,7 +63,7 @@ A further 4× could come from `uint4` (16 bytes = 4 pixels per thread) with
 the mask trick `v ^ 0x00FFFFFF` per 32-bit word. At this size the one-pixel
 version is already bandwidth-bound, so it is kept for clarity.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2 \cdot 4\,WH \ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

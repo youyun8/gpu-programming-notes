@@ -37,7 +37,7 @@ $$
 | $\alpha,\ \beta$ | float32 scalars |
 | fp32(·), fp16(·) | conversion to float32, and round-to-nearest conversion back to fp16 |
 
-### Tensor-core fragments (WMMA 16 × 16 × 16)
+### Tensor-Core Fragments (WMMA 16 × 16 × 16)
 
 One `wmma::mma_sync` call per warp computes
 
@@ -57,7 +57,7 @@ contrasts this with AMD MFMA, where the layout is documented.)
 
 ## Approach
 
-### Tiling hierarchy
+### Tiling Hierarchy
 
 | Level | Tile of $C$ | Notes |
 |---|---|---|
@@ -65,7 +65,7 @@ contrasts this with AMD MFMA, where the layout is documented.)
 | Warp | 32 × 32 | 2 × 2 accumulator fragments |
 | MMA | 16 × 16 × 16 | one `mma_sync` |
 
-### Main loop over $K$ in steps of 32
+### Main Loop over $K$ in Steps of 32
 
 1. Stage `a_s[64][32+8]` and `b_s[32][64+8]` (fp16) from global memory,
    **zero-filling** out-of-range elements. $M$, $N$, $K$ then do not need to
@@ -86,7 +86,7 @@ and stores with a bounds check. Going through shared memory is what makes the
 per-element $\beta$ term and the bounds checks possible, since fragments
 cannot be indexed element by element portably.
 
-### Alignment rules (why the odd pitches)
+### Alignment Rules (Why the Odd Pitches)
 
 WMMA requires the pointer to be 32-byte aligned and the leading dimension
 `ldm` to be a multiple of 16 bytes: 8 halves or 4 floats. Pitches of 40 and
@@ -94,7 +94,7 @@ WMMA requires the pointer to be 32-byte aligned and the leading dimension
 16 bytes relative to the 128-byte bank cycle, which spreads the fragment
 loads over the banks. All shared arrays are declared `__align__(32)`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK, \qquad

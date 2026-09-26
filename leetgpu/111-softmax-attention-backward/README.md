@@ -78,7 +78,7 @@ $dK$/$dV$ gives every output row exactly one owner warp. The price is
 computing $S$ and $dP$ twice, a standard trade-off (FlashAttention-2 instead
 uses atomics for $dQ$ in a single pass).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx \underbrace{4MNd}_{\text{rowStats}} + \underbrace{6MNd}_{\text{gradQ}} + \underbrace{8MNd}_{\text{gradKV}} = 18MNd, \qquad

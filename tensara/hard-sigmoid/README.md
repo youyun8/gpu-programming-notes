@@ -52,7 +52,7 @@ All Tensara elementwise problems share one kernel shape:
 
 The code computes `fminf(fmaxf(x / 6.0f + 0.5f, 0.0f), 1.0f)`: one division (or a multiply by the compiler's reciprocal when allowed), one add and two min/max instructions.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

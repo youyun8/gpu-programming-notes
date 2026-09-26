@@ -65,7 +65,7 @@ $$
 The summed embedding is never written to memory: one fused kernel instead of
 gather + add + LayerNorm.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx \underbrace{8BTD}_{\text{two gathered rows}} + \underbrace{4BTD}_{\text{output}} + \underbrace{8D}_{\gamma,\beta} \ \text{bytes}, \qquad W \approx 8BTD

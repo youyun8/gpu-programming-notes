@@ -59,7 +59,7 @@ $$
 3. **Normalize** in a third pass with $r_f = 1/\sqrt{\sigma_f^2+\epsilon}$
    computed once per block.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 3 \cdot 4\,BFD_1D_2 \ (\text{reads}) + 4\,BFD_1D_2 \ (\text{writes}), \qquad T_{\min} = \frac{Q}{\beta}

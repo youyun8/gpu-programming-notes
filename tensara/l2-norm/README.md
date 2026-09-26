@@ -40,7 +40,7 @@ pass 1 accumulates $x^2$ per thread and reduces across the block (warp
 shuffles plus shared memory); pass 2 multiplies by
 $1/(\sqrt{s} + \epsilon)$, re-reading the row from L2.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q_{\text{DRAM}} \approx 8BD\ \text{bytes}, \qquad W = 3BD\ \text{flops}

@@ -98,7 +98,7 @@ scale through the swizzled index (8 threads share it, a cache hit),
 multiply by $\operatorname{e4m3}(s)$ and by $1/g$ (computed once on the
 host), and store a `float2`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 0.5\,MK + \frac{MK}{16}\ (\text{read}) + 4MK\ (\text{write})\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

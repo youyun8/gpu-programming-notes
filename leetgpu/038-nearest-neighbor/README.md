@@ -41,7 +41,7 @@ $$
 
 The square root is unnecessary, because $\sqrt{\cdot}$ is monotonic.
 
-### Why the evaluation order is pinned
+### Why the Evaluation Order Is Pinned
 
 PyTorch computes `diff*diff` (3 separately rounded products) and then
 `sum(dim=2)` (left to right). A compiler left alone would contract
@@ -63,7 +63,7 @@ an ulp of each other, it flips the argmin. The kernel uses `__fsub_rn`,
   index on ties, because $j$ increases monotonically.
 - Threads with $i \ge N$ still help load tiles and reach the barriers.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 9N^2 \ \text{FLOPs}, \qquad Q_{\text{DRAM}} \approx 12N\left\lceil \frac{N}{256}\right\rceil + 16N \ \text{bytes}

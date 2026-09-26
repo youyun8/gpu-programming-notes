@@ -39,7 +39,7 @@ $$
 | rne | round to nearest, ties to even (`torch.round`, `rintf`) |
 | clamp | saturate to the int8 range |
 
-### Folding out the zero points
+### Folding Out the Zero Points
 
 $A_{ik} - z_A$ ranges over $[-255, 255]$ and no longer fits in int8, so the
 shifted values cannot go directly to the int8 tensor cores. Expanding the
@@ -75,7 +75,7 @@ so nothing overflows.
      *exactly* the reference's float32 operation order and `rintf`, adds
      $z_C$, clamps, and stores int8.
 
-### Why contiguous 16 × 16 blocks?
+### Why Contiguous 16 × 16 Blocks?
 
 WMMA requires fragment pointers aligned to 32 bytes. With 1-byte elements, a
 row-major tile `a_s[64][32+pad]` puts the second fragment of a row at
@@ -84,7 +84,7 @@ fragment as its own contiguous 256-byte block makes every fragment start on a
 256-byte boundary. The [cuemu](../../tools/cuemu/README.md) emulator's
 alignment check caught the original padded layout.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK \ \text{int ops}, \qquad Q \approx MK\frac{N}{64} + KN\frac{M}{64} + MN \ \text{bytes}

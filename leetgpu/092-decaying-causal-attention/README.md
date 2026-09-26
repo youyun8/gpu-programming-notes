@@ -64,7 +64,7 @@ The FlashAttention skeleton without the online-softmax bookkeeping:
 - **Causal tile skipping.** Key tiles stop at the block's last row, so about
   half of all tiles are never touched.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 4d\cdot\frac{S(S+1)}{2} + \frac{S(S+1)}{2}\,c_{\text{pow}}, \qquad Q_{\min} = 16Sd\ \text{bytes}

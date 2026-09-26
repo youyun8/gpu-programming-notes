@@ -45,7 +45,7 @@ PyTorch. For $x = +100$, $e^{-100}$ underflows to 0, giving $x/1 = x$. No
 special-casing is needed. The alternative form `x * (1/(1+e^{-x}))` behaves
 the same way.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N\ \text{bytes}, \qquad W \approx N\,(c_{\exp} + c_{\div})

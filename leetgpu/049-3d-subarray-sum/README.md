@@ -44,7 +44,7 @@ The flattened reduction from [2D Subarray Sum](../048-2d-subarray-sum/),
 extended to 3 coordinates. The flat index is 64-bit, the column is fastest
 (coalesced), and the warp reduction plus one atomic per warp follow as before.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4dhw \ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

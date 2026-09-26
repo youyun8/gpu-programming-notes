@@ -38,7 +38,7 @@ $$
 $(0, 1]$ and the denominator lies in $[1, N]$. No overflow is possible, and
 at least one term equals 1.
 
-### Online (single-pass) max and sum
+### Online (Single-Pass) Max and Sum
 
 The naive algorithm makes three passes: max, sum of exponentials, normalise.
 The first two fuse into one pass by carrying a pair $(m, s)$, where $m$ is the
@@ -76,7 +76,7 @@ The identity element is represented by $(-\text{FLT\_MAX}, 0)$ rather than
 $-\infty$. When both inputs are the identity, `combine` returns early. This
 avoids evaluating $e^{(-\infty) - (-\infty)} = e^{\text{NaN}}$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = \underbrace{4N}_{\text{pass 1}} + \underbrace{4N + 4N}_{\text{pass 3}} = 12N \ \text{bytes}, \qquad

@@ -46,7 +46,7 @@ $\mathbb 1[x > 0]$.
   to cover the vector part and give the tail threads a home even when
   $N < 4$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N \ \text{bytes}, \qquad W = N, \qquad I = \frac18\ \text{FLOP/byte}, \qquad T_{\min} = \frac{8N}{\beta}

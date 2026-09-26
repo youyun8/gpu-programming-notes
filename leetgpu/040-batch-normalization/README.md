@@ -40,7 +40,7 @@ $$
 | $\gamma_j,\ \beta_j$ | learnable scale and shift |
 | $y_{ij}$ | output |
 
-### Welford's online update and Chan's merge
+### Welford's Online Update and Chan's Merge
 
 Accumulating $\sum x$ and $\sum x^2$ and using $E[x^2] - E[x]^2$ suffers
 catastrophic cancellation when $\lvert\mu\rvert \gg \sigma$. Welford's
@@ -79,7 +79,7 @@ $$
    $y = \gamma_j\,((x - \mu_j)\cdot\text{rstd}_j) + \beta_j$ with
    $j = i \bmod C$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = \underbrace{4NC}_{\text{stats}} + \underbrace{4NC + 4NC}_{\text{normalize}} = 12NC \ \text{bytes}, \qquad T_{\min} = \frac{12NC}{\beta_{\text{mem}}}

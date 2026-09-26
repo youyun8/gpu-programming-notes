@@ -37,7 +37,7 @@ $$
 
 ## Approach
 
-### Why "sparse" does not help here
+### Why "Sparse" Does Not Help Here
 
 Every element of $A$, zero or not, must be read to know whether it is zero,
 so the traffic is $4MN$ bytes regardless of sparsity. Skipping zeros would
@@ -45,7 +45,7 @@ only save FMAs, which are not the bottleneck. Converting to CSR on the GPU
 first would add a full pass over $A$ plus a scan, and only pays off when the
 same matrix is multiplied many times.
 
-### Warp per row
+### Warp per Row
 
 - 8 warps per block. Warp $w$ handles row $r$.
 - Lane $\ell$ accumulates $\sum_{c \equiv \ell \pmod{32}} A_{rc} x_c$ with
@@ -59,7 +59,7 @@ One *thread* per row would be the alternative. Adjacent threads would then
 read addresses $N$ floats apart, and every load would touch a different
 sector: a 32× waste of bandwidth.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4MN + 4N + 4M, \qquad W = 2MN, \qquad I \approx \frac{2MN}{4MN} = \frac12, \qquad T_{\min} \approx \frac{4MN}{\beta}

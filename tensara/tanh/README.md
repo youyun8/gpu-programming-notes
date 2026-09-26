@@ -48,7 +48,7 @@ All Tensara elementwise problems share one kernel shape:
 
 The code calls CUDA's `tanhf`, which handles small $|x|$ with a polynomial (avoiding the cancellation of $e^x - e^{-x}$) and saturates to $\pm1$ for large $|x|$. The hardware `tanh.approx.f32` (sm_75+) is faster but has about $2^{-11}$ relative error, too coarse for `rtol = 1e-4` near 0.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

@@ -49,7 +49,7 @@ per-pass scatter formula).
    scatter using `__match_any_sync` ranks.
 3. Map back with the same XOR (it is its own inverse).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4\cdot 12n + 8n = 56n\ \text{bytes}, \qquad W = O(4n)

@@ -54,7 +54,7 @@ produces.
    shared scratch can be reused by the next call.
 3. Thread 0 writes $1 - \text{dot}/\sqrt{\max(pp\cdot tt, 10^{-16})}$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8ND + 4N\ \text{bytes}, \qquad W = 6ND\ \text{flops}, \qquad T_{\min} = \frac{Q}{\beta}

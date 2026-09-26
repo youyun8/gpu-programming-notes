@@ -58,7 +58,7 @@ search finds where the path crosses it.
 Because the co-rank and the merge loop use the **same tie rule** (A first),
 consecutive threads' ranges tile the output exactly: no gaps, no overlaps.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = O\!\left(\frac{M+N}{8}\log\min(M,N)\right) + O(M+N), \qquad Q \approx 4(M + N)\cdot 2\ \text{bytes} + \text{search reads}

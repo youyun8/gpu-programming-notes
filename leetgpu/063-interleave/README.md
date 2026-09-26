@@ -47,7 +47,7 @@ store instruction would touch 256 bytes but use only half of them. That
 wastes half of the store bandwidth per instruction (L2 merges the halves
 eventually, but the request count doubles).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N + 4N + 8N = 16N\ \text{bytes}, \qquad T_{\min} = \frac{16N}{\beta}

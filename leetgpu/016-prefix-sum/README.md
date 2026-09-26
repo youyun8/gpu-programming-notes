@@ -33,7 +33,7 @@ $$
 | $x_j$ | input values (float32) |
 | $y_i$ | inclusive prefix sums (float32 output) |
 
-### Reduce-then-scan decomposition
+### Reduce-Then-Scan Decomposition
 
 Split the array into chunks of $C = 2048$ elements. With chunk totals $S_b$
 and exclusive chunk offsets $O_b$:
@@ -90,7 +90,7 @@ error across roughly 50 000 chunk offsets. Keeping $S_b$, $O_b$ and the
 block-level scan in float64 makes the only float32 roundings the 8-item
 sequential scan and the final store.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = \underbrace{4N}_{\text{pass 1}} + \underbrace{4N + 4N}_{\text{pass 3}} = 12N \ \text{bytes}, \qquad W = O(N)

@@ -38,7 +38,7 @@ $$
 Direct evaluation is $O(N^2)$, i.e. $6.9\times10^{10}$ complex multiply-adds
 for $N = 2^{18}$.
 
-### Radix-2 split (Cooley–Tukey)
+### Radix-2 Split (Cooley–Tukey)
 
 For even $N$, split into even and odd samples:
 
@@ -55,7 +55,7 @@ $$
 Recursing gives $\log_2 N$ levels of $N/2$ "butterflies". The total is
 $O(N\log N)$.
 
-### Stockham formulation (no bit reversal)
+### Stockham Formulation (No Bit Reversal)
 
 The in-place Cooley–Tukey FFT needs a bit-reversal permutation. Stockham
 instead reads from one buffer and writes to another in each pass, placing
@@ -76,7 +76,7 @@ $$
 | $q$ | which sub-transform |
 | $e^{\mp i\pi k/s}$ | twiddle ($-$ forward, $+$ inverse), computed with `sincospif` |
 
-### Bluestein (chirp-z) for arbitrary $N$
+### Bluestein (Chirp-Z) for Arbitrary $N$
 
 Using $kn = \tfrac12\bigl(k^2 + n^2 - (k-n)^2\bigr)$:
 
@@ -114,7 +114,7 @@ $$
   4. An inverse FFT (sign $+1$, unnormalised).
   5. `bluesteinFinish` multiplies by $w_k / L$.
 
-### Exact chirp phases
+### Exact Chirp Phases
 
 For $n$ near $2.6\times10^5$, $n^2 \approx 7\times10^{10}$ exceeds float32
 precision by far, so $\pi n^2/N$ computed in float32 would have a useless
@@ -123,7 +123,7 @@ $m^2 \bmod 2N$ **in 64-bit integers** first. It then calls
 `sincospif(-(m² mod 2N)/N)`, which evaluates $\sin(\pi t)$ and $\cos(\pi t)$
 without the error of multiplying by a rounded $\pi$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{pow2}} \approx 5N\log_2 N, \qquad

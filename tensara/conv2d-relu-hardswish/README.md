@@ -59,7 +59,7 @@ applied to the fp32 accumulator in registers, right before the single
 store. The intermediate images $C$ and $R$ never touch memory: this is the
 entire point of fusion.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2HWK_hK_w + 5HW, \qquad Q_{\text{fused}} \approx 8HW, \qquad Q_{\text{unfused}} \approx 8HW + 2\cdot 8HW

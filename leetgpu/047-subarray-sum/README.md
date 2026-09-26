@@ -47,7 +47,7 @@ overflow.
 Since integer addition is exact, the nondeterministic order of the atomics
 does not matter. No second pass is needed, unlike the float reductions.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4(E - S + 1)\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

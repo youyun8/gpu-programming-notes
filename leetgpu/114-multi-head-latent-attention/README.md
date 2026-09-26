@@ -49,7 +49,7 @@ $$
 | $s_{h,t}$ | score |
 | $\mathbf o_h$ | output of head $h$ (length $d_h$) |
 
-### Weight absorption
+### Weight Absorption
 
 The reconstructed key of head $h$ would be $\mathbf k_{h,t} = \mathbf c_tW_{UK,h}^{\mathsf T}$,
 so $\mathbf q^{\text{nope}}_h\cdot\mathbf k_{h,t} = (\mathbf q^{\text{nope}}_hW_{UK,h})\cdot\mathbf c_t$.
@@ -76,7 +76,7 @@ head (MQA)**: key vector $[\mathbf c_t\,|\,\mathbf k^{\text{pe}}_t]$
 3. **`upProject`**: one thread per $(h, j)$, a dot product over $R$ with
    column $j$ of $W_{UV,h}$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 \text{cache bytes per token} = 4(R + r)\ \ \text{vs.}\ \ 4\cdot 2Hd_h\ \text{(MHA)}, \qquad

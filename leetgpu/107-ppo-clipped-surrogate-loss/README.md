@@ -60,7 +60,7 @@ Computing the ratio from the *difference* of log-probabilities (one `expf`)
 is the numerically sensible form. Dividing two probabilities would underflow
 for long sequences.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12BS\ \text{bytes}, \qquad W \approx BS\,(c_{\exp} + 6)

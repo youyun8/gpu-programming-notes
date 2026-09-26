@@ -53,7 +53,7 @@ $$
 2. $\operatorname{LSE}_i = m_i + \ln s_i$.
 3. **Write pass**: $y_{ij} = x_{ij} - \operatorname{LSE}_i$ (no exponentials).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4MN\ (\text{read}) + 4MN\ (\text{re-read}) + 4MN\ (\text{write}), \qquad \#\exp = MN\ (\text{plus merges})

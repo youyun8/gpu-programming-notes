@@ -47,7 +47,7 @@ One thread per output $i$:
 
 If $N = 0$ the launch is skipped (0 blocks is an invalid configuration).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N + 2N = 6N \ \text{bytes}, \qquad W \approx \tfrac{N}{2}\,(c_{\exp} + c_{\div} + 2)

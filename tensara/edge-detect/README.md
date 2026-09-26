@@ -66,7 +66,7 @@ $$
 3. **`normalize`** reads `g_max_bits` once and rescales in place (skipped
    when the image is flat).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4hw\ (\text{read } I) + 4hw\ (\text{write } M) + 8hw\ (\text{rescale}) = 16hw\ \text{bytes}, \qquad

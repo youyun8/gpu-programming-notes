@@ -70,7 +70,7 @@ $$
 Giving each thread 4 outputs reuses each weight load 4 times from a register
 and gives the scheduler 4 independent FMA chains, which hides FMA latency.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2K(L-K+1), \qquad

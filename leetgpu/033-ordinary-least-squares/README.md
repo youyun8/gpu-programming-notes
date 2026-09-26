@@ -48,7 +48,7 @@ $$
 | $L$ | lower-triangular Cholesky factor |
 | $\mathbf z$ | intermediate vector of the forward solve |
 
-### Right-looking Cholesky, step $k = 0 \dots f-1$
+### Right-Looking Cholesky, Step $k = 0 \dots f-1$
 
 $$
 L_{kk} = \sqrt{G_{kk}}, \qquad L_{ik} = \frac{G_{ik}}{L_{kk}}\ (i > k), \qquad G_{ij} \leftarrow G_{ij} - L_{ik}L_{jk}\ (j \le i,\ i, j > k)
@@ -92,7 +92,7 @@ With inputs up to $\pm1000$ and random features, $\kappa(X)$ of $10^2$–$10^3$
 gives $\kappa(G)$ of $10^4$–$10^6$. That exhausts float32's $\sim10^{-7}$
 precision, but not float64's $\sim10^{-16}$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_G = 2nf^2, \qquad W_{\text{chol}} \approx \frac{f^3}{3}, \qquad W_{\text{solve}} = 2f^2, \qquad \text{sync steps} = O(f)

@@ -76,7 +76,7 @@ pairs folded into the grid (head stride $S\cdot E$):
 The $S\times S$ score matrix is never materialised: memory is $O(SE)$ per
 head instead of $O(S^2)$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 4\,BHS^2E\ \text{flops}, \qquad Q_{\min} = 4\cdot 4\,BHSE\ \text{bytes}, \qquad

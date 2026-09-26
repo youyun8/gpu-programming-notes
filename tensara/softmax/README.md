@@ -63,7 +63,7 @@ The shape array may live on the host or the device, so it is copied with
   neighbouring $i$, so each step is a coalesced warp access. A second walk
   writes the outputs.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12\,ORI\ \text{bytes (two reads, one write)}, \qquad \#\exp \approx 2\,ORI

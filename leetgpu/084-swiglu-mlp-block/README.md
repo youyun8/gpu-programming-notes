@@ -47,7 +47,7 @@ $$
 
 ## Approach
 
-### Kernel 1: a dual GEMM with a fused gate
+### Kernel 1: A Dual GEMM with a Fused Gate
 
 `gemm<true>` computes the tiles of $G$ **and** $U$ at the same time:
 
@@ -64,7 +64,7 @@ $U$ ($2Md_f$ floats), and an elementwise kernel that reads them back.
 
 The same register-blocked template in single mode.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2Md\,d_f\cdot 2 + 2Md_f\,d = 6Md\,d_f, \qquad

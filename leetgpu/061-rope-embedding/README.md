@@ -74,7 +74,7 @@ grid-stride with a 64-bit index.
 The kernel uses both $c_j$ and $c_{j+h}$ (not only one) so that it matches
 the reference even if a caller passes non-duplicated tables.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\cdot 4MD \ \text{bytes} \quad(\text{read } Q, \cos, \sin;\ \text{write output}), \qquad W = 3MD

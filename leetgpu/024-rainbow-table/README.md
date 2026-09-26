@@ -63,7 +63,7 @@ $$
 - Rounds are inherently sequential (each depends on the previous hash), but
   elements are independent. Parallelism comes entirely from $N$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 16RN \ \text{integer ops}, \qquad Q = 8N \ \text{bytes}, \qquad I = 2R\ \text{ops/byte}

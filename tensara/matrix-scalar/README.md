@@ -46,7 +46,7 @@ All Tensara elementwise problems share one kernel shape:
 
 One `FMUL` per element; the result is exactly the correctly rounded product, identical to PyTorch's.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = n^2, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

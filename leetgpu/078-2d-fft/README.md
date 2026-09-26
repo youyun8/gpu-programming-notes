@@ -39,7 +39,7 @@ $$
 DFT each column of the result ($N$ transforms of length $M$). The cost is
 $O(MN\log(MN))$ with FFTs.
 
-### Radix-2 decimation in time (in shared memory)
+### Radix-2 Decimation in Time (in Shared Memory)
 
 For power-of-two $L$: permute the input into **bit-reversed** order, then
 run $\log_2 L$ butterfly stages. In the stage with half-size $h$:
@@ -79,7 +79,7 @@ rounded $\pi$. Both matter at $L = 4096$.
 A row of 4096 complex values is 32 KB of shared memory. The launcher
 opts in to the dynamic size explicitly.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 5MN\log_2(MN), \qquad Q \approx \underbrace{2\cdot 8MN}_{\text{row FFTs}}\cdot 2 + \underbrace{2\cdot 8MN}_{\text{transposes}}\cdot 2 = 64MN\ \text{bytes}

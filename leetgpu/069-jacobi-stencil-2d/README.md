@@ -51,7 +51,7 @@ Gauss–Seidel.
 - `__restrict__` tells the compiler that `in` and `out` do not alias, so
   loads can be cached in the read-only path.
 
-### Reuse without shared memory
+### Reuse Without Shared Memory
 
 Each input value is read by up to 5 threads: its own, left, right, above,
 below. Within a warp, the left, centre and right reads fall in the same
@@ -60,7 +60,7 @@ neighbouring block rows moments earlier (L2 hits). DRAM traffic therefore
 stays close to 1 read + 1 write per cell, and an explicit shared-memory tile
 with halo would mostly save L1/L2 transactions, not DRAM bytes.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q_{\min} = 8RC\ \text{bytes}, \qquad W = 4RC, \qquad I = \frac{4}{8} = 0.5\ \text{FLOP/byte}

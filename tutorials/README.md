@@ -18,7 +18,7 @@ Chapters 05–07 form an AMD track. They assume 04, and they read best in
 order: first the hardware and instruction (05), then a hand-written kernel
 (06), then the generator that produces thousands of such kernels (07).
 
-## The one formula to keep in mind
+## The One Formula to Keep in Mind
 
 Every chapter and every problem page comes back to the roofline bound
 (chapter 00):
@@ -41,7 +41,7 @@ Chapters 01–03 are about reaching $Q/\beta$ for kernels with $I < I^{\star}$
 04–07 are about raising the *effective* $I$ of matrix multiplication at
 every level of the memory hierarchy until $W/F$ is the bound.
 
-## How the pages are organised
+## How the Pages Are Organised
 
 - Each tutorial states its goals, derives the key formulas (each followed
   by a table of symbols), shows complete kernels, and ends with practice
@@ -60,7 +60,7 @@ every level of the memory hierarchy until $W/F$ is the bound.
 - Tensor cores on NVIDIA (WMMA / MMA / CuTe)
 - Triton for the same problems
 
-## Reading list
+## Reading List
 
 - *Programming Massively Parallel Processors* (Hwu, Kirk, El Hajj), 4th ed.
 - [CUDA C++ Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)

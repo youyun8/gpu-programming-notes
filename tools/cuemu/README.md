@@ -1,10 +1,10 @@
-# cuemu – run CUDA solutions on a CPU
+# cuemu – Run CUDA Solutions on a CPU
 
 `cuemu` lets every solution in this repository be tested without an NVIDIA
 GPU. It is how CI checks all 185 solutions against the platforms' own
 reference implementations.
 
-## How it works
+## How It Works
 
 1. **Translate** (`cuemu.py`). A few source-level rewrites turn a `.cu` file
    into C++:

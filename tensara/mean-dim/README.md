@@ -66,7 +66,7 @@ changes nothing in memory: it has $O\cdot I$ elements in the same order.
 
 For this problem the accumulator is the sum accumulator with `finish` dividing by $R$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\,ORI + 4\,OI\ \text{bytes}, \qquad T_{\min} = \frac{4\,ORI}{\beta}

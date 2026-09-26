@@ -79,7 +79,7 @@ $$
 
 ## Approach
 
-### Only the last position matters
+### Only the Last Position Matters
 
 The reference re-runs the whole sequence each step and keeps only the last
 row of logits. With **one layer**, position $j$'s key and value depend only
@@ -91,14 +91,14 @@ computed once, when the token is appended, and cached. This is exactly the
 2. attention over the $\le 41$ cached keys ($O(L)$);
 3. the residual, MLP, norm and 10 logits ($O(1)$).
 
-### One thread per sequence
+### One Thread per Sequence
 
 Per sequence, the whole state is ≤ 42 positions × 3 floats. One thread runs
 the entire 11-step greedy loop in registers/local memory: embed the prompt
 tokens → cache $(\mathbf k_j, v_j)$ → loop {query, attention, MLP, logits,
 argmax, append}. The batch provides the parallelism.
 
-### Matching the reference numerically
+### Matching the Reference Numerically
 
 The logits feed an `argmax`, so a tiny numerical difference can flip a
 generated digit and change every later step. The kernel therefore follows the
@@ -106,7 +106,7 @@ reference's operation order. The fixed constants ($\omega$, $\lambda$) are
 computed on the host in double, exactly as the Python module does, and passed
 in as floats.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx B\left(31\,c_{\text{append}} + \sum_{s=0}^{10}\bigl(c_{\text{step}} + 6\,(31 + s)\bigr)\right)

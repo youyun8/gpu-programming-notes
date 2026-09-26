@@ -79,7 +79,7 @@ The epilogue functors receive the output row index. They derive the sample
 index $b = \lfloor \text{row}/S\rfloor$ and read the right gate vector, so the
 per-sample broadcast costs nothing extra.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx BS\Bigl(2\cdot512\cdot1536 + 2\cdot512^2 + 2\cdot2\cdot512\cdot2048\Bigr) + 4BS^2\cdot512 + 2B\cdot512\cdot3072

@@ -51,7 +51,7 @@ $$
 The shared pitches satisfy WMMA's `ldm` rule (multiple of 8 halves = 16
 bytes), and every fragment pointer is 32-byte aligned (see [GEMM](../022-gemm/)).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2BMNK, \qquad Q \approx 2B\left(MK\frac{N}{64} + KN\frac{M}{64}\right) + 2BMN

@@ -61,7 +61,7 @@ The two-pass reduction from [Reduction](../004-reduction/):
 2. **`finalize`**: one block adds the partials in float64 and writes
    $(b - a)\cdot\text{sum}/n$, computing $b - a$ in double.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4n \ \text{bytes}, \qquad W = n, \qquad T_{\min} = \frac{4n}{\beta}

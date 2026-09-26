@@ -66,7 +66,7 @@ $O(\log L)$ depth.
 This is the same "chunked scan" idea that makes Mamba's selective scan
 parallel on GPUs.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 3BL\ (\text{fold}) + 2BL\ (\text{replay}) + O(B\cdot 1024\log 1024), \qquad Q = 12BL\ \text{bytes}

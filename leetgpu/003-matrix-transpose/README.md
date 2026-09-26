@@ -46,7 +46,7 @@ $R$ elements (i.e. $4R$ bytes) apart. One side is always strided.
 
 ## Approach
 
-### Tiled transpose through shared memory
+### Tiled Transpose Through Shared Memory
 
 A 32 × 8 thread block handles a 32 × 32 tile. The block origin is
 $(r_0, c_0) = (32\,\texttt{blockIdx.y},\ 32\,\texttt{blockIdx.x})$.
@@ -64,7 +64,7 @@ $(r_0, c_0) = (32\,\texttt{blockIdx.y},\ 32\,\texttt{blockIdx.x})$.
 The transpose happens inside shared memory (row index ↔ column index), where
 strided access is cheap. It never happens in DRAM.
 
-### Bank-conflict-free padding
+### Bank-Conflict-Free Padding
 
 Shared memory has 32 banks of 4 bytes. Word $w$ lives in bank $w \bmod 32$.
 In step 3 a warp reads a *column* of the tile, i.e. words
@@ -84,7 +84,7 @@ With $P = 32$, every lane hits the same bank: a **32-way conflict**, fully
 serialised. With $P = 33$ (`tile[32][33]`), the banks are
 $(t_x + q) \bmod 32$, all distinct, so the read is conflict-free.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2 \cdot 4RC \ \text{bytes}, \qquad W = 0, \qquad T_{\min} = \frac{Q}{\beta}

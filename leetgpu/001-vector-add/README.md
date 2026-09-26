@@ -53,14 +53,14 @@ $$
 
 ## Approach
 
-### Parallel decomposition
+### Parallel Decomposition
 
 One thread per element. The launch is `vectorAdd<<<G, 256>>>` with
 $G = \lceil N/256 \rceil$. Each thread computes its $i$, returns if
 $i \ge N$, and otherwise does one load from `A`, one from `B`, one add and one
 store to `C`.
 
-### Why the memory access pattern matters
+### Why the Memory Access Pattern Matters
 
 A warp is 32 consecutive threads, so it touches the 32 consecutive floats
 $A_{32w}, \dots, A_{32w+31}$, i.e. 128 contiguous bytes. The memory system
@@ -68,7 +68,7 @@ serves this as a single fully used transaction (4 sectors of 32 bytes). This
 is called **coalescing**, and it is the only optimisation that really matters
 here: every byte fetched is a byte used.
 
-### Why not do more per thread?
+### Why Not Do More per Thread?
 
 Grid-stride loops or `float4` vectorised loads (each thread handles 4
 elements) reduce the instruction count and can help a few percent on very
@@ -76,7 +76,7 @@ large $N$. They do not change the byte count, which is what bounds the
 runtime. The simple one-thread-per-element version already saturates DRAM
 when $N$ is large, so it is kept for clarity.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = N, \qquad Q = 3 \cdot 4N = 12N \ \text{bytes}, \qquad I = \frac{W}{Q} = \frac{1}{12}\ \text{FLOP/byte},

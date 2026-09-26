@@ -62,7 +62,7 @@ $$
    buffers, stop when nothing changed (at most $N - 1$ sweeps).
 4. **`finish`**: $+\infty \to -1$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N^2 \cdot T\ \text{bytes}, \qquad W = N^2 T\ \text{relaxations}

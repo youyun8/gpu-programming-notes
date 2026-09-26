@@ -82,7 +82,7 @@ element):
 
 Out-of-range entries load as $+\infty$, which never wins a min.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2N^3\ (\text{add + min}), \qquad

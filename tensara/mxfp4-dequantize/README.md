@@ -67,7 +67,7 @@ block read the same scale byte, a cache hit. Every E2M1 value times a
 power of two is exact in FP32, so the result matches the reference bit for
 bit.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 0.5\,MK + \frac{MK}{32}\ (\text{read}) + 4MK\ (\text{write})\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

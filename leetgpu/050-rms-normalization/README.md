@@ -56,7 +56,7 @@ Three kernels in one stream:
 The scalar is handed from kernel to kernel through device memory, so there
 is no host round trip.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N + 8N = 12N\ \text{bytes}, \qquad W \approx 5N

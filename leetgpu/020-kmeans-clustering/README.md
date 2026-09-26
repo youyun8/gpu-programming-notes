@@ -54,7 +54,7 @@ $$
 Each iteration has two kernels. The iteration loop runs on the host; the
 data never leaves the GPU.
 
-### 1. `assignPoints` (≤ 1024 blocks × 256 threads)
+### 1. `assignPoints` (≤ 1024 Blocks × 256 Threads)
 
 - Stage all $k$ centroids in shared memory. Every point compares against
   every centroid, so the centroid reads are broadcasts.
@@ -70,12 +70,12 @@ data never leaves the GPU.
   $k = 5$ and $n = 10^4$ this replaces 30 000 heavily contended global
   atomics per iteration with at most $3 \cdot 5 \cdot 40$.
 
-### 2. `updateCentroids` ($k$ threads)
+### 2. `updateCentroids` ($k$ Threads)
 
 $\mu_c = \Sigma_c / \text{cnt}_c$ if $\text{cnt}_c > 0$. It then zeroes the
 accumulators for the next iteration, which avoids a separate `memset` launch.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx T\,(5nk + 3n), \qquad Q \approx T\,(8n + 4n) \ \text{bytes}

@@ -115,7 +115,7 @@ Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
    even lane packs itself with its odd neighbour into one byte. Lane 0 of
    the half-warp writes the scale at `swizzledScaleIndex(row, blk)`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2MK\ (\text{read}) + \frac{MK}{2} + \frac{MK}{16}\ (\text{write})\ \text{bytes}

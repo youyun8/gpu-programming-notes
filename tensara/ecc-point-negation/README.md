@@ -55,7 +55,7 @@ $y_i$ (two coalesced 8-byte loads) and writes both results as a single
 array is 16-byte aligned. The `y == 0 ? 0 : p - y` branch compiles to a
 select.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 16N + 16N = 32N\ \text{bytes}, \qquad T_{\min} = \frac{32N}{\beta}

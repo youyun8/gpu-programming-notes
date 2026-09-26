@@ -57,7 +57,7 @@ $$
 
 The result is deterministic, unlike an `atomicAdd` into one float.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8n\ \text{bytes}, \qquad T_{\min} = \frac{8n}{\beta}

@@ -58,7 +58,7 @@ With $k \le 16$, the windows of neighbouring outputs overlap when $s < k$
 (e.g. $3\times3$, stride 2). Those repeated reads are served by L1/L2, and
 explicit shared-memory tiling brings little for such small windows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{cmp}} = k^2 N C H_o W_o, \qquad Q_{\min} = 4NC\,(HW + H_oW_o)

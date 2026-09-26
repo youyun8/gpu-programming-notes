@@ -49,7 +49,7 @@ $$
 4. Out-of-range planes and rows are skipped with `continue`, so the border
    costs nothing.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2n^3K^3, \qquad Q_{\min} = 8n^3\ \text{bytes}, \qquad I = \frac{W}{Q_{\min}} = \frac{K^3}{4}

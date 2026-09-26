@@ -42,7 +42,7 @@ $$
 `cudaMemcpy(…, cudaMemcpyDeviceToDevice)` would do the same using the copy
 engine or an internal kernel, but the exercise is the kernel.
 
-### What limits a copy
+### What Limits a Copy
 
 Achieved bandwidth depends on the number of **bytes in flight**. By
 Little's law:
@@ -60,7 +60,7 @@ At $\beta = 2$ TB/s and $\lambda \approx 600$ ns, about 1.2 MB must be
 outstanding at all times. `float4` accesses quadruple the bytes per
 instruction, which makes it easy to reach that with ordinary occupancy.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2 \cdot 4N^2 \ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

@@ -13,7 +13,7 @@ optimisation ladder:
 Throughout, $C = AB$ with $A$ of size $M\times K$, $B$ of size $K\times N$
 and $C$ of size $M\times N$, all row-major FP32.
 
-## 1. The numbers that matter
+## 1. The Numbers That Matter
 
 $$
 C_{ij} = \sum_{k=0}^{K-1} A_{ik} B_{kj}, \qquad
@@ -33,7 +33,7 @@ At $n = 4096$, $I_{\max} \approx 680$ flop/byte, far above any GPU's ridge
 point (chapter 00). The whole game is to get the *actual* intensity, as
 seen from DRAM and from each level of on-chip memory, high enough.
 
-## 2. Naive kernel
+## 2. Naive Kernel
 
 One thread per output element:
 
@@ -62,7 +62,7 @@ Caches rescue some of it (the warp's 32 threads share the row of $A$, and
 neighbouring warps reuse $B$), but the kernel still typically reaches only
 1–5 % of peak.
 
-## 3. Shared-memory tiling
+## 3. Shared-Memory Tiling
 
 Split $C$ into $T\times T$ tiles, one per block of $T\times T$ threads, and
 split the $k$ loop into phases of $T$:
@@ -124,7 +124,7 @@ broadcast of `a_tile` is nearly free, the `b_tile` read is not), and an SM
 can issue far fewer shared loads than FMAs per cycle. This kernel typically
 reaches 10–20 % of peak.
 
-## 4. Register tiling
+## 4. Register Tiling
 
 Give each thread a $t_M\times t_N$ patch of outputs held in registers. For
 each $k$, a thread loads $t_M$ values of $A$ and $t_N$ values of $B$ from
@@ -180,7 +180,7 @@ Details that matter:
 - **Full unrolling** keeps `acc[4][4]` in registers; a dynamic index would
   force it into local memory.
 
-## 5. The rest of the ladder
+## 5. The Rest of the Ladder
 
 | Technique | Why it helps |
 |-----------|-----|

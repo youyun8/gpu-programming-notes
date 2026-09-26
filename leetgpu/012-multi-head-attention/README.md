@@ -48,7 +48,7 @@ The per-row online-softmax update is the one derived in
 [Softmax Attention](../006-softmax-attention/): running max $m$, denominator
 $\ell$, accumulator $\mathbf a$, and correction $\alpha = e^{m - m'}$.
 
-### Heads as strides
+### Heads as Strides
 
 Element $(r, c)$ of head $i$ lives at offset
 $r \cdot d_{\text{model}} + i\,d_k + c$. A head is therefore just a base
@@ -64,7 +64,7 @@ the same kernel is reused by the causal, GQA and other attention variants.
 $\lceil N/4\rceil \times h$ blocks of 128 threads. `blockIdx.y` selects the
 head, and each warp handles one query row.
 
-### Slicing the head dimension
+### Slicing the Head Dimension
 
 $d_k$ can be as large as 1024, but a $32 \times 1024$ float tile would need
 128 KB of shared memory. The kernel therefore streams K and V through shared
@@ -81,7 +81,7 @@ memory in **slices of 128 columns**:
    $V$, broadcast each $p_j$ with `__shfl_sync`, and update the accumulator
    registers of that slice.
 
-### Keeping accumulators in registers
+### Keeping Accumulators in Registers
 
 Each lane owns up to $8 \text{ slices} \times 4 = 32$ output columns. The
 slice loop is `#pragma unroll`ed with a compile-time bound (`kMaxSlices = 8`)
@@ -93,7 +93,7 @@ Shared memory is $4 d_k + 32\cdot129 + 32\cdot128$ floats ≈ 49 KB at
 $d_k = 1024$, over the 48 KB default, so the launcher raises the limit with
 `cudaFuncSetAttribute(…MaxDynamicSharedMemorySize…)`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 4N^2 d_{\text{model}}, \qquad

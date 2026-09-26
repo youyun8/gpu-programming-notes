@@ -1,4 +1,4 @@
-# 06 – Inside a hand-written AMD GEMM: aiter's bf16 asm kernels
+# 06 – Inside a Hand-Written AMD GEMM: aiter's bf16 Asm Kernels
 
 [aiter](https://github.com/ROCm/aiter) is AMD's operator library for LLM
 inference; vLLM and SGLang use it on MI300 and MI355. Most of its
@@ -16,7 +16,7 @@ weights and split-K. It uses the MFMA vocabulary from
 the disassembly of aiter commit `569ae98`. You can reproduce all of it on a
 machine without a GPU (see [Reproduce this chapter](#reproduce-this-chapter)).
 
-## 1. How aiter finds and launches the kernel
+## 1. How aiter Finds and Launches the Kernel
 
 The Python call chain for `C = A · Bᵀ` (an `nn.Linear`) is:
 
@@ -28,7 +28,7 @@ aiter.tuned_gemm.gemm_a16w16(A, B, bias)          # aiter/tuned_gemm.py
        └─ C++: csrc/py_itfs_cu/asm_gemm_a16w16.cu  # picks a .co, fills KernelArgs, hipModuleLaunchKernel
 ```
 
-### Tuned table
+### Tuned Table
 
 `aiter/configs/bf16_tuned_gemm.csv` holds one row per
 `(gfx, cu_num, M, N, K, bias, dtype, outdtype, scaleAB, bpreshuffle)` key.
@@ -46,7 +46,7 @@ practical lesson is that **a GEMM library is a dispatch table plus a zoo of
 specialised kernels.** Chapter 07 shows hipBLASLt doing the same thing at a
 much larger scale.
 
-### Kernel table
+### Kernel Table
 
 `hsa/gfx942/bf16gemm/bf16gemm_fp32bf16.csv` lists every `.co` in the family
 with its properties:
@@ -74,7 +74,7 @@ When no tuned row matches, `get_heuristic_kernel` in the C++ launcher:
 This is the same "fill the machine, then maximise reuse" reasoning a human
 applies.
 
-### Arguments and launch
+### Arguments and Launch
 
 `KernelArgs` is a packed struct in which **every field is padded to 16
 bytes**: `ptr_D`, `ptr_C`, `ptr_A`, `ptr_B`, `alpha`, `beta`, strides, `M`,
@@ -94,7 +94,7 @@ s_load_dword   s48,      s[0:1], 0x110   ; splitk
 The launch grid is `(ceil(N/64), ceil(M/128), splitK)` with 256 threads per
 workgroup.
 
-### Pre-shuffled weights
+### Pre-Shuffled Weights
 
 `aiter.ops.shuffle.shuffle_weight(w, layout=(16, 16))` permutes the weight
 **once, offline**:
@@ -129,7 +129,7 @@ Each contiguous 1 KiB chunk is one $16\times32$ block, and lane $\ell$ gets
 row $n_0 = \ell \bmod 16$ with 8 consecutive $k$: the MFMA B-operand
 layout for two consecutive 16x16x16 instructions.
 
-## 2. The kernel descriptor: one fat wave per SIMD
+## 2. The Kernel Descriptor: One Fat Wave per SIMD
 
 ```
 $ llvm-objdump -D -j .rodata --mcpu=gfx942 bf16gemm_fp32bf16_tn_128x64_bshuffle_splitk.co
@@ -149,7 +149,7 @@ Nothing hides latency except the kernel's own instruction schedule. This is
 the opposite of the "maximise occupancy" advice for simple kernels, and it is
 normal for peak-performance GEMMs on CDNA.
 
-## 3. The work decomposition: why B never touches LDS
+## 3. The Work Decomposition: Why B Never Touches LDS
 
 The MFMAs in the main loop look like this:
 
@@ -207,11 +207,11 @@ The only requirement is that the A fragments read from LDS use the same
 $\sigma$ as the pre-shuffled B, which the kernel's LDS read offsets
 guarantee.
 
-## 4. The main loop
+## 4. The Main Loop
 
 The steady state is a block that repeats for every K step of 64.
 
-### Per-block instruction budget
+### Per-Block Instruction Budget
 
 Counted from the disassembly:
 
@@ -249,7 +249,7 @@ The teaching kernel of chapter 05 has $\rho = 8/8 = 1$ as well, but each of
 its MFMAs is surrounded by address arithmetic, waits and barriers; here the
 whole loop body is scheduled so that the matrix pipe never idles.
 
-### Direct-to-LDS loads
+### Direct-to-LDS Loads
 
 ```asm
 s_add_u32 m0, 0x100, s42                     ; LDS destination = M0 (+ lane * 4)
@@ -264,7 +264,7 @@ Each instruction moves 256 bytes, so `M0` advances by `0x100`.
 There are no `ds_write`s at all in the loop. That saves 16 instructions per
 step, plus the VGPRs that would have staged the data.
 
-### Register double buffering
+### Register Double Buffering
 
 ```asm
 v_mfma_f32_16x16x16_bf16 v[44:47], a[128:129], a[0:1], v[44:47]   ; compute with a[0:63]...
@@ -309,7 +309,7 @@ the pointer increment for free.
 This is the single most important scheduling idea in AMD GEMMs. It is exactly
 what TensileLite's `ScheduleIterAlg=3` automates (chapter 07).
 
-### Counting outstanding loads
+### Counting Outstanding Loads
 
 `s_waitcnt vmcnt(18)` means "continue once at most 18 vector-memory operations
 are still in flight". Each block issues 16 + 2 = 18 of them. Vector memory
@@ -318,7 +318,7 @@ for everything from block *k-1* and earlier, while block *k*'s loads keep
 flying. That is **one full block of prefetch**, expressed with a single
 counter, with no extra registers and no branches.
 
-### Branch-free K tail
+### Branch-Free K Tail
 
 ```asm
 s_add_u32 s31, 0x100, s33
@@ -337,7 +337,7 @@ kernels such as TensileLite's rely on that for edge tiles. This kernel sets
 `num_records` to `0xFFFFFFF0` (`s_mov_b32 s6, -16` in the prologue), which
 effectively disables the check.
 
-## 5. Epilogue: split-K and bf16 rounding
+## 5. Epilogue: Split-K and bf16 Rounding
 
 With `splitk > 1`, the grid's z dimension splits K. Each z-slice accumulates a
 partial 128×64 tile:
@@ -401,7 +401,7 @@ $$
 It multiplies the number of workgroups by $S$ at the cost of $S$ partial
 results per tile (atomics) and non-deterministic fp32 summation order.
 
-## 6. Modifying and profiling such a kernel
+## 6. Modifying and Profiling Such a Kernel
 
 aiter documents the full workflow in `docs/isa_kernel_optimization.md`, and
 its scripts are in `docs/examples/isa_optimization/`:
@@ -431,7 +431,7 @@ its scripts are in `docs/examples/isa_optimization/`:
      It shows whether the loop is bound by MFMA issue, `s_waitcnt` or LDS bank
      conflicts.
 
-## Reproduce this chapter
+## Reproduce This Chapter
 
 No GPU or ROCm is needed; Ubuntu's LLVM 18 packages are enough.
 

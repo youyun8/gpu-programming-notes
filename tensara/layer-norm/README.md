@@ -56,7 +56,7 @@ channel across the batch; here they are per sample across the features.
 4. **Pass 3**: $y = (x - \mu_b)\,r_b\,\gamma_g + \beta_g$ (with $\gamma, \beta$
    read coalesced and shared by all blocks through L2).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 3\cdot 4BG + 2\cdot 4G + 4BG = 16BG + 8G\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta_{\text{mem}}}

@@ -55,7 +55,7 @@ band-specific changes:
 The tile loop bounds are block-uniform, so every warp reaches every
 `__syncthreads()`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 4d\sum_{i}\lvert\mathcal W_i\rvert \le 4dM(2w+1), \qquad \text{tiles per block} = \left\lceil\frac{(r_1 - r_0 + 1) + 2w}{32}\right\rceil

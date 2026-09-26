@@ -93,7 +93,7 @@ Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
 
 The vector (≈ $0.56K$ bytes) stays in L1/L2; the matrix is streamed once.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 0.5625\,MK + 0.5625\,K + 2M\ \text{bytes}, \qquad W = 2MK, \qquad T_{\min} = \frac{Q}{\beta_{\text{mem}}}

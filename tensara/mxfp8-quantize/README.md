@@ -72,7 +72,7 @@ rounds to nearest-even, handling subnormals ($\lvert v\rvert < 2^{-6}$, step
 $2^{-9}$). Each lane writes its own byte (a coalesced 32-byte store per
 warp) and lane 0 writes the scale.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4MK + MK + \frac{MK}{32}\ \text{bytes} \approx 5.03\,MK, \qquad T_{\min} = \frac{Q}{\beta}

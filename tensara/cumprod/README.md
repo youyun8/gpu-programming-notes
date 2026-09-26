@@ -65,7 +65,7 @@ All intermediate values are `double`. For products this matters more than
 for sums: fp64's exponent range ($10^{\pm308}$) keeps partial products
 exact far longer, and they are rounded to float only at the store.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N\ (\text{read}) + 4N\ (\text{re-read}) + 4N\ (\text{write}) = 12N\ \text{bytes}, \qquad \#\text{launches} = 3

@@ -55,7 +55,7 @@ Every batch entry is independent, so there is no inter-block communication.
 With $M = N = 256$ each matrix gives only 16 blocks. The batch dimension is
 what fills the GPU: $16 \cdot B$ blocks in total.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2BMNK, \qquad Q \approx 4B\left(MK\frac{N}{64} + KN\frac{M}{64} + MN\right), \qquad I \approx 16 \ \text{FLOP/byte}

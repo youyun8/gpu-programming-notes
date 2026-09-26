@@ -67,7 +67,7 @@ This is $2K$ additions per pixel instead of $K^2$ (54 vs 729 at $K = 27$).
 A running-sum (sliding window) version would need $O(1)$ per pixel, but it
 serializes each row, which hurts parallelism.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{ops}} = 2K\,hw, \qquad Q \approx 4 \cdot 4\,hw\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

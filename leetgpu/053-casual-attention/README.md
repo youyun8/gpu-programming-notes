@@ -67,7 +67,7 @@ accumulators per lane ($d \le 128$).
 Each row's first key ($j = 0$) is always visible, so the running
 denominator is positive and never divides by zero.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 4d\cdot\frac{M(M+1)}{2} = 2dM(M+1), \qquad \text{tiles loaded per block} = \left\lceil\frac{r_0 + 8}{32}\right\rceil

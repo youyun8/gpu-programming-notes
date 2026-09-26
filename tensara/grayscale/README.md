@@ -49,7 +49,7 @@ fully coalesced.
 The `channels` argument is used as the pixel stride, so the kernel also
 works for an RGBA (4-channel) layout.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12hw + 4hw = 16hw\ \text{bytes}, \qquad W = 5hw\ \text{flops}, \qquad T_{\min} = \frac{Q}{\beta}

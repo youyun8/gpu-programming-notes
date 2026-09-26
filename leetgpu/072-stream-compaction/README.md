@@ -54,7 +54,7 @@ Reduce-then-scan over 2048-element chunks (256 threads × 8 items):
 4. **Zero fill**: positions $[k, N)$ are set to 0. The harness claims `out`
    is pre-initialised, but zero-filling makes the kernel independent of that.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = \underbrace{4N}_{\text{count}} + \underbrace{4N}_{\text{scatter read}} + \underbrace{4k + 4(N-k)}_{\text{writes}} = 12N\ \text{bytes}

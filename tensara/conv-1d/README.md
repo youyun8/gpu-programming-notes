@@ -66,7 +66,7 @@ $$
    about $\lceil K/2048 \rceil$ times in total, which is negligible next to
    the $NK$ FMAs.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2NK\ \text{flops}, \qquad Q \approx 4N\left(2 + \left\lceil \tfrac{K}{2048} \right\rceil\right) + 4K\left\lceil \tfrac{N}{T} \right\rceil\ \text{bytes}, \qquad

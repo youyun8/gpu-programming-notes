@@ -47,7 +47,7 @@ One thread per output: load both halves (two coalesced streams), then
 most 2 ulp of error. Multiplying by $1/\sqrt2$ instead of dividing by
 $\sqrt2$ saves a division, and the difference is well below the tolerance.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 6N\ \text{bytes}, \qquad W \approx \tfrac N2\,(c_{\operatorname{erf}} + 5)

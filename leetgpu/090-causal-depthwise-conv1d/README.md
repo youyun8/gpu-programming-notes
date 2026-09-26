@@ -58,7 +58,7 @@ filters. Parameters: $D(K+1)$, versus $D^2K$ for a full convolution.
 Each input element is read by up to $K$ different output positions of the
 same thread (overlapping windows). Those re-reads hit L1.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2BLDK, \qquad Q_{\min} = 8BLD + 4D(K+1)\ \text{bytes}, \qquad I \approx \frac{K}{4}

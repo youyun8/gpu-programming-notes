@@ -59,7 +59,7 @@ consecutive $c$, the contiguous axis, so the innermost loop reads are
 coalesced across the warp and overlapping windows are cache hits. The sum
 is divided by $k^3$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{ops}} = k^3\,H_{\text{out}} W_{\text{out}} D_{\text{out}}, \qquad

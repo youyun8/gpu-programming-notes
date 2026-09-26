@@ -58,7 +58,7 @@ $$
 - **Early exit after the barrier.** Threads outside the output return only
   *after* the kernel-staging `__syncthreads()`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2K_dK_rK_c\ D_oR_oC_o, \qquad Q_{\min} = 4\,(DRC + D_oR_oC_o), \qquad I_{\max} = \frac{W}{Q_{\min}} \approx \frac{K_dK_rK_c}{4}

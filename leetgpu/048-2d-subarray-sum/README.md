@@ -44,7 +44,7 @@ grid-stride accumulation, `__reduce_add_sync`, and one `atomicAdd` per warp.
 The flat index is 64-bit ($h w \le 10^8$ fits in 32 bits, but the product is
 formed safely).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4hw\ \text{bytes (useful)}, \qquad \text{sectors touched} \approx h\left\lceil\frac{4w}{32}\right\rceil + h

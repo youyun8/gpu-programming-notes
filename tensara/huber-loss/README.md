@@ -53,7 +53,7 @@ Grid-stride elementwise map over two inputs:
 `a = fabsf(d); out = a < 1 ? 0.5f*d*d : a - 0.5f`. The branch is a
 select, so there is no divergence.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12N\ \text{bytes}, \qquad T_{\min} = \frac{12N}{\beta_{\text{mem}}}

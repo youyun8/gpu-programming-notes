@@ -63,7 +63,7 @@ large register accumulators. Since $M N \le 4.2$M, the score matrix
 The template `sgemm<kTransB, kAlibi>` generates both GEMMs from one source
 with compile-time branches.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNd + 2MNd + O(MN), \qquad Q \approx 4\,(MN\cdot 3) + 4\left(Md + Nd\right)\cdot\frac{\max(M,N)}{64} + 4Md

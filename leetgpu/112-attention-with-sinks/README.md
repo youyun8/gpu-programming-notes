@@ -57,7 +57,7 @@ $j \le i \land (j < n_s \lor j \ge i - w + 1)$. Otherwise it gets score
 $-\infty$ and weight 0. The loop bounds are block-uniform, so all warps take
 part in every barrier.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 4d\sum_i \lvert\mathcal A_i\rvert \le 4dM(n_s + w), \qquad \text{tiles per block} \approx \left\lceil\frac{n_s}{32}\right\rceil + \left\lceil\frac{w + 7}{32}\right\rceil

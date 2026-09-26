@@ -65,7 +65,7 @@ in registers:
 This needs no sorting and no shared memory, and all $k$ rounds happen in
 registers. For $k = 2$ it is two warp reductions per token.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx M\,k\,(8 + 5\cdot 3), \qquad Q = 4ME + 8Mk\ \text{bytes}

@@ -68,7 +68,7 @@ to the error negligible.
 
 ## Approach
 
-### Pass 1: `partialSums` (≤ 1024 blocks × 256 threads)
+### Pass 1: `partialSums` (≤ 1024 Blocks × 256 Threads)
 
 1. **Grid-stride loop with `float4` loads.** Thread $g$ reads vectors
    $g, g+P, g+2P, \dots$ of 4 floats (16 bytes per load, fully coalesced) and
@@ -83,20 +83,20 @@ to the error negligible.
 4. Thread 0 writes the block's float64 partial to the `__device__` array
    `g_partials[b]`.
 
-### Pass 2: `finalSum` (1 block)
+### Pass 2: `finalSum` (1 Block)
 
 It adds the $B$ partials with the same block reduction in float64, then
 rounds once to float32. Because the second kernel starts only after the
 first finishes (same stream), no grid-wide synchronisation is needed.
 
-### Why two passes and not `atomicAdd`?
+### Why Two Passes and Not `atomicAdd`?
 
 A single kernel in which every block does `atomicAdd(output, partial)` also
 works. However, float atomics complete in a nondeterministic order, so the
 result can change from run to run in its last bits. The two-pass design is
 **deterministic**, and the second pass costs a few microseconds.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N \ \text{bytes}, \qquad W = N - 1, \qquad I = \frac{W}{Q} \approx \frac{1}{4}, \qquad T_{\min} = \frac{4N}{\beta}

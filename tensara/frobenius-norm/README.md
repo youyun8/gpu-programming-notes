@@ -58,7 +58,7 @@ Separate launches give a device-wide barrier for free; no atomics or
 cooperative groups are needed, and the result is deterministic (the same
 partition every run).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4n\ (\text{pass 1}) + 8n\ (\text{pass 3}) = 12n\ \text{bytes}, \qquad T_{\min} = \frac{12n}{\beta}

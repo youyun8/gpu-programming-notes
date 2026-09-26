@@ -86,7 +86,7 @@ The format-specific parts (E2M1, E4M3, E8M0 codecs, swizzle) are written
 with integer bit manipulation, so they do not depend on `cuda_fp4.h` or a
 specific architecture.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4MK\ (\text{read}) + \frac{MK}{2} + \frac{MK}{32}\ (\text{write})\ \text{bytes} \approx 4.53\,MK, \qquad T_{\min} = \frac{Q}{\beta}

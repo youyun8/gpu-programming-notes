@@ -136,7 +136,7 @@ See [tutorials/](tutorials/README.md).
 | [FP16 Batched Matrix Multiplication](leetgpu/057-fp16-batched-matmul) | medium | gemm, fp16, tensor-cores, wmma, batched | ✅ | [link](https://leetgpu.com/challenges/fp16-batched-matrix-multiplication) |
 | [FP16 Dot Product](leetgpu/058-fp16-dot-product) | medium | reduction, fp16, mixed-precision | ✅ | [link](https://leetgpu.com/challenges/fp16-dot-product) |
 | [Sliding Window Self-Attention](leetgpu/059-sliding-window-attn) | hard | attention, sliding-window, flash-attention, local-attention | ✅ | [link](https://leetgpu.com/challenges/sliding-window-self-attention) |
-| [Top-p Sampling](leetgpu/060-top-p-sampling) | medium | sampling, softmax, selection, llm, bit-tricks | ✅ | [link](https://leetgpu.com/challenges/top-p-sampling) |
+| [Top-P Sampling](leetgpu/060-top-p-sampling) | medium | sampling, softmax, selection, llm, bit-tricks | ✅ | [link](https://leetgpu.com/challenges/top-p-sampling) |
 | [Rotary Positional Embedding](leetgpu/061-rope-embedding) | medium | elementwise, rope, llm, positional-encoding | ✅ | [link](https://leetgpu.com/challenges/rotary-positional-embedding) |
 | [Value Clipping](leetgpu/062-value-clipping) | easy | elementwise, clamp | ✅ | [link](https://leetgpu.com/challenges/value-clipping) |
 | [Interleave Arrays](leetgpu/063-interleave) | easy | memory-bound, vectorized, data-movement | ✅ | [link](https://leetgpu.com/challenges/interleave-arrays) |
@@ -207,7 +207,7 @@ See [tutorials/](tutorials/README.md).
 | [ELU](tensara/elu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/elu) |
 | [Frobenius Normalization](tensara/frobenius-norm) | easy | normalization, reduction, fp64-accumulation, grid-reduction | ✅ | [link](https://tensara.org/problems/frobenius-norm) |
 | [GELU](tensara/gelu) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/gelu) |
-| [GEMM with Element-wise Multiply and LeakyReLU](tensara/gemm-multiply-leakyrelu) | medium | matmul, sgemm, fusion, activation | ✅ | [link](https://tensara.org/problems/gemm-multiply-leakyrelu) |
+| [GEMM with Element-Wise Multiply and LeakyReLU](tensara/gemm-multiply-leakyrelu) | medium | matmul, sgemm, fusion, activation | ✅ | [link](https://tensara.org/problems/gemm-multiply-leakyrelu) |
 | [GEMM with Bias and ReLU](tensara/gemm-relu) | medium | matmul, sgemm, fusion, linear-layer | ✅ | [link](https://tensara.org/problems/gemm-relu) |
 | [Grayscale Conversion](tensara/grayscale) | easy | elementwise, image-processing, strided-access | ✅ | [link](https://tensara.org/problems/grayscale) |
 | [Hard Sigmoid](tensara/hard-sigmoid) | easy | elementwise, activation, float4 | ✅ | [link](https://tensara.org/problems/hard-sigmoid) |
@@ -271,7 +271,7 @@ See [tutorials/](tutorials/README.md).
 | [Vector Multiplication over Finite Field](tensara/vector-multiply-ff) | medium | finite-field, elementwise, mersenne-prime | ✅ | [link](https://tensara.org/problems/vector-multiply-ff) |
 <!-- END TENSARA INDEX -->
 
-## Code conventions
+## Code Conventions
 
 - Classes / structs: `PascalCase`
 - Functions, kernels, lambdas: `camelCase`

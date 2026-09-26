@@ -1,5 +1,5 @@
 ---
-title: GEMM with Element-wise Multiply and LeakyReLU
+title: GEMM with Element-Wise Multiply and LeakyReLU
 platform: Tensara
 upstream: gemm-multiply-leakyrelu
 url: https://tensara.org/problems/gemm-multiply-leakyrelu
@@ -8,7 +8,7 @@ tags: [matmul, sgemm, fusion, activation]
 status: solved
 ---
 
-# GEMM with Element-wise Multiply and LeakyReLU
+# GEMM with Element-Wise Multiply and LeakyReLU
 
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/gemm-multiply-leakyrelu)
 
@@ -41,7 +41,7 @@ $$
 
 The shared kernel with the epilogue `MulLeakyEpi{C, ld, alpha}`: it loads $C_{ij}$ at the same coalesced position as the store, multiplies, and applies the slope. $C$ is read exactly once and $G$, $H$ are never written.
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -83,7 +83,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK, \qquad Q_{\min} = 4\,(MK + KN + 2MN)\ \text{bytes}, \qquad T_{\min} = \max\left(\frac{W}{F},\ \frac{Q_{\min}}{\beta}\right)

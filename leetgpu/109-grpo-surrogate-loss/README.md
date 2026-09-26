@@ -64,7 +64,7 @@ $$
    then a float64 block reduction into partials.
 3. **`finalize`**: $-\text{sum}/(BGS)$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 12BGS + 8BG\ \text{bytes}, \qquad W \approx BGS\,(2c_{\exp} + 10)

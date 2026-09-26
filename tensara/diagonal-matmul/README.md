@@ -43,7 +43,7 @@ to 65535) covers rows. Each thread loads $a_i$ (the same address for the
 whole block: a broadcast served from cache) and one element of $B$, and
 stores one element of $C$. Loads and stores along a row are coalesced.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8NM + 4N\ \text{bytes}, \qquad W = NM\ \text{mults}, \qquad T_{\min} = \frac{8NM}{\beta}

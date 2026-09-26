@@ -48,7 +48,7 @@ Consecutive threads start $S$ elements apart, so a warp's window loads cover
 a contiguous span of about $32S + k$ elements: mostly coalesced, with
 overlapping windows served by L1 when $S < k$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4H + 4H_{\text{out}}\ \text{bytes}, \qquad W = kH_{\text{out}}

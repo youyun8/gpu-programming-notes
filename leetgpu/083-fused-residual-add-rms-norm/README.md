@@ -53,7 +53,7 @@ $$
    $z\cdot\text{inv\_rms}\cdot w_j$. The row (at most 512 KB for two inputs)
    was just read, so the second read is served from L1/L2, not DRAM.
 
-### What fusion saves
+### What Fusion Saves
 
 | Variant | DRAM traffic per element |
 |---|---|
@@ -63,7 +63,7 @@ $$
 That is half of the traffic, for an operation that runs twice per
 transformer layer.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12NC\ \text{bytes}, \qquad W \approx 5NC, \qquad T_{\min} = \frac{12NC}{\beta}

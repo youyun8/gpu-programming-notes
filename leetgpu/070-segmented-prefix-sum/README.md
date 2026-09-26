@@ -36,7 +36,7 @@ $$
 | $h(i)$ | index of the head of the segment containing $i$ |
 | $y_i$ | output: exclusive segmented prefix; $y_i = 0$ at every head |
 
-### Segmented scan as an ordinary scan
+### Segmented Scan as an Ordinary Scan
 
 Scan over pairs $(f, s)$ with the operator
 
@@ -72,13 +72,13 @@ With chunks of 2048 elements (256 threads × 8 consecutive items):
 
 All sums use float64, as the reference does.
 
-### The block scan with a non-commutative operator
+### The Block Scan with a Non-Commutative Operator
 
 The warp step is Hillis–Steele with `__shfl_up_sync` on both pair components:
 `v = combine(other, v)`, with the lower lane's value on the **left**. Order
 matters because $\oplus$ is associative but *not* commutative.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = \underbrace{8N}_{\text{pass 1: values + flags}} + \underbrace{8N + 4N}_{\text{pass 3}} = 20N\ \text{bytes}

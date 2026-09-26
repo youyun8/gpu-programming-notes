@@ -46,7 +46,7 @@ All Tensara elementwise problems share one kernel shape:
 
 `fmaxf(x, 0.0f)` is one instruction. The whole kernel is a memory copy with a filter, so its speed is set entirely by how well the loads and stores use DRAM: 16-byte accesses, enough bytes in flight (4096 × 256 threads × 16 B = 16 MB outstanding at most), and no redundant traffic.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

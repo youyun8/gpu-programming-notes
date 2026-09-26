@@ -40,7 +40,7 @@ The same kernel as [Count 2D](../044-count-2d-array-element/): a 64-bit
 element count, grid-stride `int4` loads, `__reduce_add_sync`, and one
 `atomicAdd` per warp.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4NMK \ \text{bytes}, \qquad T_{\min} = \frac{4NMK}{\beta}

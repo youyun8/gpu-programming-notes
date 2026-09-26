@@ -61,7 +61,7 @@ $$
 
 ## Approach
 
-### Kernel sequence
+### Kernel Sequence
 
 | # | Kernel | Computes | Fused epilogue |
 |---|---|---|---|
@@ -73,7 +73,7 @@ $$
 | 6 | GEMM $S\times d\cdot d\times 4d$ | MLP hidden | $+\,\mathbf b_{fc}$, then GELU |
 | 7 | GEMM $S\times 4d\cdot 4d\times d$ | $Y$ | $+\,\mathbf b_{\text{proj}} + X'$ (residual) |
 
-### A GEMM with pluggable epilogues
+### A GEMM with Pluggable Epilogues
 
 The 64 × 64 register-blocked SGEMM is a template
 `gemmKernel<kTransB, Epi>`. After accumulation, each thread calls
@@ -87,7 +87,7 @@ The functor is inlined at compile time, so fusing costs nothing. Without
 fusion, each of these would be a separate elementwise kernel that reads and
 writes an $S\times 3d$ or $S\times 4d$ tensor.
 
-### Attention straight from the packed QKV buffer
+### Attention Straight from the Packed QKV Buffer
 
 The QKV GEMM writes rows of length $3d$: $[Q\,|\,K\,|\,V]$. Head $h$'s query
 row $i$ lives at $\text{qkv} + i\cdot 3d + h d_h$, its key at an extra offset
@@ -97,14 +97,14 @@ takes these strides as parameters. That removes the reference's
 `view/transpose/contiguous` shuffles. It writes directly into the
 concatenated $S\times d$ layout.
 
-### LayerNorm, warp per row
+### LayerNorm, Warp per Row
 
 One warp per row of 768 values: 24 values per lane. Lanes accumulate
 $\sum z$ and $\sum z^2$ (in float64) and reduce them with shuffles. The
 normalisation then uses $\mu$ and $\sigma^2 = E[z^2] - \mu^2$, which is safe
 in float64.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx \underbrace{2S d(3d)}_{QKV} + \underbrace{4S^2 d}_{\text{attention}} + \underbrace{2Sd^2}_{W_o} + \underbrace{2\cdot 2S d(4d)}_{\text{MLP}} = 24Sd^2 + 4S^2d

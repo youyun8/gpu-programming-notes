@@ -45,7 +45,7 @@ shared-memory hop) gives $\sum x^2$. Every thread computes
 $r_b = 1/\sqrt{\sum x^2/N + \epsilon}$. Pass 2 writes $y = x\,r_b$,
 re-reading the row from L1/L2.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q_{\text{DRAM}} \approx 8BN\ \text{bytes}, \qquad W = 3BN\ \text{flops}, \qquad T_{\min} = \frac{8BN}{\beta}

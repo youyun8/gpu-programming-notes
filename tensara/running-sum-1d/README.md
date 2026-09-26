@@ -71,7 +71,7 @@ $$
 | $\Delta\text{out}$ | error of one window sum from rounded prefixes |
 | $u_{32}, u_{64}$ | unit roundoff of float and double |
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4N + 4N\ (\text{scan reads}) + 8N\ (\text{write }\Pi) + 16N\ (\text{read two }\Pi) + 4N\ (\text{write out}) = 36N\ \text{bytes}

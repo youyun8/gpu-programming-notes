@@ -44,7 +44,7 @@ identity value set to $+\text{FLT\_MAX}$:
 - $I > 1$: a thread per output, looping over $R$ with stride $I$, coalesced
   across neighbouring threads.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4ORI + 4OI\ \text{bytes}, \qquad T_{\min} = \frac{4ORI}{\beta}

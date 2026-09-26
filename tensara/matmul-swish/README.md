@@ -41,7 +41,7 @@ $$
 
 The shared kernel with `kTransB = true` and an epilogue that adds the bias, applies $z\,\sigma(z)$ and multiplies by $s$.
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -83,7 +83,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2B\cdot\text{in}\cdot\text{out}, \qquad Q_{\min} = 4\,(B\cdot\text{in} + \text{out}\cdot\text{in} + B\cdot\text{out})\ \text{bytes}, \qquad T_{\min} = \max\left(\frac{W}{F},\ \frac{Q_{\min}}{\beta}\right)

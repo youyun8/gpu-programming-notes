@@ -48,7 +48,7 @@ $$
 
 For $P = 20 = 10100_2$: 4 squarings + 1 multiply = **5 GEMMs** instead of 19.
 
-### Matching PyTorch's rounding
+### Matching PyTorch's Rounding
 
 Matrix multiplication is associative mathematically but not in floating
 point. With entries up to 10, $A^{20}$ has huge dynamic range, and a different
@@ -73,7 +73,7 @@ solution mirrors `matrix_power` exactly:
 - All launches go into the same stream, so each GEMM sees the previous one's
   result without explicit synchronisation.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2N^3 \cdot \#\text{GEMM}, \qquad Q \approx \#\text{GEMM}\cdot 4\left(2N^2\frac{N}{64} + N^2\right)

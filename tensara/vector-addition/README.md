@@ -47,7 +47,7 @@ All Tensara elementwise problems share one kernel shape:
 
 With $n = 2^{30}$, a one-thread-per-element launch would need $2^{22}$ blocks of 256 threads: legal (the $x$ grid limit is $2^{31} - 1$) but wasteful. The capped grid-stride loop uses 4096 blocks and every index is `size_t`, because $4n$ bytes $= 2^{32}$ overflows 32-bit arithmetic.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 12\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

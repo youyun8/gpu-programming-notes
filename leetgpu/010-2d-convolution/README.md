@@ -38,7 +38,7 @@ $$
 | $i,\ j$ | output row and column |
 | $m,\ n$ | kernel row and column offsets |
 
-### Tile and halo
+### Tile and Halo
 
 A block computes a $32 \times 32$ output tile whose top-left corner is
 $(i_0, j_0)$. It needs the input window
@@ -68,7 +68,7 @@ $$
 Each thread keeps 4 accumulators in registers, so the loads of
 `s_kernel[m][n]` are amortised over 4 outputs.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2K_rK_c\,(R-K_r+1)(C-K_c+1), \qquad

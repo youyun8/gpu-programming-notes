@@ -1,5 +1,5 @@
 ---
-title: Top-p Sampling
+title: Top-P Sampling
 platform: LeetGPU
 upstream: medium/60_top_p_sampling
 url: https://leetgpu.com/challenges/top-p-sampling
@@ -8,7 +8,7 @@ tags: [sampling, softmax, selection, llm, bit-tricks]
 status: solved
 ---
 
-# Top-p Sampling
+# Top-P Sampling
 
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/top-p-sampling)
 
@@ -46,7 +46,7 @@ $$
 | $\mathcal N$ | the nucleus: the top $c + 1$ tokens |
 | $p$ | nucleus mass threshold |
 
-### Nucleus as a threshold
+### Nucleus as a Threshold
 
 Because the nucleus is a *top set*, it equals $\{t : \pi_t \ge T\}$ for the
 threshold $T = \pi_{(c)}$, which is the largest value with enough mass above
@@ -68,7 +68,7 @@ set bit $b$, measure the mass of $\{\pi_t \ge \text{candidate}\}$ with a block
 reduction, and keep the bit if the mass is still $\ge p$. After 32 steps the
 pattern is exactly $T$.
 
-### Sampling by inverse CDF
+### Sampling by Inverse CDF
 
 Draw $u \in [0, 1)$ and return the first nucleus token (in index order) at
 which the running nucleus mass exceeds $u \cdot \sum_{\mathcal N}\pi$. Any
@@ -92,7 +92,7 @@ elements per thread:
    shared "hit" slot and stopping early. A fallback returns the last nucleus
    token if rounding leaves the target just above the total.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx V\,(c_{\exp} + 1)\cdot(2 + 32 + 1 + 1), \qquad Q = 4V \ \text{bytes (L1/L2-resident after the first pass)}

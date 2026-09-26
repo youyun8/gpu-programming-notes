@@ -64,14 +64,14 @@ A FlashAttention-style kernel, one pass, with no $S\times S$ matrix:
   `cudaFuncSetAttribute(…MaxDynamicSharedMemorySize…)`. The K tile uses an
   odd pitch $D+1$ against bank conflicts.
 
-### Why GQA is fast in practice
+### Why GQA Is Fast in Practice
 
 The $G$ query heads of a group read the same $K_g$ and $V_g$. Their blocks
 run close together in time (consecutive `blockIdx.y`), so after the first
 block the KV tiles come from L2 instead of DRAM. KV traffic is divided by up
 to $G$. For decoding ($S_q = 1$) this is the dominant saving.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 4H_qS^2D, \qquad Q_{\min} = 4\bigl(2H_qSD + 2H_{kv}SD\bigr)

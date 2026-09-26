@@ -1,4 +1,4 @@
-# 07 – hipBLASLt and TensileLite: GEMM kernels written by a program
+# 07 – hipBLASLt and TensileLite: GEMM Kernels Written by a Program
 
 aiter (chapter 06) hand-writes a few dozen GEMM kernels.
 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) ships **thousands**: ROCm's `libhipblaslt` holds one set of code objects per GPU
@@ -27,7 +27,7 @@ This chapter explains:
 >
 > File references below are to those paths.
 
-## 1. From "a GEMM" to "a solution"
+## 1. From "a GEMM" to "a Solution"
 
 A TensileLite **solution** is one point in a large design space:
 
@@ -42,7 +42,7 @@ A TensileLite **solution** is one point in a large design space:
 | Cache behaviour | `WorkGroupMapping` (WGM), `WorkGroupMappingXCC` (WGMXCC), `StaggerU*` | Tile order, XCD placement, DRAM channel spreading |
 | Epilogue | `StoreRemapVectorWidth`, `StoreVectorWidth`, activation / bias / scaling fusions | Coalesced stores |
 
-### 1.1 `MatrixInstruction`: the tile hierarchy in 9 numbers
+### 1.1 `MatrixInstruction`: The Tile Hierarchy in 9 Numbers
 
 The comment in `ValidParameters.py` explains the 9-number format:
 
@@ -109,7 +109,7 @@ $128\times64$ needs 128.
 **`DepthU`** is the K extent of one main-loop iteration: 64 in the aiter
 kernel, and typically 32–128 for 16-bit types.
 
-### 1.2 Global reads: PGR, DirectToLds
+### 1.2 Global Reads: PGR, DirectToLds
 
 `PrefetchGlobalRead`, as described in `ValidParameters.py`:
 
@@ -130,7 +130,7 @@ expresses in chapter 06.
   - `M0` must hold the LDS address;
   - for some layouts, `TransposeLDS=1`.
 
-### 1.3 LDS and local reads
+### 1.3 LDS and Local Reads
 
 - **`1LDSBuffer`** chooses one LDS buffer instead of two, trading overlap for
   capacity: bigger tiles, or higher occupancy. With SIA3 it works only with
@@ -171,7 +171,7 @@ The generator also computes every `s_waitcnt` itself. It knows how many
 loads it placed between each producer and its consumer, capped by the
 hardware's `MaxVmcnt`, so it can emit the tightest safe count.
 
-### 1.5 Work decomposition: GSU and Stream-K
+### 1.5 Work Decomposition: GSU and Stream-K
 
 Suppose `M·N / (MT0·MT1)` output tiles is much smaller than 304 CUs, for
 example M = 128 during decode. There are two ways to use the idle CUs.
@@ -232,7 +232,7 @@ export TENSILE_STREAMK_MAX_CUS=128           # cap CUs used
 
 Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
 
-### 1.6 Cache-aware tile order: WGM, WGMXCC, StaggerU
+### 1.6 Cache-Aware Tile Order: WGM, WGMXCC, StaggerU
 
 - **`WorkGroupMapping` (WGM)** reorders workgroup IDs so that the tiles in
   flight at once form a box of height WGM in C. Tiles in a box share A-row
@@ -285,7 +285,7 @@ internalArgs1 (32 bit): WGMXCCG (10) | WGMXCC (6) | WGM (16, signed)
 This layout is documented in `Components/README.md` as kernel-argument
 "Version 2". One code object can therefore serve many tuned variants.
 
-## 2. Reading a kernel name
+## 2. Reading a Kernel Name
 
 Kernel names are generated in `SolutionStructs/Naming.py`:
 
@@ -320,7 +320,7 @@ Other parameters abbreviate the same way:
 When you profile PyTorch on MI300 and see a `Cijk_…` kernel, this is how you
 read what it does.
 
-## 3. How hipBLASLt chooses at run time
+## 3. How hipBLASLt Chooses at Run Time
 
 1. **Library logic files.** YAML files per architecture and data type are
    produced by benchmarking. They list solutions and the problem sizes where
@@ -333,7 +333,7 @@ read what it does.
    build*. You can request one explicitly with `--algo_method index` in
    `hipblaslt-bench`, or through the extension API.
 
-## 4. Tuning hipBLASLt for your shapes
+## 4. Tuning hipBLASLt for Your Shapes
 
 This is the offline tuning flow from `docs/how-to/how-to-use-hipblaslt-offline-tuning.rst`:
 
@@ -367,7 +367,7 @@ Framework-level alternatives:
   winner's `solidx` goes into `bf16_tuned_gemm.csv` with
   `libtype=hipblaslt`.
 
-## 5. Generating your own kernels with TensileLite
+## 5. Generating Your Own Kernels with TensileLite
 
 TensileLite can also be run directly on a YAML config that lists fork
 parameters and problem sizes. Example configs live under
@@ -387,7 +387,7 @@ This is the "handcraft by search" half of AMD's approach. aiter's `.co`
 kernels are the "handcraft by hand" half. Both end up with the same loop
 structure you traced in chapter 06.
 
-## 6. Summary: the AMD GEMM playbook
+## 6. Summary: The AMD GEMM Playbook
 
 | Technique | aiter asm (ch. 06) | TensileLite parameter |
 |-----------|-------------------|-----------------------|

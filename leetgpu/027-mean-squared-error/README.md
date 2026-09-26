@@ -49,7 +49,7 @@ The same two-pass structure as [Reduction](../004-reduction/):
 2. **`finalMean`**: one block sums the partials in float64, divides by $N$,
    and rounds to float32.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N\ \text{bytes}, \qquad W = 3N, \qquad I = \frac{3}{8}\ \text{FLOP/byte}, \qquad T_{\min} = \frac{8N}{\beta}

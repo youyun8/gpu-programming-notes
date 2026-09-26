@@ -34,7 +34,7 @@ $$
 | $C_{ij}$ | output |
 | nnz | number of non-zeros of $A$, ≈ $0.35MN$ |
 
-### Dense vs. sparse break-even
+### Dense vs. Sparse Break-Even
 
 $$
 W_{\text{dense}} = 2MNK, \qquad W_{\text{sparse}} = 2\,\text{nnz}\cdot K = 2\rho MNK
@@ -67,7 +67,7 @@ memory, 4 × 4 strided outputs per thread, zero-padded edge tiles. The
 multiplication by zeros is simply done; it is free compared with the
 alternative.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK, \qquad Q \approx 4\left(MN\frac{K}{64} + NK\frac{M}{64} + MK\right)

@@ -49,7 +49,7 @@ tiles strictly below the diagonal are zero-filled, the others loop $k$
 over the range above, and loads mask $A_{ik}$ with $k < i$ and $B_{kj}$
 with $k > j$.
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -91,7 +91,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{dense}} = 2N^3, \qquad

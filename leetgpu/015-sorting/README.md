@@ -35,7 +35,7 @@ $$
 | $\pi$ | a permutation of $\{0, \dots, N-1\}$ |
 | $y_k$ | sorted output, written back to `data` |
 
-### Order-preserving float → integer map
+### Order-Preserving Float → Integer Map
 
 IEEE-754 floats compare like sign-magnitude integers. The map
 
@@ -60,7 +60,7 @@ above every negative.
 | $\vert$ | bitwise OR |
 | $f(u)$ | unsigned key whose integer order equals the float order |
 
-### LSD radix sort
+### LSD Radix Sort
 
 Write each key in base $2^8$ as digits $(d_3, d_2, d_1, d_0)$. Four
 **stable** counting-sort passes on $d_0$, then $d_1$, $d_2$, $d_3$ sort the
@@ -97,7 +97,7 @@ All of the radix machinery is shared with [Radix Sort](../036-radix-sort/):
 3. After 4 ping-pong passes the keys are back in the original buffer.
    `keyToFloat` applies $f^{-1}$ and writes into `data`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx \underbrace{8N}_{\text{map in/out}} + P\,(\underbrace{4N}_{\text{count}} + \underbrace{8N}_{\text{scatter}}) + 8N, \qquad P = \frac{32}{8} = 4

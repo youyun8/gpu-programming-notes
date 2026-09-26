@@ -8,7 +8,7 @@ This chapter covers:
 - why a GPU needs so many threads (latency hiding);
 - occupancy, and how to pick a block size.
 
-## 1. The hierarchy
+## 1. The Hierarchy
 
 ```
 Grid  ── many Blocks  (scheduled independently onto SMs, in any order)
@@ -34,7 +34,7 @@ Warp  ── 32 consecutive threads of a block, issued together (SIMT)
   the lanes that are on the same path, so divergence still costs time,
   and warp-level primitives take an explicit lane mask (`0xffffffff`).
 
-## 2. Index arithmetic
+## 2. Index Arithmetic
 
 A thread finds its element from its coordinates:
 
@@ -82,7 +82,7 @@ $$
 So a $32\times8$ block has 8 warps, each one a full row of $t_x$ values.
 A $16\times16$ block also has 8 warps, but each warp covers *two* rows.
 
-## 3. Grid-stride loops
+## 3. Grid-Stride Loops
 
 Decouple the grid size from the problem size:
 
@@ -115,7 +115,7 @@ Benefits:
   accumulator) is amortised over $k$ elements, which is how reductions
   build their per-thread partial sums (chapter 03).
 
-## 4. Warps and divergence
+## 4. Warps and Divergence
 
 All 32 lanes of a warp execute the same instruction. When lanes take
 different branches, the warp runs each path in turn with the other lanes
@@ -136,7 +136,7 @@ $$
   real divergence.
 - Loops with lane-dependent trip counts run as long as the longest lane.
 
-## 5. Why so many threads: latency hiding
+## 5. Why So Many Threads: Latency Hiding
 
 A global load takes hundreds of cycles. The GPU does not wait; the warp
 scheduler switches to another warp that is ready. Little's law says how
@@ -197,7 +197,7 @@ Occupancy is a means, not a goal. Register-blocked GEMMs run very well at
 in flight. Use `cudaOccupancyMaxActiveBlocksPerMultiprocessor` or the
 Nsight Compute occupancy section to see the limiter.
 
-## 7. Choosing a block size
+## 7. Choosing a Block Size
 
 - A multiple of 32. 128–512 is typical; 256 is a safe default.
 - For 2-D problems, make the $x$ extent at least 32 so that each warp
@@ -210,7 +210,7 @@ Nsight Compute occupancy section to see the limiter.
   $\lceil G / (c\,n_{\text{SM}}) \rceil$; a grid of 1.1 waves wastes almost
   half of the second wave.
 
-## 8. Synchronization and communication
+## 8. Synchronization and Communication
 
 | Scope | Mechanism |
 |---|---|
@@ -222,7 +222,7 @@ Nsight Compute occupancy section to see the limiter.
 `__syncthreads()` must be reached by **every** thread of the block. A
 barrier inside `if (threadIdx.x < 16)` deadlocks or corrupts data.
 
-## 9. Worked example: vectorized vector addition
+## 9. Worked Example: Vectorized Vector Addition
 
 ```cpp
 constexpr int kBlockSize = 256;

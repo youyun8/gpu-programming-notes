@@ -46,7 +46,7 @@ $$
   two scales, and $T^2 = 16\,384$ elements share each scale overall. The
   scale matrix ($64 \times 64$ floats = 16 KB) stays in L1/L2 permanently.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 8MN + 4\left\lceil\frac{M}{T}\right\rceil\left\lceil\frac{N}{T}\right\rceil \ \text{bytes}, \qquad T_{\min} \approx \frac{8MN}{\beta}

@@ -61,7 +61,7 @@ for subnormals and NaN), multiply by the block scale, store. The E4M3
 decode could also be a 256-entry lookup table in shared memory, but the
 arithmetic version is already hidden behind the memory traffic.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 1\,MK + \frac{MK}{32}\ (\text{read}) + 4MK\ (\text{write})\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

@@ -56,7 +56,7 @@ with torch.inference_mode():
   a copy.
 - `inference_mode()` disables autograd tracking and version counters.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{flop}} = 2B\,d_{\text{in}}\,d_{\text{out}}, \qquad Q \approx 4\,(B d_{\text{in}} + d_{\text{in}}d_{\text{out}} + B d_{\text{out}})

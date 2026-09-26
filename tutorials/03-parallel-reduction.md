@@ -10,7 +10,7 @@ covers:
 - floating-point accuracy;
 - the general "reduce with a monoid" recipe that the problem pages reuse.
 
-## 1. Work, depth and Brent's bound
+## 1. Work, Depth and Brent's Bound
 
 A sequential sum does $n - 1$ additions in a chain of length $n - 1$. A
 balanced tree does the same additions in far fewer levels:
@@ -34,7 +34,7 @@ the millions, so the $W/p$ term dominates. The practical recipe follows
 from that: each thread first sums many elements **sequentially** (cheap,
 no synchronization), and only the few per-thread results go through a tree.
 
-## 2. Step 1: block-level tree reduction in shared memory
+## 2. Step 1: Block-Level Tree Reduction in Shared Memory
 
 ```cpp
 constexpr int kBlockSize = 256;
@@ -65,7 +65,7 @@ __global__ void reduceSum(const float* input, float* output, int n) {
 `*output` must be zeroed before the launch (`cudaMemset`). The tree has
 $\log_2 256 = 8$ levels, each ending in a barrier.
 
-## 3. Step 2: warp shuffles
+## 3. Step 2: Warp Shuffles
 
 Within a warp no shared memory or barrier is needed; `__shfl_down_sync`
 reads a register of another lane:
@@ -113,7 +113,7 @@ function is called twice in a row (for example a sum and then a sum of
 squares), add a `__syncthreads()` at its end so that the second call does
 not overwrite `warp_sums` while warp 0 is still reading it.
 
-## 4. The classic evolution
+## 4. The Classic Evolution
 
 Mark Harris' *Optimizing Parallel Reduction in CUDA* walks through seven
 versions. The lessons still hold:
@@ -141,7 +141,7 @@ $$
 
 Version 7 plus `float4` loads reaches 85–95 % of it.
 
-## 5. Finishing across blocks
+## 5. Finishing Across Blocks
 
 Blocks cannot wait for each other, so the per-block results need a second
 step:
@@ -188,7 +188,7 @@ two: the chain length is about $n/p$. Practical consequences:
   per element, which is free in a memory-bound kernel. Beware of
   `--use_fast_math`, which may reassociate it away.
 
-## 7. Reductions in general: monoids
+## 7. Reductions in General: Monoids
 
 Any **associative** operator $\oplus$ with an identity $e$ can be reduced
 with exactly the same code:

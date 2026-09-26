@@ -51,7 +51,7 @@ coefficients.
 
 ## Approach
 
-### Parallelism across channels, sequential in time
+### Parallelism Across Channels, Sequential in Time
 
 With $B\cdot D = 2048$ independent $(b, d)$ pairs at the benchmark size, each
 thread can own one pair and walk time sequentially. That avoids the
@@ -71,7 +71,7 @@ sequences with few channels).
 - Per step: $N$ exponentials, $N$ state updates, and an $N$-term dot product
   with $C$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx BLDN\,(c_{\exp} + 5), \qquad Q = 4BLD\cdot 3 + 8BLN\cdot\left\lceil\frac{D}{128}\right\rceil\ \text{bytes}

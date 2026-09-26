@@ -73,7 +73,7 @@ solve argmin, max/min/sum/mean/product along a dimension.
 The `shape` array may arrive as a host or a device pointer, so it is copied
 with `cudaMemcpyDefault` and unified addressing picks the direction.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\,ORI + 4\,OI\ \text{bytes}, \qquad T_{\min} = \frac{4ORI}{\beta}

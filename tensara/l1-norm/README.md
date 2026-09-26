@@ -45,7 +45,7 @@ After normalization $\sum_d \lvert y_{bd}\rvert = s_b/(s_b + \epsilon) \approx 1
    $y = x\,r$ for its elements. The row (at most 64 KB) was just read, so
    the second pass mostly hits in L2.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q_{\text{DRAM}} \approx 4BD + 4BD = 8BD\ \text{bytes}, \qquad \#\text{blocks} = B

@@ -10,7 +10,7 @@ chapter covers:
 - a fully worked transpose;
 - how to measure the result.
 
-## 1. The memory spaces
+## 1. The Memory Spaces
 
 | Memory | Scope | Latency (approx.) | Size (A100, approx.) | Notes |
 |--------|-------|-------------------|------|-------|
@@ -66,7 +66,7 @@ touch 12 sectors for 128 useful bytes, but the next two instructions
 (`rgb[3 * i + 1]`, `rgb[3 * i + 2]`) hit the same lines in L1, so DRAM
 traffic is still optimal ([Tensara – Grayscale](../tensara/grayscale/)).
 
-## 3. Vectorized access
+## 3. Vectorized Access
 
 `float4` (or `int4`, `uint2`, …) loads move 16 bytes per lane per
 instruction:
@@ -81,7 +81,7 @@ instruction:
 const float4 v = reinterpret_cast<const float4*>(in)[i];   // i indexes float4s
 ```
 
-## 4. Shared memory and bank conflicts
+## 4. Shared Memory and Bank Conflicts
 
 Shared memory is split into 32 **banks** of 4 bytes. Successive 4-byte
 words go to successive banks:
@@ -126,7 +126,7 @@ Other fixes are an XOR swizzle of the column index (used by CUTLASS and
 the AMD kernels of chapters 06–07), or choosing which dimension
 `threadIdx.x` indexes so that lanes read along a row.
 
-## 5. Worked example: a coalesced transpose
+## 5. Worked Example: A Coalesced Transpose
 
 $B = A^{\mathsf T}$ for an $R\times C$ matrix. A direct kernel reads rows
 and writes columns (or vice versa), so one side is uncoalesced. Tiling
@@ -178,7 +178,7 @@ A good transpose reaches 80–90 % of the bandwidth of a plain copy. A naive
 one (reads coalesced, writes strided by $R$) moves up to 8× more sectors
 on the write side and is typically 3–5× slower.
 
-## 6. Caches and read-only data
+## 6. Caches and Read-Only Data
 
 - `const T* __restrict__` tells the compiler that the data is not
   written through another pointer during the kernel, which lets it use

@@ -63,7 +63,7 @@ $$
 4. The kernel is a template over an **epilogue functor**, which lets
    [Conv2D + ReLU + HardSwish](../conv2d-relu-hardswish/) reuse it.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2HWK_hK_w, \qquad

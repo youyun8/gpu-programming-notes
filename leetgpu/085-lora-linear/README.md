@@ -45,7 +45,7 @@ The right-hand form shows that the whole layer is **one GEMM over a
 concatenated inner dimension** $d_{\text{in}} + r$, once the small matrix
 $h = s\,xA^{\mathsf T}$ is known.
 
-### Why not merge $W + sBA$?
+### Why Not Merge $W + sBA$?
 
 For inference with a fixed adapter, precomputing $W' = W + sBA$ removes the
 LoRA cost entirely. With many adapters (multi-tenant serving) or during
@@ -66,7 +66,7 @@ paths.
 Both use the 64 × 64 register-blocked tile. For the NT layout, the $B$-side
 tile is loaded with $k$ fastest, so reads of the weight rows are coalesced.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{flop}} = 2b\,d_{\text{in}}\,d_{\text{out}} + 2b\,r\,(d_{\text{in}} + d_{\text{out}}), \qquad

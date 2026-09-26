@@ -60,7 +60,7 @@ The sizes are small ($k \le$ a few), so a shared-memory tile would only save
 cache hits. For large $k$ the separable trick of [Box Blur](../box-blur/)
 applies (average = row sum, then column sum).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{ops}} = k^2 H_{\text{out}} W_{\text{out}}, \qquad

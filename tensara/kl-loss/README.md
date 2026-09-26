@@ -56,7 +56,7 @@ multiply, one select, one store. Computing $\ln\tilde{p} - \ln\tilde{q}$ as
 two logarithms (as the reference does) rather than $\ln(\tilde{p}/\tilde{q})$
 keeps the rounding identical to PyTorch's.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12N\ \text{bytes}, \qquad T_{\min} = \frac{12N}{\beta}

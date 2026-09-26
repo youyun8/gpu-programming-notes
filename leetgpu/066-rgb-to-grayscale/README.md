@@ -37,7 +37,7 @@ $$
 One thread per pixel, reading 3 consecutive floats at `input + 3p` and
 writing one float.
 
-### Is the strided read wasteful?
+### Is the Strided Read Wasteful?
 
 Per instruction, a warp reads 32 floats with a stride of 12 bytes: a 384-byte
 span that is only one-third used. But the three instructions (R, G, B)
@@ -50,7 +50,7 @@ Alternatives: stage the pixels through shared memory with coalesced
 `float4` loads, or let each thread handle 4 pixels = 3 `float4` loads.
 These reduce instruction count, but not DRAM bytes.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12WH + 4WH = 16WH\ \text{bytes}, \qquad W_{\text{flop}} = 5WH

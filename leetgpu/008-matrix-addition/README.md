@@ -36,7 +36,7 @@ $$
 | $A,\ B$ | input matrices (float32) |
 | $C$ | output matrix (float32) |
 
-### Vectorised split
+### Vectorised Split
 
 $$
 N^2 = 4V + R, \qquad V = \left\lfloor \frac{N^2}{4} \right\rfloor, \quad R = N^2 \bmod 4
@@ -60,7 +60,7 @@ Vector loads reduce the number of load/store instructions and in-flight
 memory requests. This helps the memory system reach peak bandwidth with fewer
 warps. The DRAM traffic is the same as for a scalar kernel.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 3 \cdot 4N^2 = 12N^2 \ \text{bytes}, \qquad W = N^2, \qquad I = \frac{1}{12}, \qquad T_{\min} = \frac{12N^2}{\beta}

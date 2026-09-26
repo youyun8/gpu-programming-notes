@@ -54,7 +54,7 @@ suffices: grid-stride over pairs, compute $z$ and the stable softplus in
 float32, accumulate in float64, then a warp-shuffle and shared-memory
 reduction. Thread 0 writes $\text{sum}/B$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 16B\ \text{bytes}, \qquad W \approx B\,(c_{\exp} + c_{\log} + 8)

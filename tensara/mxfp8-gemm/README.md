@@ -107,7 +107,7 @@ On Blackwell (sm_100) the same data would feed `tcgen05.mma` block-scaled
 instructions directly, which read these swizzled scale layouts in
 hardware; this portable kernel uses CUDA cores instead.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK, \qquad Q_{\min} = 1\,(MK + NK) + \frac{MK + NK}{32} + 4\,MN\ \text{bytes}

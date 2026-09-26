@@ -63,7 +63,7 @@ All Tensara elementwise problems share one kernel shape:
 
 The code evaluates the polynomial as `x + kCubic * x * x * x` and calls `tanhf` (full-precision; `__tanhf` or `tanh.approx` would be faster but less accurate than the tolerance allows near 0).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

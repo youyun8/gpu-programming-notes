@@ -80,7 +80,7 @@ per forward pass.
 The weight function is passed to `inverseCdf` as a lambda, so the same scan
 code serves the residual, uniform and target distributions.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \le B\,\bigl(T + 3V\bigr), \qquad Q \le 4B\,(T + 2V\cdot 2)

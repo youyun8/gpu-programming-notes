@@ -48,7 +48,7 @@ All Tensara elementwise problems share one kernel shape:
 
 The select `x > 0.0f ? x : alpha * x` compiles to a multiply and a predicated move; there is no divergence.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

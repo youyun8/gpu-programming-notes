@@ -45,7 +45,7 @@ $O(\lvert V\rvert + \lvert E\rvert) = O(\text{rows}\cdot\text{cols})$.
 
 ## Approach
 
-### Level-synchronous BFS in one persistent block
+### Level-Synchronous BFS in One Persistent Block
 
 - A single block of 1024 threads runs the whole search. Two global arrays
   hold the current and next frontier, and a global `visited` map holds one
@@ -61,7 +61,7 @@ $O(\lvert V\rvert + \lvert E\rvert) = O(\text{rows}\cdot\text{cols})$.
      `__syncthreads()` again.
 - The loop stops when the goal is found or the frontier is empty.
 
-### Why one block?
+### Why One Block?
 
 Separating levels needs a barrier. Across the whole GPU that means one kernel
 launch per level (~3–5 µs each) or a cooperative-groups grid sync. A
@@ -71,7 +71,7 @@ over 0.5 s in launch overhead alone. Inside one block the barrier is a
 sparse frontiers (usually tens to hundreds of cells) one SM is not the
 bottleneck.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = O(\lvert V\rvert), \qquad T \approx L\cdot t_{\text{level}} + \frac{4\lvert V\rvert}{\text{throughput}_{\text{SM}}}

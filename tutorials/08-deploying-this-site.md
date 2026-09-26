@@ -1,4 +1,4 @@
-# 08 – Deploying this site
+# 08 – Deploying This Site
 
 This repository renders to a static website. It contains:
 - every tutorial;
@@ -10,7 +10,7 @@ It can also be exported as offline formats: a zipped HTML site, EPUB, a
 single Markdown file, and a PDF if you have LaTeX. This chapter explains how
 the pipeline works and gives four ways to publish the site.
 
-## 1. How the site is built
+## 1. How the Site Is Built
 
 ```
 repository                       scripts/build_site.py              mkdocs build
@@ -53,7 +53,7 @@ The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
 plugin system Material depends on.
 
-### What is *not* published
+### What Is *Not* Published
 
 - **Problem statements.** LeetGPU's challenge texts are CC BY-NC-ND, and
   Tensara's problem repository has no license, so this repository never
@@ -66,7 +66,7 @@ plugin system Material depends on.
 - **aiter / hipBLASLt sources.** They are MIT licensed, but chapters 06–07
   only quote short excerpts and link to the upstream repositories.
 
-## 2. Build and preview locally
+## 2. Build and Preview Locally
 
 ```bash
 python3 -m venv .venv && . .venv/bin/activate
@@ -87,7 +87,7 @@ reloads.
 and the solution files. Any web server can host it, and you can open it
 straight from disk.
 
-## 3. Option A – GitHub Pages (automatic, recommended)
+## 3. Option A – GitHub Pages (Automatic, Recommended)
 
 `.github/workflows/pages.yml` builds and deploys on every push to `main`.
 
@@ -118,7 +118,7 @@ To use a **custom domain**:
 `configure-pages` then reports the new base URL, and the sitemap and
 canonical links follow it automatically.
 
-## 4. Option B – `mkdocs gh-deploy` (manual, no Actions)
+## 4. Option B – `mkdocs gh-deploy` (Manual, No Actions)
 
 ```bash
 python3 scripts/build_site.py --strict --site-url https://<user>.github.io/gpu-programming-notes/
@@ -132,7 +132,7 @@ and `/ (root)`.
 Do not use this together with Option A, because they fight over the Pages
 source.
 
-## 5. Option C – any static host
+## 5. Option C – Any Static Host
 
 Upload the `build/site/` folder:
 
@@ -148,7 +148,7 @@ If the site lives under a sub-path (`https://host/notes/`), pass
 `--site-url https://host/notes/`. MkDocs uses relative URLs, so the pages
 work either way; `site_url` only affects the sitemap and canonical links.
 
-## 6. Option D – offline formats
+## 6. Option D – Offline Formats
 
 | Format | Command | Notes |
 |--------|---------|-------|
@@ -161,7 +161,7 @@ work either way; `site_url` only affects the sitemap and canonical links.
 The Pages workflow publishes the zipped HTML, the single Markdown file and
 the EPUB under `downloads/` on the deployed site.
 
-## 7. Keeping the site honest: CI
+## 7. Keeping the Site Honest: CI
 
 `.github/workflows/ci.yml` runs on every push, and a red CI means the site
 would publish something broken or wrong:
@@ -173,7 +173,7 @@ would publish something broken or wrong:
 | `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
 | `README index and site build` | The README tables are current and the site builds with no broken links |
 
-## 8. Adding content later
+## 8. Adding Content Later
 
 ```bash
 scripts/fetch_upstream.sh && python3 scripts/sync_problems.py   # scaffold new upstream problems
@@ -186,7 +186,7 @@ git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pa
 A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
 in `tutorials/README.md`. The navigation is generated.
 
-## 9. How math and code are rendered
+## 9. How Math and Code Are Rendered
 
 Every problem page and tutorial writes formulas in TeX and follows each
 display formula with a table that explains every symbol. The pieces:

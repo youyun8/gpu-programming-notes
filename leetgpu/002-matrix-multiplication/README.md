@@ -62,7 +62,7 @@ $$
 
 ## Approach
 
-### Parallel decomposition
+### Parallel Decomposition
 
 | Level | Owns | Size |
 |---|---|---|
@@ -75,7 +75,7 @@ owns rows $t_y + 16i$ and columns $t_x + 16j$ for $i, j \in \{0,1,2,3\}$. The
 stride of 16 (instead of a contiguous 4 × 4 block) keeps consecutive threads
 on consecutive columns, so the final stores to `C` are coalesced.
 
-### Main loop, per inner slice
+### Main Loop, per Inner Slice
 
 1. **Stage.** All 256 threads cooperatively copy the 64 × 16 slice of $A$ and
    the 16 × 64 slice of $B$ into shared memory. Out-of-range elements are
@@ -91,14 +91,14 @@ on consecutive columns, so the final stores to `C` are coalesced.
 4. `__syncthreads()`: nobody overwrites the slice while it is still being
    read.
 
-### Why register blocking
+### Why Register Blocking
 
 Per inner step, a thread issues 8 shared-memory loads for 16 FMAs, a ratio of
 2 FMAs per load. The classic "one output per thread" tiled kernel needs 2
 loads per FMA, which is 4× more shared-memory traffic. Shared-memory bandwidth
 is what limits that simpler kernel.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2MNK, \qquad

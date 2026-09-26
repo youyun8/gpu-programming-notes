@@ -83,11 +83,11 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
 </div>
 
-## Where to start
+## Where to Start
 
 <div class="grid cards" markdown>
 
--   :material-school:{{ .lg .middle }} **CUDA foundations**
+-   :material-school:{{ .lg .middle }} **CUDA Foundations**
 
     ---
 
@@ -96,7 +96,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     [:octicons-arrow-right-24: Chapters 00–04](tutorials/index.md)
 
--   :material-chip:{{ .lg .middle }} **AMD GEMM deep dive**
+-   :material-chip:{{ .lg .middle }} **AMD GEMM Deep Dive**
 
     ---
 
@@ -105,7 +105,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     [:octicons-arrow-right-24: Chapters 05–07](tutorials/05-amd-cdna3-mfma.md)
 
--   :material-code-braces:{{ .lg .middle }} **LeetGPU: {leetgpu} problems**
+-   :material-code-braces:{{ .lg .middle }} **LeetGPU: {leetgpu} Problems**
 
     ---
 
@@ -113,7 +113,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     [:octicons-arrow-right-24: Problem index](leetgpu/index.md)
 
--   :material-lightning-bolt:{{ .lg .middle }} **Tensara: {tensara} problems**
+-   :material-lightning-bolt:{{ .lg .middle }} **Tensara: {tensara} Problems**
 
     ---
 
@@ -130,7 +130,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
     [:octicons-arrow-right-24: How it works](tools/cuemu/index.md)
 
--   :material-rocket-launch:{{ .lg .middle }} **Deploy your own copy**
+-   :material-rocket-launch:{{ .lg .middle }} **Deploy Your Own Copy**
 
     ---
 
@@ -140,7 +140,7 @@ fastest GEMMs, with a worked, tested solution to every LeetGPU and Tensara probl
 
 </div>
 
-## How every problem page is organised
+## How Every Problem Page Is Organised
 
 1. **Problem**: the task in my own words, with shapes and data types.
 2. **Formulation**: the exact mathematics in TeX, followed by a symbol table
@@ -299,7 +299,7 @@ class SiteBuilder:
                 code_nav.append({src.relative_to(tdir).as_posix(): page.as_posix()})
             elif src.name != "README.md" and src.parent == tdir:
                 nav.append(page.as_posix())
-        return nav + ([{"Example code": code_nav}] if code_nav else [])
+        return nav + ([{"Example Code": code_nav}] if code_nav else [])
 
     def problems(self, platform: str):
         rows = {d: [] for d in DIFFICULTIES}

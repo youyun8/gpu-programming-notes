@@ -42,7 +42,7 @@ $$
 | $\lambda$ | L2 regularisation, $10^{-6}$ |
 | $J$ | objective (negative log-likelihood + ridge) |
 
-### Newton / IRLS step
+### Newton / IRLS Step
 
 $$
 \mathbf g = X^{\mathsf T}(\mathbf p - \mathbf y) + \lambda\boldsymbol\beta, \qquad
@@ -83,7 +83,7 @@ Only the single scalar $\lVert\boldsymbol\delta\rVert^2$ is copied to the host
 each iteration to decide whether to stop. $\boldsymbol\beta$ stays on the
 device and is converted to float32 at the end.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 \text{per iteration:}\quad W \approx \underbrace{2nf}_{z} + \underbrace{2nf^2}_{H} + \underbrace{2nf}_{\mathbf g} + \underbrace{f^3/3}_{\text{Cholesky}}, \qquad \text{total} \approx T_{\text{it}}\cdot W

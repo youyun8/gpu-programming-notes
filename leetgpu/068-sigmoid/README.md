@@ -40,7 +40,7 @@ The `float4` elementwise template (see [ReLU](../021-relu/)): 4 sigmoids per
 thread, plus a scalar tail. Each element needs one accurate `expf` and one
 IEEE division.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N\ \text{bytes}, \qquad W \approx N\,(c_{\exp} + c_{\div} + 1)

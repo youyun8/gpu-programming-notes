@@ -45,7 +45,7 @@ fp32 first, and a correct kernel must do the same.
 2. **`finalSum`**: one block sums the partials in float64 and converts to
    fp16 (`__float2half`, round to nearest).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 2 \cdot 2N = 4N\ \text{bytes}, \qquad T_{\min} = \frac{4N}{\beta}

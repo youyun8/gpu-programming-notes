@@ -60,7 +60,7 @@ The block and final levels are done in float64 for accuracy and
 determinism. The benchmark uses $N = 5$, where launch overhead is the entire
 cost. The same code also scales to $10^8$ elements at full bandwidth.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N \ \text{bytes}, \qquad W = 2N, \qquad I = \frac{2N}{8N} = \frac14 \ \text{FLOP/byte}, \qquad T_{\min} = \frac{8N}{\beta}

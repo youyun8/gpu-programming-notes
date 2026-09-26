@@ -55,7 +55,7 @@ $$
 4. A scalar fallback handles $K \bmod 4 \ne 0$, where rows are not 16-byte
    aligned.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4MK + 4K + 4M\ \text{bytes}, \qquad W = 2MK, \qquad I = \frac{W}{Q} \approx \frac{1}{2}\ \tfrac{\text{flop}}{\text{byte}}

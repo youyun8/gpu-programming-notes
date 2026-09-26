@@ -37,7 +37,7 @@ $$
 One thread per element: `fminf(fmaxf(x, lo), hi)`. These are two
 `FMNMX` instructions, with no branches and no divergence.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N\ \text{bytes}, \qquad T_{\min} = \frac{8N}{\beta}

@@ -51,7 +51,7 @@ the same answer. Atomics are therefore safe here, unlike for float sums.
 At most $2048 \cdot 8 = 16\,384$ global atomics hit one address. That is
 negligible next to reading 400 MB.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4N \ \text{bytes}, \qquad T_{\min} = \frac{4N}{\beta}

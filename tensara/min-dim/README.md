@@ -65,7 +65,7 @@ changes nothing in memory: it has $O\cdot I$ elements in the same order.
 
 For this problem the accumulator is `{identity: +FLT_MAX, combine: fminf}`; exact, order-independent.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\,ORI + 4\,OI\ \text{bytes}, \qquad T_{\min} = \frac{4\,ORI}{\beta}

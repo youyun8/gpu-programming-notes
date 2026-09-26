@@ -59,7 +59,7 @@ All Tensara elementwise problems share one kernel shape:
 
 `log1pf` keeps accuracy when $e^x$ is tiny (large negative $x$), where `logf(1 + e^x)` would round $1 + e^x$ to 1 and return 0 instead of $\approx e^x$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

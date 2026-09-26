@@ -78,7 +78,7 @@ $$
 so for $R \ge 200$ most results are exactly 0 in both PyTorch and here,
 and the loose tolerance covers the rest.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\,ORI + 4\,OI\ \text{bytes}, \qquad T_{\min} = \frac{4\,ORI}{\beta}

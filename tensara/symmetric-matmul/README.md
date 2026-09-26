@@ -48,7 +48,7 @@ $B$ as $B^{\mathsf T}$, i.e. either the "NN" or the "NT" staging path.
 
 The shared kernel is used unchanged (`NoEpi`, NN layout).
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -90,7 +90,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2N^3, \qquad Q_{\min} = 4\,(3N^2)\ \text{bytes}, \qquad T_{\min} = \max\left(\frac{W}{F},\ \frac{Q_{\min}}{\beta}\right)

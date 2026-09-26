@@ -58,7 +58,7 @@ $$
 3. **Accumulator** starts at $-\text{FLT\_MAX}$ and folds with `fmaxf`.
    `max` is exact, so the result is bit-identical to PyTorch.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{ops}} = k^{1}\,H_{\text{out}}, \qquad Q \approx 4\,(\text{input size} + H_{\text{out}})\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

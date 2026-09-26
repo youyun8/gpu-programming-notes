@@ -74,7 +74,7 @@ It contains only one factor of 2, so no power-of-two NTT exists
    $c_k$. For $n \le 1024$ the sum stays below $2^{42}$, so the guard never
    fires.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = n^2\ \text{modular multiply-adds}, \qquad Q = 8n + 4(2n - 1)\ \text{bytes}

@@ -47,7 +47,7 @@ All Tensara elementwise problems share one kernel shape:
 
 The select `x > threshold ? 255.0f : 0.0f` has no arithmetic at all; it is a pure bandwidth test.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = hw, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

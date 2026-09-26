@@ -65,7 +65,7 @@ The inner sum is computed once and shared by all queries.
 Float64 in step 1 matters: inputs up to 100 make $\phi(k)$ up to 101, and
 $S$ sums $10^4$ products of magnitude ~$10^4$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{linear}} = 2Md^2 + 2Md^2 + O(Md), \qquad W_{\text{softmax attn}} = 4M^2 d, \qquad \frac{W_{\text{softmax}}}{W_{\text{linear}}} = \frac{M}{d}

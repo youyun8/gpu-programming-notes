@@ -62,7 +62,7 @@ $$
 Float counts are exact up to $2^{24} = 16.7$ M, exactly $4096^2$, so the
 largest test is right at the limit and still exact.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4hw + 4n_b\ \text{bytes}, \qquad \#\text{global atomics} \le G\,n_b, \qquad \#\text{shared atomics} = hw

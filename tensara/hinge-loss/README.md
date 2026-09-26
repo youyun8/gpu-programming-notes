@@ -40,7 +40,7 @@ least 1, and grows linearly otherwise.
 A grid-stride map over two inputs: each thread loads $x_i$ and $y_i$
 (coalesced), computes `fmaxf(0, 1 - x*y)`, and stores $\ell_i$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12N\ \text{bytes}, \qquad T_{\min} = \frac{12N}{\beta}

@@ -62,7 +62,7 @@ $$
    $h^{(g)}_t, h^{(g)}_{t+256}, \dots$ to global memory with `atomicAdd`,
    skipping zeros.
 
-### Why it is faster
+### Why It Is Faster
 
 | Variant | Global atomics | Contention |
 |---|---|---|
@@ -73,7 +73,7 @@ Global atomics are resolved in L2 at a fixed throughput per address, so the
 naive version is serialised on hot bins. Privatisation moves more than 99% of
 the updates into shared memory.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4N + 4GB \ \text{bytes}, \qquad T_{\min} = \frac{4N}{\beta}

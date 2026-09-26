@@ -46,7 +46,7 @@ $$
 The per-token scale factors out of the inner sums, so the dot product can
 run on the raw int8 values and be scaled once per token.
 
-### Flash-decoding (split along the sequence)
+### Flash-Decoding (Split Along the Sequence)
 
 With one query per head there are only $H$ independent problems, e.g. 32
 blocks for 108–132 SMs. Split the keys into chunks $\mathcal C_1, \mathcal C_2, \dots$
@@ -81,7 +81,7 @@ of across tiles.
 2. **`combine`**: one block per head merges the chunk partials with the
    formulas above.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 2HSD + 8HS + 4HD\cdot 2 + \text{partials}, \qquad W \approx 4HSD

@@ -79,7 +79,7 @@ every production LLM implementation handles QKV and gate/up.
 attention kernel receives these offsets and the stride 768, so there are no
 reshape or transpose kernels (see [GQA](../080-grouped-query-attention/)).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx 2S d\,(512 + 256) + 2Sd^2 + 2Sd\,(2\cdot1408) + 2S\cdot1408\,d + 2\cdot 8\cdot 64\,S^2

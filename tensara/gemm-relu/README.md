@@ -43,7 +43,7 @@ an "NT" GEMM.
 
 The shared kernel with `kTransB = true` (it reads $W$ row by row and transposes it into the shared tile) and the epilogue `BiasReluEpi`: `fmaxf(v + bias[c], 0)`. The bias load is a per-column value, served from L1.
 
-### The shared SGEMM kernel
+### The Shared SGEMM Kernel
 
 All matmul pages on Tensara use the same register-blocked FP32 kernel
 (`gemmKernel<kTransB, Epi>`):
@@ -85,7 +85,7 @@ $128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
 double-buffered `cp.async` staging, and finally tensor cores (TF32) where
 the tolerance allows.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2BNM, \qquad Q_{\min} = 4\,(BN + MN + BM)\ \text{bytes}, \qquad T_{\min} = \max\left(\frac{W}{F},\ \frac{Q_{\min}}{\beta}\right)

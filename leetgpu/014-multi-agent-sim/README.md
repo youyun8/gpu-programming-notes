@@ -56,7 +56,7 @@ All updates read only the **old** state, so the step is a pure function
 
 ## Approach
 
-### Tiled all-pairs loop
+### Tiled All-Pairs Loop
 
 - One thread per agent $i$, 256 threads per block. The thread keeps its own
   `float4` in registers.
@@ -71,7 +71,7 @@ All updates read only the **old** state, so the step is a pure function
 Each agent's data is fetched from DRAM once per block instead of once per
 pair, which is a 256× reduction in global traffic.
 
-### Bit-exact neighbour test
+### Bit-Exact Neighbour Test
 
 The membership test $d^2 < 25$ is a hard threshold. Agents placed exactly on,
 or within an ulp of, the radius must be classified exactly as PyTorch does.
@@ -82,7 +82,7 @@ computes `dx*dx + dy*dy` with a single rounding, which can flip a boundary
 case and change $\lvert\mathcal N_i\rvert$ by one. That is enough to fail at
 `1e-5`.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W \approx c\,N^2, \qquad Q_{\text{DRAM}} \approx 16N\left\lceil\frac{N}{256}\right\rceil + 32N

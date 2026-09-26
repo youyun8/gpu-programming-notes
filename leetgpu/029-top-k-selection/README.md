@@ -47,7 +47,7 @@ $$
 The answer is every element $> \tau$, plus exactly
 $k - \#\{x_i > \tau\}$ copies of $\tau$.
 
-### Radix select on order-preserving keys
+### Radix Select on Order-Preserving Keys
 
 Map floats to unsigned keys with $f$ (see [Sorting](../015-sorting/)), so that
 key order equals float order. Determine the key $T = f(\tau)$ one 8-bit digit
@@ -94,14 +94,14 @@ host–device copies:
    (size, stride) step.
 6. **`writeOutput`**: apply $f^{-1}$ to the first $k$ keys.
 
-### Bitonic sort in one line
+### Bitonic Sort in One Line
 
 For block size $s = 2, 4, \dots, P$ and stride $t = s/2, \dots, 1$, element
 $i$ is compare-exchanged with $j = i \oplus t$. The direction is descending
 when $(i \mathbin{\&} s) = 0$. That is $\frac{\log_2 P(\log_2 P + 1)}{2}$
 data-independent stages, which suits SIMT perfectly.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx \underbrace{4 \cdot 4N}_{\text{4 histogram passes}} + \underbrace{4N}_{\text{gather}} = 20N \ \text{bytes}, \qquad

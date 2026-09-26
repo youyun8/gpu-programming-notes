@@ -54,7 +54,7 @@ positive by at least $m$.
 3. **A final single block** sums the $B$ hinge values in `double` and
    writes $\mathcal{L}$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12BE\ \text{bytes}, \qquad W = 6BE\ \text{flops}, \qquad T_{\min} = \frac{12BE}{\beta}

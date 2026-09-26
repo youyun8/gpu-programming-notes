@@ -36,7 +36,7 @@ $$
 | $w_j,\ b_j$ | per-feature scale and shift (shared by all rows) |
 | $y_{ij}$ | output |
 
-### Why two passes for the variance
+### Why Two Passes for the Variance
 
 The one-pass formula $\sigma^2 = E[x^2] - \mu^2$ subtracts two large, nearly
 equal numbers when $\lvert\mu\rvert \gg \sigma$. The relative error is about
@@ -58,7 +58,7 @@ The row ($\le 16$ KB) stays in L1 across the three passes, so DRAM traffic is
 about one read and one write. A warp per row avoids shared memory and
 `__syncthreads()` entirely, and $N = 65\,536$ rows provide ample parallelism.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 8NC + 8C\ \text{bytes}, \qquad W \approx 8NC, \qquad T_{\min} = \frac{8NC}{\beta}

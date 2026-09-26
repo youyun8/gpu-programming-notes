@@ -40,7 +40,7 @@ Unrolled: $A_t = \sum_{k=0}^{S-1-t} c^{k}\,\delta_{t+k}$.
 | $\delta_t$ | temporal-difference error |
 | $A_t$ | advantage (output) |
 
-### As a scan of affine maps
+### As a Scan of Affine Maps
 
 Each step is the map $f_t(a) = c\,a + \delta_t$, applied from $t = S-1$ down
 to 0, starting from $a = 0$. Composition is associative (see
@@ -73,7 +73,7 @@ $$
    the chunk from the right. The thread replays its chunk right to left,
    writing $A_t$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12BS\ \text{bytes}, \qquad W \approx 8BS + O(B\cdot1024\log1024)

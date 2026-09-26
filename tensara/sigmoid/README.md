@@ -57,7 +57,7 @@ All Tensara elementwise problems share one kernel shape:
 
 `1.0f / (1.0f + expf(-x))`: one `expf` (a range reduction plus `ex2.approx` and a correction) and one division.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 n = MN, \qquad Q = 8\,n\ \text{bytes}, \qquad T_{\min} = \frac{Q}{\beta}

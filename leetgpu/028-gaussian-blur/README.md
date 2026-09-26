@@ -58,7 +58,7 @@ This is the [2D Convolution](../010-2d-convolution/) kernel with two changes:
 Each 32 × 8 block computes 4 outputs per thread. Kernel weights are
 shared-memory broadcasts, and input reads are consecutive across a warp.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2K_rK_c\,RC, \qquad Q \approx 4RC\left(\frac{(32+K_r-1)(32+K_c-1)}{32\cdot32} + 1\right)

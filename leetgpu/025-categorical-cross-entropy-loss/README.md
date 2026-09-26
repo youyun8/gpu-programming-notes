@@ -65,7 +65,7 @@ $\operatorname{LSE} = m + \log s$.
 Warp-per-row fits $C \le 1000$: a row is at most 32 coalesced loads per
 lane-group, and no shared memory is needed for the row reduction.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q \approx 4NC + 4N, \qquad W \approx NC\,(\text{1 exp} + 3\ \text{flops}), \qquad T_{\min} \approx \frac{4NC}{\beta}

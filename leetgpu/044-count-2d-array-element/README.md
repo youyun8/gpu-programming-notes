@@ -41,7 +41,7 @@ count computed as a **64-bit** `long long`. $N M$ is at most $10^8$ here,
 but writing it in 64-bit keeps the kernel safe for larger shapes. Loop
 indices are 64-bit as well.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4NM \ \text{bytes}, \qquad T_{\min} = \frac{4NM}{\beta}

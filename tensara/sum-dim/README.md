@@ -78,7 +78,7 @@ $$
 
 and the warp-tree in the $I = 1$ kernel shortens the chains further.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 4\,ORI + 4\,OI\ \text{bytes}, \qquad T_{\min} = \frac{4\,ORI}{\beta}

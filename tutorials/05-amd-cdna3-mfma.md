@@ -1,4 +1,4 @@
-# 05 – AMD CDNA3 and MFMA: from CUDA to wave64 matrix cores
+# 05 – AMD CDNA3 and MFMA: From CUDA to wave64 Matrix Cores
 
 Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's
 data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA target `gfx942`). It
@@ -7,7 +7,7 @@ the ISA the compiler emits. Chapters 06 and 07 use this vocabulary to take
 apart the hand-written assembly GEMMs in **aiter** and the generated ones in
 **hipBLASLt**.
 
-## 1. Vocabulary map
+## 1. Vocabulary Map
 
 | CUDA | HIP / AMD | Notes |
 |------|-----------|-------|
@@ -51,7 +51,7 @@ Things that change how you write kernels:
      different L2s.
    - hipBLASLt's `WorkGroupMappingXCC` (chapter 07) exists to undo this.
 
-## 2. MFMA: one instruction, one wave, a whole tile
+## 2. MFMA: One Instruction, One Wave, a Whole Tile
 
 `v_mfma_f32_16x16x16_bf16 D, A, B, C` computes `D = A·B + C` for a 16×16×16
 tile, cooperatively across the 64 lanes of a wave.
@@ -123,7 +123,7 @@ The accumulators can live in **AGPRs** (`a[0:3]`) or VGPRs:
 - Compilers put accumulators in AGPRs. Hand-written kernels also park
   *operands* there (chapter 06).
 
-## 3. A teaching kernel
+## 3. A Teaching Kernel
 
 [`tutorials/amd/mfma_gemm.hip`](amd/mfma_gemm.hip) is a complete bf16 TN
 GEMM, about 120 lines of device code plus a host test and timer:
@@ -151,7 +151,7 @@ GEMM, about 120 lines of device code plus a host test and timer:
 - **Epilogue** writes `acc[i][j][r]` to row `4·(lane/16) + r`, column
   `lane % 16`.
 
-### Compile it without a GPU
+### Compile It Without a GPU
 
 You do not need ROCm to look at the ISA. Stock clang ≥ 17 has the AMDGPU
 back end. [`hip_compat.h`](amd/hip_compat.h) supplies the few HIP macros the
@@ -227,7 +227,7 @@ Infinity Cache reuse between neighbouring tiles provide the rest.
 > `hipcc -O3 --offload-arch=gfx942 tutorials/amd/mfma_gemm.hip -o mfma_gemm && ./mfma_gemm 4096 4096 4096`
 > runs the built-in check against an fp64 CPU reference and prints TFLOP/s.
 
-## 4. What a fast GEMM does differently
+## 4. What a Fast GEMM Does Differently
 
 Each step below is visible in chapter 06's disassembly:
 
@@ -262,7 +262,7 @@ second one is 5 % full, so $\eta_{\text{fill}} = 53\%$. Split-K multiplies
 $T$ by the split factor; Stream-K gives every CU an equal share of the
 $T\cdot\lceil K/B_K\rceil$ loop iterations (chapter 07).
 
-## 5. Tools you will want
+## 5. Tools You Will Want
 
 | Tool | Use |
 |------|-----|

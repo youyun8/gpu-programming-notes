@@ -52,7 +52,7 @@ A grid-stride loop (256 threads, up to 4096 blocks); each thread computes
 and a handful of shifts, ANDs, adds and a select, versus a slow 64-bit
 `%` (a software division routine on NVIDIA GPUs).
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 12n\ \text{bytes}, \qquad T_{\min} = \frac{12n}{\beta}

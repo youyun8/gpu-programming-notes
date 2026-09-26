@@ -45,7 +45,7 @@ The product `0.01f * x` is a single float32 multiply. It is rounded exactly
 as PyTorch's `alpha * input` in float32, which matters for the tight `1e-6`
 tolerance.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 Q = 8N \ \text{bytes}, \qquad T_{\min} = \frac{8N}{\beta}

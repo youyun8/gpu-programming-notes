@@ -44,7 +44,7 @@ $$
 | $W_{nk}$ | dequantised weight |
 | $y_{mn}$ | fp16 output |
 
-### Why weight-only quantisation works
+### Why Weight-Only Quantisation Works
 
 During LLM decoding, $M$ is small (a few tokens) and the GEMM is limited by
 **reading the weights**. INT4 weights are 4× smaller than fp16, so
@@ -69,7 +69,7 @@ fused into the shared-memory staging**:
    accumulators.
 4. **Epilogue**: shared float tile → fp16 stores with bounds checks.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W_{\text{flop}} = 2MNK, \qquad

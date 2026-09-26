@@ -48,7 +48,7 @@ $$
    derivation is on the [LeetGPU page](../../leetgpu/073-all-pairs-shortest-paths/).
 3. **`unreachableToMinusOne`**: $+\infty \to -1$.
 
-## Cost analysis
+## Cost Analysis
 
 $$
 W = 2n^3, \qquad Q \approx \frac{n}{32}\cdot 3\cdot 4n^2\ \text{bytes}, \qquad \#\text{launches} = 3\left\lceil\frac{n}{32}\right\rceil + 2
