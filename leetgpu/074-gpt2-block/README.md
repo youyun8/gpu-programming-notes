@@ -4,7 +4,7 @@ platform: LeetGPU
 upstream: hard/74_gpt2_block
 url: https://leetgpu.com/challenges/gpt-2-transformer-block
 difficulty: hard
-tags: [transformer, gpt-2, gemm, fusion]
+tags: [transformer, gpt-2, gemm, fusion, layernorm, attention]
 status: solved
 cuemu_max_elements: 16777216
 ---
@@ -14,13 +14,132 @@ cuemu_max_elements: 16777216
 **Platform:** LeetGPU · **Difficulty:** hard · [Problem statement](https://leetgpu.com/challenges/gpt-2-transformer-block)
 
 ## Problem
-A full GPT-2 (124M) pre-LN block: LN → QKV → 12-head attention → projection +
-residual → LN → FC + GELU(tanh) → projection + residual.
+
+One complete **GPT-2 (124M) decoder block** in float32. The input
+$x \in \mathbb R^{S \times 768}$ and a packed weight buffer with all block
+parameters (LayerNorm scales and shifts, QKV/output/MLP weights stored as
+(in, out) and biases) produce the block output (tolerance `1e-3`). This
+problem ties together GEMM, LayerNorm, attention and the activation
+function, and shows how **kernel fusion** removes most of the elementwise
+traffic.
+
+## Formulation
+
+Pre-LayerNorm residual block with $d = 768$, $H = 12$ heads of $d_h = 64$, and
+MLP width $4d = 3072$:
+
+$$
+\begin{aligned}
+X_1 &= \operatorname{LN}_1(X), & [Q\ K\ V] &= X_1 W_{qkv} + \mathbf b_{qkv} \\
+A_h &= \operatorname{softmax}\!\Bigl(\tfrac{Q_h K_h^{\mathsf T}}{\sqrt{d_h}}\Bigr) V_h, & X' &= X + \operatorname{Concat}(A_1..A_H)\,W_o + \mathbf b_o \\
+X_2 &= \operatorname{LN}_2(X'), & Y &= X' + \operatorname{GELU}_{\tanh}\!\bigl(X_2W_{fc} + \mathbf b_{fc}\bigr)W_{\text{proj}} + \mathbf b_{\text{proj}}
+\end{aligned}
+$$
+
+$$
+\operatorname{LN}(\mathbf z) = \gamma\odot\frac{\mathbf z - \mu}{\sqrt{\sigma^2 + \varepsilon}} + \beta, \qquad
+\operatorname{GELU}_{\tanh}(u) = \tfrac12 u\Bigl(1 + \tanh\bigl(\sqrt{2/\pi}\,(u + 0.044715\,u^3)\bigr)\Bigr)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $S$ | sequence length (`seq_len`) |
+| $d$ | model width, 768 |
+| $H,\ d_h$ | heads (12) and head width (64) |
+| $X$ | block input, $S\times d$ |
+| $\operatorname{LN}_1,\ \operatorname{LN}_2$ | LayerNorms with their own $\gamma, \beta$ (length $d$), $\varepsilon = 10^{-5}$ |
+| $\mu,\ \sigma^2$ | per-row mean and biased variance of $\mathbf z$ |
+| $W_{qkv},\ \mathbf b_{qkv}$ | fused QKV projection, $d\times 3d$ and $3d$ |
+| $Q_h, K_h, V_h$ | columns $[h d_h, (h+1)d_h)$ of $Q$, $K$, $V$ |
+| $A_h$ | attention output of head $h$ ($S\times d_h$); no causal mask in this problem |
+| $W_o,\ \mathbf b_o$ | attention output projection, $d\times d$ |
+| $X'$ | hidden state after the first residual |
+| $W_{fc},\ \mathbf b_{fc}$ | MLP up-projection, $d \times 4d$ |
+| $W_{\text{proj}},\ \mathbf b_{\text{proj}}$ | MLP down-projection, $4d\times d$ |
+| $\operatorname{GELU}_{\tanh}$ | GELU with the tanh approximation (as in the reference, `approximate="tanh"`) |
+| $Y$ | block output |
 
 ## Approach
-Five GEMMs plus attention and LayerNorm, with the elementwise work **fused
-into GEMM epilogues** (bias, GELU, residual). Attention reads Q/K/V directly
-from the packed `qkv` rows through strides, so no reshape or transpose
-kernels are needed. The kernels are a register-blocked GEMM templated on the
-epilogue functor and the B layout, a strided flash-attention kernel, and a
-warp-per-row LayerNorm.
+
+### Kernel sequence
+
+| # | Kernel | Computes | Fused epilogue |
+|---|---|---|---|
+| 1 | `layerNormRows` | $X_1 = \operatorname{LN}_1(X)$ | – |
+| 2 | GEMM $S\times d\cdot d\times 3d$ | $QKV$ | $+\,\mathbf b_{qkv}$ |
+| 3 | flash attention | $A = \operatorname{Concat}(A_h)$ | – |
+| 4 | GEMM $S\times d\cdot d\times d$ | $X'$ | $+\,\mathbf b_o + X$ (residual) |
+| 5 | `layerNormRows` | $X_2 = \operatorname{LN}_2(X')$ | – |
+| 6 | GEMM $S\times d\cdot d\times 4d$ | MLP hidden | $+\,\mathbf b_{fc}$, then GELU |
+| 7 | GEMM $S\times 4d\cdot 4d\times d$ | $Y$ | $+\,\mathbf b_{\text{proj}} + X'$ (residual) |
+
+### A GEMM with pluggable epilogues
+
+The 64 × 64 register-blocked SGEMM is a template
+`gemmKernel<kTransB, Epi>`. After accumulation, each thread calls
+`epi(acc, r, c)` for its 16 outputs. The functors are:
+
+- `BiasEpi`: $v + b_c$;
+- `BiasGeluEpi`: $\operatorname{GELU}_{\tanh}(v + b_c)$;
+- `BiasResidualEpi`: $v + b_c + R_{rc}$.
+
+The functor is inlined at compile time, so fusing costs nothing. Without
+fusion, each of these would be a separate elementwise kernel that reads and
+writes an $S\times 3d$ or $S\times 4d$ tensor.
+
+### Attention straight from the packed QKV buffer
+
+The QKV GEMM writes rows of length $3d$: $[Q\,|\,K\,|\,V]$. Head $h$'s query
+row $i$ lives at $\text{qkv} + i\cdot 3d + h d_h$, its key at an extra offset
+$+d$, and its value at $+2d$. The strided flash-attention kernel (warp per
+query row, online softmax, see [Multi-Head Attention](../012-multi-head-attention/))
+takes these strides as parameters. That removes the reference's
+`view/transpose/contiguous` shuffles. It writes directly into the
+concatenated $S\times d$ layout.
+
+### LayerNorm, warp per row
+
+One warp per row of 768 values: 24 values per lane. Lanes accumulate
+$\sum z$ and $\sum z^2$ (in float64) and reduce them with shuffles. The
+normalisation then uses $\mu$ and $\sigma^2 = E[z^2] - \mu^2$, which is safe
+in float64.
+
+## Cost analysis
+
+$$
+W \approx \underbrace{2S d(3d)}_{QKV} + \underbrace{4S^2 d}_{\text{attention}} + \underbrace{2Sd^2}_{W_o} + \underbrace{2\cdot 2S d(4d)}_{\text{MLP}} = 24Sd^2 + 4S^2d
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $W$ | FLOPs of the block (LayerNorm and elementwise terms are negligible) |
+| $24Sd^2$ | the familiar "$\approx 24 \times$ params-per-layer per token" rule: the block has ≈ $12d^2$ weights |
+| $4S^2 d$ | attention scores and $PV$ (quadratic in $S$) |
+
+For $S = 1024$: $W \approx 1.45\times10^{10} + 3.2\times10^{9} \approx 18$ GFLOP.
+The GEMMs dominate, so the SGEMM's efficiency sets the runtime. Fusion saves
+roughly $2\cdot 4\,(3d + d + 4d + d)S$ bytes ≈ 75 MB of elementwise traffic
+at $S = 1024$.
+
+## Pitfalls
+
+- **Weight layout.** The packed matrices are $(\text{in}, \text{out})$,
+  i.e. $X W$, not $X W^{\mathsf T}$ as in `nn.Linear`. That is why the GEMMs
+  use the "NN" form.
+- **GELU variant.** GPT-2 uses the **tanh** approximation. The exact erf
+  GELU differs by up to ~$10^{-3}$, right at the tolerance.
+- **No causal mask.** The reference computes bidirectional attention here,
+  unlike GPT-2 inference.
+- **Temporary memory**: $S(3d + 3d + 4d)$ floats of scratch are
+  allocated per call. The `xn` buffer is reused for both LayerNorms.
+
+## Verification
+
+All LeetGPU cases pass on [cuemu](../../tools/cuemu/README.md) at `1e-3`.
+The large sequence lengths are enabled through this problem's
+`cuemu_max_elements` setting.
+
+## Related
+
+- [LLaMA Transformer Block](../093-llama-transformer-block/), [DiT Block](../116-dit-block/),
+  [Multi-Head Attention](../012-multi-head-attention/), [Layer Norm](../113-layer-normalization/).
