@@ -98,7 +98,7 @@ for (int h = 0; h < 2; ++h) {
 這項資訊也能支援 WMMA 難以完成的融合：逐列縮放、bias、activation，以及
 FlashAttention 的 softmax 統計，全都可在暫存器中套用。
 
-## 4. Swizzle 共享記憶體
+## 4. Swizzle 共享記憶體 { #4-swizzled-shared-memory }
 
 Fragment 從共享記憶體讀取時，以 8 列 × 16 位元組為單位（見下方
 `ldmatrix`）。在一般 row-major 分塊中，這 8 列之間相隔整數個 128 位元組
@@ -171,7 +171,7 @@ ldmatrixX4<true>(r, bs + offsetB(kk + lane % 8 + 8 * (q % 2), warp_col + 16 * p 
 （32 個 lane 全部會合、交換暫存器並計算），所以 lane 映射錯誤、漏掉
 `.trans`，或 writer 與 reader 的 swizzle 不一致，都會讓 `--test` 失敗。
 
-## 6. Hopper：`wgmma` 與 Warp Specialization
+## 6. Hopper：`wgmma` 與 Warp Specialization { #6-hopper-wgmma-and-warp-specialization }
 
 在 sm_90 上，最佳 kernel 的形態再次改變：
 

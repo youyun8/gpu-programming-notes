@@ -139,7 +139,7 @@ SIA=3 時，`GlobalReadPerMfma` 與 `LocalWritePerMfma`（0.01–32）控制密�
 
 Generator 也會自行計算每個 `s_waitcnt`。它知道每個 producer 與 consumer 間放了多少 load，並以硬體 `MaxVmcnt` 為上限，因此能發出最緊但安全的 count。
 
-### 1.5 工作切分：GSU 與 Stream-K
+### 1.5 工作切分：GSU 與 Stream-K { #15-work-decomposition-gsu-and-stream-k }
 
 假設 `M·N / (MT0·MT1)` 個 output tile 遠少於 304 個 CU，例如 decode 時 M=128。可用兩種方法使用 idle CU。
 
@@ -190,7 +190,7 @@ export TENSILE_STREAMK_MAX_CUS=128           # cap CUs used
 
 優先順序為 `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`。
 
-### 1.6 Cache-Aware Tile Order：WGM、WGMXCC、StaggerU
+### 1.6 Cache-Aware Tile Order：WGM、WGMXCC、StaggerU { #16-cache-aware-tile-order-wgm-wgmxcc-staggeru }
 
 - **`WorkGroupMapping`（WGM）** 重新排列 workgroup ID，使同時 in flight 的 tile 在 C 中形成高度 WGM 的 box。Box 中 tile 會在 L2 共用 A-row 與 B-column panel。公式是 `wgSerial = wg0 + (wg1 % WGM) · nwg0`。
 - **`WorkGroupMappingXCC`（WGMXCC）** 抵銷 MI300 將 workgroup *i* round-robin 放到 XCD *i % 8* 的行為。它 remap ID，讓**連續 logical tile 在同一 XCD 執行**，共享其 4 MiB L2。`WorkGroupMappingXCCGroup` 設定 group size，`-1` 代表「CU count」。

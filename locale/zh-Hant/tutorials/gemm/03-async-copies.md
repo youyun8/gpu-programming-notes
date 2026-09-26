@@ -116,7 +116,7 @@ $$
   對齊，因此 kernel 會具現化成使用 4 位元組複製（`kVec = 1`）：複製
   指令數是四倍，但使用相同 pipeline。
 
-## 4. Hopper 上的 TMA
+## 4. Hopper 上的 TMA { #4-tma-on-hopper }
 
 TMA 每條指令可搬移一個完整的多維分塊：
 

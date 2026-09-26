@@ -9,7 +9,7 @@
 hsa/gfx942/bf16gemm/bf16gemm_fp32bf16_tn_128x64_bshuffle_splitk.co
 ```
 
-這是 bf16 × bf16 → fp32/bf16 GEMM，使用 128×64 output tile、預先 shuffle 的 weight 與 split-K。它沿用[第 05 章](05-amd-cdna3-mfma.md)的 MFMA 詞彙。文中所有數字都來自 AITER commit `569ae98` 的 disassembly；沒有 GPU 也能重現（見[重現本章](#重現本章)）。
+這是 bf16 × bf16 → fp32/bf16 GEMM，使用 128×64 output tile、預先 shuffle 的 weight 與 split-K。它沿用[第 05 章](05-amd-cdna3-mfma.md)的 MFMA 詞彙。文中所有數字都來自 AITER commit `569ae98` 的 disassembly；沒有 GPU 也能重現（見[重現本章](#reproduce-this-chapter)）。
 
 **你將學會**
 
@@ -283,7 +283,7 @@ s_add_u32 s4, s40, s4         ; advance A's buffer base
 
 Buffer resource（`s[4:7]`、`s[8:11]`）也能由硬體做 bounds check：越界 load 回傳 0，越界 store 會丟棄。TensileLite 等 generated kernel 依賴此行為處理 edge tile。此 kernel 在 prologue 將 `num_records` 設為 `0xFFFFFFF0`（`s_mov_b32 s6, -16`），實際上停用了檢查。
 
-## 5. Epilogue：Split-K 與 bf16 Rounding
+## 5. Epilogue：Split-K 與 bf16 Rounding { #5-epilogue-split-k-and-bf16-rounding }
 
 ### 5.1 合併 Partial Tile
 
@@ -358,7 +358,7 @@ AITER 在 `docs/isa_kernel_optimization.md` 記錄完整流程，script 位於 `
    - `rocprofv3 --kernel-trace --stats --kernel-include-regex bf16gemm` 做計時。
    - `rocprofv3 --att --kernel-iteration-range 5-5 --att-target-cu 1` 取得 per-instruction thread trace，再用 ROCprof Compute Viewer 查看。它會顯示 loop 受限於 MFMA issue、`s_waitcnt`，還是 LDS bank conflict。
 
-## 重現本章
+## 重現本章 { #reproduce-this-chapter }
 
 不需要 GPU 或 ROCm；Ubuntu 的 LLVM 18 package 即可。
 

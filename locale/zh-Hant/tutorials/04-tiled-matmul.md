@@ -191,7 +191,7 @@ $$
 （A100 SM 每週期可執行 64 個 FP32 FMA，但只能從共享記憶體讀取 32 個
 word）。此 kernel 通常達到峰值的 10–20 %。
 
-## 4. 暫存器分塊
+## 4. 暫存器分塊 { #4-register-tiling }
 
 ### 4.1 Outer Product
 
