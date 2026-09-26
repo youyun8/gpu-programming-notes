@@ -4,7 +4,7 @@ platform: Tensara
 upstream: matrix-multiplication
 url: https://tensara.org/problems/matrix-multiplication
 difficulty: medium
-tags: [gemm, register-blocking]
+tags: [matmul, sgemm, register-blocking, shared-memory]
 status: solved
 ---
 
@@ -13,11 +13,119 @@ status: solved
 **Platform:** Tensara · **Difficulty:** medium · [Problem statement](https://tensara.org/problems/matrix-multiplication)
 
 ## Problem
-`C = A·B` (fp32, row-major).
+
+General FP32 matrix product $C = AB$ with $A$ of size $M\times K$ and $B$
+of size $K\times N$, row-major, for sizes from $4096^3$ to $8192^3$. The
+check is `rtol = 2e-4`, `atol = 5e-3`, tight enough that TF32 tensor cores
+(10-bit mantissa) are not an option: this is a true SGEMM.
+
+## Formulation
+
+$$
+C_{ij} = \sum_{k=0}^{K-1} A_{ik}\,B_{kj}, \qquad 0 \le i < M,\ 0 \le j < N
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $A$ | left operand, $M\times K$, row-major (`input_a`) |
+| $B$ | right operand, $K\times N$, row-major (`input_b`) |
+| $C$ | output, $M\times N$ (`output_c`) |
+| $M, N, K$ | rows of $C$, columns of $C$, reduction length |
+| $i, j, k$ | row, column and reduction indices |
+
+Tiling rewrites the sum as a sum of tile products, which is what the
+kernel computes:
+
+$$
+C_{\mathcal{I}\mathcal{J}} = \sum_{s=0}^{\lceil K/T_K\rceil - 1} A_{\mathcal{I},\,\mathcal{K}_s}\,B_{\mathcal{K}_s,\,\mathcal{J}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $\mathcal{I}, \mathcal{J}$ | the 64 rows and 64 columns of one output tile |
+| $\mathcal{K}_s$ | the $s$-th slice of 16 reduction indices |
 
 ## Approach
-Register-blocked SGEMM: a 64×64 block tile, 16-wide K slices in shared memory
-(A stored transposed), and 4×4 outputs per thread with stride 16 so the
-stores are coalesced. See [tutorial 04](../../tutorials/04-tiled-matmul.md).
-The same kernel, templated on B's layout and a fused epilogue functor, is
-reused by the other GEMM problems below.
+
+The kernel is launched with `NoEpi` (identity epilogue) and `kTransB = false`.
+
+### The shared SGEMM kernel
+
+All matmul pages on Tensara use the same register-blocked FP32 kernel
+(`gemmKernel<kTransB, Epi>`):
+
+1. **Block tile $64\times64$**, 256 threads; each thread owns a $4\times4$
+   patch of outputs at rows `ty + 16i`, columns `tx + 16j`. The stride-16
+   layout makes every store instruction of a warp hit 16 consecutive
+   columns (coalesced), and makes shared-memory reads conflict-free.
+2. **K-slices of 16.** Per slice the block copies a $64\times16$ panel of
+   $A$ (stored transposed as `a_tile[k][m]`) and a $16\times64$ panel of
+   $B$ into shared memory (rows padded by 4 floats), then synchronizes.
+3. **Inner product in registers.** For each of the 16 values of $k$, a
+   thread loads 4 values of $A$ and 4 of $B$ from shared memory and does
+   $4\times4 = 16$ FMAs (an outer product).
+4. **Epilogue functor.** The accumulator goes through `epi(v, row, col)`
+   before the single store. This is where bias, activations, scaling or
+   elementwise multiplies are fused, so the product never makes a round
+   trip through DRAM.
+5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
+   weight layout) and transposes it while staging.
+
+Data reuse at each level of the hierarchy:
+
+$$
+I_{\text{L2}} = \frac{2\,T_M T_N T_K}{4\,T_K\,(T_M + T_N)} = \frac{T_M T_N}{2\,(T_M + T_N)} = 16\ \tfrac{\text{flop}}{\text{byte}}, \qquad
+I_{\text{smem}} = \frac{2 \cdot r_M r_N}{4\,(r_M + r_N)} = 1\ \tfrac{\text{flop}}{\text{byte}}
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $T_M, T_N, T_K$ | block tile: 64, 64, 16 |
+| $r_M, r_N$ | per-thread register tile: 4 × 4 |
+| $I_{\text{L2}}$ | flops per byte loaded from L2/DRAM into shared memory |
+| $I_{\text{smem}}$ | flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
+covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):
+$128\times128$ tiles with $8\times8$ per thread, `float4` shared loads,
+double-buffered `cp.async` staging, and finally tensor cores (TF32) where
+the tolerance allows.
+
+## Cost analysis
+
+$$
+W = 2MNK, \qquad Q_{\min} = 4\,(MK + KN + MN)\ \text{bytes}, \qquad T_{\min} = \max\left(\frac{W}{F},\ \frac{Q_{\min}}{\beta}\right)
+$$
+
+| Symbol | Meaning |
+|---|---|
+| $W$ | floating-point operations (one FMA = 2 flops) |
+| $Q_{\min}$ | compulsory DRAM bytes (each operand read once, output written once) |
+| $F$ | FP32 peak (tens of TFLOP/s on current GPUs) |
+| $\beta$ | DRAM bandwidth |
+| $T_{\min}$ | roofline lower bound |
+
+At $8192^3$: $W = 1.1$ TFLOP, $Q_{\min} = 805$ MB. The arithmetic intensity
+$W/Q_{\min} \approx 1365$ flop/byte is far above any GPU's ridge point, so
+the kernel is compute-bound and its speed is set by how close the inner
+loop gets to one FMA per cycle per lane.
+
+## Pitfalls
+
+- **TF32**: cuBLAS may use TF32 when `allow_tf32` is on; the reference
+  disables autocast, and the tolerance rejects TF32 on large $K$.
+- **`int` overflow**: $8192^2 = 2^{26}$ elements fits, but byte offsets do
+  not; the kernel multiplies with `size_t`.
+- **Partial tiles**: out-of-range rows, columns and $k$ are zero-filled at
+  load and skipped at store.
+
+## Verification
+
+All test cases (scaled-down variants of the official sizes) pass on
+[cuemu](../../tools/cuemu/README.md) against the PyTorch reference.
+
+## Related
+
+- [Square Matmul](../square-matmul/), [Matmul 3D](../matmul-3d/), [GEMM + ReLU](../gemm-relu/),
+  LeetGPU [Matrix Multiplication](../../leetgpu/002-matrix-multiplication/),
+  tutorial [04 – Tiled matmul](../../tutorials/04-tiled-matmul.md).

@@ -6,7 +6,7 @@
 // max(i, j). The register-blocked SGEMM is restricted accordingly:
 //   - output tiles entirely outside the triangle are written as zeros without
 //     touching A or B;
-//   - the K loop of the other tiles only visits [row0, col0 + kTileN), roughly a third of
+//   - the K loop of the other tiles only visits [row0, col0 + kTileN), roughly a sixth of
 //     the dense FLOPs overall;
 //   - loads mask the opposite triangle (the reference applies tril/triu too).
 #include <cuda_runtime.h>
