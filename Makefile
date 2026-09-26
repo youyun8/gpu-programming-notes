@@ -1,19 +1,39 @@
-# Compile-check every solution. Does not require a GPU, only nvcc.
+# Compile-check every solution and GEMM tutorial program. Does not require a GPU, only nvcc.
 NVCC      ?= nvcc
 ARCH      ?= sm_80
 NVCCFLAGS ?= -O3 -std=c++17 -arch=$(ARCH) -Xcompiler -Wall
 
 SOLUTIONS := $(shell find leetgpu tensara -name 'solution.cu' | sort)
 OBJECTS   := $(patsubst %.cu,build/%.o,$(SOLUTIONS))
+GEMM      := $(sort $(wildcard tutorials/gemm/*.cu))
+GEMM_OBJS := $(patsubst %.cu,build/%.o,$(GEMM))
 
-.PHONY: check test index site serve amd-isa clean
+.PHONY: check test gemm-test figures index site serve amd-isa clean
 
-check: $(OBJECTS)
-	@echo "compiled $(words $(OBJECTS)) solution(s)"
+check: $(OBJECTS) $(GEMM_OBJS)
+	@echo "compiled $(words $(OBJECTS)) solution(s) and $(words $(GEMM_OBJS)) GEMM tutorial program(s)"
+
+build/tutorials/gemm/%.o: tutorials/gemm/%.cu tutorials/gemm/harness.cuh
+	@mkdir -p $(dir $@)
+	$(NVCC) $(NVCCFLAGS) -c $< -o $@
 
 build/%.o: %.cu
 	@mkdir -p $(dir $@)
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
+
+# Run every GEMM tutorial program's --test mode on the CPU emulator (needs clang++ only),
+# plus the split-K and Stream-K variants.
+CUEMU_RUN := python3 tools/cuemu/cuemu.py run
+gemm-test:
+	@set -e; for f in $(GEMM); do $(CUEMU_RUN) $$f -- --test; done
+	@$(CUEMU_RUN) tutorials/gemm/06-split-k.cu -- --atomic --test
+	@$(CUEMU_RUN) tutorials/gemm/06-split-k.cu -- --splits=5 --test
+	@set -e; for g in 1 3 7 13; do $(CUEMU_RUN) tutorials/gemm/07-stream-k.cu -- --blocks=$$g --test; done
+	@CUEMU_REVERSE=1 $(CUEMU_RUN) tutorials/gemm/09-mma-sync.cu -- --test
+
+# Regenerate the tutorial figures (tutorials/figures/*.svg) from scripts/figures/
+figures:
+	python3 scripts/build_figures.py
 
 index:
 	python3 scripts/build_index.py

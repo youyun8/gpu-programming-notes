@@ -21,6 +21,8 @@ chapter covers:
 | Global (HBM / GDDR) | Device | ~400–800 cycles | 40–80 GB | Large, high bandwidth, high latency. |
 | Constant | Device, read-only | Cached | 64 KB | Fast when all lanes read the same address (broadcast). |
 
+![The memory hierarchy of an A100, from registers to HBM](figures/ch02-memory-levels.svg)
+
 The numbers vary between generations. The ratios are what matters: each
 level down is roughly an order of magnitude slower, and DRAM bandwidth is
 roughly 10–20× lower than the rate at which the SMs can do arithmetic.
@@ -53,6 +55,8 @@ $$
 | `x[2 * i]`, `float` | 2 | 8 | 50 % |
 | `x[32 * i]`, `float` (a column of a 32-wide matrix) | 32 | 32 | 12.5 % |
 | Misaligned by 4 bytes, `float` | 1 | 5 | 80 % |
+
+![Sectors fetched for one warp-wide load with stride 1, 2 and 32](figures/ch02-coalescing.svg)
 
 **Rule of thumb:** make `threadIdx.x` index the fastest-varying
 (contiguous) dimension. When a kernel must read along the slow dimension
@@ -122,6 +126,8 @@ values: conflict-free.
 __shared__ float tile[kTile][kTile + 1];   // +1 shifts each row by one bank
 ```
 
+![Where the 32 elements of column 3 live: all in one bank without padding, in 32 different banks with one word of padding per row](figures/ch02-bank-conflicts.svg)
+
 Other fixes are an XOR swizzle of the column index (used by CUTLASS and
 the AMD kernels of chapters 06–07), or choosing which dimension
 `threadIdx.x` indexes so that lanes read along a row.
@@ -131,6 +137,8 @@ the AMD kernels of chapters 06–07), or choosing which dimension
 $B = A^{\mathsf T}$ for an $R\times C$ matrix. A direct kernel reads rows
 and writes columns (or vice versa), so one side is uncoalesced. Tiling
 through shared memory makes both sides contiguous:
+
+![A tile is read along rows, transposed in shared memory, and written along rows](figures/ch02-transpose.svg)
 
 ```cpp
 constexpr int kTile = 32;

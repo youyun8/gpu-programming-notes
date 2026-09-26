@@ -79,6 +79,8 @@ $$
 For the example: $\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$ and
 $\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$, 256 threads.
 
+![MatrixInstruction [32, 32, 1, 2, 1, 4, 1, 2, 2]: MFMA tile, wave tile and macro tile](figures/ch07-macro-tile.svg)
+
 For the gfx942 bf16 kernels you mostly see `16x16x16` or `32x32x8` MFMAs,
 written as `[16,16,16,1, 1, …]`.
 
@@ -249,6 +251,8 @@ Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
   - `StaggerUMapping` selects which workgroup index drives the offset:
     wg0, wg1, wg2 or the serial ID.
 
+![Default round-robin XCD placement vs a remapping that keeps neighbouring tiles on one XCD](figures/ch07-xcd-remap.svg)
+
 The idea behind WGM is the same as the "grouped" launch order used by
 Triton and CUTLASS. Written in that common form, the serial launch index
 $s$ is mapped to the tile $(w_0', w_1')$ that the workgroup computes:
@@ -351,6 +355,8 @@ unset HIPBLASLT_TUNING_FILE
 export HIPBLASLT_TUNING_OVERRIDE_FILE=tuning.txt
 python my_model.py
 ```
+
+![The three steps of offline tuning](figures/ch07-tuning-flow.svg)
 
 Two warnings apply:
 - Solution indices are only valid for **the same library build and the same

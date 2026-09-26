@@ -34,11 +34,7 @@ nvcc -O3 -arch=native -o hello hello.cu && ./hello
 
 `nvcc` splits a `.cu` file into host code and device code:
 
-```
-hello.cu ──► host part  ──► g++/clang ──────────────────────────► host object
-         └─► device part ──► PTX (virtual ISA, compute_XX) ──► ptxas ──► SASS (sm_XX)
-                                                   └────── both embedded in a "fatbin"
-```
+![nvcc splits a .cu file into host code and device code; device code becomes PTX and SASS, both embedded in a fatbin](figures/ch00-nvcc.svg)
 
 - **PTX** is a portable virtual instruction set. The driver can compile it
   just in time for a newer GPU.
@@ -174,6 +170,8 @@ $$
 | $\beta$ | Peak DRAM bandwidth |
 | $T_{\min}$ | Lower bound on the kernel time |
 | $I^{\star}$ | Ridge point: kernels with $I < I^{\star}$ are memory-bound, those with $I > I^{\star}$ compute-bound |
+
+![The roofline of an A100: below the ridge point a kernel is bounded by bandwidth, above it by compute. Dots mark the bound implied by each kernel's intensity](figures/ch00-roofline.svg)
 
 Some rough numbers:
 

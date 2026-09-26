@@ -193,6 +193,8 @@ waves split N: 4 × 16 = 64 = tileN. Two consequences follow:
    and B leaves `Σₖ aₖ·bₖ` unchanged. The shuffle picks the k order that makes
    loads contiguous.
 
+![The 128 × 64 tile: A is staged in LDS for all four waves, each wave loads its own B strip straight into AGPRs](figures/ch06-decomposition.svg)
+
 In symbols, for any permutation $\sigma$ of $\{0, \dots, K-1\}$:
 
 $$
@@ -306,6 +308,8 @@ An MFMA keeps the matrix core busy for several cycles after it issues. While
 it runs, the wave's instruction arbiter can issue the load, the `M0` update or
 the pointer increment for free.
 
+![MFMAs keep the matrix core busy while loads, LDS reads and scalar updates issue in between](figures/ch06-interleave.svg)
+
 This is the single most important scheduling idea in AMD GEMMs. It is exactly
 what TensileLite's `ScheduleIterAlg=3` automates (chapter 07).
 
@@ -354,6 +358,8 @@ zero-initialised per stream in `gemm_op_a16w16.py`) holds per-tile arrival
 counters. The last workgroup to arrive does the final phase and resets the
 counter. That is why the launcher asserts `gdx·gdy ≤ 1024` and why separate
 streams need separate workspaces: shared counters would deadlock.
+
+![Split-K: every z-slice adds its partial tile with atomics; a per-tile counter elects the last arrival](figures/ch06-split-k.svg)
 
 The fp32 → bf16 conversion is done by hand:
 

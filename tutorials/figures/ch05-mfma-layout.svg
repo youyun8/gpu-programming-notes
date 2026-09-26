@@ -1,0 +1,918 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 390" width="720" height="390" class="fig-svg" role="img">
+<title>Operand layout of v_mfma_f32_16x16x16_bf16 across the 64 lanes of a wave</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch05-mfma-layout-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch05-mfma-layout-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch05-mfma-layout-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch05-mfma-layout-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch05-mfma-layout-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch05-mfma-layout-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch05-mfma-layout-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="390" class="fig-paper"/>
+<rect x="40" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">0</text>
+<text x="130" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">16</text>
+<text x="190" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">32</text>
+<text x="250" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">48</text>
+<rect x="40" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">1</text>
+<text x="130" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">17</text>
+<text x="190" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">33</text>
+<text x="250" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">49</text>
+<rect x="40" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">2</text>
+<text x="130" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">18</text>
+<text x="190" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">34</text>
+<text x="250" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">50</text>
+<rect x="40" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">3</text>
+<text x="130" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">19</text>
+<text x="190" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">35</text>
+<text x="250" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">51</text>
+<rect x="40" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">4</text>
+<text x="130" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">20</text>
+<text x="190" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">36</text>
+<text x="250" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">52</text>
+<rect x="40" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">5</text>
+<text x="130" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">21</text>
+<text x="190" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">37</text>
+<text x="250" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">53</text>
+<rect x="40" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">6</text>
+<text x="130" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">22</text>
+<text x="190" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">38</text>
+<text x="250" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">54</text>
+<rect x="40" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">7</text>
+<text x="130" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">23</text>
+<text x="190" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">39</text>
+<text x="250" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">55</text>
+<rect x="40" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">8</text>
+<text x="130" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">24</text>
+<text x="190" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">40</text>
+<text x="250" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">56</text>
+<rect x="40" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">9</text>
+<text x="130" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">25</text>
+<text x="190" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">41</text>
+<text x="250" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">57</text>
+<rect x="40" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">10</text>
+<text x="130" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">26</text>
+<text x="190" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">42</text>
+<text x="250" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">58</text>
+<rect x="40" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">11</text>
+<text x="130" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">27</text>
+<text x="190" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">43</text>
+<text x="250" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">59</text>
+<rect x="40" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">12</text>
+<text x="130" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">28</text>
+<text x="190" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">44</text>
+<text x="250" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">60</text>
+<rect x="40" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">13</text>
+<text x="130" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">29</text>
+<text x="190" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">45</text>
+<text x="250" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">61</text>
+<rect x="40" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">14</text>
+<text x="130" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">30</text>
+<text x="190" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">46</text>
+<text x="250" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">62</text>
+<rect x="40" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="55" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="70" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="85" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="100" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="115" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="130" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="145" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="160" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="175" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="190" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="205" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="220" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="235" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="250" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="265" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="70" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">15</text>
+<text x="130" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">31</text>
+<text x="190" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">47</text>
+<text x="250" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">63</text>
+<rect x="40" y="70" width="240" height="240" rx="0" class="fig-none s-ink" stroke-width="1.2"/>
+<text x="160" y="34" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">A (16 × 16)</text>
+<text x="160" y="50" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">number = lane holding 4 k values</text>
+<text x="160" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">k →</text>
+<rect x="290" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="70" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="70" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="70" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="70" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">0</text>
+<text x="380" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">16</text>
+<text x="440" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">32</text>
+<text x="500" y="77.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">48</text>
+<rect x="290" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="85" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="85" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="85" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="85" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">1</text>
+<text x="380" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">17</text>
+<text x="440" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">33</text>
+<text x="500" y="92.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">49</text>
+<rect x="290" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="100" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="100" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="100" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="100" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">2</text>
+<text x="380" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">18</text>
+<text x="440" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">34</text>
+<text x="500" y="107.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">50</text>
+<rect x="290" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="115" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="115" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="115" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="115" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">3</text>
+<text x="380" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">19</text>
+<text x="440" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">35</text>
+<text x="500" y="122.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">51</text>
+<rect x="290" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="130" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="130" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="130" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="130" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">4</text>
+<text x="380" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">20</text>
+<text x="440" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">36</text>
+<text x="500" y="137.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">52</text>
+<rect x="290" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="145" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="145" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="145" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="145" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">5</text>
+<text x="380" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">21</text>
+<text x="440" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">37</text>
+<text x="500" y="152.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">53</text>
+<rect x="290" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="160" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="160" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="160" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="160" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">6</text>
+<text x="380" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">22</text>
+<text x="440" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">38</text>
+<text x="500" y="167.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">54</text>
+<rect x="290" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="175" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="175" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="175" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="175" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">7</text>
+<text x="380" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">23</text>
+<text x="440" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">39</text>
+<text x="500" y="182.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">55</text>
+<rect x="290" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="190" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="190" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="190" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="190" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">8</text>
+<text x="380" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">24</text>
+<text x="440" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">40</text>
+<text x="500" y="197.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">56</text>
+<rect x="290" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="205" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="205" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="205" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="205" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">9</text>
+<text x="380" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">25</text>
+<text x="440" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">41</text>
+<text x="500" y="212.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">57</text>
+<rect x="290" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="220" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="220" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="220" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="220" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">10</text>
+<text x="380" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">26</text>
+<text x="440" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">42</text>
+<text x="500" y="227.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">58</text>
+<rect x="290" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="235" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="235" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="235" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="235" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">11</text>
+<text x="380" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">27</text>
+<text x="440" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">43</text>
+<text x="500" y="242.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">59</text>
+<rect x="290" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="250" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="250" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="250" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="250" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">12</text>
+<text x="380" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">28</text>
+<text x="440" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">44</text>
+<text x="500" y="257.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">60</text>
+<rect x="290" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="265" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="265" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="265" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="265" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">13</text>
+<text x="380" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">29</text>
+<text x="440" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">45</text>
+<text x="500" y="272.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">61</text>
+<rect x="290" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="280" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="280" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="280" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="280" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">14</text>
+<text x="380" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">30</text>
+<text x="440" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">46</text>
+<text x="500" y="287.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">62</text>
+<rect x="290" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="305" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="320" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="335" y="295" width="15" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="350" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="365" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="380" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="395" y="295" width="15" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="410" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="425" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="440" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="455" y="295" width="15" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="470" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="485" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="500" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="515" y="295" width="15" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<text x="320" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">15</text>
+<text x="380" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">31</text>
+<text x="440" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">47</text>
+<text x="500" y="302.5" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">63</text>
+<rect x="290" y="70" width="240" height="240" rx="0" class="fig-none s-ink" stroke-width="1.2"/>
+<text x="410" y="34" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">Bᵀ (row j = column j of B)</text>
+<text x="410" y="50" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">same layout as A</text>
+<text x="410" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">k →</text>
+<rect x="540" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="547.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="555" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="562.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="570" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="577.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="585" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="592.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="600" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="607.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="615" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="622.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="630" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="637.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="645" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="652.5" y="70" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="540" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="547.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="555" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="562.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="570" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="577.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="585" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="592.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="600" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="607.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="615" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="622.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="630" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="637.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="645" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="652.5" y="85" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="540" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="547.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="555" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="562.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="570" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="577.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="585" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="592.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="600" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="607.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="615" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="622.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="630" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="637.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="645" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="652.5" y="100" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="540" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="547.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="555" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="562.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="570" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="577.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="585" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="592.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="600" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="607.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="615" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="622.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="630" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="637.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="645" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="652.5" y="115" width="7.5" height="15" rx="0" class="f-a s-line" stroke-width="0.3"/>
+<rect x="540" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="547.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="555" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="562.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="570" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="577.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="585" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="592.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="600" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="607.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="615" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="622.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="630" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="637.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="645" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="652.5" y="130" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="540" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="547.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="555" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="562.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="570" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="577.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="585" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="592.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="600" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="607.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="615" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="622.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="630" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="637.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="645" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="652.5" y="145" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="540" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="547.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="555" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="562.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="570" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="577.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="585" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="592.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="600" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="607.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="615" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="622.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="630" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="637.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="645" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="652.5" y="160" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="540" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="547.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="555" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="562.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="570" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="577.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="585" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="592.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="600" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="607.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="615" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="622.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="630" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="637.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="645" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="652.5" y="175" width="7.5" height="15" rx="0" class="f-b s-line" stroke-width="0.3"/>
+<rect x="540" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="547.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="555" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="562.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="570" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="577.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="585" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="592.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="600" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="607.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="615" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="622.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="630" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="637.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="645" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="652.5" y="190" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="540" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="547.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="555" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="562.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="570" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="577.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="585" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="592.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="600" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="607.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="615" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="622.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="630" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="637.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="645" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="652.5" y="205" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="540" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="547.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="555" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="562.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="570" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="577.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="585" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="592.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="600" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="607.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="615" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="622.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="630" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="637.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="645" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="652.5" y="220" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="540" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="547.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="555" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="562.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="570" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="577.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="585" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="592.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="600" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="607.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="615" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="622.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="630" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="637.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="645" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="652.5" y="235" width="7.5" height="15" rx="0" class="f-c s-line" stroke-width="0.3"/>
+<rect x="540" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="547.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="555" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="562.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="570" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="577.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="585" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="592.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="600" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="607.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="615" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="622.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="630" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="637.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="645" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="652.5" y="250" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="540" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="547.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="555" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="562.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="570" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="577.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="585" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="592.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="600" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="607.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="615" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="622.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="630" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="637.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="645" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="652.5" y="265" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="540" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="547.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="555" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="562.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="570" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="577.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="585" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="592.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="600" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="607.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="615" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="622.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="630" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="637.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="645" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="652.5" y="280" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="540" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="547.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="555" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="562.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="570" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="577.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="585" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="592.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="600" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="607.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="615" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="622.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="630" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="637.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="645" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="652.5" y="295" width="7.5" height="15" rx="0" class="f-d s-line" stroke-width="0.3"/>
+<rect x="540" y="70" width="120" height="240" rx="0" class="fig-none s-ink" stroke-width="1.2"/>
+<text x="600" y="34" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">D (16 × 16, fp32)</text>
+<text x="600" y="50" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">column l % 16</text>
+<text x="666" y="100" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-tiny">l 0–15</text>
+<text x="666" y="160" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-tiny">l 16–31</text>
+<text x="666" y="220" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-tiny">l 32–47</text>
+<text x="666" y="280" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-tiny">l 48–63</text>
+<text x="360" y="340" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">Lane l supplies A[l % 16][4(l/16) … 4(l/16)+3] and B[4(l/16) … +3][l % 16]: 4 consecutive k</text>
+<text x="360" y="358" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">per lane = one 8-byte read when A and B are both K-contiguous (the TN layout).</text>
+</svg>

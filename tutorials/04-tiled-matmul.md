@@ -77,6 +77,8 @@ $$
 | $\mathcal{K}_s$ | The $s$-th slice of $T$ reduction indices |
 | $A_{\mathcal{I},\mathcal{K}_s}$, $B_{\mathcal{K}_s,\mathcal{J}}$ | $T\times T$ sub-matrices staged in shared memory |
 
+![Block tiling: a block owns one tile of C and walks the matching row panel of A and column panel of B one slice at a time](figures/ch04-block-tiling.svg)
+
 ```cpp
 constexpr int kTile = 32;
 
@@ -148,6 +150,8 @@ $$
 | $64\times64$ block, $4\times4$ per thread | 2 | 16 |
 | $128\times128$ block, $8\times8$ per thread | 4 | 32 |
 
+![Register tiling: per k step a thread loads 4 values of A and 4 of B and does 16 FMAs](figures/ch04-register-tile.svg)
+
 The Tensara matmul pages use the $64\times64$ / $4\times4$ version
 ([Tensara – Matrix Multiplication](../tensara/matrix-multiplication/)). Its
 inner loop is:
@@ -182,24 +186,30 @@ Details that matter:
 
 ## 5. The Rest of the Ladder
 
-| Technique | Why it helps |
-|-----------|-----|
-| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments |
-| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two |
-| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous |
-| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse |
-| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 |
-| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU |
-| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow |
+Each technique below has its own page in the
+[GEMM deep dive](gemm/README.md), with a complete program that is tested
+on the CPU emulator:
+
+| Technique | Why it helps | Page |
+|-----------|-----|---|
+| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments | [04.1](gemm/01-vectorized-loads.md) |
+| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two | [04.2](gemm/02-double-buffering.md) |
+| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous | [04.3](gemm/03-async-copies.md) |
+| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse | [04.4](gemm/04-warp-tiling.md) |
+| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 | [04.5](gemm/05-tile-swizzling.md) |
+| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU | [04.6](gemm/06-split-k-stream-k.md) |
+| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow | [04.7](gemm/07-tensor-cores.md) |
 
 A typical progression on one GPU, as a fraction of cuBLAS FP32:
 
 | Kernel | Fraction of cuBLAS |
 |---|---|
 | Naive | 1–5 % |
-| shared-memory tiling | 10–20 % |
+| Shared-memory tiling | 10–20 % |
 | $4\times4$ register tiling | 40–60 % |
 | $8\times8$, `float4`, double buffering, warp tiling | 80–95 % |
+
+![Typical fraction of cuBLAS FP32 throughput reached by each rung of the ladder](figures/ch04-ladder.svg)
 
 Chapters 05–07 continue the story on AMD hardware with matrix-core
 instructions, a hand-written assembly kernel and a kernel generator.

@@ -23,7 +23,9 @@ leetgpu/NNN/solution.cu    ─┴►   leetgpu/NNN/index.md         ──►   
 mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav)
 ```
 
-`scripts/build_site.py` does six things:
+![How the repository becomes a static site](figures/ch08-pipeline.svg)
+
+`scripts/build_site.py` does seven things:
 
 1. **Tutorial pages.** Every Markdown file under `tutorials/` becomes a page.
    Every code file there (`.hip`, `.h`, …) also gets a rendered page with a
@@ -48,6 +50,12 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 6. **Static assets.** It copies `site_assets/` to `assets/` in the site:
    the stylesheet, the favicon, the KaTeX loader and the vendored KaTeX and
    font files (section 9).
+7. **Figures.** A tutorial line that holds nothing but a Markdown image of
+   an SVG from `tutorials/figures/` is replaced by the SVG itself, inside a
+   `<figure>` with the caption. Inlined, the figure's colours come from the
+   `--fig-*` CSS properties in `extra.css`, so it follows the light/dark
+   toggle; on GitHub the same line renders as an ordinary image with the
+   light colours.
 
 The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
@@ -168,10 +176,11 @@ would publish something broken or wrong:
 
 | Job | What it guarantees |
 |-----|--------------------|
-| `nvcc compile check` | Every `solution.cu` compiles with the real CUDA toolkit |
+| `nvcc compile check` | Every `solution.cu` and every GEMM tutorial program compiles with the real CUDA toolkit |
 | `cuemu tests (leetgpu / tensara)` | Every solution produces correct results against the platforms' reference implementations, on the CPU emulator (see [tools/cuemu](../tools/cuemu/README.md)) |
+| `GEMM tutorial programs (cuemu)` | Every program in `tutorials/gemm/` passes its `--test` shapes on the CPU emulator |
 | `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
-| `README index and site build` | The README tables are current and the site builds with no broken links |
+| `README index and site build` | The README tables and the figures are current, and the site builds with no broken links |
 
 ## 8. Adding Content Later
 
@@ -185,6 +194,14 @@ git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pa
 
 A new tutorial chapter only needs a Markdown file in `tutorials/` and a row
 in `tutorials/README.md`. The navigation is generated.
+
+Figures are not drawn by hand: each one is a Python function in
+`scripts/figures/<chapter>.py` that uses the small SVG helper in
+`scripts/figures/svg.py`. Run `python3 scripts/build_figures.py` (or
+`make figures`) after editing one and commit the regenerated SVGs; CI fails
+if they are stale. Pages in a sub-directory of `tutorials/` (such as
+`gemm/`) appear in the navigation after the chapter named in
+`TUTORIAL_SECTIONS` in `scripts/build_site.py`.
 
 ## 9. How Math and Code Are Rendered
 

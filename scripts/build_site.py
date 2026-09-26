@@ -13,6 +13,7 @@ are rewritten to the generated pages, and every referenced source file is
 also published verbatim so it can be downloaded.
 """
 import argparse
+import html
 import json
 import re
 import shutil
@@ -27,7 +28,12 @@ DIFFICULTIES = ["easy", "medium", "hard"]
 STATUS_ICONS = {"solved": "✅", "wip": "🚧", "todo": "⬜"}
 CODE_LANGUAGES = {".cu": "cuda", ".cuh": "cuda", ".hip": "cpp", ".h": "cpp", ".cpp": "cpp", ".py": "python",
                   ".sh": "bash"}
+# Tutorial sub-directories with pages of their own: directory -> (navigation title,
+# file-name prefix of the chapter they are listed after).
+TUTORIAL_SECTIONS = {"gemm": ("04.x GEMM Deep Dive", "04-")}
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
+# A figure: an SVG image alone on its line. The site inlines it (see inline_figures).
+FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.svg)\)[ \t]*$", re.M)
 
 
 def parse_front_matter(text: str):
@@ -250,6 +256,27 @@ class SiteBuilder:
         parts = re.split(r"(```.*?```)", text, flags=re.S)
         return "".join(p if p.startswith("```") else LINK_RE.sub(repl, p) for p in parts)
 
+    def inline_figures(self, text: str, source: Path) -> str:
+        """Replace SVG figures (`![caption](figures/x.svg)` on a line of its own) by inline SVG.
+
+        Inlined, the SVG's classes pick up the site's --fig-* colour properties, so figures
+        follow the light/dark scheme (on GitHub the same line renders as a plain image).
+        The caption becomes a <figcaption>; `code` spans are kept, $math$ is left to KaTeX.
+        """
+
+        def repl(m):
+            path = (source.parent / m.group(2)).resolve()
+            if not path.exists():
+                self.warnings.append(f"{source.relative_to(ROOT)}: missing figure {m.group(2)}")
+                return m.group(0)
+            svg = re.sub(r"<\?xml[^>]*\?>", "", path.read_text()).strip()
+            svg = " ".join(line.strip() for line in svg.splitlines())
+            caption = re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(m.group(1), quote=False))
+            return f'<figure class="diagram">{svg}<figcaption>{caption}</figcaption></figure>'
+
+        parts = re.split(r"(```.*?```)", text, flags=re.S)
+        return "".join(p if p.startswith("```") else FIGURE_RE.sub(repl, p) for p in parts)
+
     def write(self, page: Path, text: str):
         dest = OUT / page
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -278,13 +305,15 @@ class SiteBuilder:
 
     def tutorials(self):
         nav, code_nav = [], []
+        section_nav = {}  # sub-directory -> its pages (README first)
         tdir = ROOT / "tutorials"
         for src in sorted(tdir.rglob("*")):
             if src.is_dir() or src.name.startswith("."):
                 continue
             page = site_path(src)
             if src.suffix == ".md":
-                self.write(page, self.rewrite_links(src.read_text(), src, page))
+                text = self.inline_figures(src.read_text(), src)
+                self.write(page, self.rewrite_links(text, src, page))
             elif src.suffix in CODE_LANGUAGES:
                 lang = CODE_LANGUAGES[src.suffix]
                 self.static_files.add(src)
@@ -297,8 +326,17 @@ class SiteBuilder:
                 continue
             if src.suffix in CODE_LANGUAGES:
                 code_nav.append({src.relative_to(tdir).as_posix(): page.as_posix()})
-            elif src.name != "README.md" and src.parent == tdir:
-                nav.append(page.as_posix())
+            elif src.parent == tdir:
+                if src.name != "README.md":
+                    nav.append(page.as_posix())
+            elif src.parent.name in TUTORIAL_SECTIONS:
+                pages = section_nav.setdefault(src.parent.name, [])
+                pages.insert(0, page.as_posix()) if src.name == "README.md" else pages.append(page.as_posix())
+        # Sections (tutorials/<dir>/*.md) go right after the chapter they extend.
+        for dirname, pages in section_nav.items():
+            title, after = TUTORIAL_SECTIONS[dirname]
+            at = next((i + 1 for i, p in enumerate(nav) if Path(p).name.startswith(after)), len(nav))
+            nav.insert(at, {title: pages})
         return nav + ([{"Example Code": code_nav}] if code_nav else [])
 
     def problems(self, platform: str):
@@ -458,7 +496,12 @@ def main() -> int:
     pages = len(list(OUT.rglob("*.md")))
     print(f"wrote {pages} pages and {len(b.static_files)} downloadable files to {OUT.relative_to(ROOT)}/")
     if args.bundle:
-        order = ["about.md", "tutorials/index.md", *(p for p in tutorial_nav if isinstance(p, str))]
+        order = ["about.md", "tutorials/index.md"]
+        for item in tutorial_nav:
+            if isinstance(item, str):
+                order.append(item)
+            elif "Example Code" not in item:
+                order += next(iter(item.values()))
         for platform, by_diff in problem_nav.items():
             order.append(f"{platform}/index.md")
             for d in DIFFICULTIES:

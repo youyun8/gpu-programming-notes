@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 270" width="720" height="270" class="fig-svg" role="img">
+<title>Split-K: one output tile computed by S blocks over disjoint K ranges</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="gemm-split-k-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="gemm-split-k-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="gemm-split-k-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="gemm-split-k-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="gemm-split-k-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="gemm-split-k-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="gemm-split-k-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="270" class="fig-paper"/>
+<rect x="30" y="110" width="320" height="50" rx="0" class="fig-paper s-ink" stroke-width="1.2"/>
+<rect x="30" y="110" width="80" height="50" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<text x="70" y="135" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">K<tspan baseline-shift="sub" font-size="75%">0</tspan></text>
+<rect x="110" y="110" width="80" height="50" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<text x="150" y="135" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">K<tspan baseline-shift="sub" font-size="75%">1</tspan></text>
+<rect x="190" y="110" width="80" height="50" rx="0" class="f-c s-line" stroke-width="0.8"/>
+<text x="230" y="135" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">K<tspan baseline-shift="sub" font-size="75%">2</tspan></text>
+<rect x="270" y="110" width="80" height="50" rx="0" class="f-d s-line" stroke-width="0.8"/>
+<text x="310" y="135" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">K<tspan baseline-shift="sub" font-size="75%">3</tspan></text>
+<text x="190" y="96" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">A row panel (128 × K), split into S = 4 ranges</text>
+<line x1="30" y1="172" x2="350" y2="172" class="s-ink" stroke-width="1"/>
+<line x1="30" y1="168" x2="30" y2="176" class="s-ink" stroke-width="1"/>
+<line x1="350" y1="168" x2="350" y2="176" class="s-ink" stroke-width="1"/>
+<text x="190" y="183" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">K</text>
+<rect x="385" y="40" width="70" height="70" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="420" y="75" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">z = 0</text>
+<rect x="403" y="58" width="70" height="70" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="438" y="93" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">z = 1</text>
+<rect x="421" y="76" width="70" height="70" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="456" y="111" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">z = 2</text>
+<rect x="439" y="94" width="70" height="70" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="474" y="129" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">z = 3</text>
+<text x="447" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">S partial 128 × 128 tiles</text>
+<line x1="360" y1="135" x2="375" y2="100" class="s-muted" stroke-width="1.4" marker-end="url(#gemm-split-k-ah-muted)"/>
+<text x="575" y="90" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-big fig-bold">Σ</text>
+<rect x="600" y="60" width="70" height="70" rx="4" class="f-c2 s-c" stroke-width="1.2"/>
+<text x="635" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">C tile</text>
+<line x1="555" y1="100" x2="597" y2="95" class="s-ink" stroke-width="1.4" marker-end="url(#gemm-split-k-ah-ink)"/>
+<text x="635" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">atomicAdd, or</text>
+<text x="635" y="166" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">workspace + reduce</text>
+<text x="360" y="225" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">grid = (tiles<tspan baseline-shift="sub" font-size="75%">n</tspan>, tiles<tspan baseline-shift="sub" font-size="75%">m</tspan>, S): S times more blocks for the same tile count;</text>
+<text x="360" y="245" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">each does K / S of the work, plus the cost of combining S partial tiles.</text>
+</svg>

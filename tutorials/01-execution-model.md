@@ -23,6 +23,8 @@ Warp  ── 32 consecutive threads of a block, issued together (SIMT)
 | Warp | A warp scheduler slot | 32 threads that share one instruction stream |
 | Thread | A lane of the SIMD units | Has its own registers and predicate |
 
+![Blocks of a grid are placed on SMs; the warps of a block are issued by the SM's warp schedulers](figures/ch01-hierarchy.svg)
+
 - A **kernel** is a function run by every thread of a grid.
 - `blockIdx`, `blockDim`, `threadIdx` and `gridDim` are built-in `dim3`
   variables.
@@ -81,6 +83,8 @@ $$
 
 So a $32\times8$ block has 8 warps, each one a full row of $t_x$ values.
 A $16\times16$ block also has 8 warps, but each warp covers *two* rows.
+
+![Left: the global row and column of a thread from its block and thread indices. Right: how warps are cut out of a 16 × 16 and a 32 × 8 block](figures/ch01-indexing.svg)
 
 ## 3. Grid-Stride Loops
 
@@ -156,6 +160,8 @@ $$
 | $b_{\text{warp}}$ | Bytes in flight per warp (for example 512 for one `float4` load per lane) |
 | $N_{\text{warps}}$ | Resident warps needed per SM |
 
+![While one warp waits for memory, the scheduler issues instructions from other warps](figures/ch01-latency-hiding.svg)
+
 For an A100 ($\beta \approx 1.5$ TB/s, $L \approx 500$ ns, 108 SMs):
 $\beta L \approx 750$ KB, i.e. about 7 KB per SM, or ~14 warps per SM each
 with one 512-byte load outstanding. Fewer warps are fine if each has more
@@ -191,6 +197,8 @@ Example: $B = 256$, $r = 64$, $s = 32$ KB on an A100 gives
 $\min(8, 4, 5, 32) = 4$ blocks, i.e. 1024 threads and 50 % occupancy.
 Registers are the limit; `__launch_bounds__(256, 6)` would ask the
 compiler to use at most 40 registers (at the risk of spills).
+
+![Each resource limits the number of resident blocks; the smallest limit sets the occupancy](figures/ch01-occupancy.svg)
 
 Occupancy is a means, not a goal. Register-blocked GEMMs run very well at
 12–25 % occupancy because each thread has many independent FMAs and loads

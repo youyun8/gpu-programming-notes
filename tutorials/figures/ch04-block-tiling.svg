@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 420" width="700" height="420" class="fig-svg" role="img">
+<title>Block tiling of C = AB: one output tile, its A row panel and B column panel</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch04-block-tiling-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch04-block-tiling-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch04-block-tiling-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch04-block-tiling-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch04-block-tiling-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch04-block-tiling-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch04-block-tiling-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="700" height="420" class="fig-paper"/>
+<rect x="40" y="190" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="72" y="190" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="104" y="190" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="190" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="238" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="72" y="238" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="104" y="238" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="238" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="286" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="72" y="286" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="104" y="286" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="286" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="334" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="72" y="334" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="104" y="334" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="334" width="32" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="190" width="128" height="192" rx="0" class="fig-none s-ink" stroke-width="1.4"/>
+<rect x="40" y="238" width="128" height="48" rx="0" class="f-a s-a" stroke-width="1.4"/>
+<rect x="72" y="238" width="32" height="48" rx="0" class="f-a2 s-a" stroke-width="1.6"/>
+<rect x="40" y="190" width="128" height="192" rx="0" class="fig-none s-ink" stroke-width="1.4"/>
+<rect x="210" y="30" width="192" height="128" rx="0" class="fig-paper s-ink" stroke-width="1.4"/>
+<line x1="210" y1="62" x2="402" y2="62" class="s-line" stroke-width="0.8"/>
+<line x1="210" y1="94" x2="402" y2="94" class="s-line" stroke-width="0.8"/>
+<line x1="210" y1="126" x2="402" y2="126" class="s-line" stroke-width="0.8"/>
+<rect x="306" y="30" width="48" height="128" rx="0" class="f-b s-b" stroke-width="1.4"/>
+<rect x="306" y="62" width="48" height="32" rx="0" class="f-b2 s-b" stroke-width="1.6"/>
+<rect x="210" y="190" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="258" y="190" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="306" y="190" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="190" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="238" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="258" y="238" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="306" y="238" width="48" height="48" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="354" y="238" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="286" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="258" y="286" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="306" y="286" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="286" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="334" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="258" y="334" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="306" y="334" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="334" width="48" height="48" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="190" width="192" height="192" rx="0" class="fig-none s-ink" stroke-width="1.4"/>
+<rect x="306" y="238" width="48" height="48" rx="0" class="fig-none s-c" stroke-width="2.2"/>
+<line x1="168" y1="238" x2="306" y2="238" class="s-a" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="168" y1="286" x2="306" y2="286" class="s-a" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="306" y1="158" x2="306" y2="238" class="s-b" stroke-width="1" stroke-dasharray="4 3"/>
+<line x1="354" y1="158" x2="354" y2="238" class="s-b" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="104" y="400" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-bold">A  (M × K)</text>
+<text x="414" y="94" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-bold">B  (K × N)</text>
+<text x="306" y="400" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-bold">C  (M × N)</text>
+<line x1="72" y1="180" x2="104" y2="180" class="s-a" stroke-width="1"/>
+<line x1="72" y1="176" x2="72" y2="184" class="s-a" stroke-width="1"/>
+<line x1="104" y1="176" x2="104" y2="184" class="s-a" stroke-width="1"/>
+<text x="88" y="169" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small">T</text>
+<line x1="200" y1="62" x2="200" y2="94" class="s-b" stroke-width="1"/>
+<line x1="196" y1="62" x2="204" y2="62" class="s-b" stroke-width="1"/>
+<line x1="196" y1="94" x2="204" y2="94" class="s-b" stroke-width="1"/>
+<text x="194" y="78" text-anchor="end" dominant-baseline="central" class="fig-txt t-b fig-small">T</text>
+<line x1="412" y1="238" x2="412" y2="286" class="s-c" stroke-width="1"/>
+<line x1="408" y1="238" x2="416" y2="238" class="s-c" stroke-width="1"/>
+<line x1="408" y1="286" x2="416" y2="286" class="s-c" stroke-width="1"/>
+<text x="418" y="262" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">T</text>
+<text x="88" y="262" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-bold fig-it">s</text>
+<text x="330" y="78" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-bold fig-it">s</text>
+<text x="330" y="262" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-bold">C<tspan baseline-shift="sub" font-size="75%">IJ</tspan></text>
+<text x="460" y="250" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">One block ↔ one T × T tile of C.</text>
+<text x="460" y="272" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Phase s stages the A slice and the</text>
+<text x="460" y="290" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">B slice (dark) in shared memory,</text>
+<text x="460" y="308" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">then every thread does T FMAs.</text>
+<text x="460" y="334" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">⌈K / T⌉ phases walk the panels</text>
+<text x="460" y="352" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">from left to right / top to bottom.</text>
+</svg>

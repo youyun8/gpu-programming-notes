@@ -6,7 +6,7 @@ on:
 
 jobs:
   compile:
-    name: nvcc compile check
+    name: nvcc compile check (solutions and GEMM programs)
     runs-on: ubuntu-latest
     container: nvidia/cuda:12.4.1-devel-ubuntu22.04
     steps:
@@ -44,6 +44,16 @@ jobs:
           name: ${{ matrix.platform }}-report
           path: build/${{ matrix.platform }}-report.json
 
+  gemm:
+    name: GEMM tutorial programs (cuemu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run every program's --test mode on the CPU emulator
+        run: |
+          clang++ --version
+          make gemm-test
+
   amd:
     name: AMD tutorial code compiles for gfx942
     runs-on: ubuntu-latest
@@ -66,6 +76,8 @@ jobs:
           python-version: "3.12"
       - name: Check README index
         run: python3 scripts/build_index.py --check
+      - name: Check that the figures are current
+        run: python3 scripts/build_figures.py --check
       - name: Build site (fails on broken links)
         run: |
           pip install -r requirements-docs.txt

@@ -51,6 +51,9 @@ Things that change how you write kernels:
      different L2s.
    - hipBLASLt's `WorkGroupMappingXCC` (chapter 07) exists to undo this.
 
+![MI300X: 8 XCDs of 38 CUs, each XCD with its own L2; workgroups are dealt round-robin across XCDs](figures/ch05-mi300x.svg)
+
+
 ## 2. MFMA: One Instruction, One Wave, a Whole Tile
 
 `v_mfma_f32_16x16x16_bf16 D, A, B, C` computes `D = A·B + C` for a 16×16×16
@@ -82,6 +85,8 @@ $$
 | $d_{\ell,t}$ | Accumulator value held by lane $\ell$ |
 | $B^{\mathsf T}[j, k]$ | $B[k, j]$: the B operand is indexed by output column, then $k$ |
 | $A, B, C, D$ | The $16\times16$ operand, accumulator-in and result tiles |
+
+![Which lane holds which elements of A, B and D for v_mfma_f32_16x16x16_bf16](figures/ch05-mfma-layout.svg)
 
 One instruction performs $2\cdot16^3 = 8192$ flops. The chip's peak is
 

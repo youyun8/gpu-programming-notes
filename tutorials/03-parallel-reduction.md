@@ -65,6 +65,8 @@ __global__ void reduceSum(const float* input, float* output, int n) {
 `*output` must be zeroed before the launch (`cudaMemset`). The tree has
 $\log_2 256 = 8$ levels, each ending in a barrier.
 
+![Sequential addressing: at each level the first half of the active threads adds the second half](figures/ch03-tree.svg)
+
 ## 3. Step 2: Warp Shuffles
 
 Within a warp no shared memory or barrier is needed; `__shfl_down_sync`
@@ -79,6 +81,8 @@ $$
 | $\ell$ | Lane index |
 | $v^{(s)}_\ell$ | Lane $\ell$'s value after step $s$ |
 | $\delta_s$ | Shuffle offset at step $s$; after 5 steps lane 0 holds the warp's sum |
+
+![__shfl_down_sync with offsets 8, 4, 2, 1: after log2(width) steps lane 0 holds the sum](figures/ch03-shuffle.svg)
 
 With `__shfl_xor_sync` (a butterfly) instead, *every* lane ends with the
 full sum, which saves a broadcast when all lanes need the result (softmax,
@@ -145,6 +149,8 @@ Version 7 plus `float4` loads reaches 85–95 % of it.
 
 Blocks cannot wait for each other, so the per-block results need a second
 step:
+
+![The full reduction: per-thread sums, a reduction per block, and a final step across blocks](figures/ch03-two-level.svg)
 
 | Method | How | Deterministic? |
 |---|---|---|

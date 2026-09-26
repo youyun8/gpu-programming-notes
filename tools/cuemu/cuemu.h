@@ -147,12 +147,26 @@ extern "C" void cuemu_switch(void** save_sp, void* load_sp);
 
 enum class State { kRunnable, kWaitingBlock, kWaitingWarp, kDone };
 
+// One cp.async copy (see __pipeline_memcpy_async below), deferred until waited for.
+struct AsyncCopy {
+    void* dst;
+    const void* src;
+    size_t size;
+    size_t zfill;
+    void perform() const {
+        std::memcpy(dst, src, size - zfill);
+        std::memset(static_cast<char*>(dst) + (size - zfill), 0, zfill);
+    }
+};
+
 struct Fiber {
     void* sp = nullptr;
     char* stack = nullptr;
     uint3 tid{};
     int linear = 0;
     State state = State::kRunnable;
+    std::vector<AsyncCopy> async_open;                  // issued, not yet committed
+    std::vector<std::vector<AsyncCopy>> async_groups;  // committed groups, oldest first
 };
 
 struct WarpSlot {
@@ -195,6 +209,15 @@ inline void yieldToScheduler() {
 
 extern "C" __attribute__((used, weak)) void cuemuFiberMain() {
     g_body();
+    {
+        // A thread that exits with copies in flight: they still land (as on hardware).
+        Fiber& f = g_block.fibers[g_current];
+        for (auto& group : f.async_groups)
+            for (auto& c : group) c.perform();
+        for (auto& c : f.async_open) c.perform();
+        f.async_groups.clear();
+        f.async_open.clear();
+    }
     g_block.fibers[g_current].state = State::kDone;
     g_block.live--;
     yieldToScheduler();
@@ -1013,3 +1036,102 @@ inline float __float_to_tf32(float x) {
 }
 }  // namespace wmma
 }  // namespace nvcuda
+
+
+// ---------------------------------------------------------------------------
+// Asynchronous copies: the <cuda_pipeline.h> primitives that compile to cp.async
+// (sm_80+). Copies are *deferred* until __pipeline_wait_prior() covers their
+// group, so a kernel that reads a stage before waiting for it sees stale shared
+// memory here as it would on a GPU.
+// ---------------------------------------------------------------------------
+inline void __pipeline_memcpy_async(void* dst, const void* src, size_t size_and_align, size_t zfill = 0) {
+    if (size_and_align != 4 && size_and_align != 8 && size_and_align != 16)
+        cuemu::fail("__pipeline_memcpy_async: size must be 4, 8 or 16 bytes");
+    if (zfill > size_and_align) cuemu::fail("__pipeline_memcpy_async: zfill larger than the copy");
+    if (reinterpret_cast<uintptr_t>(dst) % size_and_align != 0 ||
+        (zfill < size_and_align && reinterpret_cast<uintptr_t>(src) % size_and_align != 0))
+        cuemu::fail("__pipeline_memcpy_async: source and destination must be aligned to the copy size");
+    cuemu::g_block.fibers[cuemu::g_current].async_open.push_back({dst, src, size_and_align, zfill});
+}
+inline void __pipeline_commit() {
+    auto& f = cuemu::g_block.fibers[cuemu::g_current];
+    f.async_groups.push_back(std::move(f.async_open));
+    f.async_open.clear();
+}
+inline void __pipeline_wait_prior(size_t prior) {
+    auto& f = cuemu::g_block.fibers[cuemu::g_current];
+    while (f.async_groups.size() > prior) {
+        for (auto& c : f.async_groups.front()) c.perform();
+        f.async_groups.erase(f.async_groups.begin());
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Warp-wide matrix instructions written as inline PTX in real kernels
+// (ldmatrix, mma.sync). cuemu cannot run PTX, so kernels call these instead
+// under `#ifdef __CUEMU__`. They implement the documented PTX fragment layouts,
+// so a kernel that indexes its fragments wrongly fails here too.
+// ---------------------------------------------------------------------------
+#define __CUEMU__ 1
+namespace cuemu {
+inline const void* g_lane_ptr[1024];
+inline uint32_t g_lane_regs[1024][10];
+inline float halfBits(uint32_t bits16) { return __half2float(__ushort_as_half(static_cast<unsigned short>(bits16))); }
+}  // namespace cuemu
+
+// ldmatrix.sync.aligned.m8n8.x{1,2,4}[.trans].shared.b16: lanes 8i..8i+7 supply the row
+// addresses of 8x8 matrix i (16 bytes per row); register i of lane l receives row l/4,
+// columns 2(l%4) and 2(l%4)+1 of matrix i (of its transpose with .trans).
+inline void cuemuLdmatrix(uint32_t* regs, int num, bool trans, const void* row_ptr) {
+    const int me = cuemu::g_block.fibers[cuemu::g_current].linear;
+    const int base = me & ~31, lane = me & 31;
+    if (reinterpret_cast<uintptr_t>(row_ptr) % 16 != 0) cuemu::fail("ldmatrix: row address must be 16-byte aligned");
+    cuemu::g_lane_ptr[me] = row_ptr;
+    __syncwarp();
+    for (int i = 0; i < num; ++i) {
+        uint16_t v[2];
+        for (int h = 0; h < 2; ++h) {
+            const int row = trans ? 2 * (lane % 4) + h : lane / 4;
+            const int col = trans ? lane / 4 : 2 * (lane % 4) + h;
+            v[h] = static_cast<const uint16_t*>(cuemu::g_lane_ptr[base + 8 * i + row])[col];
+        }
+        regs[i] = v[0] | (static_cast<uint32_t>(v[1]) << 16);
+    }
+    __syncwarp();
+}
+
+// mma.sync.aligned.m16n8k16.row.col.f32.f16.f16.f32 d, a, b, c. With g = lane / 4 and
+// t = lane % 4 (pairs of halves packed low element first):
+//   a0 = A[g][2t..2t+1]   a1 = A[g+8][2t..]   a2 = A[g][2t+8..]   a3 = A[g+8][2t+8..]
+//   b0 = B[2t..2t+1][g]   b1 = B[2t+8..2t+9][g]
+//   c0, c1 = C[g][2t], C[g][2t+1]             c2, c3 = C[g+8][2t], C[g+8][2t+1]
+inline void cuemuMmaM16N8K16(float* d, const uint32_t* a, const uint32_t* b, const float* c) {
+    const int me = cuemu::g_block.fibers[cuemu::g_current].linear;
+    const int base = me & ~31, lane = me & 31;
+    for (int i = 0; i < 4; ++i) cuemu::g_lane_regs[me][i] = a[i];
+    for (int i = 0; i < 2; ++i) cuemu::g_lane_regs[me][4 + i] = b[i];
+    __syncwarp();
+    float am[16][16], bm[16][8];
+    for (int l = 0; l < 32; ++l) {
+        const uint32_t* r = cuemu::g_lane_regs[base + l];
+        const int g = l / 4, t = l % 4;
+        for (int h = 0; h < 2; ++h) {
+            am[g][2 * t + h] = cuemu::halfBits(r[0] >> (16 * h));
+            am[g + 8][2 * t + h] = cuemu::halfBits(r[1] >> (16 * h));
+            am[g][2 * t + 8 + h] = cuemu::halfBits(r[2] >> (16 * h));
+            am[g + 8][2 * t + 8 + h] = cuemu::halfBits(r[3] >> (16 * h));
+            bm[2 * t + h][g] = cuemu::halfBits(r[4] >> (16 * h));
+            bm[2 * t + 8 + h][g] = cuemu::halfBits(r[5] >> (16 * h));
+        }
+    }
+    const int g = lane / 4, t = lane % 4;
+    float out[4];
+    for (int i = 0; i < 4; ++i) {
+        const int row = g + 8 * (i / 2), col = 2 * t + (i % 2);
+        float acc = c[i];
+        for (int k = 0; k < 16; ++k) acc += am[row][k] * bm[k][col];
+        out[i] = acc;
+    }
+    __syncwarp();
+    for (int i = 0; i < 4; ++i) d[i] = out[i];
+}

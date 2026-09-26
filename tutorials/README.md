@@ -9,12 +9,14 @@ Work through these in order; each one points at the practice problems that exerc
 | 02 | [Memory hierarchy: coalescing, bank conflicts, transpose](02-memory-hierarchy.md) | Matrix Transpose, Matrix Copy |
 | 03 | [Parallel reduction: work/depth, shuffles, accuracy, monoids](03-parallel-reduction.md) | Reduction, Softmax, Dot Product |
 | 04 | [Tiled matrix multiplication: intensity, shared and register tiling](04-tiled-matmul.md) | Matrix Multiplication, GEMM |
+| 04.x | [GEMM deep dive: vectorized loads, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, tensor cores](gemm/README.md) | Nine tested example programs |
 | 05 | [AMD CDNA3 & MFMA: from CUDA to wave64 matrix cores](05-amd-cdna3-mfma.md) | [`amd/mfma_gemm.hip`](amd/mfma_gemm.hip) |
 | 06 | [Inside a hand-written AMD GEMM: AITER's bf16 asm kernels](06-aiter-asm-gemm.md) | Disassemble AITER `.co` files |
 | 07 | [hipBLASLt & TensileLite: GEMM kernels written by a program](07-hipblaslt-tensilelite.md) | `hipblaslt-bench`, offline tuning |
 | 08 | [Deploying this site](08-deploying-this-site.md) | MkDocs, GitHub Pages |
 
-Chapters 05–07 form an AMD track. They assume 04, and they read best in
+The 04.x pages continue chapter 04 one technique at a time, each with a
+complete program. Chapters 05–07 form an AMD track. They assume 04, and they read best in
 order: first the hardware and instruction (05), then a hand-written kernel
 (06), then the generator that produces thousands of such kernels (07).
 
@@ -57,7 +59,6 @@ every level of the memory hierarchy until $W/F$ is the bound.
 - Scan / prefix sum (see the Cumsum and Prefix Sum problem pages meanwhile)
 - Convolution (1D / 2D) and stencils
 - Softmax, LayerNorm & online algorithms (FlashAttention-style)
-- Tensor cores on NVIDIA (WMMA / MMA / CuTe)
 - Triton for the same problems
 
 ## Reading List

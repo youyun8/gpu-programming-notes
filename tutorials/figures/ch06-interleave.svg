@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" width="720" height="250" class="fig-svg" role="img">
+<title>Interleaving: memory instructions issue in the shadow of MFMAs</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch06-interleave-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch06-interleave-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch06-interleave-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch06-interleave-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch06-interleave-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch06-interleave-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch06-interleave-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="250" class="fig-paper"/>
+<text x="100" y="52" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">issue</text>
+<rect x="110" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="120" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="132" y="40" width="19" height="24" rx="2" class="f-b s-b" stroke-width="0.8"/>
+<text x="142" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">L</text>
+<rect x="154" y="40" width="19" height="24" rx="2" class="f-muted s-muted" stroke-width="0.8"/>
+<text x="164" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">S</text>
+<rect x="176" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="186" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="198" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="208" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<rect x="220" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="230" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<rect x="242" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="252" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="264" y="40" width="19" height="24" rx="2" class="f-b s-b" stroke-width="0.8"/>
+<text x="274" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">L</text>
+<rect x="286" y="40" width="19" height="24" rx="2" class="f-muted s-muted" stroke-width="0.8"/>
+<text x="296" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">S</text>
+<rect x="308" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="318" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="330" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="340" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<rect x="352" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="362" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<rect x="374" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="384" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="396" y="40" width="19" height="24" rx="2" class="f-b s-b" stroke-width="0.8"/>
+<text x="406" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">L</text>
+<rect x="418" y="40" width="19" height="24" rx="2" class="f-muted s-muted" stroke-width="0.8"/>
+<text x="428" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">S</text>
+<rect x="440" y="40" width="19" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="450" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<rect x="462" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="472" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<rect x="484" y="40" width="19" height="24" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="494" y="52" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<text x="100" y="102" text-anchor="end" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">matrix core</text>
+<rect x="110" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<rect x="176" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<rect x="242" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<rect x="308" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<rect x="374" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<rect x="440" y="90" width="63" height="24" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="100" y="150" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">legend</text>
+<rect x="110" y="140" width="18" height="18" rx="2" class="f-d2 s-d" stroke-width="0.8"/>
+<text x="119" y="149" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">M</text>
+<text x="134" y="149" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">mfma</text>
+<rect x="250" y="140" width="18" height="18" rx="2" class="f-b s-b" stroke-width="0.8"/>
+<text x="259" y="149" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">L</text>
+<text x="274" y="149" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">buffer_load</text>
+<rect x="390" y="140" width="18" height="18" rx="2" class="f-a s-a" stroke-width="0.8"/>
+<text x="399" y="149" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">R</text>
+<text x="414" y="149" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">ds_read</text>
+<rect x="530" y="140" width="18" height="18" rx="2" class="f-muted s-muted" stroke-width="0.8"/>
+<text x="539" y="149" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">S</text>
+<text x="554" y="149" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">s_add m0</text>
+<text x="360" y="196" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">An MFMA keeps the matrix core busy for several cycles after it issues. Placing 1–3 loads,</text>
+<text x="360" y="214" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">LDS reads or scalar updates between consecutive MFMAs hides their issue cost entirely:</text>
+<text x="360" y="232" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">the matrix core never waits. (Illustrative timing, not cycle-accurate.)</text>
+</svg>

@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 315" width="720" height="315" class="fig-svg" role="img">
+<title>Grid, blocks, warps and threads, and where they run</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:14px}.fig-small{font-size:12px}.fig-tiny{font-size:9.5px}.fig-big{font-size:16px}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="ch01-hierarchy-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="ch01-hierarchy-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="ch01-hierarchy-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="ch01-hierarchy-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="ch01-hierarchy-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="ch01-hierarchy-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="ch01-hierarchy-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="315" class="fig-paper"/>
+<text x="120" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">software: one kernel launch</text>
+<rect x="20" y="40" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="50" y="60" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(0,0)</text>
+<rect x="86" y="40" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="116" y="60" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(1,0)</text>
+<rect x="152" y="40" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="182" y="60" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(2,0)</text>
+<rect x="20" y="86" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="50" y="106" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(0,1)</text>
+<rect x="86" y="86" width="60" height="40" rx="4" class="f-c2 s-c" stroke-width="1.2"/>
+<text x="116" y="106" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(1,1)</text>
+<rect x="152" y="86" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="182" y="106" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(2,1)</text>
+<rect x="20" y="132" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="50" y="152" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(0,2)</text>
+<rect x="86" y="132" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="116" y="152" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(1,2)</text>
+<rect x="152" y="132" width="60" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="182" y="152" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-small">(2,2)</text>
+<text x="116" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">grid of blocks (blockIdx)</text>
+<rect x="242" y="32" width="200" height="150" rx="6" class="f-c s-c" stroke-width="1.2"/>
+<line x1="146" y1="86" x2="242" y2="32" class="s-c" stroke-width="0.8" stroke-dasharray="3 3"/>
+<line x1="146" y1="126" x2="242" y2="182" class="s-c" stroke-width="0.8" stroke-dasharray="3 3"/>
+<text x="254" y="51" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 0</text>
+<rect x="306" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="310" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="314" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="318" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="322" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="326" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="330" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="334" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="338" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="342" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="346" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="350" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="354" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="358" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="362" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="366" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="370" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="374" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="378" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="382" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="386" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="390" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="394" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="398" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="402" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="406" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="410" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="414" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="418" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="422" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="426" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="430" y="44" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<text x="254" y="83" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 1</text>
+<rect x="306" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="310" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="314" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="318" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="322" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="326" y="76" width="4" height="14" rx="0" class="f-a2 s-a" stroke-width="0.3"/>
+<rect x="330" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="334" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="338" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="342" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="346" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="350" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="354" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="358" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="362" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="366" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="370" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="374" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="378" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="382" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="386" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="390" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="394" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="398" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="402" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="406" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="410" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="414" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="418" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="422" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="426" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="430" y="76" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<text x="254" y="115" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 2</text>
+<rect x="306" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="310" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="314" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="318" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="322" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="326" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="330" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="334" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="338" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="342" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="346" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="350" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="354" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="358" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="362" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="366" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="370" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="374" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="378" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="382" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="386" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="390" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="394" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="398" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="402" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="406" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="410" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="414" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="418" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="422" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="426" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="430" y="108" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<text x="254" y="147" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">warp 3</text>
+<rect x="306" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="310" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="314" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="318" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="322" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="326" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="330" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="334" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="338" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="342" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="346" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="350" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="354" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="358" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="362" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="366" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="370" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="374" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="378" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="382" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="386" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="390" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="394" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="398" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="402" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="406" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="410" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="414" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="418" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="422" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="426" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<rect x="430" y="140" width="4" height="14" rx="0" class="f-a s-a" stroke-width="0.3"/>
+<text x="342" y="198" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">block: up to 1024 threads</text>
+<text x="342" y="214" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">warp = 32 consecutive threads</text>
+<text x="600" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">hardware</text>
+<rect x="500" y="36" width="200" height="200" rx="6" class="fig-panel s-ink" stroke-width="1.2"/>
+<text x="600" y="50" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">GPU (A100: 108 SMs)</text>
+<rect x="512" y="64" width="82" height="72" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="553" y="76" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">SM 0</text>
+<rect x="518" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="536" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="554" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="572" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="606" y="64" width="82" height="72" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="647" y="76" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">SM 1</text>
+<rect x="612" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="630" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="648" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="666" y="92" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="608" y="66" width="78" height="68" rx="4" class="fig-none s-c" stroke-width="2"/>
+<rect x="512" y="148" width="82" height="72" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="553" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">SM 2</text>
+<rect x="518" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="536" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="554" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="572" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="606" y="148" width="82" height="72" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="647" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">SM 3</text>
+<rect x="612" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="630" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="648" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<rect x="666" y="176" width="15" height="34" rx="2" class="f-d s-d" stroke-width="0.8"/>
+<text x="600" y="252" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4 warp schedulers per SM (purple)</text>
+<line x1="442" y1="100" x2="610" y2="80" class="s-c" stroke-width="1.4" stroke-dasharray="5 3" marker-end="url(#ch01-hierarchy-ah-c)"/>
+<text x="360" y="280" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">Each block runs on one SM (green arrow); blocks start in any order and never migrate;</text>
+<text x="360" y="298" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">each warp is issued by one scheduler, one instruction for all 32 lanes.</text>
+</svg>
