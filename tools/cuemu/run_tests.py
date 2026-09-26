@@ -443,7 +443,9 @@ def count_tensara_cases(slug):
 # ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
-def _child(conn, fn, args):
+def _child(conn, fn, args, max_elements):
+    global MAX_ELEMENTS
+    MAX_ELEMENTS = max_elements
     try:
         conn.send(fn(*args))
     except TooLarge:
@@ -454,10 +456,10 @@ def _child(conn, fn, args):
         conn.close()
 
 
-def isolated(fn, *args, timeout=TEST_TIMEOUT):
+def isolated(fn, *args, timeout=TEST_TIMEOUT, max_elements=None):
     ctx = mp.get_context("fork")
     parent, child = ctx.Pipe(duplex=False)
-    proc = ctx.Process(target=_child, args=(child, fn, args))
+    proc = ctx.Process(target=_child, args=(child, fn, args, max_elements or MAX_ELEMENTS))
     proc.start()
     child.close()
     if parent.poll(timeout):
@@ -478,14 +480,17 @@ def test_problem(problem_dir: Path, reverse: bool):
     meta = read_front_matter(problem_dir / "README.md")
     platform = problem_dir.parent.name
     upstream = meta.get("upstream")
+    # Problems whose inputs are large even in their smallest tests (e.g. packed
+    # transformer weights) can raise the emulation limit in their front matter.
+    limit = int(meta.get("cuemu_max_elements", MAX_ELEMENTS))
     if not upstream:
         return problem_dir, [(False, "README front matter has no 'upstream' key")], 0.0
     t0 = time.time()
     if (problem_dir / "solution.py").exists():
-        n = isolated(count_leetgpu_cases, upstream)
+        n = isolated(count_leetgpu_cases, upstream, max_elements=limit)
         if not isinstance(n, int):
             return problem_dir, [(False, f"could not load test cases: {n[1]}")], time.time() - t0
-        results = [isolated(run_leetgpu_py_case, problem_dir / "solution.py", upstream, i) for i in range(n)]
+        results = [isolated(run_leetgpu_py_case, problem_dir / "solution.py", upstream, i, max_elements=limit) for i in range(n)]
         return problem_dir, results, time.time() - t0
     try:
         lib = cuemu.cached_build(problem_dir / "solution.cu", BUILD_CACHE)
@@ -494,14 +499,14 @@ def test_problem(problem_dir: Path, reverse: bool):
     if reverse:
         os.environ["CUEMU_REVERSE"] = "1"
     if platform == "leetgpu":
-        n = isolated(count_leetgpu_cases, upstream)
+        n = isolated(count_leetgpu_cases, upstream, max_elements=limit)
         runner = run_leetgpu_case
     else:
-        n = isolated(count_tensara_cases, upstream)
+        n = isolated(count_tensara_cases, upstream, max_elements=limit)
         runner = run_tensara_case
     if not isinstance(n, int):
         return problem_dir, [(False, f"could not load test cases: {n[1]}")], time.time() - t0
-    results = [isolated(runner, lib, upstream, i) for i in range(n)]
+    results = [isolated(runner, lib, upstream, i, max_elements=limit) for i in range(n)]
     return problem_dir, results, time.time() - t0
 
 

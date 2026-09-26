@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: hard/15_sorting
 url: https://leetgpu.com/challenges/sorting
 difficulty: hard
-tags: []
-status: todo
+tags: [sorting, radix-sort]
+status: solved
 ---
 
 # Sorting
@@ -13,9 +13,10 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** hard · [Problem statement](https://leetgpu.com/challenges/sorting)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Sort up to 1M floats in place.
 
 ## Approach
-
-## Pitfalls
+Map floats to order-preserving `uint32` keys (flip all bits of negatives, set
+the sign bit of positives), run a **stable LSD radix sort** (4 × 8-bit
+passes, see [Radix Sort](../036-radix-sort)), and map back. It is `O(n)` work
+and needs no comparisons.
