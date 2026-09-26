@@ -1,7 +1,8 @@
 # 04.5 – Swizzled Tile Order for L2 Reuse
 
-**Program:** [`05-tile-swizzle.cu`](05-tile-swizzle.cu) · **Builds on:**
-[04.4](04-warp-tiling.md)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Program: [`05-tile-swizzle.cu`](05-tile-swizzle.cu) · Builds on: [04.4](04-warp-tiling.md) ·
+> Next: [04.6 – Split-K and Stream-K](06-split-k-stream-k.md)
 
 Each block reads a full row panel of $A$ ($128\times K$) and a full column
 panel of $B$ ($K\times128$). Across the grid every panel is read by many
@@ -9,6 +10,13 @@ blocks: $A$'s panel $i$ by all $\lceil N/128\rceil$ blocks of tile row $i$.
 Whether those re-reads come from L2 or from DRAM depends on which blocks run
 *at the same time*, and that is decided by the order in which tile indices
 are handed out.
+
+**You will learn**
+
+- why the order in which output tiles are launched decides L2 reuse;
+- the grouped (swizzled) mapping from launch index to tile, and why it is a bijection;
+- how to estimate a wave's L2 footprint, and why the group must be tall enough;
+- how this relates to TensileLite's `WorkGroupMapping` and MI300's per-XCD L2s.
 
 ## 1. Launch Order Is Tile Order
 
@@ -111,6 +119,12 @@ number from elsewhere.
   in-order in practice, which is all a cache optimization needs; correctness
   must never depend on it (compare the Stream-K fix-up in
   [04.6](06-split-k-stream-k.md)).
+
+## Key Takeaways
+
+1. Blocks that run at the same time should cover a compact box of $C$, so they share $A$ and $B$ panels in L2.
+2. Grouped ordering changes only two lines of the kernel: `row0` and `col0` come from a remapped launch index.
+3. Pick the group height from the wave size and the problem shape; a group that is too short does not help.
 
 ## Exercises
 

@@ -31,6 +31,14 @@ CODE_LANGUAGES = {".cu": "cuda", ".cuh": "cuda", ".hip": "cpp", ".h": "cpp", ".c
 # Tutorial sub-directories with pages of their own: directory -> (navigation title,
 # file-name prefix of the chapter they are listed after).
 TUTORIAL_SECTIONS = {"gemm": ("04.x GEMM Deep Dive", "04-")}
+# The tutorials are grouped into parts in the navigation: (title, chapter file-name prefixes).
+# A sub-directory section goes into the part of the chapter it follows.
+TUTORIAL_PARTS = [
+    ("Part I · CUDA Foundations", ("00-", "01-", "02-", "03-")),
+    ("Part II · Matrix Multiplication", ("04-",)),
+    ("Part III · AMD GPUs", ("05-", "06-", "07-")),
+    ("Part IV · Publishing", ("08-",)),
+]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
 # A figure: an SVG image alone on its line. The site inlines it (see inline_figures).
 FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.svg)\)[ \t]*$", re.M)
@@ -335,9 +343,22 @@ class SiteBuilder:
         # Sections (tutorials/<dir>/*.md) go right after the chapter they extend.
         for dirname, pages in section_nav.items():
             title, after = TUTORIAL_SECTIONS[dirname]
-            at = next((i + 1 for i, p in enumerate(nav) if Path(p).name.startswith(after)), len(nav))
+            at = next((i + 1 for i, p in enumerate(nav) if isinstance(p, str) and Path(p).name.startswith(after)),
+                      len(nav))
             nav.insert(at, {title: pages})
-        return nav + ([{"Example Code": code_nav}] if code_nav else [])
+        # Group chapters (and the sections that follow them) into parts.
+        parts, current = [], None
+        for item in nav:
+            if isinstance(item, str):
+                title = next((t for t, prefixes in TUTORIAL_PARTS if Path(item).name.startswith(prefixes)), None)
+                if title is not None and (current is None or title != next(iter(current))):
+                    current = {title: []}
+                    parts.append(current)
+            if current is None:
+                parts.append(item)
+            else:
+                next(iter(current.values())).append(item)
+        return parts + ([{"Example Code": code_nav}] if code_nav else [])
 
     def problems(self, platform: str):
         rows = {d: [] for d in DIFFICULTIES}
@@ -497,11 +518,14 @@ def main() -> int:
     print(f"wrote {pages} pages and {len(b.static_files)} downloadable files to {OUT.relative_to(ROOT)}/")
     if args.bundle:
         order = ["about.md", "tutorials/index.md"]
-        for item in tutorial_nav:
-            if isinstance(item, str):
-                order.append(item)
-            elif "Example Code" not in item:
-                order += next(iter(item.values()))
+        def flatten(items):
+            for item in items:
+                if isinstance(item, str):
+                    yield item
+                elif "Example Code" not in item:
+                    yield from flatten(next(iter(item.values())))
+
+        order += list(flatten(tutorial_nav))
         for platform, by_diff in problem_nav.items():
             order.append(f"{platform}/index.md")
             for d in DIFFICULTIES:

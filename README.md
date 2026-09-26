@@ -56,14 +56,12 @@ to `main`.
 
 ## Tutorials
 
-| # | Topic |
-|---|-------|
-| 00–04 | CUDA: getting started, execution model, memory hierarchy, reduction, tiled GEMM |
-| 04.x | GEMM deep dive: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` (9 programs, tested on the CPU emulator) |
-| 05 | AMD CDNA3 & MFMA: from CUDA to wave64 matrix cores (with a HIP MFMA GEMM) |
-| 06 | Inside a hand-written AMD GEMM: AITER's bf16 asm kernels, instruction by instruction |
-| 07 | hipBLASLt & TensileLite: GEMM kernels written by a program, and how to tune them |
-| 08 | Deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
+| Part | Chapters | Topic |
+|---|---|---|
+| I · CUDA Foundations | 00–03 | Toolchain, execution model, memory hierarchy, reduction |
+| II · Matrix Multiplication | 04, 04.1–04.7 | Tiled GEMM, then one page and one tested program per technique: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` |
+| III · AMD GPUs | 05–07 | CDNA3 & MFMA, AITER's hand-written asm GEMM, hipBLASLt & TensileLite |
+| IV · Publishing | 08 | Deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
 
 See [tutorials/](tutorials/README.md).
 

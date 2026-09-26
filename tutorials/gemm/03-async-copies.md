@@ -1,7 +1,8 @@
 # 04.3 – Asynchronous Copies: `cp.async` Pipelines and TMA
 
-**Program:** [`03-cp-async.cu`](03-cp-async.cu) · **Builds on:**
-[04.2](02-double-buffering.md)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Program: [`03-cp-async.cu`](03-cp-async.cu) · Builds on: [04.2](02-double-buffering.md) ·
+> Next: [04.4 – Warp Tiling](04-warp-tiling.md)
 
 Double buffering through registers has two costs: the staged slice occupies
 registers while it is in flight, and every element still needs two
@@ -11,6 +12,14 @@ file and does not block the thread. Hopper (sm_90) added the Tensor Memory
 Accelerator (TMA), which copies a whole tile with one instruction.
 
 ![Three ways from global to shared memory](../figures/gemm-copy-paths.svg)
+
+**You will learn**
+
+- the `cp.async` model: per-thread asynchronous copies, commit groups and waits;
+- how to build a multi-stage pipeline and derive its wait count;
+- why empty groups must be committed, and how the emulator catches wrong counts;
+- how many stages you need, and what they cost in shared memory;
+- how Hopper's TMA and mbarriers change the picture.
 
 ## 1. The `cp.async` Model
 
@@ -148,10 +157,25 @@ mainloops are the reference implementation.
 - **Alignment.** 16-byte copies need 16-byte-aligned source and destination
   addresses; the emulator checks this, the GPU faults.
 
+## Key Takeaways
+
+1. `cp.async` copies global → shared without registers; waits are per thread and per group, so follow them with a barrier.
+2. With $P$ stages, wait for all but $P-2$ groups, then refill the stage the previous slice vacated.
+3. Commit a group every iteration, even an empty one, so that group $j$ is always slice $j$.
+4. TMA moves whole tiles per instruction and signals completion through mbarriers, which enables warp-specialized pipelines.
+
 ## Exercises
 
 1. Set `kStages = 2` and `4`. Which requires dynamic shared memory once
    $B_K = 16$?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    One stage is $(128\times20 + 16\times128)\times4 = 18\,432$ bytes. Two
+    stages (36 KB) fit in the 48 KB of static shared memory; three (54 KB) and
+    four (72 KB) need dynamic shared memory and the opt-in attribute.
+
+    </details>
 2. Count instructions in the main loop (`cuobjdump -sass`) for 04.2 and for
    this kernel. Where did the `STS` go?
 3. Replace the scalar $A$ fragment loads by a transposed layout written with

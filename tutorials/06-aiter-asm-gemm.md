@@ -1,5 +1,8 @@
 # 06 – Inside a Hand-Written AMD GEMM: AITER's bf16 Asm Kernels
 
+> **Part III · AMD GPUs** · Prerequisites: [05 – CDNA3 and MFMA](05-amd-cdna3-mfma.md) ·
+> Next: [07 – hipBLASLt and TensileLite](07-hipblaslt-tensilelite.md)
+
 [AITER](https://github.com/ROCm/aiter) is AMD's operator library for LLM
 inference; vLLM and SGLang use it on MI300 and MI355. Most of its
 performance-critical kernels are shipped as **pre-assembled code objects
@@ -16,6 +19,23 @@ weights and split-K. It uses the MFMA vocabulary from
 the disassembly of AITER commit `569ae98`. You can reproduce all of it on a
 machine without a GPU (see [Reproduce this chapter](#reproduce-this-chapter)).
 
+**You will learn**
+
+- how a GEMM library dispatches a call to one of many specialised kernels
+  (tuned tables, heuristics, pre-shuffled weights);
+- to read a kernel descriptor and see why the fastest AMD GEMMs run one fat
+  wave per SIMD;
+- to reconstruct a kernel's work decomposition from its register numbers;
+- the main-loop techniques of a hand-written kernel: direct-to-LDS loads,
+  register double buffering, MFMA interleaving, counter-based pipelining and
+  a branch-free K tail;
+- how split-K partials are combined, and why AITER's bf16 rounding differs
+  from PyTorch's;
+- the workflow for modifying and profiling such a kernel safely.
+
+Read it with the disassembly open: every claim below points at instructions
+you can find in it.
+
 ## 1. How AITER Finds and Launches the Kernel
 
 The Python call chain for `C = A · Bᵀ` (an `nn.Linear`) is:
@@ -28,7 +48,7 @@ aiter.tuned_gemm.gemm_a16w16(A, B, bias)          # aiter/tuned_gemm.py
        └─ C++: csrc/py_itfs_cu/asm_gemm_a16w16.cu  # picks a .co, fills KernelArgs, hipModuleLaunchKernel
 ```
 
-### Tuned Table
+### 1.1 Tuned Table
 
 `aiter/configs/bf16_tuned_gemm.csv` holds one row per
 `(gfx, cu_num, M, N, K, bias, dtype, outdtype, scaleAB, bpreshuffle)` key.
@@ -46,7 +66,7 @@ practical lesson is that **a GEMM library is a dispatch table plus a zoo of
 specialised kernels.** Chapter 07 shows hipBLASLt doing the same thing at a
 much larger scale.
 
-### Kernel Table
+### 1.2 Kernel Table
 
 `hsa/gfx942/bf16gemm/bf16gemm_fp32bf16.csv` lists every `.co` in the family
 with its properties:
@@ -60,7 +80,7 @@ with its properties:
 The family has 22 kernels: tileM ∈ {32, 48, 64, 80, 96, 128, 160}, with and
 without pre-shuffled B.
 
-### Heuristic
+### 1.3 Heuristic
 
 When no tuned row matches, `get_heuristic_kernel` in the C++ launcher:
 
@@ -74,7 +94,7 @@ When no tuned row matches, `get_heuristic_kernel` in the C++ launcher:
 This is the same "fill the machine, then maximise reuse" reasoning a human
 applies.
 
-### Arguments and Launch
+### 1.4 Arguments and Launch
 
 `KernelArgs` is a packed struct in which **every field is padded to 16
 bytes**: `ptr_D`, `ptr_C`, `ptr_A`, `ptr_B`, `alpha`, `beta`, strides, `M`,
@@ -94,7 +114,7 @@ s_load_dword   s48,      s[0:1], 0x110   ; splitk
 The launch grid is `(ceil(N/64), ceil(M/128), splitK)` with 256 threads per
 workgroup.
 
-### Pre-Shuffled Weights
+### 1.5 Pre-Shuffled Weights
 
 `aiter.ops.shuffle.shuffle_weight(w, layout=(16, 16))` permutes the weight
 **once, offline**:
@@ -151,6 +171,8 @@ normal for peak-performance GEMMs on CDNA.
 
 ## 3. The Work Decomposition: Why B Never Touches LDS
 
+### 3.1 Reading the Register Numbers
+
 The MFMAs in the main loop look like this:
 
 ```asm
@@ -168,6 +190,8 @@ Reading the register numbers:
   accumulators. It is one 16-wide strip, and it comes from **B**.
 - **Second operand** `a[0:63]` changes with the accumulator. There are 8
   different 16-row blocks of **A**, 128 rows in all.
+
+### 3.2 The Decomposition and Its Consequences
 
 So each wave computes a **16(N) × 128(M)** slab of the output, and the four
 waves split N: 4 × 16 = 64 = tileN. Two consequences follow:
@@ -195,6 +219,8 @@ waves split N: 4 × 16 = 64 = tileN. Two consequences follow:
 
 ![The 128 × 64 tile: A is staged in LDS for all four waves, each wave loads its own B strip straight into AGPRs](figures/ch06-decomposition.svg)
 
+### 3.3 Why Reordering k Is Legal
+
 In symbols, for any permutation $\sigma$ of $\{0, \dots, K-1\}$:
 
 $$
@@ -213,7 +239,7 @@ guarantee.
 
 The steady state is a block that repeats for every K step of 64.
 
-### Per-Block Instruction Budget
+### 4.1 Per-Block Instruction Budget
 
 Counted from the disassembly:
 
@@ -251,7 +277,7 @@ The teaching kernel of chapter 05 has $\rho = 8/8 = 1$ as well, but each of
 its MFMAs is surrounded by address arithmetic, waits and barriers; here the
 whole loop body is scheduled so that the matrix pipe never idles.
 
-### Direct-to-LDS Loads
+### 4.2 Direct-to-LDS Loads
 
 ```asm
 s_add_u32 m0, 0x100, s42                     ; LDS destination = M0 (+ lane * 4)
@@ -266,7 +292,7 @@ Each instruction moves 256 bytes, so `M0` advances by `0x100`.
 There are no `ds_write`s at all in the loop. That saves 16 instructions per
 step, plus the VGPRs that would have staged the data.
 
-### Register Double Buffering
+### 4.3 Register Double Buffering
 
 ```asm
 v_mfma_f32_16x16x16_bf16 v[44:47], a[128:129], a[0:1], v[44:47]   ; compute with a[0:63]...
@@ -285,7 +311,7 @@ the code**:
 The disassembly has 384 MFMAs, 240 direct-to-LDS loads and 208 `ds_read_b128`
 in total.
 
-### Interleaving
+### 4.4 Interleaving
 
 Look at the first lines of a block:
 
@@ -313,7 +339,7 @@ the pointer increment for free.
 This is the single most important scheduling idea in AMD GEMMs. It is exactly
 what TensileLite's `ScheduleIterAlg=3` automates (chapter 07).
 
-### Counting Outstanding Loads
+### 4.5 Counting Outstanding Loads
 
 `s_waitcnt vmcnt(18)` means "continue once at most 18 vector-memory operations
 are still in flight". Each block issues 16 + 2 = 18 of them. Vector memory
@@ -322,7 +348,7 @@ for everything from block *k-1* and earlier, while block *k*'s loads keep
 flying. That is **one full block of prefetch**, expressed with a single
 counter, with no extra registers and no branches.
 
-### Branch-Free K Tail
+### 4.6 Branch-Free K Tail
 
 ```asm
 s_add_u32 s31, 0x100, s33
@@ -343,6 +369,8 @@ effectively disables the check.
 
 ## 5. Epilogue: Split-K and bf16 Rounding
 
+### 5.1 Combining Partial Tiles
+
 With `splitk > 1`, the grid's z dimension splits K. Each z-slice accumulates a
 partial 128×64 tile:
 
@@ -360,6 +388,8 @@ counter. That is why the launcher asserts `gdx·gdy ≤ 1024` and why separate
 streams need separate workspaces: shared counters would deadlock.
 
 ![Split-K: every z-slice adds its partial tile with atomics; a per-tile counter elects the last arrival](figures/ch06-split-k.svg)
+
+### 5.2 bf16 Rounding by Hand
 
 The fp32 → bf16 conversion is done by hand:
 
@@ -391,6 +421,8 @@ $$
 
 They differ only when the low 16 bits are exactly `0x8000` and the kept
 LSB is 0.
+
+### 5.3 The Arithmetic of Split-K
 
 Split-K itself is just the sum over K ranges:
 
@@ -462,6 +494,22 @@ metadata as **identical**. The script also prints an `e_flags` "DIFFERS" line
 with the same value (`0x54C`) on both sides; that is a quirk of how the script
 compares LLVM 18's output, not a real difference.
 
+## Key Takeaways
+
+1. A production GEMM is a dispatch table over specialised kernels; the
+   hand-written ones win only for some shapes.
+2. The fastest CDNA GEMMs use all 512 registers and 64 KiB of LDS: one wave
+   per SIMD, latency hidden by the instruction schedule, not by other waves.
+3. Operands shared by several waves go through LDS; operands private to a
+   wave (pre-shuffled weights) go straight to registers.
+4. The main loop interleaves one MFMA with 1–3 memory or scalar
+   instructions, double-buffers operands in registers, and pipelines global
+   loads with a single `s_waitcnt vmcnt(N)`.
+5. Split-K adds partial tiles with atomics (non-deterministic in fp32), and
+   hand-rolled bf16 rounding can differ from PyTorch's by 1 ulp on ties.
+6. Modify such kernels only after a byte-identical round trip; nothing checks
+   hazards for you.
+
 ## Exercises
 
 1. Disassemble `bf16gemm_fp32bf16_tn_32x64_pf3_splitk.co` (no pre-shuffle).
@@ -475,6 +523,17 @@ compares LLVM 18's output, not a real difference.
      about 16 cycles.
    - How many cycles of MFMA work does one K step give each wave?
    - How many non-MFMA instructions must fit between the MFMAs?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Each wave issues 32 MFMAs per K step of 64 (section 4.1), about
+    $32 \times 16 = 512$ cycles of matrix-core work, and 34 memory
+    instructions (16 + 2 + 16), plus scalar and address updates: roughly one
+    other instruction per MFMA, which is exactly the interleaving pattern of
+    section 4.4. A loop body (6 blocks) has 192 MFMAs:
+    $192 \times 8192 \approx 1.57$ MFLOP per wave.
+
+    </details>
 3. Write down the exact k permutation that `shuffle_weight(layout=(16,16))`
    applies inside a 16×32 block. Check that the A-side LDS layout must use the
    same permutation.

@@ -1,7 +1,8 @@
 # 04.1 – Vectorized Loads and a Conflict-Free Fragment Layout
 
-**Program:** [`01-vectorized.cu`](01-vectorized.cu) · **Builds on:**
-[chapter 04, section 4](../04-tiled-matmul.md#4-register-tiling)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Program: [`01-vectorized.cu`](01-vectorized.cu) · Builds on: [chapter 04, section 4](../04-tiled-matmul.md#4-register-tiling) ·
+> Next: [04.2 – Double Buffering](02-double-buffering.md)
 
 Chapter 04's $4\times4$ register-tiled kernel spends most of its issue slots
 on memory instructions, not FMAs. This page grows the tile to
@@ -12,6 +13,14 @@ access 16 bytes wide:
 - shared-memory fragment loads: `LDS.128`, with a layout that is free of bank
   conflicts;
 - stores of $C$: `STG.E.128`.
+
+**You will learn**
+
+- why instruction count, not just bytes, limits a register-tiled GEMM;
+- how to assign outputs to threads so that 128-bit shared loads are conflict-free;
+- how `LDS.128` is served by the 32 banks, 8 lanes at a time;
+- why $A$ is transposed on its way into shared memory, and how padding keeps that conflict-free;
+- how to keep vector accesses legal for any matrix shape (runtime alignment check, scalar fallback).
 
 ## 1. Why Instruction Count Matters
 
@@ -162,11 +171,33 @@ page) and instruction overhead.
 - **Register pressure.** 64 accumulators is about the limit for FP32 on one
   thread. Going to $16\times8$ doubles the accumulators and spills.
 
+## Key Takeaways
+
+1. Wide tiles raise reuse; wide (128-bit) loads cut the remaining load instructions by 4.
+2. Conflict-free `LDS.128` needs each group of 8 lanes to cover 128 contiguous bytes: split ownership (4tx and 64 + 4tx) does that.
+3. Transpose $A$ while storing it to shared memory so both fragments are row reads.
+4. Vector accesses need 16-byte alignment: check it at run time and keep a scalar path.
+
 ## Exercises
 
 1. Change the ownership to adjacent $8\times8$ squares (`8 * tx + j`) and
    count the wavefronts per `LDS.128` with Nsight Compute
    (`l1tex__data_bank_conflicts_pipe_lsu_mem_shared_op_ld`).
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Lanes are then 32 bytes apart, so 8 lanes span 256 bytes and every
+    `LDS.128` of B needs 8 wavefronts per warp instead of 4: a 2-way conflict.
+
+    </details>
 2. Remove the `+ 4` padding of `a_s` and measure the store conflicts.
 3. Replace `kBlockK = 8` by 16. What happens to shared memory per block, and
    to the number of barriers per FMA?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Shared memory doubles to $16\times132\times4 + 16\times128\times4 = 16\,640$
+    bytes, and the barriers per FMA halve (two per 16 $k$ steps instead of per
+    8). The loader must also move two `float4` of each operand per thread.
+
+    </details>

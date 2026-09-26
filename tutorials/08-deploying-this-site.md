@@ -1,5 +1,8 @@
 # 08 – Deploying This Site
 
+> **Part IV · Publishing** · Prerequisites: none (Python, Git) ·
+> Back to: [Tutorials index](README.md)
+
 This repository renders to a static website. It contains:
 - every tutorial;
 - every LeetGPU and Tensara problem page, with the write-up and the complete
@@ -9,6 +12,17 @@ This repository renders to a static website. It contains:
 It can also be exported as offline formats: a zipped HTML site, EPUB, a
 single Markdown file, and a PDF if you have LaTeX. This chapter explains how
 the pipeline works and gives four ways to publish the site.
+
+**You will learn**
+
+- how `scripts/build_site.py` turns the repository into MkDocs sources
+  (pages, navigation, figures, links), and what it deliberately leaves out;
+- how to build and preview the site locally;
+- four ways to publish it: GitHub Pages via Actions, `mkdocs gh-deploy`, any
+  static host, and offline formats (HTML zip, EPUB, PDF);
+- what CI checks before anything is published;
+- how to add problems, chapters and figures, and how math and code are
+  rendered.
 
 ## 1. How the Site Is Built
 
@@ -61,7 +75,7 @@ The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
 plugin system Material depends on.
 
-### What Is *Not* Published
+### 1.1 What Is *Not* Published
 
 - **Problem statements.** LeetGPU's challenge texts are CC BY-NC-ND, and
   Tensara's problem repository has no license, so this repository never
@@ -263,3 +277,15 @@ Rules that keep KaTeX and Markdown from tripping over each other:
 - Check with a browser: `python3 -m http.server -d build/site` and look for
   red KaTeX error text, or count `.katex-error` elements with Playwright.
 
+## Key Takeaways
+
+1. The site is generated: edit the repository (READMEs, tutorials,
+   `scripts/figures/`), never `build/`.
+2. `scripts/build_site.py --strict` and `mkdocs build --strict` fail on broken
+   links and anchors; CI also checks the README index, the figures and their
+   legibility.
+3. GitHub Pages via the included workflow is the zero-maintenance option;
+   the same `build/site/` directory can be served by any static host or
+   zipped for offline use.
+4. Problem statements from the platforms are never copied; only summaries,
+   solutions and links are published.

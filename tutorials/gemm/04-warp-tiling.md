@@ -1,7 +1,8 @@
 # 04.4 – Warp Tiling
 
-**Program:** [`04-warp-tiling.cu`](04-warp-tiling.cu) · **Builds on:**
-[04.1](01-vectorized-loads.md), [04.2](02-double-buffering.md)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Program: [`04-warp-tiling.cu`](04-warp-tiling.cu) · Builds on: [04.1](01-vectorized-loads.md), [04.2](02-double-buffering.md) ·
+> Next: [04.5 – Tile Swizzling](05-tile-swizzling.md)
 
 Chapter 04 tiled the output twice: into block tiles (shared memory) and
 thread tiles (registers). Between those sits a level the hardware already
@@ -10,6 +11,13 @@ instruction is served for the warp as a whole, so what matters for shared
 memory is the set of addresses **the warp** touches. Warp tiling makes that
 set small and regular by giving every warp a compact sub-tile of the block
 tile.
+
+**You will learn**
+
+- why the warp, not the thread, is the unit that matters for shared-memory traffic;
+- how to split a block tile into warp tiles, sub-tiles and lane patches;
+- how to compute a warp's shared-memory footprint and choose the lane grid;
+- why warp tiling is the bridge to tensor-core kernels.
 
 ## 1. The Three Levels
 
@@ -121,9 +129,33 @@ $$
 Squarer warp tiles minimize $Q_{\text{warp}}$; the lane grid should make
 each group of 8 lanes touch at most 128 contiguous bytes of $B$.
 
+## Key Takeaways
+
+1. Shared-memory traffic is set by the set of addresses a warp touches: give each warp a compact, square-ish tile.
+2. Block tile, warp tile and lane tile are independent parameters subject to simple divisibility constraints.
+3. The same hierarchy carries over unchanged to tensor cores, where the warp issues MMAs.
+
 ## Exercises
 
 1. Try $W_M\times W_N = 32\times64$ (warps $4\times2$, lanes $4\times8$).
    Compute $Q_{\text{warp}}$ and check the bank behaviour of the $B$ loads.
+
+    <details markdown="1"><summary>Answer</summary>
+
+    $Q_{\text{warp}} = 32 + 64 = 96$ floats, the same. With 8 lanes along $N$,
+    lanes 0–7 read 8 consecutive `float4` of B (128 bytes): one wavefront per
+    group, conflict-free; A is a broadcast among lanes with equal
+    $\lfloor \ell/8 \rfloor$.
+
+    </details>
 2. Replace the $8\times4$ lane grid by $4\times8$ while keeping the
    $64\times32$ warp tile. What happens to the $A$ broadcasts?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    A sub-tile becomes $16\times32$, so each lane holds $4\times1$ sub-tiles:
+    16 values of A and 4 of B per $k$ (20 loads for 64 FMAs instead of 16). Each
+    A `float4` is shared by 8 lanes instead of 4, but the lane does more loads
+    in total; the square-ish $2\times2$ arrangement is better.
+
+    </details>

@@ -1,7 +1,8 @@
 # 04.7 – Tensor Cores: WMMA, `mma.sync` and `wgmma`
 
-**Programs:** [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) ·
-**Builds on:** [04.3](03-async-copies.md), [04.4](04-warp-tiling.md)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Programs: [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) · Builds on: [04.3](03-async-copies.md), [04.4](04-warp-tiling.md) ·
+> Next: [05 – AMD CDNA3 and MFMA](../05-amd-cdna3-mfma.md)
 
 Tensor cores execute a small matrix multiply-accumulate per warp
 instruction. For 16-bit inputs they deliver roughly 8–16× the FP32 FMA
@@ -9,6 +10,15 @@ throughput of the same GPU (A100: 312 TFLOP/s dense FP16/BF16 vs 19.5
 TFLOP/s FP32). Everything from the previous pages still applies (block
 tiles, pipelines, warp tiles); what changes is the innermost level: a
 lane's $8\times8$ outer product becomes a warp's $16\times8\times16$ MMA.
+
+**You will learn**
+
+- the three tensor-core interfaces (WMMA, `mma.sync`, `wgmma`) and when to use each;
+- a complete WMMA kernel and its alignment rules;
+- the documented register layout of `mma.sync.m16n8k16`, and an epilogue that uses it;
+- why tensor-core tiles conflict in shared memory, and how an XOR swizzle fixes it without padding;
+- how `ldmatrix` loads whole fragments, including the transposed B operand;
+- the structure of a Hopper kernel: TMA, `wgmma`, mbarriers and warp specialization.
 
 ## 1. Three Interfaces
 
@@ -63,6 +73,7 @@ With $g = \ell / 4$ and $t = \ell \bmod 4$ for lane $\ell$:
 $$
 a_0 = A[g][2t{:}2t{+}1],\ \ a_1 = A[g{+}8][2t{:}2t{+}1],\ \ a_2 = A[g][2t{+}8{:}2t{+}9],\ \ a_3 = A[g{+}8][2t{+}8{:}2t{+}9]
 $$
+
 $$
 b_0 = B[2t{:}2t{+}1][g],\ \ b_1 = B[2t{+}8{:}2t{+}9][g], \qquad
 (d_0, d_1) = C[g][2t{:}2t{+}1],\ \ (d_2, d_3) = C[g{+}8][2t{:}2t{+}1]
@@ -208,12 +219,39 @@ because none of its test infrastructure can run or emulate one.
 - **`ldmatrix` addresses** must be 16-byte aligned and in shared memory
   (`__cvta_generic_to_shared`).
 
+## Key Takeaways
+
+1. Tensor cores replace a lane's outer product by a warp-wide MMA; the block and warp levels stay the same.
+2. WMMA is portable but opaque; `mma.sync` fragment layouts are documented, so epilogues work in registers.
+3. Shared-memory tiles for tensor cores are read 8 rows × 16 bytes at a time: swizzle 16-byte chunks with row bits.
+4. `ldmatrix` turns 32 row addresses into ready-made fragments; `.trans` handles a $k$-major B.
+5. Hopper moves the operands to shared memory (`wgmma`) and the copies to TMA, synchronized by mbarriers.
+
 ## Exercises
 
 1. Switch `09-mma-sync.cu` to BF16 (`mma.sync...bf16.bf16.f32`,
    `__nv_bfloat16`). What else changes?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    The harness types and conversions (`__float2bfloat16`), and the
+    emulator: `cuemuMmaM16N8K16` decodes FP16, so a BF16 version needs a BF16
+    decode. The fragment layout, `ldmatrix` and the swizzle stay the same:
+    they move 16-bit values regardless of format.
+
+    </details>
 2. Remove the swizzle (use `row * 32 + col` and `row * 128 + col`) and
    measure the bank conflicts with Nsight Compute. Then fix them with
    padding instead; how much shared memory does that cost for 3 stages?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Padding rows by 8 halves (16 bytes) keeps 16-byte alignment: A becomes
+    $128\times40\times2 = 10\,240$ bytes and B $32\times136\times2 = 8\,704$
+    bytes per stage, $3\times18\,944 = 56\,832$ bytes in all. That exceeds the
+    48 KB of static shared memory, so the kernel would need dynamic shared
+    memory, where the swizzled version fits in exactly 48 KB.
+
+    </details>
 3. Replace `ldmatrix` for $A$ by four 32-bit loads per lane computed from
    the layout formulas. Verify with `--test`, then compare instruction counts.

@@ -1,7 +1,8 @@
 # 04.6 – Split-K and Stream-K
 
-**Programs:** [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) ·
-**Builds on:** [04.1](01-vectorized-loads.md)
+> **Part II · Matrix Multiplication · 04.x GEMM Deep Dive** ·
+> Programs: [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) · Builds on: [04.1](01-vectorized-loads.md) ·
+> Next: [04.7 – Tensor Cores](07-tensor-cores.md)
 
 Every kernel so far launches one block per output tile. That is only
 efficient when there are many more tiles than SMs. For "skinny" GEMMs,
@@ -9,6 +10,14 @@ such as $M = N = 512$, $K = 16384$ (16 tiles of $128\times128$ on a GPU with
 108–132 SMs), most of the GPU idles. Even with plenty of tiles, the last
 wave is often partly empty. Both problems are solved by splitting the work
 along $K$ as well.
+
+**You will learn**
+
+- how tile quantization wastes SMs, and how to compute the fill efficiency;
+- split-K with atomics and with a deterministic workspace reduction, and how to choose the split factor;
+- Stream-K: distributing MAC-loop iterations instead of tiles, with contributors and owners;
+- the memory-ordering rules that make a cross-block fix-up correct, and why it cannot deadlock;
+- how to test a cross-block protocol on the emulator.
 
 ## 1. Quantization: Tiles vs SMs
 
@@ -165,6 +174,13 @@ It cannot find memory-ordering bugs between concurrent blocks; on a GPU,
 `compute-sanitizer --tool racecheck` and repeated runs with different grid
 sizes are the complement.
 
+## Key Takeaways
+
+1. With few tiles, one block per tile leaves most SMs idle; the last wave of many tiles is often partly empty.
+2. Split-K multiplies the parallelism by $S$ at the cost of combining $S$ partial tiles (atomics: fast, non-deterministic; workspace: deterministic).
+3. Stream-K gives every persistent block an equal share of iterations; shared tiles are fixed up through a workspace and flags.
+4. Cross-block communication needs fence → flag on the writer, flag → fence on the reader, loads that bypass L1, and co-resident blocks.
+
 ## Exercises
 
 1. For $M = N = 1024$, $K = 8192$ on your GPU, time 04.1, split-K (both
@@ -173,3 +189,13 @@ sizes are the complement.
    tiles one block each, Stream-K for the rest.
 3. Make the atomic split-K deterministic without a second kernel: the
    "last block to arrive reduces" scheme of chapter 03, section 5.
+
+    <details markdown="1"><summary>Hint</summary>
+
+    Give each tile a counter. Every split writes its partial tile to
+    `workspace[z]`, fences, and increments the tile's counter; the split that
+    sees $S - 1$ sums the $S$ partials in order $z = 0, \dots, S-1$, writes
+    $C$ and resets the counter. This is what AITER's semaphore does
+    (chapter 06, section 5).
+
+    </details>

@@ -1,5 +1,8 @@
 # 05 – AMD CDNA3 and MFMA: From CUDA to wave64 Matrix Cores
 
+> **Part III · AMD GPUs** · Prerequisites: [04](04-tiled-matmul.md) (and ideally [04.7](gemm/07-tensor-cores.md)) ·
+> Next: [06 – Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md)
+
 Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's
 data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA target `gfx942`). It
 then builds a small bf16 GEMM with the MFMA matrix-core instruction and reads
@@ -7,7 +10,21 @@ the ISA the compiler emits. Chapters 06 and 07 use this vocabulary to take
 apart the hand-written assembly GEMMs in **AITER** and the generated ones in
 **hipBLASLt**.
 
+**You will learn**
+
+- how CUDA concepts map onto AMD's (CU, wavefront, LDS, VGPR/AGPR/SGPR);
+- the hardware differences that change how kernels are written: wave64,
+  the scalar unit, explicit memory counters, register-limited occupancy and
+  XCD placement;
+- what one MFMA instruction computes, and exactly which lane holds which
+  operand element;
+- how to compile a HIP kernel for gfx942 and read its ISA without a GPU;
+- why a straightforward MFMA GEMM is far from peak, and the list of
+  techniques that close the gap (chapters 06–07).
+
 ## 1. Vocabulary Map
+
+### 1.1 CUDA to HIP
 
 | CUDA | HIP / AMD | Notes |
 |------|-----------|-------|
@@ -21,7 +38,7 @@ apart the hand-written assembly GEMMs in **AITER** and the generated ones in
 | Scoreboard | **Explicit** `s_waitcnt vmcnt/lgkmcnt` | The compiler (or you, in asm) waits on counters |
 | L2 per GPU | L2 **per XCD** (4 MiB) + 256 MiB Infinity Cache | Workgroup→XCD placement matters |
 
-Things that change how you write kernels:
+### 1.2 Things That Change How You Write Kernels
 
 1. **Wave64.** A reduction over a wave needs `log2(64) = 6` steps. Ballots and
    masks are 64 bits wide. Use `__shfl_xor` with width 64, or DPP / `ds_swizzle`
@@ -54,10 +71,33 @@ Things that change how you write kernels:
 ![MI300X: 8 XCDs of 38 CUs, each XCD with its own L2; workgroups are dealt round-robin across XCDs](figures/ch05-mi300x.svg)
 
 
+### 1.3 A First Example: Reducing a Wave
+
+The wave reduction of chapter 03 needs one more step on wave64, and the
+width comes from `warpSize` instead of a hard-coded 32:
+
+```cpp
+__device__ float waveReduceSum(float v) {
+    for (int offset = warpSize / 2; offset > 0; offset >>= 1) v += __shfl_down(v, offset);  // 6 steps on wave64
+    return v;   // valid in lane 0
+}
+```
+
+Code that hard-codes 32 (lane masks as `unsigned`, `threadIdx.x % 32`,
+32-entry arrays of per-warp partials) is the most common porting bug. HIP
+compiles the same source for NVIDIA as well, where `warpSize` is 32.
+
 ## 2. MFMA: One Instruction, One Wave, a Whole Tile
 
+### 2.1 What One Instruction Computes
+
 `v_mfma_f32_16x16x16_bf16 D, A, B, C` computes `D = A·B + C` for a 16×16×16
-tile, cooperatively across the 64 lanes of a wave.
+tile, cooperatively across the 64 lanes of a wave. Unlike an FMA, which
+every lane executes on its own data, an MFMA is a *wave-level* operation:
+each lane contributes a few operand values and receives a few results, and
+the matrix core does the $16\times16\times16$ product in between.
+
+### 2.2 Which Lane Holds What
 
 | Operand | Size per lane | Which elements lane `l` holds (`l ∈ [0, 64)`) |
 |---------|---------------|-----------------------------------------------|
@@ -88,6 +128,8 @@ $$
 
 ![Which lane holds which elements of A, B and D for v_mfma_f32_16x16x16_bf16](figures/ch05-mfma-layout.svg)
 
+### 2.3 Throughput
+
 One instruction performs $2\cdot16^3 = 8192$ flops. The chip's peak is
 
 $$
@@ -100,6 +142,8 @@ $$
 | $f$ | Peak engine clock |
 | $\phi$ | Dense bf16 flops per CU per clock (2048 on CDNA3, spread over 4 SIMDs) |
 
+### 2.4 Why the TN Layout
+
 Compare this with the opaque NVIDIA WMMA fragments used in
 [leetgpu/022-gemm](../leetgpu/022-gemm/solution.cu): on AMD the layout is
 documented and hand-written kernels rely on it.
@@ -110,6 +154,8 @@ matrices are K-contiguous (the "TN" layout, `C = A · Bᵀ`), then every operand
 fetch is one aligned 8-byte read per lane. That is why AITER's asm GEMMs are
 all `_tn_`, and why PyTorch's `nn.Linear` weight layout `[out, in]` is exactly
 right.
+
+### 2.5 Other Shapes
 
 Other shapes follow the same idea:
 - `32x32x8`: fewer instructions per FLOP, 16 accumulator registers.
@@ -122,6 +168,8 @@ The authoritative tables are the *CDNA3 ISA* guide and AMD's
 The calculator prints the exact register ↔ element mapping and the cycle
 count for every instruction.
 
+### 2.6 Accumulation Registers (AGPRs)
+
 The accumulators can live in **AGPRs** (`a[0:3]`) or VGPRs:
 - AGPRs roughly double the register file available to a wave.
 - Moving between the two costs `v_accvgpr_read/write`.
@@ -129,6 +177,8 @@ The accumulators can live in **AGPRs** (`a[0:3]`) or VGPRs:
   *operands* there (chapter 06).
 
 ## 3. A Teaching Kernel
+
+### 3.1 Structure
 
 [`tutorials/amd/mfma_gemm.hip`](amd/mfma_gemm.hip) is a complete bf16 TN
 GEMM, about 120 lines of device code plus a host test and timer:
@@ -156,7 +206,7 @@ GEMM, about 120 lines of device code plus a host test and timer:
 - **Epilogue** writes `acc[i][j][r]` to row `4·(lane/16) + r`, column
   `lane % 16`.
 
-### Compile It Without a GPU
+### 3.2 Compile It Without a GPU
 
 You do not need ROCm to look at the ISA. Stock clang ≥ 17 has the AMDGPU
 back end. [`hip_compat.h`](amd/hip_compat.h) supplies the few HIP macros the
@@ -166,6 +216,8 @@ kernel uses:
 clang++ -x hip -nogpuinc -nogpulib --cuda-device-only --offload-arch=gfx942 \
         -O3 -S -o mfma_gemm.s tutorials/amd/mfma_gemm.hip
 ```
+
+### 3.3 Reading the ISA
 
 This is the inner loop clang 18 produces (trimmed):
 
@@ -205,6 +257,8 @@ Notice:
 
    The rest of this chapter and the next two are about fixing that ratio.
 
+### 3.4 Why It Is Slow: Tile Intensity
+
 The block-tile arithmetic makes the problem concrete. A workgroup that
 owns a $B_M\times B_N$ output tile and walks $K$ in slices of $B_K$
 loads $(B_M + B_N)B_K$ bf16 values per slice and performs
@@ -234,6 +288,8 @@ Infinity Cache reuse between neighbouring tiles provide the rest.
 
 ## 4. What a Fast GEMM Does Differently
 
+### 4.1 The Steps
+
 Each step below is visible in chapter 06's disassembly:
 
 | Step | Change | Effect |
@@ -245,6 +301,8 @@ Each step below is visible in chapter 06's disassembly:
 | 5 | **Interleave everything with MFMAs** | An MFMA occupies the matrix pipe for several cycles. Issuing one load, LDS read or address update between consecutive MFMAs hides their issue cost completely. Compilers do this poorly, which is why the best kernels are asm or generated (TensileLite's `ScheduleIterAlg`) |
 | 6 | **Split-K / Stream-K** for small M·N | Too few output tiles to fill 304 CUs? Split the K loop across workgroups and reduce with atomics or a fix-up pass |
 | 7 | **Cache-aware tile order** | Make workgroups that run concurrently on one XCD share A/B panels in that XCD's L2 |
+
+### 4.2 Filling the Machine
 
 Why step 6 matters is simple counting. With $T$ output tiles and
 $n_{\text{CU}}$ compute units each running one workgroup at a time:
@@ -279,13 +337,58 @@ $T\cdot\lceil K/B_K\rceil$ loop iterations (chapter 07).
 | rocprofv3 ATT (thread trace) + Radeon GPU Analyzer / ROCm Compute Viewer | Instruction-level timeline: where each wave stalls |
 | `rocprof-compute` (Omniperf) | Roofline and "speed of light" summaries |
 
+## Key Takeaways
+
+1. A CU is an SM, a wavefront is a 64-lane warp, LDS is shared memory; the
+   differences that matter are wave64, the scalar unit, explicit `s_waitcnt`
+   counters, register-limited occupancy and per-XCD L2s.
+2. An MFMA is a wave-level instruction with a documented operand layout:
+   lane $\ell$ holds row $\ell \bmod 16$ and 4 consecutive $k$ of A (and of
+   B's column), and 4 rows of one column of D.
+3. With both operands K-contiguous (TN), every operand fetch is one aligned
+   8-byte read per lane.
+4. A correct MFMA GEMM is easy; a fast one needs big wave tiles, direct-to-LDS
+   loads, software pipelining with counters, interleaving, work
+   decomposition and cache-aware tile order: the subject of chapters 06–07.
+
 ## Exercises
 
 1. Change the teaching kernel to 32×32×8 MFMAs
    (`__builtin_amdgcn_mfma_f32_32x32x8bf16_1k`). Work out the new operand
    and accumulator layout with the Matrix Instruction Calculator.
+
+    <details markdown="1"><summary>Hint</summary>
+
+    The calculator's `--detail-instruction` and `--register-layout` options
+    (see its `--help`) print the register ↔ element tables for a CDNA3
+    instruction. The accumulator becomes 16 registers
+    per lane, and each lane holds 4 consecutive $k$ of one row of A
+    (32 rows × 2 groups of 4 $k$ over 64 lanes).
+
+    </details>
+
 2. Make each wave compute 32×64 instead of 32×32. How many AGPRs does the
    compiler report now, and what happens to occupancy?
+
+    <details markdown="1"><summary>Hint</summary>
+
+    The accumulators double from 16 to 32 registers per lane (2×4 tiles of 4
+    registers). Read `.agpr_count` and `.vgpr_count` in the `.s` metadata, and
+    remember each SIMD has 512 registers per lane to share among its waves.
+
+    </details>
+
 3. Replace the register-staged loads with direct-to-LDS loads: use
    `__builtin_amdgcn_global_load_lds` (clang 19 or newer), or inline asm.
    Compare the instruction counts in the loop.
+
+4. Compute $\eta_{\text{fill}}$ for $M = 4096$, $N = 1024$ with
+   $256\times256$ tiles on MI300X. How would split-K with $S = 4$ change it?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    $T = 16\cdot4 = 64$ tiles, one wave, $\eta = 64/304 = 21\%$. With
+    $S = 4$: 256 workgroups, $\eta = 256/304 = 84\%$ (before the cost of
+    combining partial tiles).
+
+    </details>

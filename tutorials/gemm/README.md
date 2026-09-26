@@ -1,5 +1,8 @@
 # 04.x – GEMM Deep Dive: The Rest of the Ladder
 
+> **Part II · Matrix Multiplication** · Prerequisites: [04 – Tiled Matrix Multiplication](../04-tiled-matmul.md) ·
+> Next: [04.1 – Vectorized Loads](01-vectorized-loads.md)
+
 [Chapter 04](../04-tiled-matmul.md) ends with a table of techniques that take
 a register-tiled SGEMM from about half of cuBLAS to within a few percent of
 it, and then to tensor cores. The pages in this section explain each of those
@@ -18,6 +21,10 @@ techniques and implement it as a complete, tested program:
 Read them in order: each program starts from the previous one and changes one
 thing, so a diff between consecutive files shows exactly what the technique
 costs in code.
+
+Every page follows the same structure: what you will learn, the idea with a
+figure, the cost model (formulas with symbol tables), the key code, pitfalls,
+key takeaways and exercises with answers.
 
 ## The Hierarchy Every Page Refines
 
