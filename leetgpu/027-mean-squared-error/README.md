@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/27_mean_squared_error
 url: https://leetgpu.com/challenges/mean-squared-error
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, two-pass]
+status: solved
 ---
 
 # Mean Squared Error
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/mean-squared-error)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`mean((pred - target)²)` over up to 10⁸ elements.
 
 ## Approach
-
-## Pitfalls
+Two-pass reduction as in [Reduction](../004-reduction), squaring the
+differences on the fly.

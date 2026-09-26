@@ -269,6 +269,26 @@ def is_meta_case(case):
     return any(isinstance(v, torch.Tensor) and v.device.type == "meta" for v in case.values())
 
 
+def _top_p_nucleus_check(case, outputs):
+    """torch.multinomial's RNG stream cannot be reproduced from CUDA, so for
+    top-p sampling we check that the sampled token lies in the nucleus."""
+    torch = _torch()
+    logits, p = case["logits"].double(), float(case["p"][0])
+    probs = torch.softmax(logits, dim=0)
+    sorted_probs, sorted_idx = torch.sort(probs, descending=True)
+    cutoff = min(int(torch.searchsorted(torch.cumsum(sorted_probs, 0), p)) + 1, len(probs))
+    threshold = float(sorted_probs[cutoff - 1])
+    allowed = set(int(i) for i in torch.nonzero(probs >= threshold * (1 - 1e-6)).flatten())
+    token = int(outputs["sampled_token"][0])
+    if token in allowed:
+        return True, ""
+    return False, f"sampled token {token} is not in the nucleus {sorted(allowed)[:10]}"
+
+
+# Challenges whose reference output cannot be reproduced bit-for-bit.
+CUSTOM_LEETGPU_CHECKS = {"medium/60_top_p_sampling": _top_p_nucleus_check}
+
+
 def run_leetgpu_case(lib_path, upstream_id, index):
     torch = _torch()
     size_guard()
@@ -286,6 +306,8 @@ def run_leetgpu_case(lib_path, upstream_id, index):
     argtypes = [sig[n][0] for n in names]
     values = [case[n] for n in names]
     buffers = call_solution(lib_path, "solve", argtypes, values)
+    custom = CUSTOM_LEETGPU_CHECKS.get(upstream_id)
+    outputs = {}
     for n, buf in zip(names, buffers):
         if buf is None:
             continue
@@ -298,9 +320,16 @@ def run_leetgpu_case(lib_path, upstream_id, index):
             continue
         out = torch.empty_like(case[n])
         buf.read_into(out)
+        outputs[n] = out
+        if custom:
+            continue
         ok, msg = compare(ref_args[n], out, ch.atol, ch.rtol)
         if not ok:
             return False, f"{name}: output '{n}' mismatch: {msg}"
+    if custom:
+        ok, msg = custom(case, outputs)
+        if not ok:
+            return False, f"{name}: {msg}"
     return True, name
 
 

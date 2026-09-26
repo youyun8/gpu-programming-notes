@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/64_weight_dequantization
 url: https://leetgpu.com/challenges/weight-dequantization
 difficulty: medium
-tags: []
-status: todo
+tags: [elementwise, quantization]
+status: solved
 ---
 
 # Weight Dequantization
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/weight-dequantization)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`Y = X ⊙ S` with one scale per `T×T` tile.
 
 ## Approach
-
-## Pitfalls
+A 2-D elementwise kernel with `threadIdx.x` along columns. Each scale value is
+shared by `T²` threads and always hits cache.

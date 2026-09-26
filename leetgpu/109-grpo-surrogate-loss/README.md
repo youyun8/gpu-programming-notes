@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/109_grpo_surrogate_loss
 url: https://leetgpu.com/challenges/grpo-surrogate-loss
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, rl]
+status: solved
 ---
 
 # GRPO Surrogate Loss
@@ -13,9 +13,9 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/grpo-surrogate-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+GRPO: group-normalized advantages + clipped surrogate − β·KL(k3), averaged.
 
 ## Approach
-
-## Pitfalls
+A small kernel computes per-group advantages (population std, as in the
+reference); a grid-stride reduction then evaluates the token terms, reading
+`A[b,g]` via `i / S`.

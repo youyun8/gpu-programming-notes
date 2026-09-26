@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/108_dpo_sequence_loss
 url: https://leetgpu.com/challenges/dpo-sequence-loss
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, rl]
+status: solved
 ---
 
 # DPO Sequence Loss
@@ -13,9 +13,7 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/dpo-sequence-loss)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+DPO loss `mean(softplus(−z))`.
 
 ## Approach
-
-## Pitfalls
+Stable softplus `max(−z,0) + log1p(e^{−|z|})` inside a single-block reduction.

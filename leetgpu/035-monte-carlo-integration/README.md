@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/35_monte_carlo_integration
 url: https://leetgpu.com/challenges/monte-carlo-integration
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction]
+status: solved
 ---
 
 # Monte Carlo Integration
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/monte-carlo-integration)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`(b - a) · mean(y)`.
 
 ## Approach
-
-## Pitfalls
+A two-pass sum reduction (`float4` loads, fp64 block partials); the final block
+scales by `(b-a)/n`.

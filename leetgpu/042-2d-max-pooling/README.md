@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/42_2d_max_pooling
 url: https://leetgpu.com/challenges/2d-max-pooling
 difficulty: medium
-tags: []
-status: todo
+tags: [pooling]
+status: solved
 ---
 
 # 2D Max Pooling
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/2d-max-pooling)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`max_pool2d` over an `N×C×H×W` tensor with kernel, stride and padding.
 
 ## Approach
-
-## Pitfalls
+One thread per output element with a grid-stride loop. Padded positions are
+skipped, which is equivalent to padding with −∞ as PyTorch does.

@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/118_vit_patch_embedding
 url: https://leetgpu.com/challenges/vision-transformer-patch-embedding
 difficulty: medium
-tags: []
-status: todo
+tags: [gemm, im2col, vision]
+status: solved
 ---
 
 # Vision Transformer Patch Embedding
@@ -13,9 +13,10 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/vision-transformer-patch-embedding)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+ViT stem: `P×P` patches → linear projection + bias, prepend CLS, add positional embeddings.
 
 ## Approach
-
-## Pitfalls
+An NT-GEMM with an **implicit im2col** A-tile loader: patch pixels are
+gathered directly from the NCHW image, so the patch matrix is never
+materialized. Bias and positional embeddings are fused into the epilogue, and
+a tiny kernel writes the CLS rows.

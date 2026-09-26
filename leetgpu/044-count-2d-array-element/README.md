@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/44_count_2d_array_element
 url: https://leetgpu.com/challenges/count-2d-array-element
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, counting]
+status: solved
 ---
 
 # Count 2D Array Element
@@ -13,9 +13,7 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/count-2d-array-element)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Count elements equal to `K` in an `N×M` matrix.
 
 ## Approach
-
-## Pitfalls
+The matrix is contiguous, so this is the 1-D counting kernel over `N·M` elements.

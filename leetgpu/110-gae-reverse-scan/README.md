@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/110_gae_reverse_scan
 url: https://leetgpu.com/challenges/parallel-reverse-scan-gae
 difficulty: medium
-tags: []
-status: todo
+tags: [scan, rl]
+status: solved
 ---
 
 # Parallel Reverse Scan (GAE)
@@ -13,9 +13,9 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/parallel-reverse-scan-gae)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Generalized Advantage Estimation: `A_t = δ_t + γλ·A_{t+1}` (right-to-left).
 
 ## Approach
-
-## Pitfalls
+The same affine-map scan as [Linear Recurrence](../082-linear-recurrence), run from
+the end of the sequence: thread `k` owns the k-th chunk counted from the right,
+so the block scan follows the direction of the recurrence.

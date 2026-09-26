@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/105_group_normalization
 url: https://leetgpu.com/challenges/group-normalization
 difficulty: medium
-tags: []
-status: todo
+tags: [normalization]
+status: solved
 ---
 
 # Group Normalization
@@ -13,9 +13,9 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/group-normalization)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+GroupNorm over `(N, C, H, W)`.
 
 ## Approach
-
-## Pitfalls
+In NCHW layout, the elements of one `(n, group)` are contiguous, so each
+group is a single block reduction (sum and sum of squares in fp64), followed by
+normalization with per-channel γ/β.

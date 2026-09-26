@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/48_2d_subarray_sum
 url: https://leetgpu.com/challenges/2d-subarray-sum
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, integer]
+status: solved
 ---
 
 # 2D Subarray Sum
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/2d-subarray-sum)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Sum over a rectangle of an `N×M` int matrix.
 
 ## Approach
-
-## Pitfalls
+Flatten the rectangle into one index space (column fastest, so reads stay
+coalesced) and reduce as in the 1-D case.

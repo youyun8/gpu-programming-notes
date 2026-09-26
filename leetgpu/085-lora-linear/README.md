@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/85_lora_linear
 url: https://leetgpu.com/challenges/lora-linear
 difficulty: medium
-tags: []
-status: todo
+tags: [gemm, lora, fusion]
+status: solved
 ---
 
 # LoRA Linear
@@ -13,9 +13,10 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/lora-linear)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+`out = x·Wᵀ + s·(x·Aᵀ)·Bᵀ`.
 
 ## Approach
-
-## Pitfalls
+1. `hidden = s·x·Aᵀ` (`batch × rank`, tiny).
+2. `out = [x | hidden] · [W | B]ᵀ`: a single NT-GEMM whose K loop runs over
+   **two concatenated segments** (`d_in`, then `rank`). The base and low-rank
+   paths accumulate into the same registers, so the output is written once.

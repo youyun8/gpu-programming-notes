@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/113_layer_normalization
 url: https://leetgpu.com/challenges/layer-normalization
 difficulty: medium
-tags: []
-status: todo
+tags: [normalization]
+status: solved
 ---
 
 # Layer Normalization
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/layer-normalization)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+LayerNorm over the feature dimension of `N×C`.
 
 ## Approach
-
-## Pitfalls
+Warp per row, three passes over the (L1-resident) row: mean, centered variance,
+write.

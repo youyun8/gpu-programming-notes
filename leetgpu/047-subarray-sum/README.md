@@ -4,8 +4,8 @@ platform: LeetGPU
 upstream: medium/47_subarray_sum
 url: https://leetgpu.com/challenges/subarray-sum
 difficulty: medium
-tags: []
-status: todo
+tags: [reduction, integer]
+status: solved
 ---
 
 # Subarray Sum
@@ -13,9 +13,8 @@ status: todo
 **Platform:** LeetGPU · **Difficulty:** medium · [Problem statement](https://leetgpu.com/challenges/subarray-sum)
 
 ## Problem
-
-<!-- Summarize the task in your own words: inputs, outputs, shapes. -->
+Sum of `input[S..E]` (inclusive).
 
 ## Approach
-
-## Pitfalls
+Grid-stride integer reduction over the range with a warp `__reduce_add_sync`
+and one atomic per warp. Integer addition is exact, so atomics are fine here.

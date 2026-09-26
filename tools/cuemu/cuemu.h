@@ -39,7 +39,7 @@
 #define __constant__
 #define __managed__
 #define __launch_bounds__(...)
-#define __align__(n) alignas(n)
+#define __align__(n) __attribute__((aligned(n)))
 #define __grid_constant__
 #define __CUDACC__ 1
 #define __CUDA_ARCH__ 800
@@ -908,3 +908,108 @@ inline cudaError_t cudaOccupancyMaxActiveBlocksPerMultiprocessor(int* n, F, int 
     *n = std::max(1, 2048 / std::max(1, block_size));
     return cudaSuccess;
 }
+
+// ---------------------------------------------------------------------------
+// nvcuda::wmma (tensor core API) — functional emulation.
+// Every thread holds the whole tile in its fragment and computes the full
+// product, so results are correct for code that treats fragments as opaque
+// (load / mma / store / elementwise ops over x[0..num_elements)). Code that
+// depends on the hardware's element-to-lane mapping is not supported.
+// ---------------------------------------------------------------------------
+namespace nvcuda {
+namespace wmma {
+struct matrix_a {};
+struct matrix_b {};
+struct accumulator {};
+struct row_major {};
+struct col_major {};
+enum layout_t { mem_row_major, mem_col_major };
+namespace precision {
+struct tf32 {};
+}
+
+template <class Use, int M, int N, int K> struct FragDims;
+template <int M, int N, int K> struct FragDims<matrix_a, M, N, K> { static constexpr int kRows = M, kCols = K; };
+template <int M, int N, int K> struct FragDims<matrix_b, M, N, K> { static constexpr int kRows = K, kCols = N; };
+template <int M, int N, int K> struct FragDims<accumulator, M, N, K> { static constexpr int kRows = M, kCols = N; };
+
+template <class T> struct FragStorage { using type = T; };
+template <> struct FragStorage<precision::tf32> { using type = float; };
+
+template <class Use, int M, int N, int K, class T, class Layout = void>
+struct fragment {
+    using Dims = FragDims<Use, M, N, K>;
+    using element_type = typename FragStorage<T>::type;
+    static constexpr int kRows = Dims::kRows;
+    static constexpr int kCols = Dims::kCols;
+    static constexpr int num_elements = kRows * kCols;
+    element_type x[num_elements];  // logical row-major tile
+};
+
+template <class Use, int M, int N, int K, class T, class L, class V>
+inline void fill_fragment(fragment<Use, M, N, K, T, L>& f, const V& v) {
+    for (int i = 0; i < f.num_elements; ++i) f.x[i] = static_cast<typename fragment<Use, M, N, K, T, L>::element_type>(v);
+}
+
+template <class P>
+inline void checkWmmaPointer(const P* p, unsigned ldm) {
+    if (reinterpret_cast<uintptr_t>(p) % 32 != 0) cuemu::fail("wmma load/store pointer must be 256-bit (32-byte) aligned");
+    if ((ldm * sizeof(P)) % 16 != 0) cuemu::fail("wmma ldm must be a multiple of 16 bytes");
+}
+
+template <class Use, int M, int N, int K, class T, class L, class P>
+inline void load_matrix_sync(fragment<Use, M, N, K, T, L>& f, const P* p, unsigned ldm) {
+    using F = fragment<Use, M, N, K, T, L>;
+    checkWmmaPointer(p, ldm);
+    constexpr bool kColMajor = std::is_same_v<L, col_major>;
+    for (int r = 0; r < F::kRows; ++r)
+        for (int c = 0; c < F::kCols; ++c)
+            f.x[r * F::kCols + c] = static_cast<typename F::element_type>(kColMajor ? p[c * ldm + r] : p[r * ldm + c]);
+}
+
+template <int M, int N, int K, class T, class P>
+inline void load_matrix_sync(fragment<accumulator, M, N, K, T, void>& f, const P* p, unsigned ldm, layout_t layout) {
+    using F = fragment<accumulator, M, N, K, T, void>;
+    checkWmmaPointer(p, ldm);
+    for (int r = 0; r < F::kRows; ++r)
+        for (int c = 0; c < F::kCols; ++c)
+            f.x[r * F::kCols + c] = layout == mem_col_major ? p[c * ldm + r] : p[r * ldm + c];
+}
+
+template <int M, int N, int K, class T, class P>
+inline void store_matrix_sync(P* p, const fragment<accumulator, M, N, K, T, void>& f, unsigned ldm, layout_t layout) {
+    using F = fragment<accumulator, M, N, K, T, void>;
+    checkWmmaPointer(p, ldm);
+    for (int r = 0; r < F::kRows; ++r)
+        for (int c = 0; c < F::kCols; ++c) {
+            P& dst = layout == mem_col_major ? p[c * ldm + r] : p[r * ldm + c];
+            dst = static_cast<P>(f.x[r * F::kCols + c]);
+        }
+}
+
+template <class Acc> struct MmaCompute { using type = float; };
+template <> struct MmaCompute<int> { using type = int; };
+
+template <int M, int N, int K, class TA, class LA, class TB, class LB, class TC, class TD>
+inline void mma_sync(fragment<accumulator, M, N, K, TD>& d, const fragment<matrix_a, M, N, K, TA, LA>& a,
+                     const fragment<matrix_b, M, N, K, TB, LB>& b, const fragment<accumulator, M, N, K, TC>& c,
+                     bool = false) {
+    using Compute = typename MmaCompute<TD>::type;
+    Compute out[M * N];
+    for (int i = 0; i < M; ++i)
+        for (int j = 0; j < N; ++j) {
+            Compute acc = static_cast<Compute>(c.x[i * N + j]);
+            for (int k = 0; k < K; ++k)
+                acc += static_cast<Compute>(a.x[i * K + k]) * static_cast<Compute>(b.x[k * N + j]);
+            out[i * N + j] = acc;
+        }
+    for (int i = 0; i < M * N; ++i) d.x[i] = static_cast<TD>(out[i]);
+}
+
+inline float __float_to_tf32(float x) {
+    unsigned u = __float_as_uint(x);
+    u = (u + 0x1000u) & 0xFFFFE000u;  // round to 10 mantissa bits
+    return __uint_as_float(u);
+}
+}  // namespace wmma
+}  // namespace nvcuda
