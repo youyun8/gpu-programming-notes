@@ -29,11 +29,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | input length (even) |
-| $x_i$ | first half: the gate input, $0 \le i < N/2$ |
-| $x_{i+N/2}$ | second half: the value being gated |
+| $N$ | Input length (even) |
+| $x_i$ | First half: the gate input, $0 \le i < N/2$ |
+| $x_{i+N/2}$ | Second half: the value being gated |
 | SiLU | $x\,\sigma(x)$; see [SiLU](../052-silu/) |
-| $y_i$ | output, length $N/2$ |
+| $y_i$ | Output, length $N/2$ |
 
 Because SiLU is smooth and non-monotonic, this "Swish gate" trains better
 than a ReLU gate. It is the activation of LLaMA, Mistral and PaLM.
@@ -55,9 +55,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: read $N$ floats, write $N/2$ floats |
-| $W$ | per output: one `expf`, one division, one add and one multiply |
-| $c_{\exp},\ c_{\div}$ | instruction costs of accurate exp and division (≈ 10–20 each) |
+| $Q$ | Bytes: read $N$ floats, write $N/2$ floats |
+| $W$ | Per output: one `expf`, one division, one add and one multiply |
+| $c_{\exp},\ c_{\div}$ | Instruction costs of accurate exp and division (≈ 10–20 each) |
 
 At $N = 10^5$ the kernel is launch-bound. In a real MLP this gate is fused
 into the epilogue of the gate/up GEMM (see [SwiGLU MLP Block](../084-swiglu-mlp-block/)).

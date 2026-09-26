@@ -33,13 +33,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | number of tokens |
-| $E$ | number of experts |
-| $k$ | experts selected per token |
-| $\mathbf z$ | one row of logits (length $E$) |
-| $j_t$ | index of the $t$-th selected expert; among equal logits the lower index comes first |
-| $w_t$ | mixing weight of expert $j_t$; $\sum_t w_t = 1$ |
-| $z_{j_0}$ | the largest logit, used as the softmax shift |
+| $M$ | Number of tokens |
+| $E$ | Number of experts |
+| $k$ | Experts selected per token |
+| $\mathbf z$ | One row of logits (length $E$) |
+| $j_t$ | Index of the $t$-th selected expert; among equal logits the lower index comes first |
+| $w_t$ | Mixing weight of expert $j_t$; $\sum_t w_t = 1$ |
+| $z_{j_0}$ | The largest logit, used as the softmax shift |
 
 The token's output in the MoE layer is then
 $\sum_t w_t\,\operatorname{Expert}_{j_t}(\mathbf x)$. Only $k$ of the $E$
@@ -73,8 +73,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | operations: per round, scan 8 registers plus 5 butterfly steps (2 shuffles and a compare each) |
-| $Q$ | bytes: read the logits, write weights and indices |
+| $W$ | Operations: per round, scan 8 registers plus 5 butterfly steps (2 shuffles and a compare each) |
+| $Q$ | Bytes: read the logits, write weights and indices |
 
 Benchmark: $M = 1024$, $E \le 256$ gives about 1 MB, which is launch-bound.
 For large $k$ (up to $E$) the $k$ rounds become $O(kE)$. A bitonic sort of

@@ -14,12 +14,12 @@ chapter covers:
 
 | Memory | Scope | Latency (approx.) | Size (A100, approx.) | Notes |
 |--------|-------|-------------------|------|-------|
-| Registers | thread | ~1 cycle | 256 KB per SM | Spills go to "local" memory (slow, cached in L1/L2). |
-| Shared memory | block | ~20–30 cycles | up to 164 KB per SM | Programmer-managed, 32 banks. Shares storage with L1. |
+| Registers | Thread | ~1 cycle | 256 KB per SM | Spills go to "local" memory (slow, cached in L1/L2). |
+| Shared memory | Block | ~20–30 cycles | Up to 164 KB per SM | Programmer-managed, 32 banks. Shares storage with L1. |
 | L1 cache | SM | ~30 cycles | 192 KB per SM (incl. shared) | Automatic; caches global loads. |
-| L2 cache | device | ~200 cycles | 40 MB | Automatic; all SMs share it; atomics resolve here. |
-| Global (HBM / GDDR) | device | ~400–800 cycles | 40–80 GB | Large, high bandwidth, high latency. |
-| Constant | device, read-only | cached | 64 KB | Fast when all lanes read the same address (broadcast). |
+| L2 cache | Device | ~200 cycles | 40 MB | Automatic; all SMs share it; atomics resolve here. |
+| Global (HBM / GDDR) | Device | ~400–800 cycles | 40–80 GB | Large, high bandwidth, high latency. |
+| Constant | Device, read-only | Cached | 64 KB | Fast when all lanes read the same address (broadcast). |
 
 The numbers vary between generations. The ratios are what matters: each
 level down is roughly an order of magnitude slower, and DRAM bandwidth is
@@ -39,20 +39,20 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index, $0 \dots 31$ |
-| $e$ | bytes per lane (4 for `float`, 16 for `float4`) |
-| $s$ | stride between consecutive lanes, in elements |
-| $a_0$ | address read by lane 0 |
+| $\ell$ | Lane index, $0 \dots 31$ |
+| $e$ | Bytes per lane (4 for `float`, 16 for `float4`) |
+| $s$ | Stride between consecutive lanes, in elements |
+| $a_0$ | Address read by lane 0 |
 | $n_{\text{sectors}}$ | 32-byte sectors fetched for the whole warp |
-| $\eta$ | efficiency: useful bytes over fetched bytes |
+| $\eta$ | Efficiency: useful bytes over fetched bytes |
 
-| Pattern | $s$ | sectors | $\eta$ |
+| Pattern | $s$ | Sectors | $\eta$ |
 |---|---|---|---|
 | `x[i]`, `float` | 1 | 4 | 100 % |
 | `x[i]`, `float4` | 1 | 16 | 100 % (and 4× fewer instructions) |
 | `x[2 * i]`, `float` | 2 | 8 | 50 % |
 | `x[32 * i]`, `float` (a column of a 32-wide matrix) | 32 | 32 | 12.5 % |
-| misaligned by 4 bytes, `float` | 1 | 5 | 80 % |
+| Misaligned by 4 bytes, `float` | 1 | 5 | 80 % |
 
 **Rule of thumb:** make `threadIdx.x` index the fastest-varying
 (contiguous) dimension. When a kernel must read along the slow dimension
@@ -93,9 +93,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $a$ | byte address in shared memory |
-| $\operatorname{bank}(a)$ | bank that serves the address |
-| degree | conflict degree: the access is split into this many serial transactions |
+| $a$ | Byte address in shared memory |
+| $\operatorname{bank}(a)$ | Bank that serves the address |
+| Degree | Conflict degree: the access is split into this many serial transactions |
 
 Lanes that read the **same word** do not conflict (broadcast). Lanes that
 read **different words of the same bank** do.
@@ -111,9 +111,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | tile width (32) |
-| $p$ | padding words per row |
-| $r, c$ | row and column in the tile |
+| $T$ | Tile width (32) |
+| $p$ | Padding words per row |
+| $r, c$ | Row and column in the tile |
 
 For fixed $c$ and $r = 0 \dots 31$, $(r + c) \bmod 32$ takes 32 distinct
 values: conflict-free.
@@ -170,8 +170,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R, C$ | rows and columns of the input |
-| $Q$ | compulsory DRAM traffic: read every element once, write it once |
+| $R, C$ | Rows and columns of the input |
+| $Q$ | Compulsory DRAM traffic: read every element once, write it once |
 | $\beta$ | DRAM bandwidth |
 
 A good transpose reaches 80–90 % of the bandwidth of a plain copy. A naive
@@ -203,9 +203,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q_{\text{read}}, Q_{\text{written}}$ | compulsory bytes (not counting cache re-reads) |
-| $t$ | kernel time |
-| $\beta_{\text{peak}}$ | datasheet bandwidth, e.g. ~1.55 TB/s on A100 40 GB, ~320 GB/s on T4 |
+| $Q_{\text{read}}, Q_{\text{written}}$ | Compulsory bytes (not counting cache re-reads) |
+| $t$ | Kernel time |
+| $\beta_{\text{peak}}$ | Datasheet bandwidth, e.g. ~1.55 TB/s on A100 40 GB, ~320 GB/s on T4 |
 
 In Nsight Compute, the *Memory Workload Analysis* section reports DRAM
 throughput, L1/L2 hit rates and "sectors per request" (4 is ideal for

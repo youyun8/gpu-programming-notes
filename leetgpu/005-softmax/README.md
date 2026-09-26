@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | vector length |
+| $N$ | Vector length |
 | $x_i$ | $i$-th input score (float32) |
-| $m$ | maximum input value; subtracting it leaves the result mathematically unchanged |
+| $m$ | Maximum input value; subtracting it leaves the result mathematically unchanged |
 | $\sigma(x)_i$ | $i$-th output probability; $\sum_i \sigma(x)_i = 1$ |
 
 **Why subtract $m$?** `expf` overflows to $+\infty$ for arguments above about
@@ -51,9 +51,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $(m_k, s_k)$ | partial result over a subset $k$ of the elements: its max and its sum of $e^{x - m_k}$ |
-| $\oplus$ | merge operator; associative and commutative, with identity $(-\infty, 0)$ |
-| $e^{m_k - m}$ | rescaling factor that re-expresses a partial sum relative to the new maximum |
+| $(m_k, s_k)$ | Partial result over a subset $k$ of the elements: its max and its sum of $e^{x - m_k}$ |
+| $\oplus$ | Merge operator; associative and commutative, with identity $(-\infty, 0)$ |
+| $e^{m_k - m}$ | Rescaling factor that re-expresses a partial sum relative to the new maximum |
 
 A single element $x$ is the pair $(x, 1)$. Because $\oplus$ is associative,
 it can be evaluated as any reduction tree, exactly like the sum in

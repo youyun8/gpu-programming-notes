@@ -30,13 +30,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of vector pairs (rows) |
-| $D$ | vector length (columns) |
-| $\mathbf{p}_i, \mathbf{t}_i$ | row $i$ of `predictions` and `targets` |
-| $p_{ij}, t_{ij}$ | their elements |
+| $N$ | Number of vector pairs (rows) |
+| $D$ | Vector length (columns) |
+| $\mathbf{p}_i, \mathbf{t}_i$ | Row $i$ of `predictions` and `targets` |
+| $p_{ij}, t_{ij}$ | Their elements |
 | $\lVert\cdot\rVert$ | Euclidean (L2) norm |
 | $\epsilon$ | $10^{-8}$; guards against division by zero |
-| $\text{out}_i$ | loss of pair $i$, in $[0, 2]$ |
+| $\text{out}_i$ | Loss of pair $i$, in $[0, 2]$ |
 
 The statement writes the denominator as
 $\max(\epsilon, \lVert\mathbf{p}\rVert)\cdot\max(\epsilon, \lVert\mathbf{t}\rVert)$;
@@ -63,7 +63,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: both matrices once, one float per row out |
-| $W$ | three FMAs per element pair |
+| $W$ | Three FMAs per element pair |
 | $\beta$ | DRAM bandwidth |
 
 The intensity is under 1 flop/byte: purely bandwidth-bound. If $N$ is

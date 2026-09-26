@@ -34,16 +34,16 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | number of tokens |
-| $d$ | model width (`d_model`) |
-| $d_f$ | hidden width of the MLP (`d_ffn`, typically $\approx \tfrac83 d$ rounded) |
-| $X$ | input, $M\times d$ |
-| $W_g,\ W_u$ | gate and up projections, $d\times d_f$ (stored (in, out)) |
-| $W_d$ | down projection, $d_f\times d$ |
-| $G,\ U$ | gate and up activations, $M\times d_f$ |
-| $\odot$ | elementwise product |
-| $H$ | gated hidden activations |
-| $Y$ | output, $M\times d$ |
+| $M$ | Number of tokens |
+| $d$ | Model width (`d_model`) |
+| $d_f$ | Hidden width of the MLP (`d_ffn`, typically $\approx \tfrac83 d$ rounded) |
+| $X$ | Input, $M\times d$ |
+| $W_g,\ W_u$ | Gate and up projections, $d\times d_f$ (stored (in, out)) |
+| $W_d$ | Down projection, $d_f\times d$ |
+| $G,\ U$ | Gate and up activations, $M\times d_f$ |
+| $\odot$ | Elementwise product |
+| $H$ | Gated hidden activations |
+| $Y$ | Output, $M\times d$ |
 
 ## Approach
 

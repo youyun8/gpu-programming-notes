@@ -40,14 +40,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of points (`sample_size`) |
-| $k$ | number of clusters |
-| $T$ | number of iterations (`max_iterations`) |
-| $(x_i, y_i)$ | coordinates of point $i$ |
-| $\mu^{(t)}_c = (\mu_{c,x}, \mu_{c,y})$ | centroid $c$ at iteration $t$; $\mu^{(0)}$ = the initial centroids |
-| $\ell^{(t)}_i$ | label (cluster index) of point $i$; ties go to the smallest $c$ |
-| $S_c$ | set of points assigned to cluster $c$ |
-| $\lvert S_c\rvert$ | cluster size; empty clusters keep their centroid |
+| $n$ | Number of points (`sample_size`) |
+| $k$ | Number of clusters |
+| $T$ | Number of iterations (`max_iterations`) |
+| $(x_i, y_i)$ | Coordinates of point $i$ |
+| $\mu^{(t)}_c = (\mu_{c,x}, \mu_{c,y})$ | Centroid $c$ at iteration $t$; $\mu^{(0)}$ = the initial centroids |
+| $\ell^{(t)}_i$ | Label (cluster index) of point $i$; ties go to the smallest $c$ |
+| $S_c$ | Set of points assigned to cluster $c$ |
+| $\lvert S_c\rvert$ | Cluster size; empty clusters keep their centroid |
 
 ## Approach
 
@@ -83,8 +83,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | operations: ~5 per point–centroid distance, plus 3 accumulations per point, per iteration |
-| $Q$ | bytes per iteration: read the coordinates (8 bytes/point) and write the labels (4 bytes/point) |
+| $W$ | Operations: ~5 per point–centroid distance, plus 3 accumulations per point, per iteration |
+| $Q$ | Bytes per iteration: read the coordinates (8 bytes/point) and write the labels (4 bytes/point) |
 
 At the benchmark size, each iteration is ~0.1 MB of traffic and far below
 any throughput limit. The cost is **60 kernel launches** (2 × 30). CUDA

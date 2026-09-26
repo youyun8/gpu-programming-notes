@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A, B$ | inputs, $N\times N$, row-major |
-| $C$ | output $AB$ |
-| $N$ | matrix side |
+| $A, B$ | Inputs, $N\times N$, row-major |
+| $C$ | Output $AB$ |
+| $N$ | Matrix side |
 
 The accumulated rounding error of a length-$N$ dot product is bounded by
 
@@ -39,8 +39,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\hat{C}_{ij}$ | the computed (rounded) value |
-| $u$ | unit roundoff, $2^{-24}$ for fp32 |
+| $\hat{C}_{ij}$ | The computed (rounded) value |
+| $u$ | Unit roundoff, $2^{-24}$ for fp32 |
 | $\gamma_N$ | worst-case growth factor (the typical error grows like $\sqrt{N}u$) |
 
 This is why `atol = 5e-3` is needed at $N = 9216$ even though the kernel is
@@ -81,10 +81,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M, T_N, T_K$ | block tile: 64, 64, 16 |
+| $T_M, T_N, T_K$ | Block tile: 64, 64, 16 |
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
-| $I_{\text{L2}}$ | flops per byte loaded from L2/DRAM into shared memory |
-| $I_{\text{smem}}$ | flops per byte read from shared memory (16 FMAs per 8 loads) |
+| $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
+| $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):
@@ -101,10 +101,10 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | floating-point operations (one FMA = 2 flops) |
-| $Q_{\min}$ | compulsory DRAM bytes (each operand read once, output written once) |
+| $Q_{\min}$ | Compulsory DRAM bytes (each operand read once, output written once) |
 | $F$ | FP32 peak (tens of TFLOP/s on current GPUs) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | roofline lower bound |
+| $T_{\min}$ | Roofline lower bound |
 
 At $N = 9216$: $W = 1.57$ TFLOP, compute-bound by a wide margin.
 

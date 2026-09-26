@@ -28,10 +28,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $p$ | the Mersenne prime $2^{31} - 1 = 2147483647$ |
-| $a_i, b_j$ | input coefficients in $[0, p)$ |
-| $c_k$ | output coefficient $k$ (a linear convolution of $a$ and $b$, reduced mod $p$) |
-| $i, j$ | indices with $i + j = k$, i.e. $i \in [\max(0, k-n+1), \min(k, n-1)]$ |
+| $p$ | The Mersenne prime $2^{31} - 1 = 2147483647$ |
+| $a_i, b_j$ | Input coefficients in $[0, p)$ |
+| $c_k$ | Output coefficient $k$ (a linear convolution of $a$ and $b$, reduced mod $p$) |
+| $i, j$ | Indices with $i + j = k$, i.e. $i \in [\max(0, k-n+1), \min(k, n-1)]$ |
 
 **Mersenne reduction.** Because $2^{31} \equiv 1 \pmod p$, a number
 $x = h\cdot 2^{31} + \ell$ satisfies $x \equiv h + \ell$:
@@ -42,9 +42,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x \mathbin{\&} p$ | the low 31 bits $\ell$ |
-| $x \gg 31$ | the high part $h$ |
-| fold | one reduction step with no division; two folds plus one conditional subtraction reduce any 64-bit value to $[0, p)$ |
+| $x \mathbin{\&} p$ | The low 31 bits $\ell$ |
+| $x \gg 31$ | The high part $h$ |
+| Fold | One reduction step with no division; two folds plus one conditional subtraction reduce any 64-bit value to $[0, p)$ |
 
 **Why not an NTT?** A number-theoretic transform of length $L$ needs an
 $L$-th root of unity, which exists in $\mathbb{F}_p$ only if $L$ divides
@@ -56,7 +56,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $p - 1$ | order of the multiplicative group of $\mathbb{F}_p$ |
+| $p - 1$ | Order of the multiplicative group of $\mathbb{F}_p$ |
 
 It contains only one factor of 2, so no power-of-two NTT exists
 (one would need CRT over NTT-friendly primes, or $\mathbb{F}_{p^2}$).

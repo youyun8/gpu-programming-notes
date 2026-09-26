@@ -28,12 +28,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $a,\ b$ | integration limits |
-| $f$ | integrand (only its sampled values are given) |
-| $x_i$ | independent uniform sample points on $[a, b]$ |
-| $y_i$ | function values (float32 input `y_samples`) |
-| $n$ | number of samples |
-| $I$ | exact integral |
+| $a,\ b$ | Integration limits |
+| $f$ | Integrand (only its sampled values are given) |
+| $x_i$ | Independent uniform sample points on $[a, b]$ |
+| $y_i$ | Function values (float32 input `y_samples`) |
+| $n$ | Number of samples |
+| $I$ | Exact integral |
 | $\hat I_n$ | Monte Carlo estimate, written to `result[0]` |
 
 Because $\mathbb E[f(x)] = I/(b-a)$ for uniform $x$, the estimator is unbiased,
@@ -45,8 +45,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\mathbb E,\ \operatorname{Std},\ \operatorname{Var}$ | expectation, standard deviation, variance over the random samples |
-| $\sigma_f$ | standard deviation of $f$ under the uniform distribution |
+| $\mathbb E,\ \operatorname{Std},\ \operatorname{Var}$ | Expectation, standard deviation, variance over the random samples |
+| $\sigma_f$ | Standard deviation of $f$ under the uniform distribution |
 
 The GPU's job is only to compute the **sample mean** accurately. Its own
 rounding error must stay far below the statistical error, which is easy with
@@ -70,7 +70,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (read every sample once) |
-| $W$ | additions |
+| $W$ | Additions |
 | $\beta$ | DRAM bandwidth |
 
 Benchmark: 40 MB, so ≈ 20 µs at 2 TB/s.

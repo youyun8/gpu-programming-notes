@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $E$ | the curve; here $a = 0$, $b = 7$ (the secp256k1 shape, on a smaller field) |
-| $p$ | field modulus $2^{61} - 1$ |
-| $(x, y)$ | a point on $E$, coordinates in $\mathbb{F}_p = \{0, \dots, p-1\}$ |
-| $-(x, y)$ | additive inverse: $(x, y) + (x, -y) = \mathcal{O}$ |
-| $\mathcal{O}$ | the point at infinity (group identity) |
+| $E$ | The curve; here $a = 0$, $b = 7$ (the secp256k1 shape, on a smaller field) |
+| $p$ | Field modulus $2^{61} - 1$ |
+| $(x, y)$ | A point on $E$, coordinates in $\mathbb{F}_p = \{0, \dots, p-1\}$ |
+| $-(x, y)$ | Additive inverse: $(x, y) + (x, -y) = \mathcal{O}$ |
+| $\mathcal{O}$ | The point at infinity (group identity) |
 
 Output layout:
 
@@ -44,8 +44,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_i, y_i$ | coordinates of point $i$ |
-| out | interleaved result, $2N$ words |
+| $x_i, y_i$ | Coordinates of point $i$ |
+| out | Interleaved result, $2N$ words |
 
 ## Approach
 

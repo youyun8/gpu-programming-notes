@@ -29,8 +29,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | one input element |
-| $\Phi(x)$ | standard normal cumulative distribution function |
+| $x$ | One input element |
+| $\Phi(x)$ | Standard normal cumulative distribution function |
 | $\operatorname{erf}$ | Gauss error function |
 
 This problem asks for the tanh approximation:
@@ -41,11 +41,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $M\times N$ float32, row-major |
-| $C$ | output matrix, same shape |
-| $x$ | one input element $A_{ij}$ |
+| $A$ | Input matrix, $M\times N$ float32, row-major |
+| $C$ | Output matrix, same shape |
+| $x$ | One input element $A_{ij}$ |
 | $\sqrt{2/\pi}$ | $\approx 0.7978845608$ (`kSqrt2OverPi`) |
-| $0.044715$ | cubic coefficient fitted so that the tanh form matches $\Phi$ (`kCubic`) |
+| $0.044715$ | Cubic coefficient fitted so that the tanh form matches $\Phi$ (`kCubic`) |
 
 ## Approach
 
@@ -71,10 +71,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $8192\times8192$: $Q = 537$ MB, about 0.27 ms at 2 TB/s.
 

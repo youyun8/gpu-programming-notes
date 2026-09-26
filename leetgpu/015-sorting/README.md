@@ -30,10 +30,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $x_i$ | input values (float32) |
-| $\pi$ | a permutation of $\{0, \dots, N-1\}$ |
-| $y_k$ | sorted output, written back to `data` |
+| $N$ | Number of elements |
+| $x_i$ | Input values (float32) |
+| $\pi$ | A permutation of $\{0, \dots, N-1\}$ |
+| $y_k$ | Sorted output, written back to `data` |
 
 ### Order-Preserving Float → Integer Map
 
@@ -55,10 +55,10 @@ above every negative.
 
 | Symbol | Meaning |
 |---|---|
-| $u$ | raw 32-bit pattern of a float (`__float_as_uint`) |
-| $\oplus$ | bitwise XOR |
-| $\vert$ | bitwise OR |
-| $f(u)$ | unsigned key whose integer order equals the float order |
+| $u$ | Raw 32-bit pattern of a float (`__float_as_uint`) |
+| $\oplus$ | Bitwise XOR |
+| $\vert$ | Bitwise OR |
+| $f(u)$ | Unsigned key whose integer order equals the float order |
 
 ### LSD Radix Sort
 
@@ -74,10 +74,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $d$ | the key's current 8-bit digit, $0..255$ |
-| $t$ | tile (block of 2048 keys) containing the key |
-| $c_{d,t}$ | number of keys with digit $d$ in tile $t$ |
-| rank | number of keys in the same tile with the same digit that come earlier (stability) |
+| $d$ | The key's current 8-bit digit, $0..255$ |
+| $t$ | Tile (block of 2048 keys) containing the key |
+| $c_{d,t}$ | Number of keys with digit $d$ in tile $t$ |
+| Rank | Number of keys in the same tile with the same digit that come earlier (stability) |
 
 ## Approach
 
@@ -106,9 +106,9 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM traffic in bytes (the histogram tables are negligible) |
-| $P$ | number of radix passes (32-bit keys, 8-bit digits) |
-| $4N$ | reading keys to count digits |
-| $8N$ | reading and scattering keys |
+| $P$ | Number of radix passes (32-bit keys, 8-bit digits) |
+| $4N$ | Reading keys to count digits |
+| $8N$ | Reading and scattering keys |
 
 For $N = 10^6$, $Q \approx 64$ MB, tens of microseconds of bandwidth. The work
 is $O(PN)$ versus $O(N\log^2 N)$ for a bitonic sort. With about 20 kernel

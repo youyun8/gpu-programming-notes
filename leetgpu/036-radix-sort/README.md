@@ -30,10 +30,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $u$ | a 32-bit key |
-| $R$ | radix, $2^8 = 256$ |
-| $p$ | digit position (pass number), 0 = least significant |
-| $d_p(u)$ | digit $p$ of $u$ (bits $8p \dots 8p+7$) |
+| $u$ | A 32-bit key |
+| $R$ | Radix, $2^8 = 256$ |
+| $p$ | Digit position (pass number), 0 = least significant |
+| $d_p(u)$ | Digit $p$ of $u$ (bits $8p \dots 8p+7$) |
 
 **LSD radix sort** runs one *stable* counting sort per digit, from $p = 0$ to
 3. After pass $p$ the keys are sorted by their low $8(p+1)$ bits.
@@ -52,12 +52,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | tile size: 256 threads × 8 chunks = 2048 keys |
-| $t$ | tile index |
-| $c_{d,t}$ | histogram: keys in tile $t$ with digit $d$ |
-| $\operatorname{off}(d, t)$ | global start of the (digit, tile) bucket |
-| $q$ | the key's position inside its tile |
-| rank | number of earlier keys in the same tile with the same digit (this is what makes the pass stable) |
+| $T$ | Tile size: 256 threads × 8 chunks = 2048 keys |
+| $t$ | Tile index |
+| $c_{d,t}$ | Histogram: keys in tile $t$ with digit $d$ |
+| $\operatorname{off}(d, t)$ | Global start of the (digit, tile) bucket |
+| $q$ | The key's position inside its tile |
+| Rank | Number of earlier keys in the same tile with the same digit (this is what makes the pass stable) |
 
 Storing $c$ **digit-major**, i.e. index $d \cdot \text{tiles} + t$, makes
 $\operatorname{off}$ a *single* flat exclusive scan: all tiles' 0-digits come
@@ -98,8 +98,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (histogram tables and scans are ~0.5% extra) |
-| $P$ | number of passes |
-| $8N$ | initial copy input → output |
+| $P$ | Number of passes |
+| $8N$ | Initial copy input → output |
 
 Benchmark: $N = 5\times10^7$ gives $Q \approx 2.8$ GB, i.e. ≈ 1.4 ms at 2 TB/s.
 Scattered writes are only partially coalesced: keys with the same digit from

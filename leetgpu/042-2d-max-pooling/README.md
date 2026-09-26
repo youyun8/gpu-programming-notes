@@ -32,14 +32,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ C,\ H,\ W$ | batch, channels, input height and width |
-| $k$ | window size (`kernel_size`) |
-| $s$ | stride |
-| $p$ | padding on each side (padded cells never win: treated as $-\infty$) |
-| $H_o,\ W_o$ | output height and width |
-| $X_{n,c,h,w}$ | input element, offset $((nC + c)H + h)W + w$ |
-| $Y_{n,c,y,x}$ | output element, offset $((nC + c)H_o + y)W_o + x$ |
-| $a,\ b$ | offsets inside the window |
+| $N,\ C,\ H,\ W$ | Batch, channels, input height and width |
+| $k$ | Window size (`kernel_size`) |
+| $s$ | Stride |
+| $p$ | Padding on each side (padded cells never win: treated as $-\infty$) |
+| $H_o,\ W_o$ | Output height and width |
+| $X_{n,c,h,w}$ | Input element, offset $((nC + c)H + h)W + w$ |
+| $Y_{n,c,y,x}$ | Output element, offset $((nC + c)H_o + y)W_o + x$ |
+| $a,\ b$ | Offsets inside the window |
 
 PyTorch requires $p \le k/2$, so every window contains at least one real
 input cell and the max is always finite.
@@ -66,8 +66,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{cmp}}$ | comparisons (`fmaxf`) |
-| $Q_{\min}$ | compulsory bytes: read the input once, write the output once |
+| $W_{\text{cmp}}$ | Comparisons (`fmaxf`) |
+| $Q_{\min}$ | Compulsory bytes: read the input once, write the output once |
 
 Pooling is memory-bound: at most $k^2/4$ comparisons per input byte in the
 worst case, usually far fewer.

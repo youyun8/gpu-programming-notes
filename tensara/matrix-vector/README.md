@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | matrix, $M\times K$, row-major |
-| $\mathbf{b}$ | input vector, length $K$ |
-| $\mathbf{c}$ | output vector, length $M$ |
+| $A$ | Matrix, $M\times K$, row-major |
+| $\mathbf{b}$ | Input vector, length $K$ |
+| $\mathbf{c}$ | Output vector, length $M$ |
 
 Per row, lane $\ell$ of a warp computes a strided partial sum, then the
 warp reduces:
@@ -40,9 +40,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index |
-| $\mathbf{a}^{(4)}_{iq}, \mathbf{b}^{(4)}_q$ | the $q$-th `float4` of row $i$ and of $\mathbf{b}$ |
-| $p_\ell$ | lane partial sum |
+| $\ell$ | Lane index |
+| $\mathbf{a}^{(4)}_{iq}, \mathbf{b}^{(4)}_q$ | The $q$-th `float4` of row $i$ and of $\mathbf{b}$ |
+| $p_\ell$ | Lane partial sum |
 
 ## Approach
 
@@ -64,8 +64,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes, dominated by reading $A$ once |
-| $W$ | flops |
-| $I$ | arithmetic intensity: far below the ridge point, so bandwidth-bound |
+| $W$ | Flops |
+| $I$ | Arithmetic intensity: far below the ridge point, so bandwidth-bound |
 
 At $9216\times4096$: 151 MB, about 75 µs at 2 TB/s.
 

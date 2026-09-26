@@ -29,8 +29,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $O,\ R,\ I$ | outer size, reduced length, inner size (stride of the reduced axis) |
-| $x[o, j, i]$ | element $\text{input}[(oR + j)I + i]$ |
+| $O,\ R,\ I$ | Outer size, reduced length, inner size (stride of the reduced axis) |
+| $x[o, j, i]$ | Element $\text{input}[(oR + j)I + i]$ |
 | $\oplus$ | arg-min with first-index tie-break |
 | out | int32 indices, $O\cdot I$ of them |
 

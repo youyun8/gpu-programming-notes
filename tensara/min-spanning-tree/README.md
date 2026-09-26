@@ -29,10 +29,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $G$ | the graph; an edge $(u, v)$ exists iff $a_{uv} > 0$ |
-| $a_{uv}$ | edge weight (symmetric, $a_{uv} = a_{vu}$) |
-| $\mathcal{T}(G)$ | the set of spanning trees of $G$ ($n - 1$ edges connecting all vertices) |
-| MST | a tree of minimum total weight |
+| $G$ | The graph; an edge $(u, v)$ exists iff $a_{uv} > 0$ |
+| $a_{uv}$ | Edge weight (symmetric, $a_{uv} = a_{vu}$) |
+| $\mathcal{T}(G)$ | The set of spanning trees of $G$ ($n - 1$ edges connecting all vertices) |
+| MST | A tree of minimum total weight |
 
 Prim's algorithm grows a tree $S$ from vertex 0, keeping for every vertex
 outside $S$ the lightest edge into $S$:
@@ -45,9 +45,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S$ | vertices already in the tree (`in_tree`) |
-| $\text{best}[v]$ | weight of the lightest edge from $v$ to $S$ ($+\infty$ if none) |
-| $u^\star$ | vertex added in this step (ties → smallest index) |
+| $S$ | Vertices already in the tree (`in_tree`) |
+| $\text{best}[v]$ | Weight of the lightest edge from $v$ to $S$ ($+\infty$ if none) |
+| $u^\star$ | Vertex added in this step (ties → smallest index) |
 
 Each step adds $\text{best}[u^\star]$ to the total. By the cut property, the
 lightest edge crossing $(S, V\setminus S)$ is always in some MST.
@@ -75,10 +75,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | total work: $n$ steps of $O(n)$ |
+| $W$ | Total work: $n$ steps of $O(n)$ |
 | $Q$ | DRAM bytes: row $u^\star$ once per step |
-| $t_{\text{sync}}$ | cost of two block barriers and the arg-min (~µs) |
-| $t_{\text{scan}}(n)$ | time to scan $n$ values with 1024 threads |
+| $t_{\text{sync}}$ | Cost of two block barriers and the arg-min (~µs) |
+| $t_{\text{scan}}(n)$ | Time to scan $n$ values with 1024 threads |
 
 At $n = 6144$: 151 MB of rows and ~6 K steps of a few µs each, so the run
 time (~10–20 ms) is dominated by the serial step latency, not bandwidth.

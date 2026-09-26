@@ -33,12 +33,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ L,\ D$ | batch, sequence length, channels |
-| $K$ | kernel taps ($\le 8$) |
-| $x_{b,l,d}$ | input; zero before the start of the sequence (causal left padding) |
-| $w_{d,k}$ | weight of channel $d$ for lag $k$: $w_{d,0}$ applies to the current position, $w_{d,K-1}$ to the oldest |
+| $B,\ L,\ D$ | Batch, sequence length, channels |
+| $K$ | Kernel taps ($\le 8$) |
+| $x_{b,l,d}$ | Input; zero before the start of the sequence (causal left padding) |
+| $w_{d,k}$ | Weight of channel $d$ for lag $k$: $w_{d,0}$ applies to the current position, $w_{d,K-1}$ to the oldest |
 | $\beta_d$ | per-channel bias |
-| $y_{b,l,d}$ | output, same layout as $x$ |
+| $y_{b,l,d}$ | Output, same layout as $x$ |
 
 "Depthwise" means there is no mixing across channels: $D$ independent 1-D
 filters. Parameters: $D(K+1)$, versus $D^2K$ for a full convolution.
@@ -67,8 +67,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs |
-| $Q_{\min}$ | compulsory bytes: read $x$ once, write $y$ once (plus the negligible weights) |
-| $I$ | arithmetic intensity |
+| $Q_{\min}$ | Compulsory bytes: read $x$ once, write $y$ once (plus the negligible weights) |
+| $I$ | Arithmetic intensity |
 
 With $K \le 8$, $I \le 2$ FLOP/byte, so the kernel is memory-bound. For
 $B = 16$, $L = 8192$, $D = 8192$: $Q = 8.6$ GB, i.e. ≈ 4.3 ms at 2 TB/s.

@@ -37,18 +37,18 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ C,\ H,\ W$ | batch, channels, image height and width |
-| $P$ | patch size ($H$, $W$ divisible by $P$) |
+| $B,\ C,\ H,\ W$ | Batch, channels, image height and width |
+| $P$ | Patch size ($H$, $W$ divisible by $P$) |
 | $g_h,\ g_w$ | patch-grid height and width |
-| $N$ | patches per image |
-| $n,\ (p_y, p_x)$ | patch index and its grid position (row-major) |
-| $I_{b,c,y,x}$ | input pixel |
-| $W_{d,c,i,j}$ | projection weight ($D\times C\times P\times P$), i.e. a conv kernel |
-| $\beta_d$ | projection bias |
-| $t_{b,n,d}$ | patch token |
-| $\mathbf{cls}$ | learned CLS vector (not projected) |
-| $E$ | positional embeddings, $(N+1)\times D$ |
-| $Y$ | output, $B\times(N+1)\times D$ |
+| $N$ | Patches per image |
+| $n,\ (p_y, p_x)$ | Patch index and its grid position (row-major) |
+| $I_{b,c,y,x}$ | Input pixel |
+| $W_{d,c,i,j}$ | Projection weight ($D\times C\times P\times P$), i.e. a conv kernel |
+| $\beta_d$ | Projection bias |
+| $t_{b,n,d}$ | Patch token |
+| $\mathbf{cls}$ | Learned CLS vector (not projected) |
+| $E$ | Positional embeddings, $(N+1)\times D$ |
+| $Y$ | Output, $B\times(N+1)\times D$ |
 
 ### As a GEMM (Implicit im2col)
 
@@ -62,7 +62,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $\mathcal P$ | im2col matrix: row $bN + n$ is patch $n$ of image $b$ |
-| $W_{\text{flat}}$ | the weight reshaped to $D\times CP^2$ (row-major, so this is an "NT" GEMM) |
+| $W_{\text{flat}}$ | The weight reshaped to $D\times CP^2$ (row-major, so this is an "NT" GEMM) |
 
 Since stride = kernel, patches do not overlap, and im2col duplicates no
 pixel: $\mathcal P$ is a pure permutation of the image.
@@ -87,7 +87,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs; note $NP^2 = HW$ |
-| $Q_{\min}$ | compulsory bytes: image, weight, output |
+| $Q_{\min}$ | Compulsory bytes: image, weight, output |
 
 For ViT-B/16 on $224^2$ images ($C = 3$, $P = 16$, $D = 768$, $N = 196$), one
 image costs $2\cdot3\cdot224^2\cdot768 = 231$ MFLOP. With $K = 768$, the

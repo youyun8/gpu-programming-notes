@@ -35,13 +35,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | sequence length |
-| $d$ | feature dimension |
-| $\mathbf q_i,\ \mathbf k_j,\ \mathbf v_j$ | rows of $Q$, $K$, $V$ (column vectors of length $d$) |
-| $\phi$ | positive feature map, applied elementwise |
+| $M$ | Sequence length |
+| $d$ | Feature dimension |
+| $\mathbf q_i,\ \mathbf k_j,\ \mathbf v_j$ | Rows of $Q$, $K$, $V$ (column vectors of length $d$) |
+| $\phi$ | Positive feature map, applied elementwise |
 | $S$ | $d\times d$ "key–value state" |
-| $\mathbf z$ | length-$d$ normaliser state |
-| $O_{i,:}$ | output row $i$ |
+| $\mathbf z$ | Length-$d$ normaliser state |
+| $O_{i,:}$ | Output row $i$ |
 
 **Why it is linear.** Standard attention computes
 $\sum_j \frac{\operatorname{sim}(\mathbf q_i, \mathbf k_j)}{\sum_{j'}\operatorname{sim}}\mathbf v_j$.

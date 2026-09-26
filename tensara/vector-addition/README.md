@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $a, b$ | input vectors (`d_input1`, `d_input2`) |
-| $c$ | output vector (`d_output`) |
-| $n$ | vector length |
+| $a, b$ | Input vectors (`d_input1`, `d_input2`) |
+| $c$ | Output vector (`d_output`) |
+| $n$ | Vector length |
 
 ## Approach
 
@@ -55,10 +55,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $n = 2^{30}$: $Q = 12.9$ GB, about 6.4 ms at 2 TB/s. The intensity is $1/12$ flop per byte.
 

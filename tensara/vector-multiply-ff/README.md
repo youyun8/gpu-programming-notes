@@ -26,8 +26,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $p$ | Mersenne prime $2^{31} - 1$ |
-| $a_i, b_i$ | inputs |
-| $c_i$ | output in $[0, p)$ |
+| $a_i, b_i$ | Inputs |
+| $c_i$ | Output in $[0, p)$ |
 
 Division-free reduction of the 62-bit product $x = a_ib_i$:
 
@@ -40,7 +40,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $x$ | 64-bit product, $< 2^{62}$ |
-| $x_1, x_2$ | values after the first and second fold (each congruent to $x$) |
+| $x_1, x_2$ | Values after the first and second fold (each congruent to $x$) |
 
 It works because $2^{31} \equiv 1 \pmod p$, so the high part can simply be
 added to the low part.

@@ -34,17 +34,17 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ T$ | batch and sequence length |
-| $V,\ P$ | vocabulary size and number of positions |
-| $D$ | embedding width |
-| $E_T \in \mathbb R^{V\times D}$ | token embedding table |
-| $E_P \in \mathbb R^{P\times D}$ | position embedding table |
-| $\tau_{b,t}$ | token id of token $(b, t)$ |
-| $\pi_t$ | position id of time step $t$ (shared by all batch rows) |
-| $\mathbf s_{b,t}$ | summed embedding |
-| $\mu,\ \sigma^2$ | row mean and biased variance |
+| $B,\ T$ | Batch and sequence length |
+| $V,\ P$ | Vocabulary size and number of positions |
+| $D$ | Embedding width |
+| $E_T \in \mathbb R^{V\times D}$ | Token embedding table |
+| $E_P \in \mathbb R^{P\times D}$ | Position embedding table |
+| $\tau_{b,t}$ | Token id of token $(b, t)$ |
+| $\pi_t$ | Position id of time step $t$ (shared by all batch rows) |
+| $\mathbf s_{b,t}$ | Summed embedding |
+| $\mu,\ \sigma^2$ | Row mean and biased variance |
 | $\gamma_d,\ \beta_d$ | LayerNorm scale and shift |
-| $y_{b,t,d}$ | output, shape $(B, T, D)$ |
+| $y_{b,t,d}$ | Output, shape $(B, T, D)$ |
 
 ## Approach
 

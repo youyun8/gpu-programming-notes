@@ -33,11 +33,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of points |
-| $(x_i, y_i, z_i)$ | coordinates of point $i$ (stored interleaved: `points[3i..3i+2]`) |
-| $d_{ij}$ | squared Euclidean distance, evaluated with float32 rounding after each operation |
-| $\operatorname{fl}(\cdot)$ | one float32 operation rounded to nearest |
-| $\operatorname{nn}(i)$ | output `indices[i]`; on ties, the smallest $j$ (argmin semantics) |
+| $N$ | Number of points |
+| $(x_i, y_i, z_i)$ | Coordinates of point $i$ (stored interleaved: `points[3i..3i+2]`) |
+| $d_{ij}$ | Squared Euclidean distance, evaluated with float32 rounding after each operation |
+| $\operatorname{fl}(\cdot)$ | One float32 operation rounded to nearest |
+| $\operatorname{nn}(i)$ | Output `indices[i]`; on ties, the smallest $j$ (argmin semantics) |
 
 The square root is unnecessary, because $\sqrt{\cdot}$ is monotonic.
 
@@ -72,7 +72,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | 3 subtractions, 3 multiplies, 2 additions and a compare per pair |
-| $Q_{\text{DRAM}}$ | every block streams all points (12 bytes each); plus own reads and index writes |
+| $Q_{\text{DRAM}}$ | Every block streams all points (12 bytes each); plus own reads and index writes |
 
 For $N = 10^4$: $W \approx 9\times10^8$, well under a millisecond, compute-bound.
 For $N = 10^5$, $W$ grows 100×. A spatial data structure (uniform grid, or a

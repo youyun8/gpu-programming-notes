@@ -27,10 +27,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | array length |
-| $x_i$ | input values (int32) |
-| $S,\ E$ | inclusive 0-based start and end indices, $0 \le S \le E < N$ |
-| out | exact sum, written to `output[0]` |
+| $N$ | Array length |
+| $x_i$ | Input values (int32) |
+| $S,\ E$ | Inclusive 0-based start and end indices, $0 \le S \le E < N$ |
+| out | Exact sum, written to `output[0]` |
 
 The maximum possible value is $10 \cdot 10^8 = 10^9 < 2^{31}$, so int32 cannot
 overflow.

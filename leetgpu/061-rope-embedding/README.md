@@ -36,14 +36,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | number of tokens (rows) |
-| $D$ | head dimension (even) |
-| $h$ | half dimension $D/2$ |
-| $\mathbf x$ | one row of $Q$ |
-| $\mathbf x_1,\ \mathbf x_2$ | first and second halves of $\mathbf x$ |
-| $\mathbf c,\ \mathbf s$ | rows of the `cos` and `sin` tables; half-split means $c_j = c_{j+h}$ and $s_j = s_{j+h}$ |
-| $\odot$ | elementwise product |
-| $\mathbf y$ | output row |
+| $M$ | Number of tokens (rows) |
+| $D$ | Head dimension (even) |
+| $h$ | Half dimension $D/2$ |
+| $\mathbf x$ | One row of $Q$ |
+| $\mathbf x_1,\ \mathbf x_2$ | First and second halves of $\mathbf x$ |
+| $\mathbf c,\ \mathbf s$ | Rows of the `cos` and `sin` tables; half-split means $c_j = c_{j+h}$ and $s_j = s_{j+h}$ |
+| $\odot$ | Elementwise product |
+| $\mathbf y$ | Output row |
 
 With $c_j = \cos(m\theta_j)$ and $s_j = \sin(m\theta_j)$ for token position
 $m$, each pair $(x_j, x_{j+h})$ is rotated by angle $m\theta_j$ in its own
@@ -55,8 +55,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $m$ | token position |
-| $\theta_j$ | frequency of pair $j$ (typically $10000^{-2j/D}$) |
+| $m$ | Token position |
+| $\theta_j$ | Frequency of pair $j$ (typically $10000^{-2j/D}$) |
 
 ## Approach
 

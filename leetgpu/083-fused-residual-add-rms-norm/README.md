@@ -30,15 +30,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of tokens (rows) |
-| $C$ | hidden dimension (columns) |
-| $x_{ij}$ | sublayer output |
-| $r_{ij}$ | residual stream |
-| $z_{ij}$ | updated residual (kept only in registers or cache) |
-| $\varepsilon$ | stability constant ($10^{-5}$) |
-| $\operatorname{rms}_i$ | root mean square of row $i$ |
+| $N$ | Number of tokens (rows) |
+| $C$ | Hidden dimension (columns) |
+| $x_{ij}$ | Sublayer output |
+| $r_{ij}$ | Residual stream |
+| $z_{ij}$ | Updated residual (kept only in registers or cache) |
+| $\varepsilon$ | Stability constant ($10^{-5}$) |
+| $\operatorname{rms}_i$ | Root mean square of row $i$ |
 | $w_j$ | per-feature weight ($\gamma$) |
-| $y_{ij}$ | normalised output |
+| $y_{ij}$ | Normalised output |
 
 ## Approach
 
@@ -57,8 +57,8 @@ $$
 
 | Variant | DRAM traffic per element |
 |---|---|
-| Separate add kernel + RMSNorm kernel | read $x, r$, write $z$ (12 B) + read $z$ twice, write $y$ (12 B) = 24 B |
-| Fused (this kernel) | read $x, r$ (8 B) + write $y$ (4 B) = 12 B |
+| Separate add kernel + RMSNorm kernel | Read $x, r$, write $z$ (12 B) + read $z$ twice, write $y$ (12 B) = 24 B |
+| Fused (this kernel) | Read $x, r$ (8 B) + write $y$ (4 B) = 12 B |
 
 That is half of the traffic, for an operation that runs twice per
 transformer layer.

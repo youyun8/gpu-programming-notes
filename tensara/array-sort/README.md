@@ -27,8 +27,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x, y$ | signed 32-bit integers (two's complement) |
-| $\operatorname{bits}(x)$ | the raw 32-bit pattern |
+| $x, y$ | Signed 32-bit integers (two's complement) |
+| $\operatorname{bits}(x)$ | The raw 32-bit pattern |
 | $\oplus$ | XOR; flipping the sign bit |
 | $f$ | order-preserving map from int32 to uint32 |
 
@@ -58,7 +58,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: per pass, read to count plus read and scatter; plus the two maps |
-| $W$ | work, linear in $n$ |
+| $W$ | Work, linear in $n$ |
 
 At $n = 262\,144$ that is 15 MB, which is L2-resident. The runtime is
 dominated by the ~20 kernel launches. For arrays this small, a single-block

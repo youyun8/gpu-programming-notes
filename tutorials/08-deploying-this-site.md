@@ -195,9 +195,9 @@ display formula with a table that explains every symbol. The pieces:
 |---|---|---|
 | `pymdownx.arithmatex` (generic mode) | `mkdocs.yml` | Leaves `$...$` and `$$...$$` untouched in the HTML, wrapped in `<span class="arithmatex">` / `<div class="arithmatex">` |
 | KaTeX 0.16 | `site_assets/vendor/katex/` | Renders those spans in the browser; its fonts are included |
-| `site_assets/javascripts/katex.js` | loader | Calls `renderMathInElement` on every page load, including Material's instant navigation (`document$.subscribe`), and defines the macros `\ceil`, `\floor`, `\R` |
+| `site_assets/javascripts/katex.js` | Loader | Calls `renderMathInElement` on every page load, including Material's instant navigation (`document$.subscribe`), and defines the macros `\ceil`, `\floor`, `\R` |
 | Ubuntu Mono, Inter | `site_assets/vendor/fonts/`, `stylesheets/fonts.css` | Self-hosted fonts; `theme.font: false` stops Material from loading Google Fonts |
-| `stylesheets/extra.css` | theme | Colours, the problem header, formula blocks, tables, code in Ubuntu Mono |
+| `stylesheets/extra.css` | Theme | Colours, the problem header, formula blocks, tables, code in Ubuntu Mono |
 
 Nothing is fetched from a CDN, so the site (and the zipped HTML) works
 offline and behind firewalls. The vendored files add about 0.8 MB.
@@ -226,9 +226,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_i$ | input element |
-| $N$ | row length |
-| $\epsilon$ | small constant for numerical stability |
+| $x_i$ | Input element |
+| $N$ | Row length |
+| $\epsilon$ | Small constant for numerical stability |
 
 Rules that keep KaTeX and Markdown from tripping over each other:
 

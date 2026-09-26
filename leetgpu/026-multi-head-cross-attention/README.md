@@ -32,15 +32,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | number of decoder queries |
-| $N$ | number of encoder positions (keys/values) |
-| $H$ | number of heads |
-| $D$ | head dimension |
-| $Q_{i,h,c}$ | query $i$, head $h$, feature $c$; offset $(iH + h)D + c$ |
-| $K_{j,h,c},\ V_{j,h,c}$ | key/value $j$, head $h$, feature $c$; offset $(jH + h)D + c$ |
-| $s^{(h)}_{ij}$ | scaled score of query $i$ vs key $j$ in head $h$ |
-| $m^{(h)}_i$ | row maximum $\max_j s^{(h)}_{ij}$ |
-| $O_{i,h,:}$ | output vector (length $D$) at offset $(iH + h)D$ |
+| $M$ | Number of decoder queries |
+| $N$ | Number of encoder positions (keys/values) |
+| $H$ | Number of heads |
+| $D$ | Head dimension |
+| $Q_{i,h,c}$ | Query $i$, head $h$, feature $c$; offset $(iH + h)D + c$ |
+| $K_{j,h,c},\ V_{j,h,c}$ | Key/value $j$, head $h$, feature $c$; offset $(jH + h)D + c$ |
+| $s^{(h)}_{ij}$ | Scaled score of query $i$ vs key $j$ in head $h$ |
+| $m^{(h)}_i$ | Row maximum $\max_j s^{(h)}_{ij}$ |
+| $O_{i,h,:}$ | Output vector (length $D$) at offset $(iH + h)D$ |
 
 ### The Transposes Are Free
 
@@ -82,8 +82,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs: $QK^{\mathsf T}$ and $PV$, $2MND$ each, per head |
-| $Q_{\min}$ | compulsory bytes: read $Q$, $K$, $V$ and write the output once each |
-| $I_{\max}$ | best achievable arithmetic intensity (FLOP/byte) |
+| $Q_{\min}$ | Compulsory bytes: read $Q$, $K$, $V$ and write the output once each |
+| $I_{\max}$ | Best achievable arithmetic intensity (FLOP/byte) |
 
 Benchmark: $W \approx 17$ GFLOP, $Q_{\min} \approx 50$ MB, and
 $I_{\max} \approx 340$, so it is solidly **compute-bound**. With 4 query rows

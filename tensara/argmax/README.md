@@ -37,11 +37,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S_k$ | size of dimension $k$ |
+| $S_k$ | Size of dimension $k$ |
 | $O$ | "outer" size: product of the dimensions before `dim` |
-| $R$ | length of the reduced dimension |
+| $R$ | Length of the reduced dimension |
 | $I$ | "inner" size: product of the dimensions after `dim` (the memory stride of the reduced axis) |
-| $x[o, j, i]$ | the element at outer index $o$, reduced index $j$, inner index $i$ |
+| $x[o, j, i]$ | The element at outer index $o$, reduced index $j$, inner index $i$ |
 | out | $O\cdot I$ indices; the smallest index among maxima wins |
 
 The reduction operator is on pairs $(v, j)$:
@@ -52,8 +52,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $(v, j)$ | a candidate value and its index |
-| $\oplus$ | associative and commutative "arg-max with first-index tie-break" |
+| $(v, j)$ | A candidate value and its index |
+| $\oplus$ | Associative and commutative "arg-max with first-index tie-break" |
 
 ## Approach
 

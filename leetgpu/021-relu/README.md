@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $x_i$ | input value (float32) |
-| $y_i$ | output value (float32) |
+| $N$ | Number of elements |
+| $x_i$ | Input value (float32) |
+| $y_i$ | Output value (float32) |
 
 Its derivative (needed for backprop, not here) is the step function
 $\mathbb 1[x > 0]$.
@@ -55,8 +55,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM traffic: read $x$, write $y$ |
-| $W$ | one max per element |
-| $I$ | arithmetic intensity |
+| $W$ | One max per element |
+| $I$ | Arithmetic intensity |
 | $\beta$ | DRAM bandwidth |
 
 Benchmark: $Q = 200$ MB, so $T_{\min} \approx 100\ \mu s$ at 2 TB/s. In a

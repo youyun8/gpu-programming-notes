@@ -29,9 +29,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of input elements |
+| $N$ | Number of input elements |
 | $x_i$ | $i$-th input value (float32) |
-| $S$ | the sum, written to `output[0]` as float32 |
+| $S$ | The sum, written to `output[0]` as float32 |
 
 Addition is associative in real arithmetic, so the sum may be evaluated as any
 **tree**. A parallel reduction regroups it into a hierarchy of partial sums:
@@ -42,10 +42,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | number of blocks in pass 1 ($\le 1024$) |
-| $W$ | warps per block ($256/32 = 8$) |
-| $\ell$ | lane index within a warp, $0..31$ |
-| $\mathcal{I}(b,w,\ell)$ | indices visited by that thread's grid-stride loop: $i \equiv g \pmod{P}$ with $g$ the global thread id and $P = 256B$ the total thread count |
+| $B$ | Number of blocks in pass 1 ($\le 1024$) |
+| $W$ | Warps per block ($256/32 = 8$) |
+| $\ell$ | Lane index within a warp, $0..31$ |
+| $\mathcal{I}(b,w,\ell)$ | Indices visited by that thread's grid-stride loop: $i \equiv g \pmod{P}$ with $g$ the global thread id and $P = 256B$ the total thread count |
 
 In floating point, addition is **not** associative, so different trees give
 slightly different answers. The error of a sum of $N$ terms in precision $u$
@@ -57,10 +57,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\hat S$ | computed sum |
-| $u$ | unit roundoff: $2^{-24}$ for float32, $2^{-53}$ for float64 |
-| $h$ | height of the summation tree: $N-1$ for a sequential loop, $\approx\log_2 N$ for a balanced tree |
-| $\gamma_h$ | standard error-growth constant (Higham) |
+| $\hat S$ | Computed sum |
+| $u$ | Unit roundoff: $2^{-24}$ for float32, $2^{-53}$ for float64 |
+| $h$ | Height of the summation tree: $N-1$ for a sequential loop, $\approx\log_2 N$ for a balanced tree |
+| $\gamma_h$ | Standard error-growth constant (Higham) |
 
 A tree is therefore not only faster but also *more accurate* than a
 sequential loop. Doing the upper levels in float64 makes their contribution
@@ -105,10 +105,10 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes read (each input read exactly once) |
-| $W$ | additions |
-| $I$ | arithmetic intensity (FLOP/byte) |
+| $W$ | Additions |
+| $I$ | Arithmetic intensity (FLOP/byte) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | bandwidth lower bound on the runtime |
+| $T_{\min}$ | Bandwidth lower bound on the runtime |
 
 At the benchmark size, $Q = 16.8$ MB, so $T_{\min} \approx 8\ \mu s$ at 2 TB/s.
 At this size, launch overhead (~2–5 µs per kernel) is comparable to the

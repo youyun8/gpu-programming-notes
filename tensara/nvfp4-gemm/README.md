@@ -35,8 +35,8 @@ $$
 |---|---|
 | $c_{i\ell}$ | 4-bit E2M1 code (two per byte, low nibble first) |
 | $s_{i\beta}$ | E4M3 scale byte of block $\beta$, stored in the swizzled layout |
-| $g$ | global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
-| $\hat{a}_{i\ell}$ | the value the encoding represents |
+| $g$ | Global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
+| $\hat{a}_{i\ell}$ | The value the encoding represents |
 
 $$
 c_{ij} = \sum_{\ell=0}^{K-1} \hat{A}_{i\ell}\,\hat{B}_{j\ell}, \qquad
@@ -45,10 +45,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\hat{A}$ | dequantized $A$, $M\times K$ |
-| $\hat{B}$ | dequantized $B$, stored $N\times K$ (so the product is $\hat{A}\hat{B}^{\mathsf T}$, an "NT" GEMM) |
-| $c$ | output, $M\times N$ (FP16) |
-| $g_A, g_B$ | global encode factors (`sf_g_a`, `sf_g_b`) |
+| $\hat{A}$ | Dequantized $A$, $M\times K$ |
+| $\hat{B}$ | Dequantized $B$, stored $N\times K$ (so the product is $\hat{A}\hat{B}^{\mathsf T}$, an "NT" GEMM) |
+| $c$ | Output, $M\times N$ (FP16) |
+| $g_A, g_B$ | Global encode factors (`sf_g_a`, `sf_g_b`) |
 
 Because every block of 16 elements shares one scale, the sum can be
 regrouped by blocks, which is what tensor-core block-scaled MMAs do:
@@ -59,9 +59,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\beta$ | block index along $K$ |
-| $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | the two block scales |
-| $x^A, x^B$ | the decoded element values (before scaling) |
+| $\beta$ | Block index along $K$ |
+| $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
+| $x^A, x^B$ | The decoded element values (before scaling) |
 
 **Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
@@ -74,10 +74,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $r$ | matrix row |
-| $c$ | scale column (block index along $K$) |
-| $C$ | number of scale columns, $K/\text{block}$ |
-| idx | byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
+| $r$ | Matrix row |
+| $c$ | Scale column (block index along $K$) |
+| $C$ | Number of scale columns, $K/\text{block}$ |
+| idx | Byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
 
 Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
 16-byte load gives a thread the 4 scales of 4 rows it needs.
@@ -108,8 +108,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | flops |
-| $Q_{\min}$ | compulsory DRAM bytes: packed operands, scales, output |
+| $W$ | Flops |
+| $Q_{\min}$ | Compulsory DRAM bytes: packed operands, scales, output |
 
 Applying the global factors once in the epilogue instead of per element
 saves $2MNK/32$ multiplies and one rounding per staged value.

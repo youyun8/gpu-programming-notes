@@ -29,9 +29,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\hat{A}$ | dequantized $A$, $M\times K$ |
-| $\hat{B}$ | dequantized $B$, stored $N\times K$ (so the product is $\hat{A}\hat{B}^{\mathsf T}$, an "NT" GEMM) |
-| $c$ | output, $M\times N$ (FP32) |
+| $\hat{A}$ | Dequantized $A$, $M\times K$ |
+| $\hat{B}$ | Dequantized $B$, stored $N\times K$ (so the product is $\hat{A}\hat{B}^{\mathsf T}$, an "NT" GEMM) |
+| $c$ | Output, $M\times N$ (FP32) |
 | $u^A, u^B$ | E8M0 scale bytes (swizzled) |
 
 Because every block of 32 elements shares one scale, the sum can be
@@ -43,9 +43,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\beta$ | block index along $K$ |
-| $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | the two block scales |
-| $x^A, x^B$ | the decoded element values (before scaling) |
+| $\beta$ | Block index along $K$ |
+| $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
+| $x^A, x^B$ | The decoded element values (before scaling) |
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
@@ -56,9 +56,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | the byte |
-| $s, e, f$ | sign bit, 4-bit exponent field, 3-bit mantissa field |
-| 448 | largest finite value ($e = 15$, $f = 6$) |
+| $b$ | The byte |
+| $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
+| 448 | Largest finite value ($e = 15$, $f = 6$) |
 
 **E8M0** (the MX block scale) is a bare power of two:
 
@@ -68,7 +68,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $u$ | the scale byte (a biased exponent) |
+| $u$ | The scale byte (a biased exponent) |
 
 **Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
@@ -81,10 +81,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $r$ | matrix row |
-| $c$ | scale column (block index along $K$) |
-| $C$ | number of scale columns, $K/\text{block}$ |
-| idx | byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
+| $r$ | Matrix row |
+| $c$ | Scale column (block index along $K$) |
+| $C$ | Number of scale columns, $K/\text{block}$ |
+| idx | Byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
 
 Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
 16-byte load gives a thread the 4 scales of 4 rows it needs.
@@ -115,8 +115,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | flops |
-| $Q_{\min}$ | compulsory DRAM bytes: packed operands, scales, output |
+| $W$ | Flops |
+| $Q_{\min}$ | Compulsory DRAM bytes: packed operands, scales, output |
 
 FP8 operands are 4× smaller than FP32, so for moderate sizes the kernel is
 even more compute-bound than an SGEMM; the decode (a few integer ops per

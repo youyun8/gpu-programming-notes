@@ -43,21 +43,21 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S$ | sequence length (`seq_len`) |
-| $d$ | model width, 768 |
-| $H,\ d_h$ | heads (12) and head width (64) |
-| $X$ | block input, $S\times d$ |
+| $S$ | Sequence length (`seq_len`) |
+| $d$ | Model width, 768 |
+| $H,\ d_h$ | Heads (12) and head width (64) |
+| $X$ | Block input, $S\times d$ |
 | $\operatorname{LN}_1,\ \operatorname{LN}_2$ | LayerNorms with their own $\gamma, \beta$ (length $d$), $\varepsilon = 10^{-5}$ |
 | $\mu,\ \sigma^2$ | per-row mean and biased variance of $\mathbf z$ |
-| $W_{qkv},\ \mathbf b_{qkv}$ | fused QKV projection, $d\times 3d$ and $3d$ |
-| $Q_h, K_h, V_h$ | columns $[h d_h, (h+1)d_h)$ of $Q$, $K$, $V$ |
-| $A_h$ | attention output of head $h$ ($S\times d_h$); no causal mask in this problem |
-| $W_o,\ \mathbf b_o$ | attention output projection, $d\times d$ |
-| $X'$ | hidden state after the first residual |
+| $W_{qkv},\ \mathbf b_{qkv}$ | Fused QKV projection, $d\times 3d$ and $3d$ |
+| $Q_h, K_h, V_h$ | Columns $[h d_h, (h+1)d_h)$ of $Q$, $K$, $V$ |
+| $A_h$ | Attention output of head $h$ ($S\times d_h$); no causal mask in this problem |
+| $W_o,\ \mathbf b_o$ | Attention output projection, $d\times d$ |
+| $X'$ | Hidden state after the first residual |
 | $W_{fc},\ \mathbf b_{fc}$ | MLP up-projection, $d \times 4d$ |
 | $W_{\text{proj}},\ \mathbf b_{\text{proj}}$ | MLP down-projection, $4d\times d$ |
 | $\operatorname{GELU}_{\tanh}$ | GELU with the tanh approximation (as in the reference, `approximate="tanh"`) |
-| $Y$ | block output |
+| $Y$ | Block output |
 
 ## Approach
 
@@ -67,7 +67,7 @@ $$
 |---|---|---|---|
 | 1 | `layerNormRows` | $X_1 = \operatorname{LN}_1(X)$ | – |
 | 2 | GEMM $S\times d\cdot d\times 3d$ | $QKV$ | $+\,\mathbf b_{qkv}$ |
-| 3 | flash attention | $A = \operatorname{Concat}(A_h)$ | – |
+| 3 | Flash attention | $A = \operatorname{Concat}(A_h)$ | – |
 | 4 | GEMM $S\times d\cdot d\times d$ | $X'$ | $+\,\mathbf b_o + X$ (residual) |
 | 5 | `layerNormRows` | $X_2 = \operatorname{LN}_2(X')$ | – |
 | 6 | GEMM $S\times d\cdot d\times 4d$ | MLP hidden | $+\,\mathbf b_{fc}$, then GELU |
@@ -113,8 +113,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs of the block (LayerNorm and elementwise terms are negligible) |
-| $24Sd^2$ | the familiar "$\approx 24 \times$ params-per-layer per token" rule: the block has ≈ $12d^2$ weights |
-| $4S^2 d$ | attention scores and $PV$ (quadratic in $S$) |
+| $24Sd^2$ | The familiar "$\approx 24 \times$ params-per-layer per token" rule: the block has ≈ $12d^2$ weights |
+| $4S^2 d$ | Attention scores and $PV$ (quadratic in $S$) |
 
 For $S = 1024$: $W \approx 1.45\times10^{10} + 3.2\times10^{9} \approx 18$ GFLOP.
 The GEMMs dominate, so the SGEMM's efficiency sets the runtime. Fusion saves

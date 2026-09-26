@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $X$ | input extent along one axis ($H$ or $W$) |
-| $X_{\text{out}}$ | output extent along that axis |
-| $k$ | window side (`kernel_size`) |
-| $S$ | stride |
-| $P$ | padding on each side |
-| $\delta$ | dilation: distance between neighbouring window taps |
+| $X$ | Input extent along one axis ($H$ or $W$) |
+| $X_{\text{out}}$ | Output extent along that axis |
+| $k$ | Window side (`kernel_size`) |
+| $S$ | Stride |
+| $P$ | Padding on each side |
+| $\delta$ | Dilation: distance between neighbouring window taps |
 
 $$
 \text{out}[a, b] = \max_{\substack{0 \le m, n < k \\ (r, c)\ \text{in bounds}}} x[r, c], \qquad r = aS - P + m\delta, \quad c = bS - P + n\delta
@@ -42,17 +42,17 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input, $H\times W$, row-major |
-| $a, b$ | output row and column |
-| $m, n$ | tap indices along rows and columns |
-| $r, c$ | input coordinates of a tap |
+| $x$ | Input, $H\times W$, row-major |
+| $a, b$ | Output row and column |
+| $m, n$ | Tap indices along rows and columns |
+| $r, c$ | Input coordinates of a tap |
 
 The flat output index $t$ decodes as $b = t \bmod W_{\text{out}}$,
 $a = \lfloor t / W_{\text{out}} \rfloor$.
 
 | Symbol | Meaning |
 |---|---|
-| $t$ | flat output index of a thread |
+| $t$ | Flat output index of a thread |
 
 ## Approach
 
@@ -73,8 +73,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{ops}}$ | comparisons |
-| $Q$ | compulsory DRAM bytes, assuming overlapping windows hit in cache |
+| $W_{\text{ops}}$ | Comparisons |
+| $Q$ | Compulsory DRAM bytes, assuming overlapping windows hit in cache |
 | $\beta$ | DRAM bandwidth |
 
 With $S < k$ windows overlap and the kernel is bandwidth-bound; with

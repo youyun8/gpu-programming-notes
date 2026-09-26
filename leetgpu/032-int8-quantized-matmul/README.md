@@ -30,14 +30,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N,\ K$ | output rows, output columns, inner dimension |
+| $M,\ N,\ K$ | Output rows, output columns, inner dimension |
 | $A_{ik},\ B_{kj}$ | int8 input values |
-| $z_A,\ z_B,\ z_C$ | zero points (integers in $[-128, 127]$) |
-| $s_A,\ s_B,\ s_C$ | positive float32 scales |
-| $S_{ij}$ | exact integer dot product of the zero-shifted inputs (int32) |
-| $\operatorname{fl}(\cdot)$ | a single float32 operation, rounded to nearest; the order $((S\,s_A)\,s_B)/s_C$ is the reference's |
-| rne | round to nearest, ties to even (`torch.round`, `rintf`) |
-| clamp | saturate to the int8 range |
+| $z_A,\ z_B,\ z_C$ | Zero points (integers in $[-128, 127]$) |
+| $s_A,\ s_B,\ s_C$ | Positive float32 scales |
+| $S_{ij}$ | Exact integer dot product of the zero-shifted inputs (int32) |
+| $\operatorname{fl}(\cdot)$ | A single float32 operation, rounded to nearest; the order $((S\,s_A)\,s_B)/s_C$ is the reference's |
+| rne | Round to nearest, ties to even (`torch.round`, `rintf`) |
+| Clamp | Saturate to the int8 range |
 
 ### Folding Out the Zero Points
 
@@ -51,10 +51,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $P_{ij}$ | raw int8 × int8 product, accumulated in int32 on tensor cores |
-| $r_i$ | row sum of $A$ (one int per row) |
-| $c_j$ | column sum of $B$ (one int per column) |
-| $K z_A z_B$ | constant correction term |
+| $P_{ij}$ | Raw int8 × int8 product, accumulated in int32 on tensor cores |
+| $r_i$ | Row sum of $A$ (one int per row) |
+| $c_j$ | Column sum of $B$ (one int per column) |
+| $K z_A z_B$ | Constant correction term |
 
 All terms are exact int32 arithmetic. $\lvert P\rvert \le 4096 \cdot 128^2 \approx 6.7\times10^7 < 2^{31}$,
 so nothing overflows.
@@ -92,8 +92,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | integer multiply-adds × 2 |
-| $Q$ | bytes (1 byte per int8 element) with 64 × 64 tiling |
+| $W$ | Integer multiply-adds × 2 |
+| $Q$ | Bytes (1 byte per int8 element) with 64 × 64 tiling |
 
 Benchmark: $W \approx 1.4\times10^{11}$ ops. At ~600 TOPS of int8 tensor
 throughput (A100) that is 0.23 ms of compute. Int8 halves the bytes of fp16

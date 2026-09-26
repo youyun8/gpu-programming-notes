@@ -39,15 +39,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N,\ d$ | queries, keys, head dimension |
-| $S,\ P$ | scaled scores and attention probabilities ($M\times N$, never stored) |
-| $O$ | forward output |
-| $dO$ | upstream gradient of the loss w.r.t. $O$ |
-| $dP$ | gradient w.r.t. $P$: $dP_{ij} = dO_i\cdot V_j$ |
-| $dS$ | gradient w.r.t. the scores (softmax Jacobian applied row-wise) |
-| $D_i$ | row correction term; equal to $dO_i\cdot O_i$ |
-| $L_i$ | row log-sum-exp; lets $P_{ij}$ be recomputed from $S_{ij}$ alone |
-| $dQ,\ dK,\ dV$ | outputs |
+| $M,\ N,\ d$ | Queries, keys, head dimension |
+| $S,\ P$ | Scaled scores and attention probabilities ($M\times N$, never stored) |
+| $O$ | Forward output |
+| $dO$ | Upstream gradient of the loss w.r.t. $O$ |
+| $dP$ | Gradient w.r.t. $P$: $dP_{ij} = dO_i\cdot V_j$ |
+| $dS$ | Gradient w.r.t. the scores (softmax Jacobian applied row-wise) |
+| $D_i$ | Row correction term; equal to $dO_i\cdot O_i$ |
+| $L_i$ | Row log-sum-exp; lets $P_{ij}$ be recomputed from $S_{ij}$ alone |
+| $dQ,\ dK,\ dV$ | Outputs |
 
 **The softmax Jacobian.** For $\mathbf p = \operatorname{softmax}(\mathbf s)$,
 $\partial p_j/\partial s_k = p_j(\delta_{jk} - p_k)$. So
@@ -88,7 +88,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs: every pass recomputes $QK^{\mathsf T}$ (and $dO V^{\mathsf T}$ where needed) for all pairs |
-| extra memory | the only intermediate state: two floats per query row |
+| Extra memory | The only intermediate state: two floats per query row |
 
 Benchmark: $W \approx 7.7\times10^{10}$ FLOP. This is compute-bound and about
 2.5× the forward pass, matching the usual "backward ≈ 2–3× forward" rule of

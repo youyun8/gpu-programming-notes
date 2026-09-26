@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | vector length |
+| $N$ | Vector length |
 | $a_i,\ b_i$ | fp16 inputs (10-bit mantissa, max 65 504) |
-| $s$ | result, rounded once to fp16 |
+| $s$ | Result, rounded once to fp16 |
 
 **Why not accumulate in fp16?** fp16 has only 11 significant bits. Once the
 running sum reaches about 2048, adding values below 1 has no effect at all

@@ -26,9 +26,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | array length |
-| $x_i$ | value at index $i$ before the call |
-| $x'_i$ | value at index $i$ after the call |
+| $N$ | Array length |
+| $x_i$ | Value at index $i$ before the call |
+| $x'_i$ | Value at index $i$ after the call |
 
 The map $i \mapsto N-1-i$ is an **involution**: it pairs index $i$ with its
 mirror $j = N-1-i$, and applying it twice is the identity. The update
@@ -40,8 +40,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $j$ | mirror index of $i$ |
-| $\lfloor N/2 \rfloor$ | number of swaps; for odd $N$ the middle element $x_{(N-1)/2}$ is its own mirror and stays put |
+| $j$ | Mirror index of $i$ |
+| $\lfloor N/2 \rfloor$ | Number of swaps; for odd $N$ the middle element $x_{(N-1)/2}$ is its own mirror and stays put |
 
 ## Approach
 

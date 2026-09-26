@@ -34,15 +34,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input matrix, $H\times W$, row-major |
+| $x$ | Input matrix, $H\times W$, row-major |
 | $\tilde{x}$ | $x$ extended with zeros outside its bounds (the padding) |
-| $k$ | window side (`kernel_size`) |
-| $S$ | stride between consecutive windows |
-| $P$ | zero padding on every side |
-| $H_{\text{out}}, W_{\text{out}}$ | output height and width |
-| $i, j$ | output row and column |
-| $m, n$ | offsets inside the window |
-| $k^2$ | the divisor; always the full window size, even at the borders |
+| $k$ | Window side (`kernel_size`) |
+| $S$ | Stride between consecutive windows |
+| $P$ | Zero padding on every side |
+| $H_{\text{out}}, W_{\text{out}}$ | Output height and width |
+| $i, j$ | Output row and column |
+| $m, n$ | Offsets inside the window |
+| $k^2$ | The divisor; always the full window size, even at the borders |
 
 ## Approach
 
@@ -70,10 +70,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{ops}}$ | additions |
+| $W_{\text{ops}}$ | Additions |
 | $Q$ | DRAM bytes, assuming the window overlap is served by caches |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | bandwidth lower bound on the run time |
+| $T_{\min}$ | Bandwidth lower bound on the run time |
 
 The arithmetic intensity is about $k^2/8$ operations per byte (for $S = 1$),
 far below the ridge point, so the kernel is bandwidth-bound.

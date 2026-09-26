@@ -31,13 +31,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | sequence length |
-| $d$ | head dimension |
-| $w$ | window radius (`window_size`) |
-| $\mathcal W_i$ | visible keys of query $i$: at most $2w + 1$ of them |
-| $s_{ij}$ | scaled score |
-| $m_i$ | max over the window |
-| $O_{i,:}$ | output row |
+| $M$ | Sequence length |
+| $d$ | Head dimension |
+| $w$ | Window radius (`window_size`) |
+| $\mathcal W_i$ | Visible keys of query $i$: at most $2w + 1$ of them |
+| $s_{ij}$ | Scaled score |
+| $m_i$ | Max over the window |
+| $O_{i,:}$ | Output row |
 
 ## Approach
 
@@ -64,7 +64,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs for scores and $PV$ over visible pairs |
-| $r_0,\ r_1$ | first and last query row of the block |
+| $r_0,\ r_1$ | First and last query row of the block |
 
 Linear in $M$ for fixed $w$. For small $w$, most lanes in a tile are masked
 (a tile has 32 keys, the band per row $2w+1$), so efficiency improves with

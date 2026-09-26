@@ -25,9 +25,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input value |
-| $\sigma(x)$ | output in $(0, 1)$ |
-| $\sigma'$ | derivative (used in backprop and in [Logistic Regression](../034-logistic-regression/)) |
+| $x$ | Input value |
+| $\sigma(x)$ | Output in $(0, 1)$ |
+| $\sigma'$ | Derivative (used in backprop and in [Logistic Regression](../034-logistic-regression/)) |
 
 **Extremes.** For $x \to -\infty$, $e^{-x}$ overflows to $+\infty$ and
 $1/\infty = 0$, which is the correct limit. For $x \to +\infty$, $e^{-x} \to 0$
@@ -49,7 +49,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes |
-| $W$ | instructions: `expf` (≈ 10–20), division (≈ 10), one add |
+| $W$ | Instructions: `expf` (≈ 10–20), division (≈ 10), one add |
 | $c_{\exp},\ c_{\div}$ | per-call instruction costs |
 
 At about 25 instructions per 8 bytes, this kernel sits near the balance

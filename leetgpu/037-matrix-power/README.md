@@ -31,8 +31,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $N \times N$ |
-| $P$ | exponent, $\ge 1$ |
+| $A$ | Input matrix, $N \times N$ |
+| $P$ | Exponent, $\ge 1$ |
 | $b_j$ | $j$-th bit of $P$ |
 | $Z_j$ | $A^{2^j}$, obtained by repeated squaring |
 
@@ -44,7 +44,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| popcount$(P)$ | number of set bits of $P$ |
+| Popcount$(P)$ | Number of set bits of $P$ |
 
 For $P = 20 = 10100_2$: 4 squarings + 1 multiply = **5 GEMMs** instead of 19.
 
@@ -60,7 +60,7 @@ solution mirrors `matrix_power` exactly:
 | 1 | $A$ (copy) |
 | 2 | $A \cdot A$ |
 | 3 | $(A \cdot A)\cdot A$ |
-| ≥ 4 | walk bits from LSB. $Z \leftarrow Z^2$ after the first bit. On a set bit, $\text{res} \leftarrow \text{res}\cdot Z$ (the first set bit copies $Z$) |
+| ≥ 4 | Walk bits from LSB. $Z \leftarrow Z^2$ after the first bit. On a set bit, $\text{res} \leftarrow \text{res}\cdot Z$ (the first set bit copies $Z$) |
 
 ## Approach
 

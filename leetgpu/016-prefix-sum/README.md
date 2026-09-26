@@ -29,9 +29,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | array length |
-| $x_j$ | input values (float32) |
-| $y_i$ | inclusive prefix sums (float32 output) |
+| $N$ | Array length |
+| $x_j$ | Input values (float32) |
+| $y_i$ | Inclusive prefix sums (float32 output) |
 
 ### Reduce-Then-Scan Decomposition
 
@@ -45,10 +45,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $C$ | chunk size: 256 threads × 8 items = 2048 |
-| $b$ | chunk (block) index |
-| $S_b$ | total of chunk $b$ |
-| $O_b$ | exclusive prefix of the chunk totals: everything before chunk $b$ |
+| $C$ | Chunk size: 256 threads × 8 items = 2048 |
+| $b$ | Chunk (block) index |
+| $S_b$ | Total of chunk $b$ |
+| $O_b$ | Exclusive prefix of the chunk totals: everything before chunk $b$ |
 
 Within a chunk, a thread handles 8 consecutive items. Its prefix is the
 exclusive scan of the per-thread totals, computed with warp shuffles:
@@ -59,9 +59,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index |
-| $\delta$ | shuffle distance at each of the $\log_2 32 = 5$ steps |
-| $\texttt{shfl\_up}(v, \delta)$ | value of $v$ held by lane $\ell - \delta$ |
+| $\ell$ | Lane index |
+| $\delta$ | Shuffle distance at each of the $\log_2 32 = 5$ steps |
+| $\texttt{shfl\_up}(v, \delta)$ | Value of $v$ held by lane $\ell - \delta$ |
 
 This is the Hillis–Steele scan: $O(n\log n)$ work, but for 32 elements in
 registers the 5 steps are cheaper than anything else.
@@ -99,7 +99,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM traffic: read the input twice, write the output once |
-| $W$ | additions, linear in $N$ (work-efficient) |
+| $W$ | Additions, linear in $N$ (work-efficient) |
 
 A single-pass "decoupled look-back" scan (as in CUB) reaches $8N$ bytes by
 chaining chunk prefixes through global flags. At the benchmark size (1 MB)

@@ -28,11 +28,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input signal, length $N$; $\tilde{x}$ is $x$ with zeros outside $[0, N)$ |
-| $W$ | window length |
-| $h$ | padding, $\lfloor W/2\rfloor$ |
-| $L$ | output length ($= N$ for odd $W$) |
-| $i$ | output index |
+| $x$ | Input signal, length $N$; $\tilde{x}$ is $x$ with zeros outside $[0, N)$ |
+| $W$ | Window length |
+| $h$ | Padding, $\lfloor W/2\rfloor$ |
+| $L$ | Output length ($= N$ for odd $W$) |
+| $i$ | Output index |
 
 With the inclusive prefix sum $\Pi$, every window is a difference of two
 prefix values:
@@ -45,8 +45,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\Pi[t]$ | inclusive prefix sum, with $\Pi[-1] = 0$ |
-| $\ell, r$ | first and last in-bounds input index of window $i$ |
+| $\Pi[t]$ | Inclusive prefix sum, with $\Pi[-1] = 0$ |
+| $\ell, r$ | First and last in-bounds input index of window $i$ |
 
 This turns $O(NW)$ additions into $O(N)$.
 
@@ -68,8 +68,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\Delta\text{out}$ | error of one window sum from rounded prefixes |
-| $u_{32}, u_{64}$ | unit roundoff of float and double |
+| $\Delta\text{out}$ | Error of one window sum from rounded prefixes |
+| $u_{32}, u_{64}$ | Unit roundoff of float and double |
 
 ## Cost Analysis
 

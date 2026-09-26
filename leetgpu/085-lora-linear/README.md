@@ -30,16 +30,16 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | batch size |
-| $d_{\text{in}},\ d_{\text{out}}$ | input and output features |
+| $b$ | Batch size |
+| $d_{\text{in}},\ d_{\text{out}}$ | Input and output features |
 | $r$ | LoRA rank |
-| $x$ | input, $b\times d_{\text{in}}$ |
-| $W$ | frozen base weight (`nn.Linear` layout, out × in) |
+| $x$ | Input, $b\times d_{\text{in}}$ |
+| $W$ | Frozen base weight (`nn.Linear` layout, out × in) |
 | $A$ | down-projection $r\times d_{\text{in}}$ |
 | $B$ | up-projection $d_{\text{out}}\times r$ |
 | $s$ | `lora_scale` (usually $\alpha/r$) |
-| $[\,\cdot\ \cdot\,]$ | horizontal concatenation along the inner (K) dimension |
-| $Y$ | output, $b\times d_{\text{out}}$ |
+| $[\,\cdot\ \cdot\,]$ | Horizontal concatenation along the inner (K) dimension |
+| $Y$ | Output, $b\times d_{\text{out}}$ |
 
 The right-hand form shows that the whole layer is **one GEMM over a
 concatenated inner dimension** $d_{\text{in}} + r$, once the small matrix
@@ -76,7 +76,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W_{\text{flop}}$ | FLOPs of the base and LoRA paths |
-| $W_{\text{LoRA}}/W_{\text{base}}$ | relative overhead of the adapter |
+| $W_{\text{LoRA}}/W_{\text{base}}$ | Relative overhead of the adapter |
 
 Benchmark: the base GEMM is 8.6 GFLOP, and LoRA adds $2\cdot 64/4096 = 3.1\%$.
 The concatenated-K fusion also avoids writing and re-reading a

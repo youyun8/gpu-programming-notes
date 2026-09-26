@@ -44,15 +44,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ T,\ V$ | batch size, number of draft tokens, vocabulary size |
-| $t_i$ | draft token at position $i$ |
-| $p_i(v)$ | draft model probability of token $v$ at position $i$ |
-| $q_i(v)$ | target model probability |
-| $u_i$ | uniform sample for the acceptance test at position $i$ |
-| $\alpha_i$ | acceptance probability |
-| $r_i$ | residual distribution used after a rejection |
-| $u_T$ | the extra uniform sample (index $T$) used for resampling or the bonus token |
-| sample$(\pi, u)$ | inverse-CDF draw (`torch.searchsorted(cumsum(π), u)`) |
+| $B,\ T,\ V$ | Batch size, number of draft tokens, vocabulary size |
+| $t_i$ | Draft token at position $i$ |
+| $p_i(v)$ | Draft model probability of token $v$ at position $i$ |
+| $q_i(v)$ | Target model probability |
+| $u_i$ | Uniform sample for the acceptance test at position $i$ |
+| $\alpha_i$ | Acceptance probability |
+| $r_i$ | Residual distribution used after a rejection |
+| $u_T$ | The extra uniform sample (index $T$) used for resampling or the bonus token |
+| Sample$(\pi, u)$ | inverse-CDF draw (`torch.searchsorted(cumsum(π), u)`) |
 
 **Why it is exact.** Accepting with probability
 $\min(1, q/p)$ and otherwise sampling from $r$ yields tokens distributed
@@ -88,8 +88,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | work: $T$ scalar tests plus at most one residual reduction and one scan over $V$ per sequence |
-| $Q$ | bytes: at most two full vocabulary rows of $p$ and $q$ read per sequence (the tensors are $B\times T\times V$, but only the rows actually visited are read) |
+| $W$ | Work: $T$ scalar tests plus at most one residual reduction and one scan over $V$ per sequence |
+| $Q$ | Bytes: at most two full vocabulary rows of $p$ and $q$ read per sequence (the tensors are $B\times T\times V$, but only the rows actually visited are read) |
 
 With $V$ around $3\times10^4$–$1.5\times10^5$ in real LLMs, the scan
 dominates. A single block per sequence keeps it simple and synchronisation-free.

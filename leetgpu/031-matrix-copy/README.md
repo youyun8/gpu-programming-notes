@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | matrix side length |
-| $k$ | flattened row-major index |
-| $A_k,\ B_k$ | source and destination elements (float32) |
+| $N$ | Matrix side length |
+| $k$ | Flattened row-major index |
+| $A_k,\ B_k$ | Source and destination elements (float32) |
 
 ## Approach
 
@@ -53,7 +53,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\beta$ | target bandwidth (bytes/s) |
+| $\beta$ | Target bandwidth (bytes/s) |
 | $\lambda$ | DRAM latency (roughly 500–800 ns) |
 
 At $\beta = 2$ TB/s and $\lambda \approx 600$ ns, about 1.2 MB must be
@@ -68,8 +68,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes moved: read $N^2$ floats, write $N^2$ floats |
-| $T_{\min}$ | bandwidth lower bound |
+| $Q$ | Bytes moved: read $N^2$ floats, write $N^2$ floats |
+| $T_{\min}$ | Bandwidth lower bound |
 
 $N = 4096$: $Q = 134$ MB, so $T_{\min} \approx 67\ \mu s$ at 2 TB/s. Compare
 your transpose ([Matrix Transpose](../003-matrix-transpose/)) against this

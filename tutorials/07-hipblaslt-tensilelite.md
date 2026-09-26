@@ -70,11 +70,11 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $m, n, k$ | MFMA shape (e.g. 32, 32, 1) |
-| $b$ | number of blocks the MFMA computes at once (multi-block variants), 1 for most |
+| $b$ | Number of blocks the MFMA computes at once (multi-block variants), 1 for most |
 | $\beta_M$ | `MIBlockM`: how many of those $b$ blocks are stacked along M (the rest go along N) |
 | $w_M, w_N$ | WaveTile: MFMA tiles per wave along M and N |
-| $W_M, W_N$ | waves per workgroup along M and N |
-| $\text{MT}_0, \text{MT}_1$ | macro tile (workgroup tile) along M and N |
+| $W_M, W_N$ | Waves per workgroup along M and N |
+| $\text{MT}_0, \text{MT}_1$ | Macro tile (workgroup tile) along M and N |
 
 For the example: $\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$ and
 $\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$, 256 threads.
@@ -98,7 +98,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M, T_N$ | output elements per wave along M and N |
+| $T_M, T_N$ | Output elements per wave along M and N |
 | $r_{\text{acc}}$ | fp32 accumulator registers per lane |
 | $w_M, w_N$ | MFMA tiles per wave; each A fragment is reused $w_N$ times and each B fragment $w_M$ times |
 
@@ -207,12 +207,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | number of output (macro) tiles |
+| $T$ | Number of output (macro) tiles |
 | DepthU | K per main-loop iteration |
-| $L$ | total MAC-loop iterations in the whole GEMM |
-| $G$ | number of Stream-K workgroups (about the CU count) |
-| $L_g$ | iterations assigned to workgroup $g$ |
-| $\eta_{\text{SK}}, \eta_{\text{tile}}$ | fill efficiency of Stream-K and of one-workgroup-per-tile |
+| $L$ | Total MAC-loop iterations in the whole GEMM |
+| $G$ | Number of Stream-K workgroups (about the CU count) |
+| $L_g$ | Iterations assigned to workgroup $g$ |
+| $\eta_{\text{SK}}, \eta_{\text{tile}}$ | Fill efficiency of Stream-K and of one-workgroup-per-tile |
 
 Because $L \gg G$, $\eta_{\text{SK}}$ is essentially 1, whereas
 $\eta_{\text{tile}}$ can be as low as $\sim 50\%$ when $T$ is slightly above
@@ -262,10 +262,10 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $w_0, w_1$ | launch-order workgroup indices |
-| $n_0$ | number of tiles along dimension 0 |
-| $g$ | box height (WGM) |
-| $s$ | serial launch order |
-| $w_0', w_1'$ | the tile actually computed |
+| $n_0$ | Number of tiles along dimension 0 |
+| $g$ | Box height (WGM) |
+| $s$ | Serial launch order |
+| $w_0', w_1'$ | The tile actually computed |
 
 Consecutive workgroups first walk down $g$ tile rows, then move one tile
 column over, so the workgroups in flight cover a $g$-tall box and share
@@ -304,7 +304,7 @@ decodes as:
 
 | Fragment | Meaning |
 |----------|---------|
-| `MT256x256x64` | macro tile 256×256, DepthU 64 |
+| `MT256x256x64` | Macro tile 256×256, DepthU 64 |
 | `MI16x16x1` | 16×16 MFMA, 1 block |
 | `DTL1` | DirectToLds |
 | `PGR2` | PrefetchGlobalRead=2 |
@@ -396,10 +396,10 @@ structure you traced in chapter 06.
 | Pre-arranged weights | B pre-shuffled into AGPRs | `HIPBLASLT_ORDER_COL16_4R8` (bf16/fp16) / `COL16_4R16` (fp8) matrix orders for A on gfx94x |
 | Multi-stage prefetch | `vmcnt(18)`, LDS ping-pong | `PrefetchGlobalRead`, `1LDSBuffer` |
 | Register double buffering | `a[0:63]` ↔ `a[64:127]` | `PrefetchLocalRead` |
-| MFMA/memory interleaving | by hand | `ScheduleIterAlg=3`, `GlobalReadPerMfma` |
+| MFMA/memory interleaving | By hand | `ScheduleIterAlg=3`, `GlobalReadPerMfma` |
 | Split-K / Stream-K | z-grid + atomics + semaphore | `GlobalSplitU*`, `StreamK` |
 | L2/XCD-aware tile order | – | `WorkGroupMapping`, `WorkGroupMappingXCC`, `StaggerU` |
-| Per-shape selection | tuned CSV + heuristic | library logic + heuristic + offline tuning |
+| Per-shape selection | Tuned CSV + heuristic | Library logic + heuristic + offline tuning |
 
 ## Exercises
 

@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $X$ | input extent along one axis ($H$) |
-| $X_{\text{out}}$ | output extent along that axis |
-| $k$ | window side (`kernel_size`) |
-| $S$ | stride |
-| $P$ | padding on each side |
-| $\delta$ | dilation: distance between neighbouring window taps |
+| $X$ | Input extent along one axis ($H$) |
+| $X_{\text{out}}$ | Output extent along that axis |
+| $k$ | Window side (`kernel_size`) |
+| $S$ | Stride |
+| $P$ | Padding on each side |
+| $\delta$ | Dilation: distance between neighbouring window taps |
 
 $$
 \text{out}[t] = \max_{0 \le m < k,\ 0 \le q < H} x[q], \qquad q = tS - P + m\delta
@@ -42,10 +42,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input signal, length $H$ |
-| $t$ | output index |
-| $m$ | tap index inside the window |
-| $q$ | input position of tap $m$ (taps with $q$ outside $[0, H)$ are padding) |
+| $x$ | Input signal, length $H$ |
+| $t$ | Output index |
+| $m$ | Tap index inside the window |
+| $q$ | Input position of tap $m$ (taps with $q$ outside $[0, H)$ are padding) |
 
 ## Approach
 
@@ -66,8 +66,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{ops}}$ | comparisons |
-| $Q$ | compulsory DRAM bytes, assuming overlapping windows hit in cache |
+| $W_{\text{ops}}$ | Comparisons |
+| $Q$ | Compulsory DRAM bytes, assuming overlapping windows hit in cache |
 | $\beta$ | DRAM bandwidth |
 
 With $S < k$ windows overlap and the kernel is bandwidth-bound; with

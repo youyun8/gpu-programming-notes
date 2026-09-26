@@ -35,13 +35,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $H,\ S,\ D$ | heads, cached sequence length, head dimension |
+| $H,\ S,\ D$ | Heads, cached sequence length, head dimension |
 | $\hat K,\ \hat V$ | int8 cache values in $[-128, 127]$ |
 | $\kappa_{h,j},\ \nu_{h,j}$ | per-token float scales (`k_scale`, `v_scale`) |
-| $\mathbf q_h$ | the query of head $h$ (length $D$) |
-| $s_{h,j}$ | attention score of cached token $j$ |
-| $m_h$ | maximum score of head $h$ |
-| $\mathbf o_h$ | output of head $h$ |
+| $\mathbf q_h$ | The query of head $h$ (length $D$) |
+| $s_{h,j}$ | Attention score of cached token $j$ |
+| $m_h$ | Maximum score of head $h$ |
+| $\mathbf o_h$ | Output of head $h$ |
 
 The per-token scale factors out of the inner sums, so the dot product can
 run on the raw int8 values and be scaled once per token.
@@ -58,9 +58,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $m_i,\ \ell_i$ | max score and sum of $e^{s - m_i}$ over chunk $i$ |
+| $m_i,\ \ell_i$ | Max score and sum of $e^{s - m_i}$ over chunk $i$ |
 | $\mathbf a_i$ | un-normalised partial output $\sum_{j\in\mathcal C_i} e^{s_j - m_i}V_j$ |
-| $m,\ \ell,\ \mathbf o$ | merged statistics and final output |
+| $m,\ \ell,\ \mathbf o$ | Merged statistics and final output |
 
 This is the same associative $(m, \ell, \mathbf a)$ merge as in
 [Softmax Attention](../006-softmax-attention/), applied across blocks instead
@@ -89,7 +89,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: int8 K and V (1 byte each), two float scales per token, query and output |
+| $Q$ | Bytes: int8 K and V (1 byte each), two float scales per token, query and output |
 | $W$ | FLOPs (scores and the weighted sum) |
 
 Benchmark: $Q \approx 67$ MB versus 268 MB for a float32 cache, i.e. about

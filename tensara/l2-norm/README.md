@@ -26,8 +26,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B, D$ | number of rows, row length |
-| $x_{bd}, y_{bd}$ | input and output element |
+| $B, D$ | Number of rows, row length |
+| $x_{bd}, y_{bd}$ | Input and output element |
 | $n_b$ | L2 norm of row $b$ |
 | $\epsilon$ | $10^{-10}$, added after the square root |
 
@@ -48,8 +48,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q_{\text{DRAM}}$ | one read (the second read hits L2) and one write |
-| $W$ | one FMA for $x^2$ and one multiply for the scale |
+| $Q_{\text{DRAM}}$ | One read (the second read hits L2) and one write |
+| $W$ | One FMA for $x^2$ and one multiply for the scale |
 
 ## Pitfalls
 

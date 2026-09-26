@@ -29,8 +29,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements in each vector |
-| $i$ | element index (0-based) |
+| $N$ | Number of elements in each vector |
+| $i$ | Element index (0-based) |
 | $A_i,\ B_i$ | $i$-th input elements, IEEE-754 float32 |
 | $C_i$ | $i$-th output element, float32 |
 
@@ -45,11 +45,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t$ | thread index inside its block (`threadIdx.x`), $0 \le t < T$ |
-| $b$ | block index inside the grid (`blockIdx.x`), $0 \le b < G$ |
-| $T$ | threads per block (`blockDim.x`), here $T = 256$ |
-| $G$ | number of blocks launched (`gridDim.x`) |
-| $\lceil\cdot\rceil$ | ceiling; the last block may be partially idle, hence the guard $i < N$ |
+| $t$ | Thread index inside its block (`threadIdx.x`), $0 \le t < T$ |
+| $b$ | Block index inside the grid (`blockIdx.x`), $0 \le b < G$ |
+| $T$ | Threads per block (`blockDim.x`), here $T = 256$ |
+| $G$ | Number of blocks launched (`gridDim.x`) |
+| $\lceil\cdot\rceil$ | Ceiling; the last block may be partially idle, hence the guard $i < N$ |
 
 ## Approach
 
@@ -85,11 +85,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | work: floating-point operations (one add per element) |
+| $W$ | Work: floating-point operations (one add per element) |
 | $Q$ | DRAM traffic in bytes: read $A$ and $B$, write $C$, 4 bytes each |
-| $I$ | arithmetic intensity, FLOPs per byte of DRAM traffic |
-| $\beta$ | sustainable DRAM bandwidth of the GPU (bytes/s) |
-| $T_{\min}$ | lower bound on kernel time imposed by memory traffic |
+| $I$ | Arithmetic intensity, FLOPs per byte of DRAM traffic |
+| $\beta$ | Sustainable DRAM bandwidth of the GPU (bytes/s) |
+| $T_{\min}$ | Lower bound on kernel time imposed by memory traffic |
 
 A modern GPU needs $I$ of roughly 10–100 FLOP/byte before arithmetic becomes
 the limit, so at $I = 1/12$ this kernel is **deeply memory-bound**. At the

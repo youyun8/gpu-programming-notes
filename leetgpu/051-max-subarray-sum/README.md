@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | array length |
-| $w$ | window size (`window_size`), $1 \le w \le N$ |
-| $x_t$ | input values (int32) |
-| $i$ | window start |
-| $P_j$ | exclusive prefix sum: sum of the first $j$ elements ($P$ has $N+1$ entries) |
-| out | the maximum window sum |
+| $N$ | Array length |
+| $w$ | Window size (`window_size`), $1 \le w \le N$ |
+| $x_t$ | Input values (int32) |
+| $i$ | Window start |
+| $P_j$ | Exclusive prefix sum: sum of the first $j$ elements ($P$ has $N+1$ entries) |
+| out | The maximum window sum |
 
 Every window sum becomes **one subtraction** of two prefix values. After
 the scan, the problem is a data-parallel max-reduction over $N - w + 1$
@@ -62,9 +62,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{naive}}$ | additions if each window is summed from scratch (up to $6.25\times10^8$ for $w = N/2$) |
-| $W_{\text{scan}}$ | work of scan + max |
-| $Q$ | bytes: read the input, write the prefix, read two prefix values per window |
+| $W_{\text{naive}}$ | Additions if each window is summed from scratch (up to $6.25\times10^8$ for $w = N/2$) |
+| $W_{\text{scan}}$ | Work of scan + max |
+| $Q$ | Bytes: read the input, write the prefix, read two prefix values per window |
 
 Everything fits in L2 (≈ 600 KB). The runtime is a few microseconds of
 single-block work plus the launch.

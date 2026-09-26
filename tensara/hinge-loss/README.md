@@ -26,11 +26,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_i$ | prediction (a raw score, not a probability) |
-| $y_i$ | target label, $-1$ or $+1$ |
-| $x_i y_i$ | the margin: positive when the sign is right |
+| $x_i$ | Prediction (a raw score, not a probability) |
+| $y_i$ | Target label, $-1$ or $+1$ |
+| $x_i y_i$ | The margin: positive when the sign is right |
 | $\ell_i$ | per-element hinge loss, the output |
-| $\mathcal{L}$ | mean loss, as used for SVM training |
+| $\mathcal{L}$ | Mean loss, as used for SVM training |
 
 The loss is 0 when the prediction is on the correct side with margin at
 least 1, and grows linearly otherwise.

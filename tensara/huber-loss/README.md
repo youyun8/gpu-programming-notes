@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_i, y_i$ | prediction and target |
-| $d_i$ | residual |
-| $\beta$ | transition point between the quadratic and linear regimes |
+| $x_i, y_i$ | Prediction and target |
+| $d_i$ | Residual |
+| $\beta$ | Transition point between the quadratic and linear regimes |
 | $z_i$ | per-element loss, the output |
 
 Both pieces meet with equal value and slope at $\lvert d\rvert = \beta$:
@@ -42,7 +42,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\frac{d}{dd}$ | derivative with respect to the residual |
+| $\frac{d}{dd}$ | Derivative with respect to the residual |
 
 So the loss is quadratic (like MSE) for small errors and linear (like L1,
 robust to outliers) for large ones.

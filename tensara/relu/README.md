@@ -26,9 +26,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $M\times N$ float32, row-major |
-| $C$ | output matrix, same shape |
-| $\operatorname{ReLU}$ | rectified linear unit |
+| $A$ | Input matrix, $M\times N$ float32, row-major |
+| $C$ | Output matrix, same shape |
+| $\operatorname{ReLU}$ | Rectified linear unit |
 
 ## Approach
 
@@ -54,10 +54,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $8192\times8192$: $Q = 537$ MB, about 0.27 ms at 2 TB/s. The best achievable is typically 85–92 % of the nominal bandwidth.
 

@@ -30,13 +30,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R,\ C$ | input rows and columns |
-| $K_r,\ K_c$ | kernel rows and columns |
-| $X_{ab}$ | input pixel at row $a$, column $b$ (row-major, offset $aC + b$) |
-| $w_{mn}$ | kernel weight at row $m$, column $n$ |
-| $Y_{ij}$ | output pixel; the output has $C - K_c + 1$ columns |
-| $i,\ j$ | output row and column |
-| $m,\ n$ | kernel row and column offsets |
+| $R,\ C$ | Input rows and columns |
+| $K_r,\ K_c$ | Kernel rows and columns |
+| $X_{ab}$ | Input pixel at row $a$, column $b$ (row-major, offset $aC + b$) |
+| $w_{mn}$ | Kernel weight at row $m$, column $n$ |
+| $Y_{ij}$ | Output pixel; the output has $C - K_c + 1$ columns |
+| $i,\ j$ | Output row and column |
+| $m,\ n$ | Kernel row and column offsets |
 
 ### Tile and Halo
 
@@ -49,8 +49,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $(i_0, j_0)$ | tile origin: $(32\,\texttt{blockIdx.y},\ 32\,\texttt{blockIdx.x})$ |
-| $32 + K - 1$ | tile plus halo; at most $62 \times 62$ for $K = 31$ |
+| $(i_0, j_0)$ | Tile origin: $(32\,\texttt{blockIdx.y},\ 32\,\texttt{blockIdx.x})$ |
+| $32 + K - 1$ | Tile plus halo; at most $62 \times 62$ for $K = 31$ |
 
 ## Approach
 
@@ -78,7 +78,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs (multiply-add per tap per output) |
-| reuse | average number of times each staged input value is used from shared memory |
+| Reuse | Average number of times each staged input value is used from shared memory |
 
 For the benchmark ($3072^2$ image, $15\times15$ kernel), $W \approx 4.1$
 GFLOP. The reuse factor is $1024 \cdot 225 / 46^2 \approx 109$, so DRAM

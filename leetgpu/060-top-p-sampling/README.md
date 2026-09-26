@@ -37,14 +37,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $V$ | vocabulary size |
-| $z_t$ | logit of token $t$ |
+| $V$ | Vocabulary size |
+| $z_t$ | Logit of token $t$ |
 | $m$ | $\max_t z_t$ (softmax stabiliser) |
-| $\pi_t$ | softmax probability of token $t$ |
+| $\pi_t$ | Softmax probability of token $t$ |
 | $\pi_{(r)}$ | $r$-th largest probability (descending order statistics) |
-| $c$ | cutoff rank: `searchsorted(cumsum, p)` in the reference |
-| $\mathcal N$ | the nucleus: the top $c + 1$ tokens |
-| $p$ | nucleus mass threshold |
+| $c$ | Cutoff rank: `searchsorted(cumsum, p)` in the reference |
+| $\mathcal N$ | The nucleus: the top $c + 1$ tokens |
+| $p$ | Nucleus mass threshold |
 
 ### Nucleus as a Threshold
 
@@ -58,8 +58,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | probability of the least likely nucleus token |
-| $\tau$ | candidate threshold |
+| $T$ | Probability of the least likely nucleus token |
+| $\tau$ | Candidate threshold |
 
 **Positive floats compare like their bit patterns** (the sign bit is 0 and
 the exponent sits above the mantissa). $T$ can therefore be found with a
@@ -100,9 +100,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | work: each of ~36 passes recomputes one `expf` per token |
-| $c_{\exp}$ | cost of one accurate `expf` |
-| $Q$ | the logits are read from DRAM once (200 KB), then hit in cache |
+| $W$ | Work: each of ~36 passes recomputes one `expf` per token |
+| $c_{\exp}$ | Cost of one accurate `expf` |
+| $Q$ | The logits are read from DRAM once (200 KB), then hit in cache |
 
 About $1.8$M exponentials in total, tens of microseconds on one SM. A full
 sort of 50k keys would take longer and need several kernels.

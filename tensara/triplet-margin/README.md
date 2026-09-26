@@ -33,12 +33,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\mathbf{a}_i, \mathbf{p}_i, \mathbf{n}_i$ | anchor, positive and negative embeddings of triplet $i$ (rows of $B\times E$ matrices) |
+| $\mathbf{a}_i, \mathbf{p}_i, \mathbf{n}_i$ | Anchor, positive and negative embeddings of triplet $i$ (rows of $B\times E$ matrices) |
 | $d$ | `torch.pairwise_distance`: L2 norm of the difference plus $\epsilon$ in every component |
 | $\epsilon$ | $10^{-6}$ (PyTorch's default) |
-| $m$ | margin |
+| $m$ | Margin |
 | $\ell_i$ | per-triplet hinge |
-| $\mathcal{L}$ | scalar output |
+| $\mathcal{L}$ | Scalar output |
 
 The loss is zero once the negative is farther from the anchor than the
 positive by at least $m$.
@@ -63,7 +63,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: three $B\times E$ matrices read once |
-| $W$ | two subtract-add-FMA chains per column |
+| $W$ | Two subtract-add-FMA chains per column |
 | $\beta$ | DRAM bandwidth |
 
 At $B = 256$, $E = 16384$: 50 MB, ~25 µs at 2 TB/s.

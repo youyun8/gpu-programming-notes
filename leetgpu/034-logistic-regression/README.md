@@ -33,14 +33,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n,\ f$ | number of samples and features |
-| $\mathbf x_i$ | row $i$ of $X$ (features of sample $i$) |
-| $y_i$ | label of sample $i$, 0 or 1 |
-| $\boldsymbol\beta$ | coefficients (output, length $f$) |
-| $\sigma$ | logistic sigmoid |
-| $p_i$ | predicted probability that $y_i = 1$ |
+| $n,\ f$ | Number of samples and features |
+| $\mathbf x_i$ | Row $i$ of $X$ (features of sample $i$) |
+| $y_i$ | Label of sample $i$, 0 or 1 |
+| $\boldsymbol\beta$ | Coefficients (output, length $f$) |
+| $\sigma$ | Logistic sigmoid |
+| $p_i$ | Predicted probability that $y_i = 1$ |
 | $\lambda$ | L2 regularisation, $10^{-6}$ |
-| $J$ | objective (negative log-likelihood + ridge) |
+| $J$ | Objective (negative log-likelihood + ridge) |
 
 ### Newton / IRLS Step
 
@@ -54,9 +54,9 @@ Stop when $\lVert H^{-1}\mathbf g\rVert_2 < 10^{-8}$ (at most 1000 iterations).
 
 | Symbol | Meaning |
 |---|---|
-| $\mathbf g$ | gradient of $J$ |
+| $\mathbf g$ | Gradient of $J$ |
 | $H$ | Hessian of $J$ (symmetric positive definite thanks to $\lambda I$ and the clamp) |
-| $W$ | diagonal weights $p_i(1-p_i)$, clamped away from 0 |
+| $W$ | Diagonal weights $p_i(1-p_i)$, clamped away from 0 |
 | $I$ | $f \times f$ identity |
 | $H^{-1}\mathbf g$ | Newton step, computed by a Cholesky solve (never an explicit inverse) |
 
@@ -92,7 +92,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs per Newton iteration |
-| $T_{\text{it}}$ | number of iterations (≈ 10) |
+| $T_{\text{it}}$ | Number of iterations (≈ 10) |
 
 The benchmark ($16 \times 8$) is entirely latency-bound: about 10 iterations ×
 (4 launches + 1 small device-to-host copy). A persistent single-block kernel

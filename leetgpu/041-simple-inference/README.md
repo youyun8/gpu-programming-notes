@@ -29,13 +29,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | batch size (rows of $X$ and $Y$) |
-| $d_{\text{in}},\ d_{\text{out}}$ | input and output feature sizes |
-| $X$ | input batch, $B \times d_{\text{in}}$ |
-| $W$ | weight (`model.weight`), $d_{\text{out}} \times d_{\text{in}}$ — PyTorch's `[out, in]` layout |
-| $\mathbf b$ | bias (`model.bias`), length $d_{\text{out}}$; may be absent |
-| $\mathbf 1$ | column of ones (broadcasts the bias to every row) |
-| $Y$ | output, $B \times d_{\text{out}}$ |
+| $B$ | Batch size (rows of $X$ and $Y$) |
+| $d_{\text{in}},\ d_{\text{out}}$ | Input and output feature sizes |
+| $X$ | Input batch, $B \times d_{\text{in}}$ |
+| $W$ | Weight (`model.weight`), $d_{\text{out}} \times d_{\text{in}}$ — PyTorch's `[out, in]` layout |
+| $\mathbf b$ | Bias (`model.bias`), length $d_{\text{out}}$; may be absent |
+| $\mathbf 1$ | Column of ones (broadcasts the bias to every row) |
+| $Y$ | Output, $B \times d_{\text{out}}$ |
 
 ## Approach
 
@@ -65,7 +65,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W_{\text{flop}}$ | FLOPs of the GEMM |
-| $Q$ | compulsory bytes (read $X$, $W$, write $Y$; the bias is negligible) |
+| $Q$ | Compulsory bytes (read $X$, $W$, write $Y$; the bias is negligible) |
 
 At $1000^3$: 2 GFLOP over 12 MB, a compute-bound GEMM. cuBLAS runs it at
 near-peak (TF32 tensor cores if enabled).

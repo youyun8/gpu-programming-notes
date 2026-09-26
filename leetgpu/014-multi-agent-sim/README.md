@@ -41,15 +41,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of agents |
-| $\mathbf p_i = (x_i, y_i)$ | position of agent $i$ |
-| $\mathbf v_i = (v_{x,i}, v_{y,i})$ | velocity of agent $i$ |
-| $r$ | neighbourhood radius, $r = 5$ (so $r^2 = 25$) |
-| $\mathcal N_i$ | set of neighbours of agent $i$ (itself excluded) |
-| $\lvert\mathcal N_i\rvert$ | number of neighbours |
-| $\bar{\mathbf v}_i$ | average neighbour velocity (own velocity if there are no neighbours) |
-| $\alpha$ | steering rate, $0.05$ |
-| $\mathbf v_i',\ \mathbf p_i'$ | updated velocity and position, written to `agents_next` |
+| $N$ | Number of agents |
+| $\mathbf p_i = (x_i, y_i)$ | Position of agent $i$ |
+| $\mathbf v_i = (v_{x,i}, v_{y,i})$ | Velocity of agent $i$ |
+| $r$ | Neighbourhood radius, $r = 5$ (so $r^2 = 25$) |
+| $\mathcal N_i$ | Set of neighbours of agent $i$ (itself excluded) |
+| $\lvert\mathcal N_i\rvert$ | Number of neighbours |
+| $\bar{\mathbf v}_i$ | Average neighbour velocity (own velocity if there are no neighbours) |
+| $\alpha$ | Steering rate, $0.05$ |
+| $\mathbf v_i',\ \mathbf p_i'$ | Updated velocity and position, written to `agents_next` |
 
 All updates read only the **old** state, so the step is a pure function
 `agents → agents_next`, with no read/write races.
@@ -90,8 +90,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | operations: about $c \approx 8$ FLOPs (distance, compare, accumulate) per ordered pair |
-| $Q_{\text{DRAM}}$ | bytes: every block streams all $N$ agents (16 bytes each), plus reading and writing the own state |
+| $W$ | Operations: about $c \approx 8$ FLOPs (distance, compare, accumulate) per ordered pair |
+| $Q_{\text{DRAM}}$ | Bytes: every block streams all $N$ agents (16 bytes each), plus reading and writing the own state |
 
 At $N = 10^4$, $W \approx 8\times10^8$ operations, a few hundred microseconds
 at best. For much larger $N$, the $O(N^2)$ algorithm is the problem, not the

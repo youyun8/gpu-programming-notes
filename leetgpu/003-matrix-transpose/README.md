@@ -33,12 +33,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R$ | number of rows of the input (`rows`) |
-| $C$ | number of columns of the input (`cols`) |
-| $r,\ c$ | row and column index in the input |
-| $\text{in}_{rc}$ | input element at row $r$, column $c$ |
-| $\text{out}_{cr}$ | output element at row $c$, column $r$ |
-| $\text{addr}(\cdot)$ | linear (element) offset in row-major storage |
+| $R$ | Number of rows of the input (`rows`) |
+| $C$ | Number of columns of the input (`cols`) |
+| $r,\ c$ | Row and column index in the input |
+| $\text{in}_{rc}$ | Input element at row $r$, column $c$ |
+| $\text{out}_{cr}$ | Output element at row $c$, column $r$ |
+| $\text{addr}(\cdot)$ | Linear (element) offset in row-major storage |
 
 The difficulty is visible in the address formulas. If consecutive threads
 take consecutive $c$, their reads are contiguous, but their writes are
@@ -76,9 +76,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $P$ | row pitch of the shared tile in 4-byte words (32 unpadded, 33 padded) |
-| $q$ | constant column offset $t_y + 8j$ within the row |
-| $\text{bank}(t_x)$ | bank accessed by lane $t_x$ |
+| $P$ | Row pitch of the shared tile in 4-byte words (32 unpadded, 33 padded) |
+| $q$ | Constant column offset $t_y + 8j$ within the row |
+| $\text{bank}(t_x)$ | Bank accessed by lane $t_x$ |
 
 With $P = 32$, every lane hits the same bank: a **32-way conflict**, fully
 serialised. With $P = 33$ (`tile[32][33]`), the banks are
@@ -92,10 +92,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | compulsory DRAM traffic: read every element once, write it once |
-| $W$ | arithmetic work (none) |
+| $Q$ | Compulsory DRAM traffic: read every element once, write it once |
+| $W$ | Arithmetic work (none) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | time lower bound |
+| $T_{\min}$ | Time lower bound |
 
 At the benchmark size, $Q = 2 \cdot 4 \cdot 7000 \cdot 6000 = 336$ MB. A good
 transpose runs at close to device-to-device copy bandwidth, so compare your

@@ -30,13 +30,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R,\ C$ | image rows and columns (also the output size) |
-| $K_r,\ K_c$ | kernel height and width (odd) |
-| $h_r,\ h_c$ | half sizes $\lfloor K_r/2\rfloor$, $\lfloor K_c/2\rfloor$: the kernel's centre offset |
-| $w_{mn}$ | kernel weight, $w_{mn} \ge 0$, $\sum w_{mn} = 1$ |
-| $X_{ab}$ | input pixel |
+| $R,\ C$ | Image rows and columns (also the output size) |
+| $K_r,\ K_c$ | Kernel height and width (odd) |
+| $h_r,\ h_c$ | Half sizes $\lfloor K_r/2\rfloor$, $\lfloor K_c/2\rfloor$: the kernel's centre offset |
+| $w_{mn}$ | Kernel weight, $w_{mn} \ge 0$, $\sum w_{mn} = 1$ |
+| $X_{ab}$ | Input pixel |
 | $\tilde X_{ab}$ | zero-padded input |
-| $Y_{ij}$ | output pixel, $0 \le i < R$, $0 \le j < C$ |
+| $Y_{ij}$ | Output pixel, $0 \le i < R$, $0 \le j < C$ |
 
 A true Gaussian kernel is **separable**, $w_{mn} = g_m g_n$. That would allow
 two 1-D passes costing $K_r + K_c$ instead of $K_rK_c$ taps per pixel. The

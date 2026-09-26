@@ -37,11 +37,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $I$ | input image, $h\times w$, row-major |
-| $G_x, G_y$ | horizontal and vertical central differences |
-| $M$ | gradient magnitude, $\ge 0$ |
-| $M_{\max}$ | global maximum of $M$ |
-| out | output, scaled to $[0, 255]$ |
+| $I$ | Input image, $h\times w$, row-major |
+| $G_x, G_y$ | Horizontal and vertical central differences |
+| $M$ | Gradient magnitude, $\ge 0$ |
+| $M_{\max}$ | Global maximum of $M$ |
+| out | Output, scaled to $[0, 255]$ |
 
 The global maximum is found with an integer `atomicMax` on the raw float
 bits. This is valid because, for non-negative IEEE-754 numbers,
@@ -52,7 +52,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\operatorname{bits}(a)$ | the 32-bit pattern of float $a$ read as an unsigned integer (`__float_as_uint`) |
+| $\operatorname{bits}(a)$ | The 32-bit pattern of float $a$ read as an unsigned integer (`__float_as_uint`) |
 
 ## Approach
 
@@ -76,7 +76,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes |
-| #atomics | one per warp (at most 32 K here) |
+| #atomics | One per warp (at most 32 K here) |
 
 At $4096^2$: 268 MB, ~0.13 ms at 2 TB/s. The second pass costs half the
 traffic; it is unavoidable unless the maximum were known in advance (for

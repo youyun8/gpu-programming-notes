@@ -29,11 +29,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | transform length |
-| $x_n$ | input sample (complex: `signal[2n] + i·signal[2n+1]`) |
-| $X_k$ | output coefficient (written interleaved to `spectrum`) |
-| $\omega_N$ | principal $N$-th root of unity (twiddle factor base) |
-| $i$ | imaginary unit |
+| $N$ | Transform length |
+| $x_n$ | Input sample (complex: `signal[2n] + i·signal[2n+1]`) |
+| $X_k$ | Output coefficient (written interleaved to `spectrum`) |
+| $\omega_N$ | Principal $N$-th root of unity (twiddle factor base) |
+| $i$ | Imaginary unit |
 
 Direct evaluation is $O(N^2)$, i.e. $6.9\times10^{10}$ complex multiply-adds
 for $N = 2^{18}$.
@@ -48,9 +48,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $E_k$ | length-$N/2$ DFT of the even-indexed samples $x_0, x_2, \dots$ |
-| $O_k$ | length-$N/2$ DFT of the odd-indexed samples $x_1, x_3, \dots$ |
-| $\omega_N^k$ | twiddle factor |
+| $E_k$ | Length-$N/2$ DFT of the even-indexed samples $x_0, x_2, \dots$ |
+| $O_k$ | Length-$N/2$ DFT of the odd-indexed samples $x_1, x_3, \dots$ |
+| $\omega_N^k$ | Twiddle factor |
 
 Recursing gives $\log_2 N$ levels of $N/2$ "butterflies". The total is
 $O(N\log N)$.
@@ -70,11 +70,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $s$ | size of the sub-transforms completed in earlier passes |
-| $j$ | butterfly index (one thread per butterfly) |
-| $k$ | position inside the current sub-transform |
-| $q$ | which sub-transform |
-| $e^{\mp i\pi k/s}$ | twiddle ($-$ forward, $+$ inverse), computed with `sincospif` |
+| $s$ | Size of the sub-transforms completed in earlier passes |
+| $j$ | Butterfly index (one thread per butterfly) |
+| $k$ | Position inside the current sub-transform |
+| $q$ | Which sub-transform |
+| $e^{\mp i\pi k/s}$ | Twiddle ($-$ forward, $+$ inverse), computed with `sincospif` |
 
 ### Bluestein (Chirp-Z) for Arbitrary $N$
 
@@ -94,13 +94,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $w_m$ | chirp $e^{-i\pi m^2/N}$ |
-| $\overline{\,\cdot\,}$ | complex conjugate |
+| $w_m$ | Chirp $e^{-i\pi m^2/N}$ |
+| $\overline{\,\cdot\,}$ | Complex conjugate |
 | $a_n$ | chirp-modulated input, zero for $n \ge N$ |
-| $b_m$ | conjugate chirp, stored at $m = 0..N-1$ and wrapped to $L - m$ for negative offsets |
-| $*$ | linear convolution |
-| $L$ | padded power-of-two length, $L \ge 2N-1$ |
-| $\odot$ | elementwise (pointwise) product |
+| $b_m$ | Conjugate chirp, stored at $m = 0..N-1$ and wrapped to $L - m$ for negative offsets |
+| $*$ | Linear convolution |
+| $L$ | Padded power-of-two length, $L \ge 2N-1$ |
+| $\odot$ | Elementwise (pointwise) product |
 
 ## Approach
 
@@ -133,7 +133,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | real FLOPs (standard radix-2 estimate: 5 per point per level) |
+| $W$ | Real FLOPs (standard radix-2 estimate: 5 per point per level) |
 | $Q$ | DRAM traffic: each pass reads and writes $N$ complex values (8 bytes each) |
 | $L$ | Bluestein padded length (up to $2^{19}$ for $N < 2^{18}$) |
 

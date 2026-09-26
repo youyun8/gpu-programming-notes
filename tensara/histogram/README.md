@@ -29,11 +29,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $I_{ij}$ | pixel value |
-| $n_b$ | number of bins (`num_bins`) |
-| $\text{bin}(v)$ | bin index of value $v$ after clamping |
-| $\mathbf{1}[\cdot]$ | indicator: 1 if the condition holds, else 0 |
-| $H[k]$ | count of bin $k$, $0 \le k < n_b$ |
+| $I_{ij}$ | Pixel value |
+| $n_b$ | Number of bins (`num_bins`) |
+| $\text{bin}(v)$ | Bin index of value $v$ after clamping |
+| $\mathbf{1}[\cdot]$ | Indicator: 1 if the condition holds, else 0 |
+| $H[k]$ | Count of bin $k$, $0 \le k < n_b$ |
 
 Privatization splits the count by block and sums the private copies:
 
@@ -43,9 +43,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $G$ | number of blocks |
-| $\mathcal{P}_b$ | pixels visited by block $b$ |
-| $H_b$ | block $b$'s private histogram in shared memory |
+| $G$ | Number of blocks |
+| $\mathcal{P}_b$ | Pixels visited by block $b$ |
+| $H_b$ | Block $b$'s private histogram in shared memory |
 
 ## Approach
 
@@ -72,7 +72,7 @@ $$
 |---|---|
 | $Q$ | DRAM bytes: read the image once |
 | $G n_b$ | block-to-global merges (at most one per bin per block) |
-| $hw$ | one shared-memory atomic per pixel |
+| $hw$ | One shared-memory atomic per pixel |
 
 At $4096^2$: 67 MB, ~34 µs at 2 TB/s. With 64 bins and natural images,
 many lanes of a warp hit the same bin and shared atomics serialize; one

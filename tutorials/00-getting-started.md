@@ -87,10 +87,10 @@ extern "C" void solution(const float* in, float* out, size_t n) { /* ... */ }
 | | LeetGPU | Tensara |
 |---|---|---|
 | Entry point | `solve(...)` | `solution(...)` |
-| Sizes | usually `int` | usually `size_t` |
-| Timing | wall time of `solve` | GPU time of `solution`, averaged over runs |
-| Tolerance | per problem | per problem (`rtol`, `atol`), often looser for big reductions |
-| Hardware | selectable GPU, or emulator | T4, A100, H100, L40S, … |
+| Sizes | Usually `int` | Usually `size_t` |
+| Timing | Wall time of `solve` | GPU time of `solution`, averaged over runs |
+| Tolerance | Per problem | Per problem (`rtol`, `atol`), often looser for big reductions |
+| Hardware | Selectable GPU, or emulator | T4, A100, H100, L40S, … |
 
 Always copy the exact signature from the starter code: the parameter order
 and the integer types differ from problem to problem.
@@ -154,12 +154,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t$ | measured time per call (seconds) |
-| $Q$ | bytes the kernel *must* move to and from DRAM (inputs read once, outputs written once) |
-| $W$ | useful floating-point operations (an FMA counts as 2) |
-| $\beta_{\text{eff}}$ | effective bandwidth, bytes/s |
-| $F_{\text{eff}}$ | achieved throughput, flop/s |
-| $I$ | arithmetic intensity, flops per byte |
+| $t$ | Measured time per call (seconds) |
+| $Q$ | Bytes the kernel *must* move to and from DRAM (inputs read once, outputs written once) |
+| $W$ | Useful floating-point operations (an FMA counts as 2) |
+| $\beta_{\text{eff}}$ | Effective bandwidth, bytes/s |
+| $F_{\text{eff}}$ | Achieved throughput, flop/s |
+| $I$ | Arithmetic intensity, flops per byte |
 
 The **roofline model** bounds the best possible time:
 
@@ -170,10 +170,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $F$ | peak compute throughput of the GPU for the data type used |
-| $\beta$ | peak DRAM bandwidth |
-| $T_{\min}$ | lower bound on the kernel time |
-| $I^{\star}$ | ridge point: kernels with $I < I^{\star}$ are memory-bound, those with $I > I^{\star}$ compute-bound |
+| $F$ | Peak compute throughput of the GPU for the data type used |
+| $\beta$ | Peak DRAM bandwidth |
+| $T_{\min}$ | Lower bound on the kernel time |
+| $I^{\star}$ | Ridge point: kernels with $I < I^{\star}$ are memory-bound, those with $I > I^{\star}$ compute-bound |
 
 Some rough numbers:
 

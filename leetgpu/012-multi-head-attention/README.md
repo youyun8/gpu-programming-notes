@@ -36,13 +36,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | sequence length (rows of $Q$, $K$, $V$, output) |
-| $d_{\text{model}}$ | model width (columns) |
-| $h$ | number of heads |
-| $d_k$ | head width $d_{\text{model}}/h$ |
-| $Q_i,\ K_i,\ V_i$ | column block $i$ of the inputs, each $N \times d_k$ |
-| $H_i$ | output of head $i$ ($N \times d_k$), written to columns $[i d_k, (i+1)d_k)$ |
-| $\operatorname{softmax}_{\text{row}}$ | softmax applied independently to each row |
+| $N$ | Sequence length (rows of $Q$, $K$, $V$, output) |
+| $d_{\text{model}}$ | Model width (columns) |
+| $h$ | Number of heads |
+| $d_k$ | Head width $d_{\text{model}}/h$ |
+| $Q_i,\ K_i,\ V_i$ | Column block $i$ of the inputs, each $N \times d_k$ |
+| $H_i$ | Output of head $i$ ($N \times d_k$), written to columns $[i d_k, (i+1)d_k)$ |
+| $\operatorname{softmax}_{\text{row}}$ | Softmax applied independently to each row |
 
 The per-row online-softmax update is the one derived in
 [Softmax Attention](../006-softmax-attention/): running max $m$, denominator
@@ -103,7 +103,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs: over all heads, $2N^2d_k$ for scores plus $2N^2 d_k$ for $PV$, times $h$ |
-| $Q_{\text{DRAM}}$ | bytes: read $Q$ and write the output once; each 4-row block streams all keys and values of its head |
+| $Q_{\text{DRAM}}$ | Bytes: read $Q$ and write the output once; each 4-row block streams all keys and values of its head |
 
 At $N = d_{\text{model}} = 1024$, $W \approx 4.3$ GFLOP. $K$ and $V$ (8 MB)
 fit in L2, so the $\lceil N/4\rceil$-fold re-reading is served mostly by L2.

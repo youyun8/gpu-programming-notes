@@ -32,14 +32,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ S$ | batch size and response length |
+| $B,\ S$ | Batch size and response length |
 | $\log\pi_{b,s}$ | log-probability of token $(b, s)$ under the current policy |
-| $\log\pi^{\text{old}}_{b,s}$ | same under the policy that generated the data |
-| $r_{b,s}$ | importance ratio $\pi/\pi^{\text{old}}$ |
-| $\varepsilon$ | clip range (`clip_eps`, e.g. 0.2) |
-| $\hat r$ | ratio clipped to the trust region $[1-\varepsilon, 1+\varepsilon]$ |
-| $A_{b,s}$ | advantage estimate (see [GAE](../110-gae-reverse-scan/)) |
-| $\mathcal L$ | loss: negative mean surrogate (PPO *maximises* the surrogate) |
+| $\log\pi^{\text{old}}_{b,s}$ | Same under the policy that generated the data |
+| $r_{b,s}$ | Importance ratio $\pi/\pi^{\text{old}}$ |
+| $\varepsilon$ | Clip range (`clip_eps`, e.g. 0.2) |
+| $\hat r$ | Ratio clipped to the trust region $[1-\varepsilon, 1+\varepsilon]$ |
+| $A_{b,s}$ | Advantage estimate (see [GAE](../110-gae-reverse-scan/)) |
+| $\mathcal L$ | Loss: negative mean surrogate (PPO *maximises* the surrogate) |
 
 **Why the min.** For $A > 0$, the objective stops rewarding increases of
 $r$ beyond $1+\varepsilon$. For $A < 0$, it stops rewarding decreases below
@@ -69,7 +69,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (three input arrays read once) |
-| $W$ | per token: one `expf`, clamp, two multiplies, min, add |
+| $W$ | Per token: one `expf`, clamp, two multiplies, min, add |
 
 The kernel is memory-bound for any realistic size. In training it is fused
 with the log-softmax gather that produces $\log\pi$.

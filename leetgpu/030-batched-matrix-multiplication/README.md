@@ -33,11 +33,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | batch size (`BATCH`) |
-| $M,\ N,\ K$ | rows of $A_b$/$C_b$, columns of $B_b$/$C_b$, inner dimension |
-| $b$ | batch index |
-| $r,\ c,\ k$ | row, column, inner index |
-| $A_{b,r,k}$ etc. | elements, with the contiguous 3-D offsets above |
+| $B$ | Batch size (`BATCH`) |
+| $M,\ N,\ K$ | Rows of $A_b$/$C_b$, columns of $B_b$/$C_b$, inner dimension |
+| $b$ | Batch index |
+| $r,\ c,\ k$ | Row, column, inner index |
+| $A_{b,r,k}$ etc. | Elements, with the contiguous 3-D offsets above |
 
 ## Approach
 
@@ -65,7 +65,7 @@ $$
 |---|---|
 | $W$ | FLOPs |
 | $Q$ | DRAM bytes with 64 × 64 tiling (inputs re-read once per tile row/column, output written once) |
-| $I$ | arithmetic intensity for large $M, N$ |
+| $I$ | Arithmetic intensity for large $M, N$ |
 
 For $B = 128$ at $256^3$: $W \approx 4.3$ GFLOP. The kernel is compute-bound on
 fp32 FMA. For small matrices, the "re-read" terms are L2 hits.

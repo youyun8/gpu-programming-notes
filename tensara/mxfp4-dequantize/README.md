@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $q$ | packed payload, $M\times K/2$ bytes |
+| $q$ | Packed payload, $M\times K/2$ bytes |
 | $c_{ij}$ | 4-bit code of element $(i, j)$ |
-| $u$ | scale bytes, $M\times K/32$, row-major |
+| $u$ | Scale bytes, $M\times K/32$, row-major |
 | out | FP32 result, $M\times K$ |
 
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
@@ -44,7 +44,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $c$ | 4-bit code; two codes per byte, element $2i$ in the **low** nibble |
-| $c_3$ | sign bit (bit 3) |
+| $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
 **E8M0** (the MX block scale) is a bare power of two:
@@ -55,7 +55,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $u$ | the scale byte (a biased exponent) |
+| $u$ | The scale byte (a biased exponent) |
 
 ## Approach
 

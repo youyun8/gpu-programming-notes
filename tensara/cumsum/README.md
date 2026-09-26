@@ -27,8 +27,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_j$ | input element, $0 \le j < N$ |
-| $y_i$ | output: the sum of the first $i+1$ inputs |
+| $x_j$ | Input element, $0 \le j < N$ |
+| $y_i$ | Output: the sum of the first $i+1$ inputs |
 
 With chunks of $L$ elements, block $c$ covers $[cL, (c+1)L)$ and
 
@@ -39,9 +39,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $L$ | chunk length, $256 \times 8 = 2048$ |
-| $T_c$ | total of chunk $c$ |
-| $E_c$ | exclusive carry into chunk $c$ |
+| $L$ | Chunk length, $256 \times 8 = 2048$ |
+| $T_c$ | Total of chunk $c$ |
+| $E_c$ | Exclusive carry into chunk $c$ |
 
 Inside a block, the warp-level scan uses the Hillis–Steele recurrence
 
@@ -51,8 +51,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index, $0 \dots 31$ |
-| $v^{(s)}_\ell$ | lane $\ell$'s partial sum after step $s$ (`__shfl_up_sync` by $2^s$) |
+| $\ell$ | Lane index, $0 \dots 31$ |
+| $v^{(s)}_\ell$ | Lane $\ell$'s partial sum after step $s$ (`__shfl_up_sync` by $2^s$) |
 
 ## Approach
 
@@ -77,7 +77,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: read twice, write once |
-| $W$ | additions |
+| $W$ | Additions |
 | $\beta$ | DRAM bandwidth |
 
 For $N = 2^{20}$ this is ~6 µs of traffic; the three launches and the

@@ -34,16 +34,16 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ L,\ D,\ N$ | batch, sequence length, channels (`d_model`), state size (`d_state`) |
-| $u_{t,d}$ | input at time $t$, channel $d$ (the batch index $b$ is implicit) |
-| $\Delta_{t,d}$ | positive, input-dependent step size (this is what makes the scan "selective") |
+| $B,\ L,\ D,\ N$ | Batch, sequence length, channels (`d_model`), state size (`d_state`) |
+| $u_{t,d}$ | Input at time $t$, channel $d$ (the batch index $b$ is implicit) |
+| $\Delta_{t,d}$ | Positive, input-dependent step size (this is what makes the scan "selective") |
 | $A_{d,n}$ | continuous-time state matrix (diagonal per channel), negative |
-| $\bar A_{t,n}$ | discretised decay $\in (0,1)$ (zero-order hold) |
-| $B_{t,n},\ C_{t,n}$ | input and output projections, shared by all channels of the batch |
-| $\bar B_{t,n}$ | discretised input gain (Euler) |
-| $h_{t,n}$ | hidden state of channel $d$ (length $N$) |
-| $s_d$ | skip (the "$D$" term in Mamba's notation) |
-| $y_{t,d}$ | output |
+| $\bar A_{t,n}$ | Discretised decay $\in (0,1)$ (zero-order hold) |
+| $B_{t,n},\ C_{t,n}$ | Input and output projections, shared by all channels of the batch |
+| $\bar B_{t,n}$ | Discretised input gain (Euler) |
+| $h_{t,n}$ | Hidden state of channel $d$ (length $N$) |
+| $s_d$ | Skip (the "$D$" term in Mamba's notation) |
+| $y_{t,d}$ | Output |
 
 Each $(b, d)$ pair runs $N$ independent first-order linear recurrences, the
 same form as [Linear Recurrence](../082-linear-recurrence/) with time-varying
@@ -79,9 +79,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | operations: one `expf` plus about 5 FLOPs per (b, t, d, n) |
-| $c_{\exp}$ | cost of `expf` |
-| $Q$ | bytes: read $u$, $\Delta$ and write $y$ once; every channel block re-reads $B$ and $C$ |
+| $W$ | Operations: one `expf` plus about 5 FLOPs per (b, t, d, n) |
+| $c_{\exp}$ | Cost of `expf` |
+| $Q$ | Bytes: read $u$, $\Delta$ and write $y$ once; every channel block re-reads $B$ and $C$ |
 
 Benchmark: $BLDN = 1.3\times10^8$ state updates, dominated by `expf` (the
 SFU does `ex2` at 1/4 rate), i.e. a few ms at most. Memory traffic is about

@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | length of each input |
-| $a_i,\ b_i$ | inputs `A[i]`, `B[i]` (float32) |
-| $o_k$ | output, $0 \le k < 2N$ |
+| $N$ | Length of each input |
+| $a_i,\ b_i$ | Inputs `A[i]`, `B[i]` (float32) |
+| $o_k$ | Output, $0 \le k < 2N$ |
 
 ## Approach
 

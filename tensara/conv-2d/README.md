@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input image $H\times W$, row-major; $\tilde{A}$ is $A$ with zeros outside |
-| $B$ | kernel $K_h\times K_w$, both odd |
-| $p_h, p_w$ | vertical and horizontal padding (kernel radii) |
-| $C$ | output image $H\times W$ |
-| $i, j$ | output row and column |
-| $u, v$ | kernel row and column |
+| $A$ | Input image $H\times W$, row-major; $\tilde{A}$ is $A$ with zeros outside |
+| $B$ | Kernel $K_h\times K_w$, both odd |
+| $p_h, p_w$ | Vertical and horizontal padding (kernel radii) |
+| $C$ | Output image $H\times W$ |
+| $i, j$ | Output row and column |
+| $u, v$ | Kernel row and column |
 
 For an output tile of $T_y\times T_x$ pixels and a band of $b$ kernel rows,
 the input window that the band touches is
@@ -45,8 +45,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_y, T_x$ | output tile height and width (32 × 32) |
-| $b$ | kernel rows processed per pass (8) |
+| $T_y, T_x$ | Output tile height and width (32 × 32) |
+| $b$ | Kernel rows processed per pass (8) |
 
 ## Approach
 
@@ -73,7 +73,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | floating-point operations |
-| $Q$ | bytes through L2: one staged window per band per tile (the ratio is window area over tile area), plus the output write |
+| $Q$ | Bytes through L2: one staged window per band per tile (the ratio is window area over tile area), plus the output write |
 
 At $4096^2$ with $127^2$ taps, $W = 541$ GFLOP: seconds of FP32 work, so
 arithmetic dominates everything. At $16384^2$ with $13^2$ taps, $W = 91$

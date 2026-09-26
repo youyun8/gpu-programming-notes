@@ -31,12 +31,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input signal of length $N$ |
+| $A$ | Input signal of length $N$ |
 | $\tilde{A}$ | $A$ extended with zeros (the padding) |
-| $B$ | kernel (filter) of $K$ taps, $K$ odd |
-| $r$ | kernel radius; the kernel is centred on $i$ |
-| $C$ | output of length $N$ |
-| $i$ | output index; $j$ tap index |
+| $B$ | Kernel (filter) of $K$ taps, $K$ odd |
+| $r$ | Kernel radius; the kernel is centred on $i$ |
+| $C$ | Output of length $N$ |
+| $i$ | Output index; $j$ tap index |
 
 Output $i$ touches the input window $[\,i - r,\ i + r\,]$. A block that
 produces the outputs $[b, b + T)$ therefore needs the window
@@ -47,8 +47,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | first output of the block |
-| $T$ | outputs per block (1024 here) |
+| $b$ | First output of the block |
+| $T$ | Outputs per block (1024 here) |
 
 ## Approach
 
@@ -77,7 +77,7 @@ $$
 |---|---|
 | $W$ | floating-point operations (one FMA = 2 flops) |
 | $Q$ | DRAM (or L2) bytes: input windows, output, kernel re-reads per block |
-| $I$ | arithmetic intensity, thousands of flops per byte here |
+| $I$ | Arithmetic intensity, thousands of flops per byte here |
 
 At $N = 524288$, $K = 8191$: $W = 8.6$ GFLOP. The kernel is compute-bound,
 but on the **shared-memory load** port rather than the FMA units: every FMA

@@ -38,11 +38,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of input values |
-| $k$ | number of values to return |
-| $x_{(r)}$ | the $r$-th largest value (order statistic, 0-based) |
-| $\tau$ | the $k$-th largest value (threshold) |
-| $\#\{\cdot\}$ | number of indices satisfying the condition |
+| $N$ | Number of input values |
+| $k$ | Number of values to return |
+| $x_{(r)}$ | The $r$-th largest value (order statistic, 0-based) |
+| $\tau$ | The $k$-th largest value (threshold) |
+| $\#\{\cdot\}$ | Number of indices satisfying the condition |
 
 The answer is every element $> \tau$, plus exactly
 $k - \#\{x_i > \tau\}$ copies of $\tau$.
@@ -63,11 +63,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\Pi$ | digits of $T$ determined in earlier passes (`prefix`, with `mask` marking which bits are valid) |
-| $\operatorname{digit}_p(u)$ | bits $8p \dots 8p+7$ of key $u$ |
-| $c_d$ | histogram: candidates whose current digit equals $d$ |
-| $\rho$ | rank of $T$ among the current candidates (starts at $k$) |
-| $d^\star$ | the digit of $T$ in this pass: walking from $d = 255$ down, the first bucket where the cumulative count reaches $\rho$ |
+| $\Pi$ | Digits of $T$ determined in earlier passes (`prefix`, with `mask` marking which bits are valid) |
+| $\operatorname{digit}_p(u)$ | Bits $8p \dots 8p+7$ of key $u$ |
+| $c_d$ | Histogram: candidates whose current digit equals $d$ |
+| $\rho$ | Rank of $T$ among the current candidates (starts at $k$) |
+| $d^\star$ | The digit of $T$ in this pass: walking from $d = 255$ down, the first bucket where the cumulative count reaches $\rho$ |
 
 After 4 passes, $T$ is fully known, and $\rho$ is the number of copies of $T$
 that belong to the answer.
@@ -111,7 +111,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes; every pass only reads the input (4 bytes/element) |
-| $P$ | padded sort size (next power of two $\ge k$) |
+| $P$ | Padded sort size (next power of two $\ge k$) |
 | $W_{\text{sort}}$ | compare-exchanges in the bitonic sort of the survivors |
 
 Benchmark: $Q = 1$ GB, i.e. ≈ 0.5 ms at 2 TB/s. This is independent of $k$

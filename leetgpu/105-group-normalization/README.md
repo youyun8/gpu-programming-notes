@@ -36,13 +36,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ C,\ H,\ W$ | batch, channels, height, width |
-| $G$ | number of groups ($C$ divisible by $G$) |
-| $\mathcal S_{n,g}$ | elements of group $g$ in sample $n$; $\lvert\mathcal S\rvert = (C/G)HW$ |
-| $\mu_{n,g},\ \sigma^2_{n,g}$ | group mean and biased variance |
-| $g(c)$ | group of channel $c$ |
+| $N,\ C,\ H,\ W$ | Batch, channels, height, width |
+| $G$ | Number of groups ($C$ divisible by $G$) |
+| $\mathcal S_{n,g}$ | Elements of group $g$ in sample $n$; $\lvert\mathcal S\rvert = (C/G)HW$ |
+| $\mu_{n,g},\ \sigma^2_{n,g}$ | Group mean and biased variance |
+| $g(c)$ | Group of channel $c$ |
 | $\gamma_c,\ \beta_c$ | per-channel affine parameters |
-| $\varepsilon$ | stability constant |
+| $\varepsilon$ | Stability constant |
 
 **Contiguity.** In NCHW layout, the channels $g\frac CG \dots (g+1)\frac CG - 1$
 of sample $n$ are one contiguous block of $\lvert\mathcal S\rvert$ floats,
@@ -71,7 +71,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (the second read usually hits L2 for moderate group sizes) |
-| parallelism | number of independent blocks |
+| Parallelism | Number of independent blocks |
 
 With few groups and large $HW$ (e.g. $N = 1$, $G = 32$, $64\times64$ feature
 maps), only 32 blocks run. Splitting each group over several blocks with a

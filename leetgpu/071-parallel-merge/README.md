@@ -34,11 +34,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N$ | lengths of $A$ and $B$ |
-| $k$ | an output position (a "diagonal" of the merge grid) |
-| $i$ | number of elements taken from $A$ before position $k$ |
-| $k - i$ | number taken from $B$ |
-| $A_i > B_{k-i-1}$ | the stopping condition: $A_i$ must come after $B$'s last taken element. Ties go to $A$ (stable, A-first) |
+| $M,\ N$ | Lengths of $A$ and $B$ |
+| $k$ | An output position (a "diagonal" of the merge grid) |
+| $i$ | Number of elements taken from $A$ before position $k$ |
+| $k - i$ | Number taken from $B$ |
+| $A_i > B_{k-i-1}$ | The stopping condition: $A_i$ must come after $B$'s last taken element. Ties go to $A$ (stable, A-first) |
 
 The predicate is monotone in $i$, so the co-rank is found by **binary search**
 in $O(\log\min(M, N))$ steps.
@@ -66,7 +66,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | work: one binary search per 8 outputs, plus the linear merge |
+| $W$ | Work: one binary search per 8 outputs, plus the linear merge |
 | $Q$ | DRAM bytes: read $A$ and $B$ once, write $C$ once; binary-search probes mostly hit cache |
 
 Benchmark: 400 MB of compulsory traffic, ≈ 0.2 ms. The merge loop's reads are

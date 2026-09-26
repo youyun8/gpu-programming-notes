@@ -32,9 +32,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R,\ C$ | grid rows and columns |
-| $u_{ij}$ | input value at row $i$, column $j$ (offset $iC + j$) |
-| $u'_{ij}$ | output value |
+| $R,\ C$ | Grid rows and columns |
+| $u_{ij}$ | Input value at row $i$, column $j$ (offset $iC + j$) |
+| $u'_{ij}$ | Output value |
 
 This is one step of the iteration $u^{(t+1)} = D^{-1}(b - (L + U)u^{(t)})$ for
 the discrete Laplace equation $\nabla^2 u = 0$ with Dirichlet boundaries. The
@@ -68,9 +68,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q_{\min}$ | compulsory DRAM bytes: read and write each cell once |
+| $Q_{\min}$ | Compulsory DRAM bytes: read and write each cell once |
 | $W$ | 3 adds + 1 multiply per interior cell |
-| $I$ | arithmetic intensity |
+| $I$ | Arithmetic intensity |
 
 Benchmark: 537 MB, i.e. ≈ 270 µs at 2 TB/s. Iterative solvers go beyond one
 sweep with **temporal blocking**: several time steps per tile while it is in

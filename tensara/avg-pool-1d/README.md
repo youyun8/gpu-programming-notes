@@ -30,13 +30,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $H$ | input length |
-| $k$ | window size (`kernel_size`) |
-| $S$ | stride |
-| $P$ | padding on each side |
-| $H_{\text{out}}$ | output length |
+| $H$ | Input length |
+| $k$ | Window size (`kernel_size`) |
+| $S$ | Stride |
+| $P$ | Padding on each side |
+| $H_{\text{out}}$ | Output length |
 | $\tilde x$ | zero-padded input |
-| $y_i$ | output: window average with a fixed divisor $k$ |
+| $y_i$ | Output: window average with a fixed divisor $k$ |
 
 ## Approach
 
@@ -57,7 +57,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (each input read about once thanks to caching; each output written once) |
-| $W$ | additions |
+| $W$ | Additions |
 
 Largest case ($H = 6.7\times10^7$, $S = 3$): ≈ 360 MB, i.e. ≈ 0.18 ms.
 The kernel is memory-bound.

@@ -33,13 +33,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $D,\ R,\ C$ | input depth, rows, columns |
-| $K_d,\ K_r,\ K_c$ | kernel depth, rows, columns |
-| $X_{z,r,c}$ | input voxel (depth slice $z$, row $r$, column $c$) |
-| $w_{a,b,e}$ | kernel tap |
-| $Y_{z,r,c}$ | output voxel |
-| $a,\ b,\ e$ | kernel offsets along depth, rows, columns |
-| $\text{offset}$ | linear index in the row-major (slice, row, column) layout |
+| $D,\ R,\ C$ | Input depth, rows, columns |
+| $K_d,\ K_r,\ K_c$ | Kernel depth, rows, columns |
+| $X_{z,r,c}$ | Input voxel (depth slice $z$, row $r$, column $c$) |
+| $w_{a,b,e}$ | Kernel tap |
+| $Y_{z,r,c}$ | Output voxel |
+| $a,\ b,\ e$ | Kernel offsets along depth, rows, columns |
+| $\text{offset}$ | Linear index in the row-major (slice, row, column) layout |
 
 ## Approach
 
@@ -66,9 +66,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $D_o,\ R_o,\ C_o$ | output dimensions $D-K_d+1$, $R-K_r+1$, $C-K_c+1$ |
+| $D_o,\ R_o,\ C_o$ | Output dimensions $D-K_d+1$, $R-K_r+1$, $C-K_c+1$ |
 | $W$ | FLOPs |
-| $Q_{\min}$ | compulsory DRAM traffic: read the input once, write the output once |
+| $Q_{\min}$ | Compulsory DRAM traffic: read the input once, write the output once |
 | $I_{\max}$ | best-case arithmetic intensity (when caches provide all reuse) |
 
 For a $5^3$ kernel, $I_{\max} \approx 31$ FLOP/byte, so the kernel is compute-

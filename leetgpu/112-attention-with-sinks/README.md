@@ -31,13 +31,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ d$ | sequence length and head dimension |
-| $n_s$ | number of sink tokens (`num_sinks`) |
-| $w$ | window size (`window_size`), counting the current token |
-| $\mathcal A_i$ | allowed keys of query $i$: the sinks (up to $i$) plus the last $w$ positions |
-| $s_{ij}$ | scaled score |
-| $m_i$ | max over the allowed set |
-| $O_i$ | output row |
+| $M,\ d$ | Sequence length and head dimension |
+| $n_s$ | Number of sink tokens (`num_sinks`) |
+| $w$ | Window size (`window_size`), counting the current token |
+| $\mathcal A_i$ | Allowed keys of query $i$: the sinks (up to $i$) plus the last $w$ positions |
+| $s_{ij}$ | Scaled score |
+| $m_i$ | Max over the allowed set |
+| $O_i$ | Output row |
 
 $\lvert\mathcal A_i\rvert \le n_s + w$, so the cost per query is constant, not $O(i)$.
 
@@ -66,7 +66,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs over allowed pairs |
-| tiles per block | key tiles loaded per 8-row block |
+| Tiles per block | Key tiles loaded per 8-row block |
 
 Linear in $M$. With small $w$, most lanes in a tile are masked, the same
 efficiency concern as [Sliding Window Attention](../059-sliding-window-attn/).

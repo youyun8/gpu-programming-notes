@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | matrix side length |
-| $r,\ c$ | row and column index |
-| $k$ | flattened row-major index |
-| $A,\ B$ | input matrices (float32) |
-| $C$ | output matrix (float32) |
+| $N$ | Matrix side length |
+| $r,\ c$ | Row and column index |
+| $k$ | Flattened row-major index |
+| $A,\ B$ | Input matrices (float32) |
+| $C$ | Output matrix (float32) |
 
 ### Vectorised Split
 
@@ -44,8 +44,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $V$ | number of complete `float4` groups (4 consecutive floats) |
-| $R$ | leftover scalar elements at the end, $0 \le R \le 3$ |
+| $V$ | Number of complete `float4` groups (4 consecutive floats) |
+| $R$ | Leftover scalar elements at the end, $0 \le R \le 3$ |
 
 ## Approach
 
@@ -69,8 +69,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM traffic (read $A$, $B$; write $C$) |
-| $W$ | additions |
-| $I$ | arithmetic intensity (FLOP/byte) |
+| $W$ | Additions |
+| $I$ | Arithmetic intensity (FLOP/byte) |
 | $\beta$ | DRAM bandwidth |
 
 $N = 4096$ gives $Q = 201$ MB, so $T_{\min} \approx 100\ \mu s$ at 2 TB/s.

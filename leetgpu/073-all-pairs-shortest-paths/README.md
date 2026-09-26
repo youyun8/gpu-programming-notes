@@ -29,9 +29,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of vertices |
-| $d^{(k)}_{ij}$ | shortest $i \to j$ distance using only intermediate vertices $< k$ |
-| dist | input adjacency / weight matrix ($+\infty$ where there is no edge) |
+| $N$ | Number of vertices |
+| $d^{(k)}_{ij}$ | Shortest $i \to j$ distance using only intermediate vertices $< k$ |
+| dist | Input adjacency / weight matrix ($+\infty$ where there is no edge) |
 
 Replacing $(+, \times)$ by $(\min, +)$ turns one step over all $k$ into a
 "tropical" matrix product, $d_{ij} = \min_k (d_{ik} + d_{kj})$. The $k$ loop
@@ -53,10 +53,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | tile size (32) |
-| $b$ | round index, $0 \le b < \lceil N/T\rceil$ |
-| $D_{ij}$ | tile at tile-row $i$, tile-column $j$ |
-| FW | the $T$ sequential Floyd–Warshall steps restricted to one tile |
+| $T$ | Tile size (32) |
+| $b$ | Round index, $0 \le b < \lceil N/T\rceil$ |
+| $D_{ij}$ | Tile at tile-row $i$, tile-column $j$ |
+| FW | The $T$ sequential Floyd–Warshall steps restricted to one tile |
 | $\otimes$ | $(\min, +)$ matrix product: $(X\otimes Y)_{rc} = \min_k (X_{rk} + Y_{kc})$ |
 
 Phase 3 is exact because, once the panels are final for this round, the
@@ -92,9 +92,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | operations |
-| $Q_{\text{naive}}$ | bytes with one kernel per $k$ (each reads row $k$, column $k$, and reads/writes the whole matrix) |
-| $Q_{\text{blocked}}$ | bytes with blocking: each round reads and writes every tile once, plus its two panels |
+| $W$ | Operations |
+| $Q_{\text{naive}}$ | Bytes with one kernel per $k$ (each reads row $k$, column $k$, and reads/writes the whole matrix) |
+| $Q_{\text{blocked}}$ | Bytes with blocking: each round reads and writes every tile once, plus its two panels |
 
 At $N = 2048$: $W = 1.7\times10^{10}$ operations, and $Q_{\text{blocked}} \approx 3.2$ GB
 versus ~100 GB naive. Phase 3 dominates and behaves like a GEMM with

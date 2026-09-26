@@ -27,8 +27,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B, D$ | number of rows, row length |
-| $x_{bd}, y_{bd}$ | input and output element in row $b$, column $d$ |
+| $B, D$ | Number of rows, row length |
+| $x_{bd}, y_{bd}$ | Input and output element in row $b$, column $d$ |
 | $s_b$ | L1 norm of row $b$ |
 | $\epsilon$ | $10^{-10}$, added to the norm (not clamped) as in the reference |
 
@@ -53,8 +53,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q_{\text{DRAM}}$ | read once from DRAM (second read from L2), write once |
-| #blocks | one per row |
+| $Q_{\text{DRAM}}$ | Read once from DRAM (second read from L2), write once |
+| #blocks | One per row |
 
 At $B = 256$, $D = 8192$: 16.8 MB, about 8 µs at 2 TB/s. With only 128 to
 256 blocks, each SM gets one or two; the latency of the row walk is then

@@ -18,10 +18,10 @@ Warp  ── 32 consecutive threads of a block, issued together (SIMT)
 
 | Software | Hardware | Notes |
 |---|---|---|
-| grid | the whole GPU | one kernel launch |
-| block (CTA) | one SM | a block never migrates; an SM can host several blocks at once |
-| warp | a warp scheduler slot | 32 threads that share one instruction stream |
-| thread | a lane of the SIMD units | has its own registers and predicate |
+| Grid | The whole GPU | One kernel launch |
+| Block (CTA) | One SM | A block never migrates; an SM can host several blocks at once |
+| Warp | A warp scheduler slot | 32 threads that share one instruction stream |
+| Thread | A lane of the SIMD units | Has its own registers and predicate |
 
 - A **kernel** is a function run by every thread of a grid.
 - `blockIdx`, `blockDim`, `threadIdx` and `gridDim` are built-in `dim3`
@@ -50,8 +50,8 @@ $$
 | $b_x, b_y$ | `blockIdx.x`, `blockIdx.y`: position of the block in the grid |
 | $B_x, B_y$ | `blockDim.x`, `blockDim.y`: block size |
 | $G_x$ | `gridDim.x`: number of blocks needed to cover $n$ elements |
-| $i$ | global 1-D index |
-| row, col | global 2-D coordinates; `col` uses $x$ so that consecutive threads touch consecutive columns (coalescing, chapter 02) |
+| $i$ | Global 1-D index |
+| Row, col | Global 2-D coordinates; `col` uses $x$ so that consecutive threads touch consecutive columns (coalescing, chapter 02) |
 
 The last block is usually partial, so every thread must check its index:
 
@@ -75,9 +75,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\tau$ | linear thread index inside the block |
-| $w$ | warp index inside the block (`warp_id`) |
-| $\ell$ | lane index inside the warp (`lane`) |
+| $\tau$ | Linear thread index inside the block |
+| $w$ | Warp index inside the block (`warp_id`) |
+| $\ell$ | Lane index inside the warp (`lane`) |
 
 So a $32\times8$ block has 8 warps, each one a full row of $t_x$ values.
 A $16\times16$ block also has 8 warps, but each warp covers *two* rows.
@@ -103,8 +103,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $k$ | iterations done by the thread whose first index is $i_0$ |
-| $G_x B_x$ | total number of threads, the loop stride |
+| $k$ | Iterations done by the thread whose first index is $i_0$ |
+| $G_x B_x$ | Total number of threads, the loop stride |
 
 Benefits:
 
@@ -127,8 +127,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $p$ | a distinct control-flow path taken by at least one lane |
-| $T_p$ | time to execute path $p$ |
+| $p$ | A distinct control-flow path taken by at least one lane |
+| $T_p$ | Time to execute path $p$ |
 
 - A branch that is **uniform across the warp** (`if (warp_id == 0)`,
   `if (blockIdx.x < k)`) costs nothing extra.
@@ -150,11 +150,11 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $\beta$ | DRAM bandwidth (bytes/s) |
-| $L$ | memory latency (s) |
-| $N_{\text{bytes in flight}}$ | bytes that must be requested but not yet returned, at any moment |
-| $n_{\text{SM}}$ | number of SMs |
-| $b_{\text{warp}}$ | bytes in flight per warp (for example 512 for one `float4` load per lane) |
-| $N_{\text{warps}}$ | resident warps needed per SM |
+| $L$ | Memory latency (s) |
+| $N_{\text{bytes in flight}}$ | Bytes that must be requested but not yet returned, at any moment |
+| $n_{\text{SM}}$ | Number of SMs |
+| $b_{\text{warp}}$ | Bytes in flight per warp (for example 512 for one `float4` load per lane) |
+| $N_{\text{warps}}$ | Resident warps needed per SM |
 
 For an A100 ($\beta \approx 1.5$ TB/s, $L \approx 500$ ns, 108 SMs):
 $\beta L \approx 750$ KB, i.e. about 7 KB per SM, or ~14 warps per SM each
@@ -178,14 +178,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | threads per block |
-| $T_{\max}$ | maximum resident threads per SM (2048 on A100/H100) |
-| $R_{\text{SM}}$ | registers per SM (65 536) |
-| $r$ | registers per thread (from `-Xptxas -v`; allocated in chunks) |
-| $S_{\text{SM}}$ | shared memory per SM available to blocks (up to ~164 KB on A100, ~228 KB on H100) |
-| $s$ | shared memory per block (static plus dynamic) |
-| $n_{\max}$ | maximum resident blocks per SM (32) |
-| occupancy | fraction of the SM's thread slots in use |
+| $B$ | Threads per block |
+| $T_{\max}$ | Maximum resident threads per SM (2048 on A100/H100) |
+| $R_{\text{SM}}$ | Registers per SM (65 536) |
+| $r$ | Registers per thread (from `-Xptxas -v`; allocated in chunks) |
+| $S_{\text{SM}}$ | Shared memory per SM available to blocks (up to ~164 KB on A100, ~228 KB on H100) |
+| $s$ | Shared memory per block (static plus dynamic) |
+| $n_{\max}$ | Maximum resident blocks per SM (32) |
+| Occupancy | Fraction of the SM's thread slots in use |
 
 Example: $B = 256$, $r = 64$, $s = 32$ KB on an A100 gives
 $\min(8, 4, 5, 32) = 4$ blocks, i.e. 1024 threads and 50 % occupancy.
@@ -214,10 +214,10 @@ Nsight Compute occupancy section to see the limiter.
 
 | Scope | Mechanism |
 |---|---|
-| warp | `__shfl_*_sync`, `__ballot_sync`, `__syncwarp()` |
-| block | shared memory + `__syncthreads()` |
-| grid | kernel boundary; atomics (`atomicAdd`, `atomicMax`, …); cooperative groups `grid.sync()` with a cooperative launch |
-| host | `cudaDeviceSynchronize()`, events, stream ordering |
+| Warp | `__shfl_*_sync`, `__ballot_sync`, `__syncwarp()` |
+| Block | Shared memory + `__syncthreads()` |
+| Grid | Kernel boundary; atomics (`atomicAdd`, `atomicMax`, …); cooperative groups `grid.sync()` with a cooperative launch |
+| Host | `cudaDeviceSynchronize()`, events, stream ordering |
 
 `__syncthreads()` must be reached by **every** thread of the block. A
 barrier inside `if (threadIdx.x < 16)` deadlocks or corrupts data.

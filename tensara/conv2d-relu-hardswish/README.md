@@ -33,12 +33,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\tilde{I}$ | input image with zero padding outside $H\times W$ |
-| $\kappa$ | kernel $K_h\times K_w$ |
+| $\tilde{I}$ | Input image with zero padding outside $H\times W$ |
+| $\kappa$ | Kernel $K_h\times K_w$ |
 | $p_h, p_w$ | $(K_h-1)/2$ and $(K_w-1)/2$ |
-| $C$ | convolution result |
-| $R$ | after ReLU |
-| $O$ | output after HardSwish |
+| $C$ | Convolution result |
+| $R$ | After ReLU |
+| $O$ | Output after HardSwish |
 
 Because $R \ge 0$, the composition simplifies to
 
@@ -48,7 +48,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $C$ | the convolution value at one pixel |
+| $C$ | The convolution value at one pixel |
 
 ## Approach
 
@@ -67,9 +67,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | flops: the convolution plus about 5 per pixel for the activations |
-| $Q_{\text{fused}}$ | compulsory bytes: read the image, write the output |
-| $Q_{\text{unfused}}$ | with separate ReLU and HardSwish kernels, each reading and writing an $H\times W$ image |
+| $W$ | Flops: the convolution plus about 5 per pixel for the activations |
+| $Q_{\text{fused}}$ | Compulsory bytes: read the image, write the output |
+| $Q_{\text{unfused}}$ | With separate ReLU and HardSwish kernels, each reading and writing an $H\times W$ image |
 
 For small kernels ($3\times3$ at $512^2$) the convolution is only 18
 flops per pixel and the unfused pipeline would be bandwidth-bound, so

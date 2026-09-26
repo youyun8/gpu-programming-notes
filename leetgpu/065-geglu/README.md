@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | input length (even); output length $N/2$ |
-| $x_i$ | first half (the value that is gated), $0 \le i < N/2$ |
-| $x_{i+N/2}$ | second half (the gate, passed through GELU) |
-| $\Phi$ | standard normal CDF |
-| $\operatorname{erf}$ | error function, $\operatorname{erf}(z) = \frac{2}{\sqrt\pi}\int_0^z e^{-t^2}dt$ |
-| $y_i$ | output |
+| $N$ | Input length (even); output length $N/2$ |
+| $x_i$ | First half (the value that is gated), $0 \le i < N/2$ |
+| $x_{i+N/2}$ | Second half (the gate, passed through GELU) |
+| $\Phi$ | Standard normal CDF |
+| $\operatorname{erf}$ | Error function, $\operatorname{erf}(z) = \frac{2}{\sqrt\pi}\int_0^z e^{-t^2}dt$ |
+| $y_i$ | Output |
 
 This is the **exact** GELU. The popular tanh approximation
 $\tfrac u2\bigl(1 + \tanh(\sqrt{2/\pi}(u + 0.044715u^3))\bigr)$ differs by up
@@ -55,8 +55,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: read $N$ floats, write $N/2$ |
-| $W$ | per output one `erff` (a rational/polynomial approximation, ≈ 20 instructions) plus a few multiply/adds |
+| $Q$ | Bytes: read $N$ floats, write $N/2$ |
+| $W$ | Per output one `erff` (a rational/polynomial approximation, ≈ 20 instructions) plus a few multiply/adds |
 
 At $N = 10^6$ (6 MB) the kernel is a few microseconds and memory-bound on
 most GPUs.

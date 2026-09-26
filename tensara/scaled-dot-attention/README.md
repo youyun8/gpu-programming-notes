@@ -31,12 +31,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B, H, S, E$ | batch, heads, sequence length, head dimension |
-| $\mathbf{q}_i, \mathbf{k}_j, \mathbf{v}_j$ | row $i$ of $Q$, rows $j$ of $K$ and $V$ (for one $(b, h)$) |
-| $s_{ij}$ | scaled score |
-| $P_{ij}$ | attention probability (softmax over $j$) |
-| $m_i$ | row maximum of the scores |
-| $\mathbf{o}_i$ | output row, length $E$ |
+| $B, H, S, E$ | Batch, heads, sequence length, head dimension |
+| $\mathbf{q}_i, \mathbf{k}_j, \mathbf{v}_j$ | Row $i$ of $Q$, rows $j$ of $K$ and $V$ (for one $(b, h)$) |
+| $s_{ij}$ | Scaled score |
+| $P_{ij}$ | Attention probability (softmax over $j$) |
+| $m_i$ | Row maximum of the scores |
+| $\mathbf{o}_i$ | Output row, length $E$ |
 
 The **online softmax** processes keys in tiles $\mathcal{J}_t$ of 32 and
 keeps a running max $m$, normaliser $\ell$ and unnormalised output
@@ -52,10 +52,10 @@ and at the end $\mathbf{o}_i = \mathbf{u}/\ell$.
 
 | Symbol | Meaning |
 |---|---|
-| $\mathcal{J}_t$ | the $t$-th tile of 32 keys |
-| $m, \ell, \mathbf{u}$ | running maximum, running sum of exponentials, running weighted sum of values |
-| $m', \ell', \mathbf{u}'$ | their values after tile $t$ |
-| $e^{m - m'}$ | rescaling factor applied when the maximum grows |
+| $\mathcal{J}_t$ | The $t$-th tile of 32 keys |
+| $m, \ell, \mathbf{u}$ | Running maximum, running sum of exponentials, running weighted sum of values |
+| $m', \ell', \mathbf{u}'$ | Their values after tile $t$ |
+| $e^{m - m'}$ | Rescaling factor applied when the maximum grows |
 
 ## Approach
 
@@ -85,8 +85,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | two matrix products ($QK^{\mathsf T}$ and $PV$), 2 flops per FMA |
-| $Q_{\min}$ | compulsory DRAM bytes: read $Q, K, V$, write $O$ |
+| $W$ | Two matrix products ($QK^{\mathsf T}$ and $PV$), 2 flops per FMA |
+| $Q_{\min}$ | Compulsory DRAM bytes: read $Q, K, V$, write $O$ |
 | $Q_{\text{K,V}}$ | K/V traffic: every block (4 query rows) re-streams the head's $K$ and $V$ |
 
 At $(8, 16, 2048, 64)$: $W = 275$ GFLOP. Because each block owns only 4

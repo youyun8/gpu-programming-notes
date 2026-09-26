@@ -29,10 +29,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of input values |
-| $B$ | number of bins (`num_bins`) |
+| $N$ | Number of input values |
+| $B$ | Number of bins (`num_bins`) |
 | $x_i$ | $i$-th input value, $0 \le x_i < B$ |
-| $h_v$ | count for bin $v$ |
+| $h_v$ | Count for bin $v$ |
 | $[\cdot]$ | Iverson bracket: 1 if the condition holds, else 0 |
 
 ### Privatisation
@@ -46,9 +46,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $G$ | number of blocks ($\le 1024$) |
-| $\mathcal{P}_g$ | indices processed by block $g$ (its grid-stride slice) |
-| $h^{(g)}_v$ | block $g$'s private count for bin $v$, kept in shared memory |
+| $G$ | Number of blocks ($\le 1024$) |
+| $\mathcal{P}_g$ | Indices processed by block $g$ (its grid-stride slice) |
+| $h^{(g)}_v$ | Block $g$'s private count for bin $v$, kept in shared memory |
 
 ## Approach
 
@@ -66,8 +66,8 @@ $$
 
 | Variant | Global atomics | Contention |
 |---|---|---|
-| Naive: one global atomic per element | $N = 5\times10^7$ | every thread in the GPU on 256 addresses |
-| Privatised | $\le G \cdot B = 262\,144$ | only 1024 blocks per address, once each |
+| Naive: one global atomic per element | $N = 5\times10^7$ | Every thread in the GPU on 256 addresses |
+| Privatised | $\le G \cdot B = 262\,144$ | Only 1024 blocks per address, once each |
 
 Global atomics are resolved in L2 at a fixed throughput per address, so the
 naive version is serialised on hot bins. Privatisation moves more than 99% of
@@ -83,7 +83,7 @@ $$
 |---|---|
 | $Q$ | DRAM traffic: read every input once, plus the merge of $G$ partial histograms |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | bandwidth lower bound (reading the input) |
+| $T_{\min}$ | Bandwidth lower bound (reading the input) |
 
 At the benchmark size, $Q \approx 200$ MB, i.e. $\approx 100\ \mu s$ at 2 TB/s. In
 practice, throughput depends on the data distribution. If all values fall in

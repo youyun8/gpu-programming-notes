@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input value |
-| $\sigma$ | logistic sigmoid |
-| $\operatorname{SiLU}(x)$ | output value |
+| $x$ | Input value |
+| $\sigma$ | Logistic sigmoid |
+| $\operatorname{SiLU}(x)$ | Output value |
 
 Limits: $\operatorname{SiLU}(x) \to x$ as $x \to +\infty$ and $\to 0^-$ as
 $x \to -\infty$, with a minimum of about $-0.278$ at $x \approx -1.278$.
@@ -54,7 +54,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes (read and write each element) |
-| $W$ | instruction work; $c_{\exp} \approx 10$–$20$ instructions for accurate `expf`, $c_{\div} \approx 10$ for IEEE division |
+| $W$ | Instruction work; $c_{\exp} \approx 10$–$20$ instructions for accurate `expf`, $c_{\div} \approx 10$ for IEEE division |
 
 At $N = 5\times10^4$ (200 KB) this is a single-wave kernel dominated by launch
 latency. At large $N$ it would be memory-bound on most GPUs, but closer to the

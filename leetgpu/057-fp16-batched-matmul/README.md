@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | batch size (`BATCH`) |
-| $M,\ N,\ K$ | output rows, output columns, inner dimension |
+| $B$ | Batch size (`BATCH`) |
+| $M,\ N,\ K$ | Output rows, output columns, inner dimension |
 | $A_{b,r,k}$ | fp16 element at offset $bMK + rK + k$ |
 | $B_{b,k,c}$ | fp16 element at offset $bKN + kN + c$ |
 | $C_{b,r,c}$ | fp16 result at offset $bMN + rN + c$ |
-| fp32(·), fp16(·) | widening conversion and round-to-nearest narrowing |
+| fp32(·), fp16(·) | Widening conversion and round-to-nearest narrowing |
 
 ## Approach
 
@@ -60,7 +60,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs (executed on tensor cores) |
-| $Q$ | bytes: fp16 operands re-read once per tile row/column, output written once (2 bytes/element) |
+| $Q$ | Bytes: fp16 operands re-read once per tile row/column, output written once (2 bytes/element) |
 
 At $B = 128$, $256^3$: $W = 4.3$ GFLOP, about 14 µs at 312 TFLOP/s (A100
 fp16 dense). Each matrix contributes only 16 blocks, so large batches are

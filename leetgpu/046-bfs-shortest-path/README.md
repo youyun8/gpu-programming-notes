@@ -34,10 +34,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $V$ | free cells (grid value 0), indexed $r\cdot\text{cols} + c$ |
-| $E$ | pairs of free cells that differ by one step up/down/left/right |
-| $s,\ t$ | start and goal cells |
-| $F_\ell$ | frontier: cells at distance exactly $\ell$ from $s$ |
+| $V$ | Free cells (grid value 0), indexed $r\cdot\text{cols} + c$ |
+| $E$ | Pairs of free cells that differ by one step up/down/left/right |
+| $s,\ t$ | Start and goal cells |
+| $F_\ell$ | Frontier: cells at distance exactly $\ell$ from $s$ |
 | $d(s,t)$ | shortest-path length; $-1$ if $t$ is never reached (frontier becomes empty) |
 
 Each cell enters exactly one frontier, so the total work is
@@ -79,10 +79,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | total work: each cell is expanded once, with 4 neighbour checks |
-| $L$ | number of BFS levels ($= d(s,t)$ or the eccentricity of $s$) |
-| $t_{\text{level}}$ | fixed cost per level (two barriers plus shared-memory bookkeeping) |
-| throughput$_{\text{SM}}$ | neighbour checks per second on one SM, limited by atomics and global-memory latency |
+| $W$ | Total work: each cell is expanded once, with 4 neighbour checks |
+| $L$ | Number of BFS levels ($= d(s,t)$ or the eccentricity of $s$) |
+| $t_{\text{level}}$ | Fixed cost per level (two barriers plus shared-memory bookkeeping) |
+| Throughput$_{\text{SM}}$ | Neighbour checks per second on one SM, limited by atomics and global-memory latency |
 
 Open grids have $L \approx$ rows + cols and wide frontiers. Mazes have huge
 $L$ and narrow frontiers. The persistent block handles both without

@@ -37,14 +37,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | number of queries (rows of $Q$ and of the output) |
-| $N$ | number of keys/values (rows of $K$, $V$) |
-| $d$ | head dimension (columns of $Q$, $K$, $V$, output), $\le 128$ |
-| $r,\ j,\ c$ | query index, key index, feature (column) index |
-| $s_{rj}$ | scaled attention score of query $r$ against key $j$ |
+| $M$ | Number of queries (rows of $Q$ and of the output) |
+| $N$ | Number of keys/values (rows of $K$, $V$) |
+| $d$ | Head dimension (columns of $Q$, $K$, $V$, output), $\le 128$ |
+| $r,\ j,\ c$ | Query index, key index, feature (column) index |
+| $s_{rj}$ | Scaled attention score of query $r$ against key $j$ |
 | $m_r$ | $\max_j s_{rj}$, for numerical stability |
-| $p_{rj}$ | attention weight; each row sums to 1 |
-| $O_{rc}$ | output element (`output[r*d + c]`) |
+| $p_{rj}$ | Attention weight; each row sums to 1 |
+| $O_{rc}$ | Output element (`output[r*d + c]`) |
 
 ### Online Softmax over Key Tiles
 
@@ -63,12 +63,12 @@ and at the end $O_{r,:} = \mathbf a / \ell$.
 
 | Symbol | Meaning |
 |---|---|
-| $\mathcal T$ | current tile of key indices (32 consecutive keys) |
-| $m,\ m'$ | running maximum score before and after the tile (starts at $-\infty$) |
-| $\alpha$ | correction factor that rescales everything accumulated so far to the new maximum |
-| $\ell,\ \ell'$ | running softmax denominator (starts at 0) |
-| $\mathbf a,\ \mathbf a'$ | running un-normalised output row, length $d$ (starts at 0) |
-| $V_{j,:}$ | row $j$ of $V$ |
+| $\mathcal T$ | Current tile of key indices (32 consecutive keys) |
+| $m,\ m'$ | Running maximum score before and after the tile (starts at $-\infty$) |
+| $\alpha$ | Correction factor that rescales everything accumulated so far to the new maximum |
+| $\ell,\ \ell'$ | Running softmax denominator (starts at 0) |
+| $\mathbf a,\ \mathbf a'$ | Running un-normalised output row, length $d$ (starts at 0) |
+| $V_{j,:}$ | Row $j$ of $V$ |
 
 This is the pair merge from [Softmax](../005-softmax/), extended with a
 vector-valued payload $\mathbf a$ that is rescaled by the same $\alpha$.
@@ -80,8 +80,8 @@ vector-valued payload $\mathbf a$ that is rescaled by the same $\alpha$.
 | Level | Responsibility |
 |---|---|
 | Block (128 threads = 4 warps) | 4 consecutive query rows; stages each K/V tile once for all 4 |
-| Warp | one query row $r$ |
-| Lane $\ell$ | scores key $\ell$ of the tile; owns output columns $\ell, \ell+32, \ell+64, \ell+96$ |
+| Warp | One query row $r$ |
+| Lane $\ell$ | Scores key $\ell$ of the tile; owns output columns $\ell, \ell+32, \ell+64, \ell+96$ |
 
 ### Per Tile
 
@@ -116,9 +116,9 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs: $2MNd$ for $QK^{\mathsf T}$ plus $2MNd$ for $PV$ |
-| $Q_{\text{DRAM}}$ | bytes: read $Q$, every block re-reads all of $K$ and $V$, write the output |
-| $\lceil M/4 \rceil$ | number of blocks (4 query rows each) |
-| $\text{mem}_{\text{scores}}$ | extra memory for the $M \times N$ score matrix, which is never stored |
+| $Q_{\text{DRAM}}$ | Bytes: read $Q$, every block re-reads all of $K$ and $V$, write the output |
+| $\lceil M/4 \rceil$ | Number of blocks (4 query rows each) |
+| $\text{mem}_{\text{scores}}$ | Extra memory for the $M \times N$ score matrix, which is never stored |
 
 At the benchmark size ($M = 512$, $N = 256$, $d \le 128$),
 $W \approx 67$ MFLOP, and $K$/$V$ (256 KB) stay in L2. Sharing each tile

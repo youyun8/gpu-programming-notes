@@ -29,8 +29,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $x_i,\ y_i$ | input and output values (float32) |
+| $N$ | Number of elements |
+| $x_i,\ y_i$ | Input and output values (float32) |
 | $\alpha$ | negative-side slope |
 
 Equivalently $y = \max(x, \alpha x)$ for $0 < \alpha < 1$.

@@ -30,12 +30,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | input length |
-| $A_i$ | input value |
-| $p_i$ | predicate (1 if kept) |
-| $o_i$ | output slot of element $i$: the number of kept elements before it |
-| $k$ | total number of kept elements |
-| out | compacted output |
+| $N$ | Input length |
+| $A_i$ | Input value |
+| $p_i$ | Predicate (1 if kept) |
+| $o_i$ | Output slot of element $i$: the number of kept elements before it |
+| $k$ | Total number of kept elements |
+| out | Compacted output |
 
 The exclusive scan of the predicate gives each kept element a **unique,
 order-preserving** destination. That is exactly the stability requirement.
@@ -63,7 +63,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes |
-| $k$ | number of kept elements |
+| $k$ | Number of kept elements |
 
 Benchmark: 600 MB, i.e. ≈ 0.3 ms at 2 TB/s. The scatter writes are
 contiguous per thread but not across the warp (each thread writes a variable

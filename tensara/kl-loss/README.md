@@ -28,8 +28,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $P, Q$ | target and predicted distributions |
-| $p_i, q_i$ | their probabilities (`targets[i]`, `predictions[i]`) |
+| $P, Q$ | Target and predicted distributions |
+| $p_i, q_i$ | Their probabilities (`targets[i]`, `predictions[i]`) |
 | $D_{\mathrm{KL}}$ | KL divergence (non-negative, 0 iff $P = Q$) |
 
 The required output is the element-wise term, exactly as the reference
@@ -42,9 +42,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\epsilon$ | clamp value $10^{-10}$ |
-| $\tilde{p}_i, \tilde{q}_i$ | clamped probabilities |
-| $\ln$ | natural logarithm (`logf`) |
+| $\epsilon$ | Clamp value $10^{-10}$ |
+| $\tilde{p}_i, \tilde{q}_i$ | Clamped probabilities |
+| $\ln$ | Natural logarithm (`logf`) |
 | $\text{out}_i$ | element-wise contribution; may be negative |
 
 The zero case follows the limit $\lim_{p\to0^+} p\ln p = 0$.

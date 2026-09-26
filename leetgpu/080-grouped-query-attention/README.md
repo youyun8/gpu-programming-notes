@@ -30,14 +30,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $H_q,\ H_{kv}$ | numbers of query and key/value heads |
-| $G$ | group size (query heads per KV head) |
-| $S$ | sequence length |
-| $D$ | head dimension |
+| $H_q,\ H_{kv}$ | Numbers of query and key/value heads |
+| $G$ | Group size (query heads per KV head) |
+| $S$ | Sequence length |
+| $D$ | Head dimension |
 | $Q_h$ | $S\times D$ query matrix of head $h$ (offset $hSD$) |
-| $K_{g},\ V_{g}$ | key/value matrices of KV head $g$ |
+| $K_{g},\ V_{g}$ | Key/value matrices of KV head $g$ |
 | $g(h)$ | KV head used by query head $h$ (consecutive query heads share one) |
-| $O_h$ | output of head $h$ |
+| $O_h$ | Output of head $h$ |
 
 **Special cases:** $G = 1$ is standard multi-head attention (MHA), and
 $H_{kv} = 1$ is multi-query attention (MQA).
@@ -80,7 +80,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs (scores and $PV$ for every query head) |
-| $Q_{\min}$ | compulsory bytes: read $Q$ and write the output ($H_q$ heads), read $K$ and $V$ ($H_{kv}$ heads) |
+| $Q_{\min}$ | Compulsory bytes: read $Q$ and write the output ($H_q$ heads), read $K$ and $V$ ($H_{kv}$ heads) |
 
 Benchmark: $W \approx 17$ GFLOP, and $Q_{\min} = 42$ MB versus 67 MB for MHA with
 $H_{kv} = H_q$. The kernel is compute-bound, so the gain from GQA shows up

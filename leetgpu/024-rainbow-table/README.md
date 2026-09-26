@@ -43,15 +43,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$, $x_i$ | input word (the int32 input reinterpreted as uint32) |
-| $h_b$ | hash state after consuming $b$ bytes |
-| $\operatorname{byte}_b(x)$ | the $b$-th least-significant byte of $x$ |
-| $\oplus$ | bitwise XOR |
+| $x$, $x_i$ | Input word (the int32 input reinterpreted as uint32) |
+| $h_b$ | Hash state after consuming $b$ bytes |
+| $\operatorname{byte}_b(x)$ | The $b$-th least-significant byte of $x$ |
+| $\oplus$ | Bitwise XOR |
 | $P$ | FNV 32-bit prime |
 | $\bmod 2^{32}$ | wrap-around of unsigned 32-bit arithmetic |
-| $H$ | one full hash of a 32-bit word |
-| $R$ | number of rounds |
-| $y_i$ | output (uint32) |
+| $H$ | One full hash of a 32-bit word |
+| $R$ | Number of rounds |
+| $y_i$ | Output (uint32) |
 
 ## Approach
 
@@ -72,8 +72,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | ≈ 16 integer instructions per hash (4 bytes × {shift, and, xor, mul}) times $R$ rounds |
-| $Q$ | read 4 bytes and write 4 bytes per element |
-| $I$ | operations per byte of DRAM traffic |
+| $Q$ | Read 4 bytes and write 4 bytes per element |
+| $I$ | Operations per byte of DRAM traffic |
 
 With $R = 100$, $I = 200$ ops/byte, far above any GPU's balance point.
 Throughput is bounded by the **32-bit integer multiply** rate. On most NVIDIA

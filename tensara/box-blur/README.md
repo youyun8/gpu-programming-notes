@@ -35,12 +35,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input image, $h\times w$, row-major |
-| $K$ | window side (`kernel_size`, odd) |
-| $r$ | window radius |
-| $i, j$ | pixel row and column |
-| $i_0, i_1, j_0, j_1$ | window limits clipped to the image |
-| $N_{ij}$ | number of valid pixels in the clipped window |
+| $x$ | Input image, $h\times w$, row-major |
+| $K$ | Window side (`kernel_size`, odd) |
+| $r$ | Window radius |
+| $i, j$ | Pixel row and column |
+| $i_0, i_1, j_0, j_1$ | Window limits clipped to the image |
+| $N_{ij}$ | Number of valid pixels in the clipped window |
 
 Because the clipped window is a rectangle, the sum factors:
 
@@ -50,7 +50,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $R$ | horizontal (row) sums, an intermediate $h\times w$ image |
+| $R$ | Horizontal (row) sums, an intermediate $h\times w$ image |
 
 ## Approach
 
@@ -75,7 +75,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{ops}}$ | additions in both passes |
+| $W_{\text{ops}}$ | Additions in both passes |
 | $Q$ | DRAM bytes: read $x$, write $R$, read $R$, write out |
 | $\beta$ | DRAM bandwidth |
 

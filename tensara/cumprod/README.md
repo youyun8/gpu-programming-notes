@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_j$ | input element |
-| $y_i$ | output: product of the first $i+1$ inputs |
-| 1 | identity of multiplication |
+| $x_j$ | Input element |
+| $y_i$ | Output: product of the first $i+1$ inputs |
+| 1 | Identity of multiplication |
 
 A scan works for any **associative** operator $\otimes$ with identity $e$.
 Splitting the input into chunks $c$ of length $L$:
@@ -42,11 +42,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\otimes, e$ | the scan operator and its identity ($\times$ and 1 here) |
-| $L$ | chunk length (2048) |
-| $T_c$ | total of chunk $c$ |
-| $E_c$ | exclusive carry into chunk $c$: the total of all earlier chunks |
-| $c(i)$ | the chunk that contains $i$ |
+| $\otimes, e$ | The scan operator and its identity ($\times$ and 1 here) |
+| $L$ | Chunk length (2048) |
+| $T_c$ | Total of chunk $c$ |
+| $E_c$ | Exclusive carry into chunk $c$: the total of all earlier chunks |
+| $c(i)$ | The chunk that contains $i$ |
 
 ## Approach
 
@@ -74,7 +74,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes |
-| #launches | kernel launches per call |
+| #launches | Kernel launches per call |
 
 For $N = 2^{20}$, $Q = 12.6$ MB, about 6 µs at 2 TB/s, so launch
 overhead and the single-block middle kernel are comparable to the data

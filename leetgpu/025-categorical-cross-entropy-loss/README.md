@@ -34,14 +34,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | batch size (number of samples) |
-| $C$ | number of classes |
-| $z_{jk}$ | logit of sample $j$ for class $k$ (row-major, offset $jC + k$) |
-| $\mathbf z_j$ | row $j$ of the logits |
-| $y_j$ | true class of sample $j$, $0 \le y_j < C$ |
-| $\ell_j$ | loss of sample $j$ (negative log-likelihood of the true class) |
+| $N$ | Batch size (number of samples) |
+| $C$ | Number of classes |
+| $z_{jk}$ | Logit of sample $j$ for class $k$ (row-major, offset $jC + k$) |
+| $\mathbf z_j$ | Row $j$ of the logits |
+| $y_j$ | True class of sample $j$, $0 \le y_j < C$ |
+| $\ell_j$ | Loss of sample $j$ (negative log-likelihood of the true class) |
 | $\operatorname{LSE}$ | log-sum-exp; the max shift $m_j$ keeps every exponent $\le 0$ |
-| $\mathcal L$ | batch mean loss, written to `loss[0]` |
+| $\mathcal L$ | Batch mean loss, written to `loss[0]` |
 
 The LSE is computed in one pass with the online $(m, s)$ pair merge from
 [Softmax](../005-softmax/):
@@ -73,8 +73,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: every logit once, plus the labels |
-| $W$ | work, dominated by one `expf` per logit (the online merge also rescales $s$) |
+| $Q$ | Bytes: every logit once, plus the labels |
+| $W$ | Work, dominated by one `expf` per logit (the online merge also rescales $s$) |
 | $\beta$ | DRAM bandwidth |
 
 $N = 10^4$, $C = 1000$: 40 MB of logits, so ≈ 20 µs of bandwidth. The

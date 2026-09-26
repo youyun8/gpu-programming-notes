@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | useful flops of the kernel |
-| $Q$ | bytes it must move to and from DRAM |
-| $F$ | peak compute throughput |
-| $\beta$ | peak DRAM bandwidth |
-| $T_{\min}$ | the best achievable time |
-| $I, I^{\star}$ | arithmetic intensity of the kernel, and the GPU's ridge point |
+| $W$ | Useful flops of the kernel |
+| $Q$ | Bytes it must move to and from DRAM |
+| $F$ | Peak compute throughput |
+| $\beta$ | Peak DRAM bandwidth |
+| $T_{\min}$ | The best achievable time |
+| $I, I^{\star}$ | Arithmetic intensity of the kernel, and the GPU's ridge point |
 
 Chapters 01–03 are about reaching $Q/\beta$ for kernels with $I < I^{\star}$
 (almost all elementwise, reduction and normalization problems). Chapters

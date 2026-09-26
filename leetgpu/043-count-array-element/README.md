@@ -27,11 +27,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $x_i$ | input values (int32) |
-| $K$ | the value to count |
+| $N$ | Number of elements |
+| $x_i$ | Input values (int32) |
+| $K$ | The value to count |
 | $[\cdot]$ | Iverson bracket (1 if true, else 0) |
-| count | result, written to `output[0]` |
+| Count | Result, written to `output[0]` |
 
 Integer addition is associative **and exact**, so any reduction order gives
 the same answer. Atomics are therefore safe here, unlike for float sums.

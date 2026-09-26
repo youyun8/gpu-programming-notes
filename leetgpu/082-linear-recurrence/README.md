@@ -37,12 +37,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ L$ | batch size and sequence length |
-| $a_t$ | decay / transition coefficient at step $t$ |
-| $x_t$ | input at step $t$ |
-| $h_t$ | state (output) at step $t$ |
-| $f_t$ | the affine map applied at step $t$ |
-| $(A, X)$ | an affine map $h \mapsto Ah + X$ (the composite of a range of steps) |
+| $B,\ L$ | Batch size and sequence length |
+| $a_t$ | Decay / transition coefficient at step $t$ |
+| $x_t$ | Input at step $t$ |
+| $h_t$ | State (output) at step $t$ |
+| $f_t$ | The affine map applied at step $t$ |
+| $(A, X)$ | An affine map $h \mapsto Ah + X$ (the composite of a range of steps) |
 
 Composition is **associative** (it is matrix multiplication of
 $\begin{bmatrix}A & X\\0 & 1\end{bmatrix}$), with identity $(1, 0)$. An

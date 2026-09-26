@@ -37,15 +37,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | a block of 32 elements of one row |
-| $a_t$ | input element |
-| $\alpha_b$ | block absolute maximum |
-| $\lfloor\log_2\alpha_b\rfloor$ | the float's unbiased exponent, read from bits 23–30 |
-| $e_{\max}$ | exponent of the element format's largest power of two (8 for E4M3, whose largest value is $448 = 1.75\cdot 2^8$) |
-| $E_b$ | shared block exponent |
-| $u_b$ | stored E8M0 scale byte |
-| $q_t$ | element code, rounded to nearest (ties to even) in the element format, saturating |
-| $\hat{a}_t$ | the value the code represents (what the checker compares after dequantizing) |
+| $b$ | A block of 32 elements of one row |
+| $a_t$ | Input element |
+| $\alpha_b$ | Block absolute maximum |
+| $\lfloor\log_2\alpha_b\rfloor$ | The float's unbiased exponent, read from bits 23–30 |
+| $e_{\max}$ | Exponent of the element format's largest power of two (8 for E4M3, whose largest value is $448 = 1.75\cdot 2^8$) |
+| $E_b$ | Shared block exponent |
+| $u_b$ | Stored E8M0 scale byte |
+| $q_t$ | Element code, rounded to nearest (ties to even) in the element format, saturating |
+| $\hat{a}_t$ | The value the code represents (what the checker compares after dequantizing) |
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
@@ -56,9 +56,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | the byte |
-| $s, e, f$ | sign bit, 4-bit exponent field, 3-bit mantissa field |
-| 448 | largest finite value ($e = 15$, $f = 6$) |
+| $b$ | The byte |
+| $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
+| 448 | Largest finite value ($e = 15$, $f = 6$) |
 
 The scaled block maximum $\alpha_b/2^{E_b}$ lies in $[256, 512)$, so values
 above 448 are clamped to $\pm448$ before rounding.

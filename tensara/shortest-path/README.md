@@ -33,11 +33,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $s$ | source vertex |
-| $a_{uv}$ | weight of edge $u \to v$ (0 = absent) |
-| $d^{(t)}[v]$ | shortest distance to $v$ using at most $t$ edges |
-| $T$ | number of sweeps performed |
-| out | final distances, $-1$ if unreachable |
+| $s$ | Source vertex |
+| $a_{uv}$ | Weight of edge $u \to v$ (0 = absent) |
+| $d^{(t)}[v]$ | Shortest distance to $v$ using at most $t$ edges |
+| $T$ | Number of sweeps performed |
+| out | Final distances, $-1$ if unreachable |
 
 After $t$ sweeps $d^{(t)}$ is exact for every vertex whose shortest path
 has at most $t$ edges, so the iteration can stop at the first sweep that
@@ -49,7 +49,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $d^{(\infty)}$ | the true shortest distances (reached after at most $N - 1$ sweeps) |
+| $d^{(\infty)}$ | The true shortest distances (reached after at most $N - 1$ sweeps) |
 
 ## Approach
 
@@ -72,7 +72,7 @@ $$
 |---|---|
 | $Q$ | DRAM bytes: the whole matrix per sweep |
 | $W$ | add-and-compare operations |
-| $T$ | sweeps until convergence |
+| $T$ | Sweeps until convergence |
 
 At $N = 8192$ the matrix is 268 MB, about 0.13 ms per sweep at 2 TB/s. For
 random dense graphs shortest paths have few edges, so $T$ is small; the

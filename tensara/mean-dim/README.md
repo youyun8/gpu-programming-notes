@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S_k$ | size of axis $k$; $d$ is `dim` |
-| $O$ | outer size (product of the axes before $d$) |
-| $R$ | length of the reduced axis |
-| $I$ | inner size (product of the axes after $d$); also the memory stride of the reduced axis |
-| $x[o, j, i]$ | the element at outer index $o$, reduced index $j$, inner index $i$ |
+| $S_k$ | Size of axis $k$; $d$ is `dim` |
+| $O$ | Outer size (product of the axes before $d$) |
+| $R$ | Length of the reduced axis |
+| $I$ | Inner size (product of the axes after $d$); also the memory stride of the reduced axis |
+| $x[o, j, i]$ | The element at outer index $o$, reduced index $j$, inner index $i$ |
 
 $$
 \text{out}[oI + i] = \frac{1}{R}\sum_{j=0}^{R-1} x[o, j, i]
@@ -43,7 +43,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | out | $O\cdot I$ results, index $oI + i$ |
-| $1/R$ | applied once at the end (`finish`) |
+| $1/R$ | Applied once at the end (`finish`) |
 
 ## Approach
 

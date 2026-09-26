@@ -27,11 +27,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $M\times N$ float32, row-major |
-| $C$ | output matrix, same shape |
-| $x$ | one input element $A_{ij}$ |
-| $\ln(1 + e^x)$ | smooth approximation of $\max(x, 0)$, computed as `log1pf(expf(x))` |
-| $\tau$ | threshold 20: above it, $\ln(1 + e^x) = x$ to float precision |
+| $A$ | Input matrix, $M\times N$ float32, row-major |
+| $C$ | Output matrix, same shape |
+| $x$ | One input element $A_{ij}$ |
+| $\ln(1 + e^x)$ | Smooth approximation of $\max(x, 0)$, computed as `log1pf(expf(x))` |
+| $\tau$ | Threshold 20: above it, $\ln(1 + e^x) = x$ to float precision |
 
 Why the threshold: $e^x$ overflows for $x > 88.7$, and already at $x = 20$
 
@@ -41,7 +41,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $2^{-24}\cdot 20$ | half an ulp of $x$ at $x = 20$, about $1.2\times10^{-6}$ |
+| $2^{-24}\cdot 20$ | Half an ulp of $x$ at $x = 20$, about $1.2\times10^{-6}$ |
 
 ## Approach
 
@@ -67,10 +67,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $8192\times8192$: $Q = 537$ MB, about 0.27 ms at 2 TB/s.
 

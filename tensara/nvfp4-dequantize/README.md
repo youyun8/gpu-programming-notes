@@ -33,8 +33,8 @@ $$
 |---|---|
 | $c_{i\ell}$ | 4-bit E2M1 code (two per byte, low nibble first) |
 | $s_{i\beta}$ | E4M3 scale byte of block $\beta$, stored in the swizzled layout |
-| $g$ | global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
-| $\hat{a}_{i\ell}$ | the value the encoding represents |
+| $g$ | Global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
+| $\hat{a}_{i\ell}$ | The value the encoding represents |
 
 $$
 \text{out}_{i\ell} = \operatorname{e2m1}(c_{i\ell})\cdot\operatorname{e4m3}\bigl(s[\operatorname{idx}(i, \lfloor\ell/16\rfloor)]\bigr)\cdot\frac{1}{g}
@@ -43,7 +43,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | out | FP32 result, $M\times K$ |
-| idx | swizzled scale index (below) |
+| idx | Swizzled scale index (below) |
 
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
@@ -56,7 +56,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $c$ | 4-bit code; two codes per byte, element $2i$ in the **low** nibble |
-| $c_3$ | sign bit (bit 3) |
+| $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
@@ -68,9 +68,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | the byte |
-| $s, e, f$ | sign bit, 4-bit exponent field, 3-bit mantissa field |
-| 448 | largest finite value ($e = 15$, $f = 6$) |
+| $b$ | The byte |
+| $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
+| 448 | Largest finite value ($e = 15$, $f = 6$) |
 
 **Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
@@ -83,10 +83,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $r$ | matrix row |
-| $c$ | scale column (block index along $K$) |
-| $C$ | number of scale columns, $K/\text{block}$ |
-| idx | byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
+| $r$ | Matrix row |
+| $c$ | Scale column (block index along $K$) |
+| $C$ | Number of scale columns, $K/\text{block}$ |
+| idx | Byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
 
 Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
 16-byte load gives a thread the 4 scales of 4 rows it needs.

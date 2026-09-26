@@ -23,11 +23,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A, B, C$ | operands and result |
-| $M, N, K$ | rows of $C$, columns of $C$, reduction length |
-| $W$ | flops (each multiply-add counts as 2) |
-| $Q_{\min}$ | compulsory DRAM bytes if every element were read or written exactly once |
-| $I_{\max}$ | best possible arithmetic intensity; for square $n\times n$ matrices it grows like $n/6$ |
+| $A, B, C$ | Operands and result |
+| $M, N, K$ | Rows of $C$, columns of $C$, reduction length |
+| $W$ | Flops (each multiply-add counts as 2) |
+| $Q_{\min}$ | Compulsory DRAM bytes if every element were read or written exactly once |
+| $I_{\max}$ | Best possible arithmetic intensity; for square $n\times n$ matrices it grows like $n/6$ |
 
 At $n = 4096$, $I_{\max} \approx 680$ flop/byte, far above any GPU's ridge
 point (chapter 00). The whole game is to get the *actual* intensity, as
@@ -56,7 +56,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $I_{\text{naive}}$ | intensity seen by the load/store units |
+| $I_{\text{naive}}$ | Intensity seen by the load/store units |
 
 Caches rescue some of it (the warp's 32 threads share the row of $A$, and
 neighbouring warps reuse $B$), but the kernel still typically reaches only
@@ -73,8 +73,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\mathcal{I}, \mathcal{J}$ | the $T$ rows and $T$ columns of one output tile |
-| $\mathcal{K}_s$ | the $s$-th slice of $T$ reduction indices |
+| $\mathcal{I}, \mathcal{J}$ | The $T$ rows and $T$ columns of one output tile |
+| $\mathcal{K}_s$ | The $s$-th slice of $T$ reduction indices |
 | $A_{\mathcal{I},\mathcal{K}_s}$, $B_{\mathcal{K}_s,\mathcal{J}}$ | $T\times T$ sub-matrices staged in shared memory |
 
 ```cpp
@@ -114,8 +114,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | tile width (32 here) |
-| $Q_{\text{tiled}}$ | bytes loaded from global memory (L2/DRAM) in total |
+| $T$ | Tile width (32 here) |
+| $Q_{\text{tiled}}$ | Bytes loaded from global memory (L2/DRAM) in total |
 | $I_{\text{tiled}}$ | global-memory intensity: global traffic drops by a factor of $T$ |
 
 With $T = 32$, $I = 8$ flop/byte from L2/DRAM. The new bottleneck is shared
@@ -137,10 +137,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t_M, t_N$ | outputs per thread along $M$ and $N$ (register tile) |
-| $B_M, B_N$ | outputs per block (block tile) |
-| $B_K$ | depth of one K-slice staged in shared memory |
-| $I_{\text{L2}}$ | flops per byte loaded into shared memory from L2/DRAM |
+| $t_M, t_N$ | Outputs per thread along $M$ and $N$ (register tile) |
+| $B_M, B_N$ | Outputs per block (block tile) |
+| $B_K$ | Depth of one K-slice staged in shared memory |
+| $I_{\text{L2}}$ | Flops per byte loaded into shared memory from L2/DRAM |
 
 | Configuration | FMAs per shared load | $I_{\text{L2}}$ (flop/B) |
 |---|---|---|
@@ -185,18 +185,18 @@ Details that matter:
 | Technique | Why it helps |
 |-----------|-----|
 | `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments |
-| Double buffering (two sets of tiles) | load slice $s+1$ while computing slice $s$; one barrier per slice instead of two |
-| `cp.async` (sm_80+) / TMA (sm_90) | global → shared copies without going through registers, asynchronous |
-| Warp tiling | a warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse |
-| Swizzled tile order ("grouped" launch) | blocks that run together share rows of $A$ and columns of $B$ in L2 |
-| Split-K / Stream-K | more parallelism when $M\cdot N$ has too few tiles to fill the GPU |
+| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two |
+| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous |
+| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse |
+| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 |
+| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU |
 | Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow |
 
 A typical progression on one GPU, as a fraction of cuBLAS FP32:
 
 | Kernel | Fraction of cuBLAS |
 |---|---|
-| naive | 1–5 % |
+| Naive | 1–5 % |
 | shared-memory tiling | 10–20 % |
 | $4\times4$ register tiling | 40–60 % |
 | $8\times8$, `float4`, double buffering, warp tiling | 80–95 % |

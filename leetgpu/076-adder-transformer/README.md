@@ -63,19 +63,19 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t$, $t_p$ | a digit token (0–9); the token at position $p$ |
-| $w_0, w_1$ | embedding parameters (`w[0]`, `w[1]`) |
+| $t$, $t_p$ | A digit token (0–9); the token at position $p$ |
+| $w_0, w_1$ | Embedding parameters (`w[0]`, `w[1]`) |
 | $e(t)$ | 2-D token embedding (also the output projection, since the embeddings are tied) |
 | $\varepsilon$ | $10^{-6}$ |
-| $q_0, q_1, v_0$ | query and value parameters (`w[2..4]`); the key projection has no parameters |
+| $q_0, q_1, v_0$ | Query and value parameters (`w[2..4]`); the key projection has no parameters |
 | $\omega$ | RoPE angular frequency $2\pi/19$ |
 | $R_\theta$ | 2-D rotation (RoPE on a 2-dimensional head) |
-| $\lambda$ | attention scale, a model constant: $2^{-1/2}\cdot\frac{\ln 10}{\sqrt2\,(\cos 0.3\omega - \cos 0.7\omega)}$ |
-| $m$ | max logit for the softmax shift |
-| $a_L$ | attention output (the value vector has only dimension 0, written into hidden dim 1) |
+| $\lambda$ | Attention scale, a model constant: $2^{-1/2}\cdot\frac{\ln 10}{\sqrt2\,(\cos 0.3\omega - \cos 0.7\omega)}$ |
+| $m$ | Max logit for the softmax shift |
+| $a_L$ | Attention output (the value vector has only dimension 0, written into hidden dim 1) |
 | $\alpha, \gamma, c$ | MLP gate and carry parameters (`w[5..7]`) |
-| $\nu_0, \nu_1$ | final RMSNorm weights (`w[8]`, `w[9]`) |
-| $\text{logit}_t$ | output score of digit $t$, written for every decode step |
+| $\nu_0, \nu_1$ | Final RMSNorm weights (`w[8]`, `w[9]`) |
+| $\text{logit}_t$ | Output score of digit $t$, written for every decode step |
 
 ## Approach
 
@@ -114,10 +114,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | batch size |
-| $c_{\text{append}}$ | cost of embedding a token and caching its key/value (≈ 30 FLOPs + sin/cos) |
-| $c_{\text{step}}$ | fixed per-step cost (query, MLP, norm, 10 logits ≈ 100 FLOPs + 3 exp) |
-| $6(31+s)$ | attention over the current length (dot, exp, two accumulations) |
+| $B$ | Batch size |
+| $c_{\text{append}}$ | Cost of embedding a token and caching its key/value (≈ 30 FLOPs + sin/cos) |
+| $c_{\text{step}}$ | Fixed per-step cost (query, MLP, norm, 10 logits ≈ 100 FLOPs + 3 exp) |
+| $6(31+s)$ | Attention over the current length (dot, exp, two accumulations) |
 
 A few thousand FLOPs per sequence: negligible. Without the KV cache
 (recomputing all positions each step, as the reference does), the work would

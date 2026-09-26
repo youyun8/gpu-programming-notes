@@ -22,11 +22,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of inputs |
-| $W$ | work: total number of additions |
-| $D$ | depth: length of the longest chain of dependent additions |
-| $p$ | number of processors (threads working at once) |
-| $T_p$ | time steps with $p$ processors (Brent's theorem) |
+| $n$ | Number of inputs |
+| $W$ | Work: total number of additions |
+| $D$ | Depth: length of the longest chain of dependent additions |
+| $p$ | Number of processors (threads working at once) |
+| $T_p$ | Time steps with $p$ processors (Brent's theorem) |
 
 The tree is **work-efficient** (same $W$ as the sequential sum) and has
 logarithmic depth. On a GPU, $p$ is in the tens of thousands while $n$ is in
@@ -76,9 +76,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index |
-| $v^{(s)}_\ell$ | lane $\ell$'s value after step $s$ |
-| $\delta_s$ | shuffle offset at step $s$; after 5 steps lane 0 holds the warp's sum |
+| $\ell$ | Lane index |
+| $v^{(s)}_\ell$ | Lane $\ell$'s value after step $s$ |
+| $\delta_s$ | Shuffle offset at step $s$; after 5 steps lane 0 holds the warp's sum |
 
 With `__shfl_xor_sync` (a butterfly) instead, *every* lane ends with the
 full sum, which saves a broadcast when all lanes need the result (softmax,
@@ -121,12 +121,12 @@ versions. The lessons still hold:
 | # | Change | What it fixes |
 |---|---|---|
 | 1 | Interleaved addressing, `if (tid % (2*s) == 0)` | (baseline) heavy divergence: half the lanes of every warp idle from the first step |
-| 2 | Strided index `index = 2*s*tid` | divergence, but introduces shared-memory bank conflicts |
-| 3 | Sequential addressing (above) | bank conflicts |
-| 4 | First add during the global load | half the threads idled in the first level |
-| 5 | Unroll the last warp | barriers and loop overhead when only one warp is left (today: shuffles) |
-| 6 | Complete unrolling with templates | loop overhead |
-| 7 | Many elements per thread (grid-stride) | the kernel becomes bandwidth-bound: the target |
+| 2 | Strided index `index = 2*s*tid` | Divergence, but introduces shared-memory bank conflicts |
+| 3 | Sequential addressing (above) | Bank conflicts |
+| 4 | First add during the global load | Half the threads idled in the first level |
+| 5 | Unroll the last warp | Barriers and loop overhead when only one warp is left (today: shuffles) |
+| 6 | Complete unrolling with templates | Loop overhead |
+| 7 | Many elements per thread (grid-stride) | The kernel becomes bandwidth-bound: the target |
 
 The reduction reads each input once, so its bound is
 
@@ -136,7 +136,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $4n$ | bytes read (float inputs) |
+| $4n$ | Bytes read (float inputs) |
 | $\beta$ | DRAM bandwidth |
 
 Version 7 plus `float4` loads reaches 85–95 % of it.
@@ -148,10 +148,10 @@ step:
 
 | Method | How | Deterministic? |
 |---|---|---|
-| Atomics | thread 0 of each block does `atomicAdd(out, block_sum)` | no: the order of additions varies from run to run |
-| Two kernels | kernel 1 writes $G$ partials; kernel 2 (one block) reduces them | yes |
-| Last-block | each block writes its partial, `__threadfence()`, increments a counter; the block that sees the count reach $G$ reduces the partials | yes |
-| Cooperative groups | `grid.sync()` inside one cooperative launch | yes |
+| Atomics | Thread 0 of each block does `atomicAdd(out, block_sum)` | No: the order of additions varies from run to run |
+| Two kernels | Kernel 1 writes $G$ partials; kernel 2 (one block) reduces them | Yes |
+| Last-block | Each block writes its partial, `__threadfence()`, increments a counter; the block that sees the count reach $G$ reduces the partials | Yes |
+| Cooperative groups | `grid.sync()` inside one cooperative launch | Yes |
 
 The two-kernel version is used by most problem pages here (for example
 [Tensara – Frobenius Norm](../tensara/frobenius-norm/) and
@@ -172,9 +172,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $s, \hat{s}$ | exact and computed sums |
-| $u$ | unit roundoff: $2^{-24}$ for fp32, $2^{-53}$ for fp64 |
-| $\gamma_k$ | error growth factor after $k$ dependent additions |
+| $s, \hat{s}$ | Exact and computed sums |
+| $u$ | Unit roundoff: $2^{-24}$ for fp32, $2^{-53}$ for fp64 |
+| $\gamma_k$ | Error growth factor after $k$ dependent additions |
 
 The GPU scheme (per-thread sequential chains, then a tree) sits between the
 two: the chain length is about $n/p$. Practical consequences:
@@ -199,16 +199,16 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\oplus$ | the combine operator |
-| $e$ | its identity element (what padding lanes contribute) |
+| $\oplus$ | The combine operator |
+| $e$ | Its identity element (what padding lanes contribute) |
 
 | Reduction | State | Identity $e$ | Combine $(a \oplus b)$ |
 |---|---|---|---|
-| sum | $s$ | 0 | $s_a + s_b$ |
-| max | $m$ | $-\infty$ | $\max(m_a, m_b)$ |
-| arg-max (first index) | $(v, j)$ | $(-\infty, \infty)$ | the larger $v$; on ties the smaller $j$ |
-| softmax normaliser | $(m, z)$ | $(-\infty, 0)$ | $M = \max(m_a, m_b)$, $z = z_ae^{m_a - M} + z_be^{m_b - M}$ |
-| mean and variance (Welford / Chan) | $(n, \mu, M_2)$ | $(0, 0, 0)$ | see below |
+| Sum | $s$ | 0 | $s_a + s_b$ |
+| Max | $m$ | $-\infty$ | $\max(m_a, m_b)$ |
+| arg-max (first index) | $(v, j)$ | $(-\infty, \infty)$ | The larger $v$; on ties the smaller $j$ |
+| Softmax normaliser | $(m, z)$ | $(-\infty, 0)$ | $M = \max(m_a, m_b)$, $z = z_ae^{m_a - M} + z_be^{m_b - M}$ |
+| Mean and variance (Welford / Chan) | $(n, \mu, M_2)$ | $(0, 0, 0)$ | See below |
 
 Chan's parallel merge for the mean and the sum of squared deviations:
 
@@ -220,11 +220,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n_a, n_b$ | element counts of the two partial results |
-| $\mu_a, \mu_b$ | their means |
-| $M_{2,a}, M_{2,b}$ | their sums of squared deviations from their own means |
-| $\delta$ | difference of the means |
-| $\mu, M_2$ | merged mean and sum of squared deviations; the variance is $M_2 / n$ |
+| $n_a, n_b$ | Element counts of the two partial results |
+| $\mu_a, \mu_b$ | Their means |
+| $M_{2,a}, M_{2,b}$ | Their sums of squared deviations from their own means |
+| $\delta$ | Difference of the means |
+| $\mu, M_2$ | Merged mean and sum of squared deviations; the variance is $M_2 / n$ |
 
 This gives mean and variance in a single pass without the cancellation of
 $\mathbb{E}[x^2] - \mathbb{E}[x]^2$. The Tensara pages implement exactly

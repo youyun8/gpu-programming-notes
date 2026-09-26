@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $I$ | input image, $h\times w$ float32, values in $[0, 255]$ |
-| $\theta$ | threshold (`threshold_value`) |
-| out | binary output image, values in $\{0, 255\}$ |
+| $I$ | Input image, $h\times w$ float32, values in $[0, 255]$ |
+| $\theta$ | Threshold (`threshold_value`) |
+| out | Binary output image, values in $\{0, 255\}$ |
 
 ## Approach
 
@@ -55,10 +55,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $3840\times2160$: $Q = 66$ MB, about 33 µs at 2 TB/s; at this size launch overhead (a few µs) is already visible.
 

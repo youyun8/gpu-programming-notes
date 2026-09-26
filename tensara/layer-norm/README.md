@@ -34,13 +34,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | batch size: one normalization group per sample |
-| $G$ | group size, the product of the normalized axes |
-| $x_{b,g}$ | element $g$ (flattened over $F, D_1, D_2$) of sample $b$; offset $bG + g$ |
-| $\mu_b, \sigma_b^2$ | mean and biased variance of sample $b$ |
-| $\gamma_g, \beta_g$ | scale and shift for position $g$ (shared across the batch) |
+| $B$ | Batch size: one normalization group per sample |
+| $G$ | Group size, the product of the normalized axes |
+| $x_{b,g}$ | Element $g$ (flattened over $F, D_1, D_2$) of sample $b$; offset $bG + g$ |
+| $\mu_b, \sigma_b^2$ | Mean and biased variance of sample $b$ |
+| $\gamma_g, \beta_g$ | Scale and shift for position $g$ (shared across the batch) |
 | $\epsilon$ | $10^{-5}$ |
-| $y_{b,g}$ | output |
+| $y_{b,g}$ | Output |
 
 Contrast with [Batch Norm](../batch-norm/): there the statistics are per
 channel across the batch; here they are per sample across the features.

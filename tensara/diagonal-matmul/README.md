@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\mathbf{a}$ | diagonal entries, length $N$ |
-| $\operatorname{diag}(\mathbf{a})$ | the $N\times N$ diagonal matrix (never materialized) |
-| $B$ | input matrix $N\times M$, row-major |
-| $C$ | output matrix $N\times M$ |
-| $i, j, k$ | row, column, and summation indices |
+| $\mathbf{a}$ | Diagonal entries, length $N$ |
+| $\operatorname{diag}(\mathbf{a})$ | The $N\times N$ diagonal matrix (never materialized) |
+| $B$ | Input matrix $N\times M$, row-major |
+| $C$ | Output matrix $N\times M$ |
+| $i, j, k$ | Row, column, and summation indices |
 
 ## Approach
 
@@ -52,7 +52,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: read $B$, write $C$, read $\mathbf{a}$ |
-| $W$ | multiplications |
+| $W$ | Multiplications |
 | $\beta$ | DRAM bandwidth |
 
 At $8192\times4096$: $Q = 268$ MB, about 0.13 ms at 2 TB/s. The GEMM route

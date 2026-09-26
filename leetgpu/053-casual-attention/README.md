@@ -30,13 +30,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | sequence length (queries = keys = values) |
-| $d$ | head dimension |
-| $\mathbf q_i,\ \mathbf k_j,\ \mathbf v_j$ | rows of $Q$, $K$, $V$ |
-| $s_{ij}$ | scaled score |
-| $\tilde s_{ij}$ | masked score ($e^{-\infty} = 0$, so future keys get weight 0) |
-| $m_i$ | row maximum over the *visible* keys $j \le i$ |
-| $O_{i,:}$ | output row $i$ |
+| $M$ | Sequence length (queries = keys = values) |
+| $d$ | Head dimension |
+| $\mathbf q_i,\ \mathbf k_j,\ \mathbf v_j$ | Rows of $Q$, $K$, $V$ |
+| $s_{ij}$ | Scaled score |
+| $\tilde s_{ij}$ | Masked score ($e^{-\infty} = 0$, so future keys get weight 0) |
+| $m_i$ | Row maximum over the *visible* keys $j \le i$ |
+| $O_{i,:}$ | Output row $i$ |
 
 Row $i$ has $i + 1$ visible keys, so the total number of (query, key) pairs
 is
@@ -76,7 +76,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs for scores and $PV$ over visible pairs only |
-| $r_0$ | first query row of the block |
+| $r_0$ | First query row of the block |
 
 This is half of the dense attention cost. At $M = 10^4$, $d = 128$:
 $W \approx 2.6\times10^{10}$ FLOP, compute-bound on fp32 FMA and shared loads.

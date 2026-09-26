@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x_{ij}, y_{ij}$ | input and output of row $i$, column $j$ |
+| $x_{ij}, y_{ij}$ | Input and output of row $i$, column $j$ |
 | $\operatorname{LSE}_i$ | log-sum-exp of row $i$ |
-| $m_i$ | row maximum; subtracting it keeps every exponent $\le 0$ (no overflow) |
+| $m_i$ | Row maximum; subtracting it keeps every exponent $\le 0$ (no overflow) |
 
 The maximum and the sum are computed together in one pass with the
 **online** update of a pair $(m, s)$, where $s = \sum e^{x - m}$:
@@ -40,9 +40,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $(m, s)$ | running maximum and running sum of $e^{x - m}$ |
-| $\oplus$ | associative merge; a new element $x$ is merged as $(x, 1)$ |
-| $M$ | the larger of the two maxima |
+| $(m, s)$ | Running maximum and running sum of $e^{x - m}$ |
+| $\oplus$ | Associative merge; a new element $x$ is merged as $(x, 1)$ |
+| $M$ | The larger of the two maxima |
 
 ## Approach
 
@@ -61,8 +61,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes; the re-read hits L2 when a row (up to 32 KB) is still resident |
-| #exp | exponentials in the online pass |
+| $Q$ | Bytes; the re-read hits L2 when a row (up to 32 KB) is still resident |
+| #exp | Exponentials in the online pass |
 
 At $8192^2$: 268 MB in and out, ~0.27 ms at 2 TB/s. Unlike softmax, the
 write pass needs no second exponential.

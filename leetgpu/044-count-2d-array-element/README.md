@@ -27,11 +27,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ M$ | rows and columns |
-| $x_{rc}$ | element at row $r$, column $c$ (int32) |
-| $i$ | flattened row-major index |
-| $K$ | value to count |
-| count | exact result in `output[0]` |
+| $N,\ M$ | Rows and columns |
+| $x_{rc}$ | Element at row $r$, column $c$ (int32) |
+| $i$ | Flattened row-major index |
+| $K$ | Value to count |
+| Count | Exact result in `output[0]` |
 
 ## Approach
 

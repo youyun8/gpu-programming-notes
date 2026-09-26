@@ -27,12 +27,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ M$ | matrix rows and columns |
-| $x_{rc}$ | element at offset $rM + c$ |
+| $N,\ M$ | Matrix rows and columns |
+| $x_{rc}$ | Element at offset $rM + c$ |
 | $r_0, r_1$ | `S_ROW`, `E_ROW` |
 | $c_0, c_1$ | `S_COL`, `E_COL` |
-| $h,\ w$ | rectangle height $r_1 - r_0 + 1$ and width $c_1 - c_0 + 1$ |
-| $i$ | flat index over the rectangle, column-fastest |
+| $h,\ w$ | Rectangle height $r_1 - r_0 + 1$ and width $c_1 - c_0 + 1$ |
+| $i$ | Flat index over the rectangle, column-fastest |
 
 ## Approach
 
@@ -52,8 +52,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes actually needed |
-| sectors | 32-byte DRAM sectors fetched; each row segment may straddle one extra sector at each end |
+| $Q$ | Bytes actually needed |
+| Sectors | 32-byte DRAM sectors fetched; each row segment may straddle one extra sector at each end |
 
 For narrow rectangles (small $w$), the per-row overhead dominates. For the
 full-width benchmark, efficiency is essentially 100%.

@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $L$ | input length (`input_size`) |
-| $K$ | kernel length (`kernel_size`) |
-| $x_n$ | input signal, $0 \le n < L$ |
-| $w_j$ | kernel weight, $0 \le j < K$ |
-| $y_i$ | output sample; there are $L - K + 1$ of them ("valid" positions only) |
+| $L$ | Input length (`input_size`) |
+| $K$ | Kernel length (`kernel_size`) |
+| $x_n$ | Input signal, $0 \le n < L$ |
+| $w_j$ | Kernel weight, $0 \le j < K$ |
+| $y_i$ | Output sample; there are $L - K + 1$ of them ("valid" positions only) |
 
 ### Tiling
 
@@ -47,9 +47,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | block index |
-| $T$ | outputs per block: 256 threads × 4 outputs per thread = 1024 |
-| $T + K - 1$ | input window (outputs plus the kernel "halo") staged in shared memory |
+| $b$ | Block index |
+| $T$ | Outputs per block: 256 threads × 4 outputs per thread = 1024 |
+| $T + K - 1$ | Input window (outputs plus the kernel "halo") staged in shared memory |
 
 ## Approach
 
@@ -81,9 +81,9 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs (one multiply-add per tap per output) |
-| $Q_{\text{naive}}$ | bytes if every tap read $x$ and $w$ from global memory |
-| $Q_{\text{tiled}}$ | bytes with tiling: each input read about $(T+K-1)/T$ times (halo overlap), each output written once, the kernel read once per block |
-| $T$ | outputs per block (1024) |
+| $Q_{\text{naive}}$ | Bytes if every tap read $x$ and $w$ from global memory |
+| $Q_{\text{tiled}}$ | Bytes with tiling: each input read about $(T+K-1)/T$ times (halo overlap), each output written once, the kernel read once per block |
+| $T$ | Outputs per block (1024) |
 
 At the benchmark size, $W \approx 6.1\times10^9$ FLOP, while
 $Q_{\text{tiled}} \approx 4(1.5\text{M}\cdot 3 + 1.5\text{M} + 3\text{M}) \approx 36$ MB.

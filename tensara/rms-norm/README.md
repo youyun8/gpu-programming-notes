@@ -27,10 +27,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | number of rows (samples) |
-| $N$ | features per row |
-| $x_{bn}, y_{bn}$ | input and output element |
-| $\operatorname{RMS}_b$ | root mean square of row $b$, with $\epsilon$ inside the square root |
+| $B$ | Number of rows (samples) |
+| $N$ | Features per row |
+| $x_{bn}, y_{bn}$ | Input and output element |
+| $\operatorname{RMS}_b$ | Root mean square of row $b$, with $\epsilon$ inside the square root |
 | $\epsilon$ | $10^{-5}$ |
 
 Compared with [Layer Norm](../layer-norm/), RMSNorm drops the mean
@@ -53,8 +53,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q_{\text{DRAM}}$ | one read (the re-read hits cache) and one write |
-| $W$ | an FMA for $x^2$ and a multiply for the scale |
+| $Q_{\text{DRAM}}$ | One read (the re-read hits cache) and one write |
+| $W$ | An FMA for $x^2$ and a multiply for the scale |
 | $\beta$ | DRAM bandwidth |
 
 At $(2048, 8192)$: 134 MB, about 67 µs at 2 TB/s.

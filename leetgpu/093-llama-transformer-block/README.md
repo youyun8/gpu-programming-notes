@@ -38,9 +38,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S$ | sequence length |
-| $d$ | model width, 512 |
-| $X$ | input, $S\times d$ |
+| $S$ | Sequence length |
+| $d$ | Model width, 512 |
+| $X$ | Input, $S\times d$ |
 | $\mathbf w_1,\ \mathbf w_2$ | RMSNorm weights (length $d$) |
 | $W_Q$ | $512\times512$ (8 heads × 64), `nn.Linear` layout (out, in) |
 | $W_K,\ W_V$ | $128\times512$ each (2 KV heads × 64) |
@@ -49,25 +49,25 @@ $$
 | 8 | $\sqrt{64}$, the attention scale divisor |
 | $\operatorname{mask}_{\text{causal}}$ | $-\infty$ above the diagonal |
 | $\mathbf c,\ \mathbf s$ | RoPE $\cos$/$\sin$ row of the token (length 32, shared by both halves) |
-| $\mathbf q_1,\ \mathbf q_2$ | first and second 32-element halves of a head vector |
-| $W_O$ | output projection $512\times512$ |
-| $W_g,\ W_u$ | gate and up projections $1408\times512$ |
-| $W_{\text{down}}$ | down projection $512\times1408$ |
-| $Y$ | block output |
+| $\mathbf q_1,\ \mathbf q_2$ | First and second 32-element halves of a head vector |
+| $W_O$ | Output projection $512\times512$ |
+| $W_g,\ W_u$ | Gate and up projections $1408\times512$ |
+| $W_{\text{down}}$ | Down projection $512\times1408$ |
+| $Y$ | Block output |
 
 ## Approach
 
 | # | Kernel | Output | Notes |
 |---|---|---|---|
-| 1 | `rmsNormRows` | $X_1$ | warp per row |
+| 1 | `rmsNormRows` | $X_1$ | Warp per row |
 | 2 | NT-GEMM, 768 cols | $[Q \mid K \mid V]$ | $W_Q, W_K, W_V$ are **contiguous** in the buffer, so one GEMM computes all three |
-| 3 | `applyRope` | rotate $Q$ and $K$ heads in place | pair $(j, j+32)$ per thread |
-| 4 | flash attention | $A$ | causal, GQA `group = 4`, strided reads from the packed `qkv` rows |
-| 5 | NT-GEMM + `ResidualEpi` | $X' = X + AW_O^{\mathsf T}$ | residual fused |
+| 3 | `applyRope` | Rotate $Q$ and $K$ heads in place | Pair $(j, j+32)$ per thread |
+| 4 | Flash attention | $A$ | Causal, GQA `group = 4`, strided reads from the packed `qkv` rows |
+| 5 | NT-GEMM + `ResidualEpi` | $X' = X + AW_O^{\mathsf T}$ | Residual fused |
 | 6 | `rmsNormRows` | $X_2$ | – |
 | 7 | NT-GEMM, 2816 cols | $[G \mid U]$ | $W_g$ and $W_u$ contiguous, so one GEMM |
-| 8 | `swiglu` | $\operatorname{SiLU}(G)\odot U$ | elementwise |
-| 9 | NT-GEMM + `ResidualEpi` | $Y = X' + HW_{\text{down}}^{\mathsf T}$ | residual fused |
+| 8 | `swiglu` | $\operatorname{SiLU}(G)\odot U$ | Elementwise |
+| 9 | NT-GEMM + `ResidualEpi` | $Y = X' + HW_{\text{down}}^{\mathsf T}$ | Residual fused |
 
 **Concatenated projections.** Stacking weight matrices that share the same
 input into one taller matrix turns 3 (or 2) skinny GEMMs into one larger GEMM.

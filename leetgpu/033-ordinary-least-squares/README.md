@@ -37,16 +37,16 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of samples (rows of $X$) |
-| $f$ | number of features (columns of $X$) |
-| $X$ | feature matrix, row-major, element $X_{sj}$ at $sf + j$ |
-| $\mathbf y$ | target vector |
-| $\boldsymbol\beta$ | coefficients (output) |
+| $n$ | Number of samples (rows of $X$) |
+| $f$ | Number of features (columns of $X$) |
+| $X$ | Feature matrix, row-major, element $X_{sj}$ at $sf + j$ |
+| $\mathbf y$ | Target vector |
+| $\boldsymbol\beta$ | Coefficients (output) |
 | $\lVert\cdot\rVert_2$ | Euclidean norm |
 | $G$ | Gram matrix $X^{\mathsf T}X$ ($f\times f$, symmetric positive definite for full-rank $X$) |
 | $\mathbf b$ | right-hand side $X^{\mathsf T}\mathbf y$ |
 | $L$ | lower-triangular Cholesky factor |
-| $\mathbf z$ | intermediate vector of the forward solve |
+| $\mathbf z$ | Intermediate vector of the forward solve |
 
 ### Right-Looking Cholesky, Step $k = 0 \dots f-1$
 
@@ -56,9 +56,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $k$ | current pivot column |
-| $G_{ij}$ | trailing sub-matrix, updated in place (lower triangle only) |
-| $L_{ik}$ | column $k$ of $L$, overwriting $G$'s column |
+| $k$ | Current pivot column |
+| $G_{ij}$ | Trailing sub-matrix, updated in place (lower triangle only) |
+| $L_{ik}$ | Column $k$ of $L$, overwriting $G$'s column |
 
 ## Approach
 
@@ -102,8 +102,8 @@ $$
 |---|---|
 | $W_G$ | FLOPs to form $G$ (only half is needed by symmetry; both halves are computed) |
 | $W_{\text{chol}}$ | Cholesky FLOPs |
-| $W_{\text{solve}}$ | two triangular solves |
-| sync steps | the factorisation is inherently sequential over $k$, with ~3 barriers per step |
+| $W_{\text{solve}}$ | Two triangular solves |
+| Sync steps | The factorisation is inherently sequential over $k$, with ~3 barriers per step |
 
 For $n = 10^5$, $f = 1000$: $W_G = 2\times10^{11}$ (float64), which dominates.
 For the benchmark ($32 \times 32$) everything is latency. A single block with

@@ -33,14 +33,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M$ | rows of $A$ and of $C$ |
-| $N$ | columns of $A$ = rows of $B$ (the reduction dimension) |
-| $K$ | columns of $B$ and of $C$ |
-| $r,\ c$ | row and column of the output element |
-| $k$ | summation index along the inner dimension |
-| $A_{rk}$ | element of $A$ stored at offset $rN + k$ (row-major) |
-| $B_{kc}$ | element of $B$ stored at offset $kK + c$ |
-| $C_{rc}$ | element of $C$ stored at offset $rK + c$ |
+| $M$ | Rows of $A$ and of $C$ |
+| $N$ | Columns of $A$ = rows of $B$ (the reduction dimension) |
+| $K$ | Columns of $B$ and of $C$ |
+| $r,\ c$ | Row and column of the output element |
+| $k$ | Summation index along the inner dimension |
+| $A_{rk}$ | Element of $A$ stored at offset $rN + k$ (row-major) |
+| $B_{kc}$ | Element of $B$ stored at offset $kK + c$ |
+| $C_{rc}$ | Element of $C$ stored at offset $rK + c$ |
 
 ### Tiling
 
@@ -54,9 +54,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M,\ T_K$ | output tile size per block: 64 × 64 here |
+| $T_M,\ T_K$ | Output tile size per block: 64 × 64 here |
 | $T_N$ | inner-dimension slice staged in shared memory per step: 16 here |
-| $s$ | slice index |
+| $s$ | Slice index |
 | $r_0,\ c_0$ | top-left corner of the block's tile: $r_0 = 64\,\texttt{blockIdx.y}$, $c_0 = 64\,\texttt{blockIdx.x}$ |
 | $X[a{:}b,\ c{:}d]$ | sub-matrix with rows $a \dots b-1$ and columns $c \dots d-1$ |
 
@@ -66,8 +66,8 @@ $$
 
 | Level | Owns | Size |
 |---|---|---|
-| Grid | whole $C$ | $\lceil K/64\rceil \times \lceil M/64\rceil$ blocks |
-| Block (256 threads) | one 64 × 64 tile of $C$ | 4096 outputs |
+| Grid | Whole $C$ | $\lceil K/64\rceil \times \lceil M/64\rceil$ blocks |
+| Block (256 threads) | One 64 × 64 tile of $C$ | 4096 outputs |
 | Thread | 4 × 4 outputs, strided by 16 | 16 accumulators in registers |
 
 Thread $(t_x, t_y) = (\texttt{tid} \bmod 16,\ \lfloor\texttt{tid}/16\rfloor)$
@@ -111,9 +111,9 @@ $$
 |---|---|
 | $W$ | FLOPs: one multiply and one add per $(r, c, k)$ triple |
 | $Q_{\text{naive}}$ | global-memory bytes if every FMA fetched both operands from DRAM |
-| $Q_{\text{tiled}}$ | bytes with tiling: $A$ is re-read once per column of tiles ($K/T_K$ times), $B$ once per row of tiles ($M/T_M$ times), $C$ written once |
-| $I_{\text{tiled}}$ | arithmetic intensity (FLOP/byte), ignoring the $C$ term |
-| 4 | bytes per float32 |
+| $Q_{\text{tiled}}$ | Bytes with tiling: $A$ is re-read once per column of tiles ($K/T_K$ times), $B$ once per row of tiles ($M/T_M$ times), $C$ written once |
+| $I_{\text{tiled}}$ | Arithmetic intensity (FLOP/byte), ignoring the $C$ term |
+| 4 | Bytes per float32 |
 
 With $T_M = T_K = 64$, $I_{\text{tiled}} \approx 16$ FLOP/byte versus
 $0.25$ naive, a 64× cut in DRAM traffic. (L2 caching makes the real naive

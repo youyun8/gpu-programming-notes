@@ -34,12 +34,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W,\ H$ | image width and height in pixels |
-| $x,\ y$ | pixel column and row |
-| $p$ | linear pixel index, $0 \le p < WH$ |
-| $c$ | channel index: 0 = R, 1 = G, 2 = B, 3 = A |
-| $\text{img}_{p,c}$ | byte value before inversion, $0..255$ |
-| $\text{img}'_{p,c}$ | byte value after inversion |
+| $W,\ H$ | Image width and height in pixels |
+| $x,\ y$ | Pixel column and row |
+| $p$ | Linear pixel index, $0 \le p < WH$ |
+| $c$ | Channel index: 0 = R, 1 = G, 2 = B, 3 = A |
+| $\text{img}_{p,c}$ | Byte value before inversion, $0..255$ |
+| $\text{img}'_{p,c}$ | Byte value after inversion |
 
 For 8-bit values, $255 - v$ equals the bitwise complement $\lnot v$, so the
 operation can also be written as `v ^ 0xFF`.
@@ -73,7 +73,7 @@ $$
 |---|---|
 | $Q$ | DRAM traffic: every pixel is read and written once (4 bytes each way) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | bandwidth lower bound |
+| $T_{\min}$ | Bandwidth lower bound |
 
 At the benchmark size, $WH = 2.1\times10^7$ pixels and $Q = 168$ MB, so
 $T_{\min} \approx 84\ \mu s$ at 2 TB/s. There is no meaningful arithmetic.

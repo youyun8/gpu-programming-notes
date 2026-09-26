@@ -28,11 +28,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ M,\ K$ | tensor dimensions |
-| $x_{abc}$ | element (int32) |
-| $P$ | value to count |
-| offset | flat row-major index |
-| count | exact result in `output[0]` |
+| $N,\ M,\ K$ | Tensor dimensions |
+| $x_{abc}$ | Element (int32) |
+| $P$ | Value to count |
+| Offset | Flat row-major index |
+| Count | Exact result in `output[0]` |
 
 ## Approach
 

@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N$ | matrix rows and columns |
-| $T$ | tile size (`TILE_SIZE`) |
-| $X_{ij}$ | quantised value (given as float32 here) |
-| $S_{rc}$ | scale of tile $(r, c)$; row-major with $\lceil N/T\rceil$ columns |
-| $Y_{ij}$ | dequantised value |
-| $\lfloor i/T\rfloor$ | tile row of element row $i$ (edge tiles may be partial) |
+| $M,\ N$ | Matrix rows and columns |
+| $T$ | Tile size (`TILE_SIZE`) |
+| $X_{ij}$ | Quantised value (given as float32 here) |
+| $S_{rc}$ | Scale of tile $(r, c)$; row-major with $\lceil N/T\rceil$ columns |
+| $Y_{ij}$ | Dequantised value |
+| $\lfloor i/T\rfloor$ | Tile row of element row $i$ (edge tiles may be partial) |
 
 ## Approach
 

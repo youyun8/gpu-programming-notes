@@ -31,14 +31,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | batch size (rows) |
-| $C$ | number of channels (columns) |
-| $x_{ij}$ | input, row $i$, channel $j$ (offset $iC + j$) |
-| $\mu_j$ | batch mean of channel $j$ |
-| $\sigma_j^2$ | biased batch variance (divide by $N$, not $N-1$) |
+| $N$ | Batch size (rows) |
+| $C$ | Number of channels (columns) |
+| $x_{ij}$ | Input, row $i$, channel $j$ (offset $iC + j$) |
+| $\mu_j$ | Batch mean of channel $j$ |
+| $\sigma_j^2$ | Biased batch variance (divide by $N$, not $N-1$) |
 | $\varepsilon$ | numerical-stability constant ($10^{-5}$) |
-| $\gamma_j,\ \beta_j$ | learnable scale and shift |
-| $y_{ij}$ | output |
+| $\gamma_j,\ \beta_j$ | Learnable scale and shift |
+| $y_{ij}$ | Output |
 
 ### Welford's Online Update and Chan's Merge
 
@@ -59,10 +59,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of samples folded into a state |
-| $\bar x$ | running mean |
-| $M_2$ | running sum of squared deviations from the mean; $\sigma^2 = M_2 / n$ |
-| $\delta$ | difference between the new sample (or partial mean) and the current mean |
+| $n$ | Number of samples folded into a state |
+| $\bar x$ | Running mean |
+| $M_2$ | Running sum of squared deviations from the mean; $\sigma^2 = M_2 / n$ |
+| $\delta$ | Difference between the new sample (or partial mean) and the current mean |
 
 ## Approach
 

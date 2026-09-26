@@ -35,8 +35,8 @@ $$
 |---|---|
 | $c_{i\ell}$ | 4-bit E2M1 code (two per byte, low nibble first) |
 | $s_{i\beta}$ | E4M3 scale byte of block $\beta$, stored in the swizzled layout |
-| $g$ | global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
-| $\hat{a}_{i\ell}$ | the value the encoding represents |
+| $g$ | Global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
+| $\hat{a}_{i\ell}$ | The value the encoding represents |
 
 $$
 y_i = \frac{1}{g_A g_x}\sum_{\beta=0}^{K/16 - 1} \operatorname{e4m3}(s^A_{i\beta})\operatorname{e4m3}(s^x_{\beta})\sum_{\ell\in\beta} \operatorname{e2m1}(c^A_{i\ell})\operatorname{e2m1}(c^x_{\ell})
@@ -44,11 +44,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $y_i$ | output element (FP16) |
+| $y_i$ | Output element (FP16) |
 | $\beta$ | 16-element block along $K$ |
-| $s^A_{i\beta}, s^x_\beta$ | block scales of the matrix row and of the vector |
-| $c^A, c^x$ | element codes |
-| $g_A, g_x$ | global encode factors |
+| $s^A_{i\beta}, s^x_\beta$ | Block scales of the matrix row and of the vector |
+| $c^A, c^x$ | Element codes |
+| $g_A, g_x$ | Global encode factors |
 
 A matrix row costs $K/2$ bytes of codes plus $K/16$ scale bytes:
 
@@ -71,10 +71,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $r$ | matrix row |
-| $c$ | scale column (block index along $K$) |
-| $C$ | number of scale columns, $K/\text{block}$ |
-| idx | byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
+| $r$ | Matrix row |
+| $c$ | Scale column (block index along $K$) |
+| $C$ | Number of scale columns, $K/\text{block}$ |
+| idx | Byte offset of scale $(r, c)$ (`swizzledScaleIndex`) |
 
 Inside an atom, rows $r, r+32, r+64, r+96$ are interleaved so that one
 16-byte load gives a thread the 4 scales of 4 rows it needs.
@@ -102,7 +102,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes, dominated by the packed matrix |
-| $W$ | flops (plus decode work) |
+| $W$ | Flops (plus decode work) |
 | $\beta_{\text{mem}}$ | DRAM bandwidth |
 
 This is why FP4 weights matter for LLM decoding: GEMV is bandwidth-bound,

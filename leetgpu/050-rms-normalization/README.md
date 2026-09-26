@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | vector length |
-| $x_i$ | input value |
-| $\varepsilon$ | stability constant added inside the root |
-| $\operatorname{rms}$ | root mean square of the input |
-| $\gamma,\ \beta$ | scalar scale and shift |
-| $y_i$ | output value |
+| $N$ | Vector length |
+| $x_i$ | Input value |
+| $\varepsilon$ | Stability constant added inside the root |
+| $\operatorname{rms}$ | Root mean square of the input |
+| $\gamma,\ \beta$ | Scalar scale and shift |
+| $y_i$ | Output value |
 
 The output depends on a **global** statistic of the whole vector. The
 computation is therefore a reduction followed by a broadcast elementwise pass.

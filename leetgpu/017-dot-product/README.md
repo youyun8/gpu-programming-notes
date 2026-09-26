@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | vector length |
-| $a_i,\ b_i$ | elements of the input vectors `A`, `B` (float32) |
-| $s$ | scalar result, stored in `result[0]` |
+| $N$ | Vector length |
+| $a_i,\ b_i$ | Elements of the input vectors `A`, `B` (float32) |
+| $s$ | Scalar result, stored in `result[0]` |
 
 Per thread, the products are accumulated with a **fused multiply-add**:
 
@@ -39,9 +39,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| acc | the thread's running float32 partial sum |
-| $\operatorname{fma}$ | fused multiply-add: one rounding for the product and the add together |
-| round | rounding to the nearest float32 |
+| acc | The thread's running float32 partial sum |
+| $\operatorname{fma}$ | Fused multiply-add: one rounding for the product and the add together |
+| Round | Rounding to the nearest float32 |
 
 FMA is both faster (one instruction) and more accurate (one rounding
 instead of two) than a separate multiply and add.
@@ -70,7 +70,7 @@ $$
 |---|---|
 | $Q$ | DRAM bytes (read both vectors once) |
 | $W$ | FLOPs (one multiply and one add per element) |
-| $I$ | arithmetic intensity |
+| $I$ | Arithmetic intensity |
 | $\beta$ | DRAM bandwidth |
 
 This kernel is memory-bound for any GPU.

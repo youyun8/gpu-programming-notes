@@ -33,14 +33,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B$ | number of preference pairs |
-| $\ell^+_i,\ \ell^-_i$ | policy log-probability of the chosen / rejected response $\log\pi_\theta(y^\pm\mid x)$ |
-| $\ell^{\pm,\text{ref}}_i$ | same under the frozen reference policy |
-| $\beta$ | temperature: how strongly to deviate from the reference |
-| $z_i$ | implicit reward margin: how much more the policy prefers $y^+$ than the reference does |
-| $\sigma$ | logistic sigmoid |
-| softplus | $\log(1+e^x)$; the right-hand form is overflow-free |
-| $\mathcal L$ | mean DPO loss |
+| $B$ | Number of preference pairs |
+| $\ell^+_i,\ \ell^-_i$ | Policy log-probability of the chosen / rejected response $\log\pi_\theta(y^\pm\mid x)$ |
+| $\ell^{\pm,\text{ref}}_i$ | Same under the frozen reference policy |
+| $\beta$ | Temperature: how strongly to deviate from the reference |
+| $z_i$ | Implicit reward margin: how much more the policy prefers $y^+$ than the reference does |
+| $\sigma$ | Logistic sigmoid |
+| Softplus | $\log(1+e^x)$; the right-hand form is overflow-free |
+| $\mathcal L$ | Mean DPO loss |
 
 **Why the stable form.** $\log(1 + e^{x})$ computed literally overflows for
 $x > 88$ (giving $\infty$) and loses all precision for $x < -17$
@@ -62,8 +62,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: four float arrays read once |
-| $W$ | per pair: one `expf`, one `log1pf`, a few adds and multiplies |
+| $Q$ | Bytes: four float arrays read once |
+| $W$ | Per pair: one `expf`, one `log1pf`, a few adds and multiplies |
 
 Microseconds at any realistic $B$. The expensive part of DPO, computing the
 four sequence log-probabilities, happens in the model's forward passes.

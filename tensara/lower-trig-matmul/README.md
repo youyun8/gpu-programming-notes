@@ -27,9 +27,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $L^{A} = \operatorname{tril}(A)$, $L^{B} = \operatorname{tril}(B)$ | the inputs with their strict upper triangles zeroed |
-| $C$ | product, again lower triangular |
-| $k \in [j, i]$ | the only reduction indices where both factors can be non-zero: $A_{ik} \ne 0$ needs $k \le i$, $B_{kj} \ne 0$ needs $k \ge j$ |
+| $L^{A} = \operatorname{tril}(A)$, $L^{B} = \operatorname{tril}(B)$ | The inputs with their strict upper triangles zeroed |
+| $C$ | Product, again lower triangular |
+| $k \in [j, i]$ | The only reduction indices where both factors can be non-zero: $A_{ik} \ne 0$ needs $k \le i$, $B_{kj} \ne 0$ needs $k \ge j$ |
 
 For a whole output tile with rows $[r_0, r_0 + 64)$ and columns
 $[c_0, c_0 + 64)$, the union of those ranges is
@@ -40,7 +40,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $r_0, c_0$ | first row and first column of the tile |
+| $r_0, c_0$ | First row and first column of the tile |
 
 ## Approach
 
@@ -87,10 +87,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M, T_N, T_K$ | block tile: 64, 64, 16 |
+| $T_M, T_N, T_K$ | Block tile: 64, 64, 16 |
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
-| $I_{\text{L2}}$ | flops per byte loaded from L2/DRAM into shared memory |
-| $I_{\text{smem}}$ | flops per byte read from shared memory (16 FMAs per 8 loads) |
+| $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
+| $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):
@@ -108,9 +108,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{dense}}$ | flops of a dense $N\times N$ product |
-| $W_{\text{tri}}$ | flops actually needed: output $(i, j)$ in the triangle with $d = \lvert i - j\rvert$ needs $d + 1$ FMAs, and there are $N - d$ such outputs |
-| $d$ | distance from the diagonal |
+| $W_{\text{dense}}$ | Flops of a dense $N\times N$ product |
+| $W_{\text{tri}}$ | Flops actually needed: output $(i, j)$ in the triangle with $d = \lvert i - j\rvert$ needs $d + 1$ FMAs, and there are $N - d$ such outputs |
+| $d$ | Distance from the diagonal |
 
 With 64-wide tiles the kernel does a little more (whole tiles and
 16-aligned $k$ ranges), close to the $1/6$ bound for $N \ge 2048$. At

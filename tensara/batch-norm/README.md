@@ -36,14 +36,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B, F$ | batch size, number of channels |
-| $D_1, D_2$ | spatial extents; $p$ is the flattened spatial index |
-| $x_{b,f,p}$ | input at batch $b$, channel $f$, position $p$; flat offset $(bF + f)D_1D_2 + p$ |
-| $N$ | number of elements that share one channel's statistics |
+| $B, F$ | Batch size, number of channels |
+| $D_1, D_2$ | Spatial extents; $p$ is the flattened spatial index |
+| $x_{b,f,p}$ | Input at batch $b$, channel $f$, position $p$; flat offset $(bF + f)D_1D_2 + p$ |
+| $N$ | Number of elements that share one channel's statistics |
 | $\mu_f$ | per-channel mean |
 | $\sigma_f^2$ | per-channel **biased** variance (divide by $N$, not $N-1$) |
 | $\epsilon$ | $10^{-5}$, keeps the square root away from 0 |
-| $y_{b,f,p}$ | output, same layout as $x$ |
+| $y_{b,f,p}$ | Output, same layout as $x$ |
 
 ## Approach
 

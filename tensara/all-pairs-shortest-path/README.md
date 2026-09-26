@@ -32,10 +32,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of vertices |
-| $a_{ij}$ | input weight of edge $i \to j$ (0 = absent) |
-| $d^{(k)}_{ij}$ | shortest $i\to j$ distance using intermediates $< k$ |
-| $\text{out}_{ij}$ | output; $-1$ for unreachable pairs |
+| $n$ | Number of vertices |
+| $a_{ij}$ | Input weight of edge $i \to j$ (0 = absent) |
+| $d^{(k)}_{ij}$ | Shortest $i\to j$ distance using intermediates $< k$ |
+| $\text{out}_{ij}$ | Output; $-1$ for unreachable pairs |
 
 ## Approach
 
@@ -56,9 +56,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | add and min operations |
+| $W$ | Add and min operations |
 | $Q$ | DRAM bytes: each round reads and writes every tile once, plus its two panels |
-| #launches | kernel launches (384 at $n = 4096$) |
+| #launches | Kernel launches (384 at $n = 4096$) |
 
 At $n = 4096$: $W = 1.4\times10^{11}$ operations and $Q \approx 25$ GB, so the
 kernel is compute-bound in phase 3. Register tiling of phase 3 (several

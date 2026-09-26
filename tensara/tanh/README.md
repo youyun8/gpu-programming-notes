@@ -26,11 +26,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $M\times N$ float32, row-major |
-| $C$ | output matrix, same shape |
-| $x$ | one input element $A_{ij}$ |
-| $\tanh$ | hyperbolic tangent, range $(-1, 1)$ |
-| $\sigma$ | logistic sigmoid |
+| $A$ | Input matrix, $M\times N$ float32, row-major |
+| $C$ | Output matrix, same shape |
+| $x$ | One input element $A_{ij}$ |
+| $\tanh$ | Hyperbolic tangent, range $(-1, 1)$ |
+| $\sigma$ | Logistic sigmoid |
 
 ## Approach
 
@@ -56,10 +56,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $8192\times8192$: $Q = 537$ MB, about 0.27 ms at 2 TB/s.
 

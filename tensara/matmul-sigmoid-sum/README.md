@@ -28,9 +28,9 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $A, B$ | GEMM operands |
-| $G$ | product (never stored) |
-| $\sigma$ | logistic sigmoid |
-| result | scalar output |
+| $G$ | Product (never stored) |
+| $\sigma$ | Logistic sigmoid |
+| Result | Scalar output |
 
 The sum is split by output tile:
 
@@ -40,8 +40,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t$ | a $64\times64$ output tile (one thread block) |
-| $S_t$ | the tile's partial sum |
+| $t$ | A $64\times64$ output tile (one thread block) |
+| $S_t$ | The tile's partial sum |
 
 ## Approach
 
@@ -89,10 +89,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M, T_N, T_K$ | block tile: 64, 64, 16 |
+| $T_M, T_N, T_K$ | Block tile: 64, 64, 16 |
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
-| $I_{\text{L2}}$ | flops per byte loaded from L2/DRAM into shared memory |
-| $I_{\text{smem}}$ | flops per byte read from shared memory (16 FMAs per 8 loads) |
+| $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
+| $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):
@@ -109,10 +109,10 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | floating-point operations (one FMA = 2 flops) |
-| $Q_{\min}$ | compulsory DRAM bytes (each operand read once, output written once) |
+| $Q_{\min}$ | Compulsory DRAM bytes (each operand read once, output written once) |
 | $F$ | FP32 peak (tens of TFLOP/s on current GPUs) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | roofline lower bound |
+| $T_{\min}$ | Roofline lower bound |
 
 The output is a single float, so $Q_{\min}$ drops the $MN$ term: at
 $1024^3$ the unfused pipeline would write and re-read 4 MB twice, which is

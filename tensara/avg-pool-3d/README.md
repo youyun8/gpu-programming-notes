@@ -32,13 +32,13 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input tensor $H\times W\times D$, row-major ($D$ is contiguous) |
+| $x$ | Input tensor $H\times W\times D$, row-major ($D$ is contiguous) |
 | $\tilde{x}$ | $x$ extended with zeros outside its bounds |
-| $k, S, P$ | window side, stride, padding |
-| $X_{\text{out}}$ | output extent along an axis of input extent $X$ |
-| $a, b, c$ | output indices along $H, W, D$ |
-| $m, n, o$ | offsets inside the window |
-| $k^3$ | divisor, always the full window volume |
+| $k, S, P$ | Window side, stride, padding |
+| $X_{\text{out}}$ | Output extent along an axis of input extent $X$ |
+| $a, b, c$ | Output indices along $H, W, D$ |
+| $m, n, o$ | Offsets inside the window |
+| $k^3$ | Divisor, always the full window volume |
 
 The output index is decoded from the flat index $t$ as
 
@@ -49,7 +49,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $t$ | flat output index handled by a thread |
+| $t$ | Flat output index handled by a thread |
 
 ## Approach
 
@@ -68,8 +68,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W_{\text{ops}}$ | additions |
-| $Q$ | compulsory DRAM traffic (each input read once if caches hold the overlap) |
+| $W_{\text{ops}}$ | Additions |
+| $Q$ | Compulsory DRAM traffic (each input read once if caches hold the overlap) |
 
 With $S < k$ the windows overlap along three axes, and the working set of a
 block ($k$ planes of $k$ rows) is larger than in 2-D. If L2 thrashes, a

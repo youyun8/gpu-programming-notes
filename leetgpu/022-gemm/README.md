@@ -31,11 +31,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N,\ K$ | rows of $A$/$C$, columns of $B$/$C$, and the inner dimension |
+| $M,\ N,\ K$ | Rows of $A$/$C$, columns of $B$/$C$, and the inner dimension |
 | $A_{rk},\ B_{kc}$ | fp16 inputs |
-| $C^{\text{old}}_{rc}$ | initial content of $C$ (fp16) |
+| $C^{\text{old}}_{rc}$ | Initial content of $C$ (fp16) |
 | $\alpha,\ \beta$ | float32 scalars |
-| fp32(·), fp16(·) | conversion to float32, and round-to-nearest conversion back to fp16 |
+| fp32(·), fp16(·) | Conversion to float32, and round-to-nearest conversion back to fp16 |
 
 ### Tensor-Core Fragments (WMMA 16 × 16 × 16)
 
@@ -47,8 +47,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A_f,\ B_f$ | matrix fragments loaded from shared memory with `load_matrix_sync` |
-| $C_f,\ D$ | accumulator fragment (float32), kept in registers across the whole $K$ loop |
+| $A_f,\ B_f$ | Matrix fragments loaded from shared memory with `load_matrix_sync` |
+| $C_f,\ D$ | Accumulator fragment (float32), kept in registers across the whole $K$ loop |
 
 These are 4096 multiply-adds per warp instruction. The register layout of a
 fragment is opaque (architecture-specific), so the API only allows
@@ -61,9 +61,9 @@ contrasts this with AMD MFMA, where the layout is documented.)
 
 | Level | Tile of $C$ | Notes |
 |---|---|---|
-| Block (4 warps) | 64 × 64 | grid $\lceil N/64\rceil \times \lceil M/64\rceil$ |
+| Block (4 warps) | 64 × 64 | Grid $\lceil N/64\rceil \times \lceil M/64\rceil$ |
 | Warp | 32 × 32 | 2 × 2 accumulator fragments |
-| MMA | 16 × 16 × 16 | one `mma_sync` |
+| MMA | 16 × 16 × 16 | One `mma_sync` |
 
 ### Main Loop over $K$ in Steps of 32
 
@@ -106,7 +106,7 @@ $$
 |---|---|
 | $W$ | FLOPs |
 | $Q$ | DRAM bytes: fp16 $A$ re-read once per column-tile, $B$ once per row-tile, and $C$ read and written (2 + 2 bytes) |
-| $I$ | arithmetic intensity, ignoring the $C$ term |
+| $I$ | Arithmetic intensity, ignoring the $C$ term |
 
 At $1024^3$, $W \approx 2.1$ GFLOP. On an A100 (312 TFLOP/s fp16 tensor)
 the compute floor is ≈ 7 µs. A 64 × 64 block tile with synchronous

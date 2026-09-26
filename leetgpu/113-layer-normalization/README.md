@@ -29,12 +29,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ C$ | rows and features |
-| $x_{ij}$ | input |
-| $\mu_i,\ \sigma^2_i$ | row mean and biased variance |
-| $\varepsilon$ | stability constant |
+| $N,\ C$ | Rows and features |
+| $x_{ij}$ | Input |
+| $\mu_i,\ \sigma^2_i$ | Row mean and biased variance |
+| $\varepsilon$ | Stability constant |
 | $w_j,\ b_j$ | per-feature scale and shift (shared by all rows) |
-| $y_{ij}$ | output |
+| $y_{ij}$ | Output |
 
 ### Why Two Passes for the Variance
 

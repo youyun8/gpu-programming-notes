@@ -30,15 +30,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N$ | numbers of queries and keys |
-| $d$ | head dimension (up to 1024) |
-| $\mathbf q_i,\ \mathbf k_j$ | rows of $Q$ and $K$ |
+| $M,\ N$ | Numbers of queries and keys |
+| $d$ | Head dimension (up to 1024) |
+| $\mathbf q_i,\ \mathbf k_j$ | Rows of $Q$ and $K$ |
 | $\alpha$ | ALiBi slope (one head, so one slope) |
-| $i - j$ | signed relative position (query index minus key index) |
-| $S_{ij}$ | biased, scaled score |
-| $m_i$ | row maximum of $S$ |
-| $P_{ij}$ | attention weight (row softmax) |
-| $O$ | output, $M \times d$ |
+| $i - j$ | Signed relative position (query index minus key index) |
+| $S_{ij}$ | Biased, scaled score |
+| $m_i$ | Row maximum of $S$ |
+| $P_{ij}$ | Attention weight (row softmax) |
+| $O$ | Output, $M \times d$ |
 
 With $\alpha < 0$ (the usual choice in causal LMs), distant keys are
 penalised linearly. This lets models extrapolate to longer sequences than
@@ -72,7 +72,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs: two GEMMs plus the softmax |
-| $Q$ | bytes: write $S$, read and write it in softmax, read it in the second GEMM, plus tiled GEMM operand traffic |
+| $Q$ | Bytes: write $S$, read and write it in softmax, read it in the second GEMM, plus tiled GEMM operand traffic |
 
 At $M = N = 2048$, $d = 1024$: $W \approx 17$ GFLOP (GEMM-dominated) and
 48 MB of score traffic. Materialising $S$ costs about 3 × 16 MB of extra

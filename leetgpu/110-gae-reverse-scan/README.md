@@ -31,14 +31,14 @@ Unrolled: $A_t = \sum_{k=0}^{S-1-t} c^{k}\,\delta_{t+k}$.
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ S$ | batch (trajectories) and sequence length |
-| $r_t$ | reward at step $t$ |
-| $V_t$ | value estimate at step $t$; the value after the last step is 0 |
-| $\gamma$ | discount factor |
+| $B,\ S$ | Batch (trajectories) and sequence length |
+| $r_t$ | Reward at step $t$ |
+| $V_t$ | Value estimate at step $t$; the value after the last step is 0 |
+| $\gamma$ | Discount factor |
 | $\lambda$ | GAE parameter, trading bias against variance |
-| $c$ | combined decay $\gamma\lambda$ |
+| $c$ | Combined decay $\gamma\lambda$ |
 | $\delta_t$ | temporal-difference error |
-| $A_t$ | advantage (output) |
+| $A_t$ | Advantage (output) |
 
 ### As a Scan of Affine Maps
 
@@ -53,8 +53,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $[lo, hi)$ | a contiguous chunk of time steps |
-| $M,\ D$ | multiplier and offset of the chunk's composite map |
+| $[lo, hi)$ | A contiguous chunk of time steps |
+| $M,\ D$ | Multiplier and offset of the chunk's composite map |
 
 ## Approach
 
@@ -81,7 +81,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: read rewards and values (values twice, cached) and write advantages |
+| $Q$ | Bytes: read rewards and values (values twice, cached) and write advantages |
 | $W$ | FLOPs of the fold and replay (linear) plus the block scans |
 
 At typical RL sizes (thousands of steps × hundreds of trajectories), the

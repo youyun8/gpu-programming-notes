@@ -29,11 +29,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N$ | rows and columns of $A$ |
-| $A_{rc}$ | matrix element at offset $rN + c$ (often zero) |
-| $x_c$ | dense input vector, length $N$ |
-| $y_r$ | output vector, length $M$ |
-| nnz | number of non-zero elements of $A$ (unused by the kernel) |
+| $M,\ N$ | Rows and columns of $A$ |
+| $A_{rc}$ | Matrix element at offset $rN + c$ (often zero) |
+| $x_c$ | Dense input vector, length $N$ |
+| $y_r$ | Output vector, length $M$ |
+| nnz | Number of non-zero elements of $A$ (unused by the kernel) |
 
 ## Approach
 
@@ -67,9 +67,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: the whole matrix once, $\mathbf x$ once (cached), $\mathbf y$ once |
+| $Q$ | Bytes: the whole matrix once, $\mathbf x$ once (cached), $\mathbf y$ once |
 | $W$ | FLOPs |
-| $I$ | arithmetic intensity |
+| $I$ | Arithmetic intensity |
 | $\beta$ | DRAM bandwidth |
 
 Benchmark: $4MN = 40$ MB, so $T_{\min} \approx 20\ \mu s$ at 2 TB/s. With only

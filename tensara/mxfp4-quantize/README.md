@@ -39,15 +39,15 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | a block of 32 elements of one row |
-| $a_t$ | input element |
-| $\alpha_b$ | block absolute maximum |
-| $\lfloor\log_2\alpha_b\rfloor$ | the float's unbiased exponent, read from bits 23–30 |
-| $e_{\max}$ | exponent of the element format's largest power of two (2 for E2M1, whose largest value is $6 = 1.5\cdot 2^2$) |
-| $E_b$ | shared block exponent |
-| $u_b$ | stored E8M0 scale byte |
-| $q_t$ | element code, rounded to nearest (ties to even) in the element format, saturating |
-| $\hat{a}_t$ | the value the code represents (what the checker compares after dequantizing) |
+| $b$ | A block of 32 elements of one row |
+| $a_t$ | Input element |
+| $\alpha_b$ | Block absolute maximum |
+| $\lfloor\log_2\alpha_b\rfloor$ | The float's unbiased exponent, read from bits 23–30 |
+| $e_{\max}$ | Exponent of the element format's largest power of two (2 for E2M1, whose largest value is $6 = 1.5\cdot 2^2$) |
+| $E_b$ | Shared block exponent |
+| $u_b$ | Stored E8M0 scale byte |
+| $q_t$ | Element code, rounded to nearest (ties to even) in the element format, saturating |
+| $\hat{a}_t$ | The value the code represents (what the checker compares after dequantizing) |
 
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
@@ -60,7 +60,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $c$ | 4-bit code; two codes per byte, element $2i$ in the **low** nibble |
-| $c_3$ | sign bit (bit 3) |
+| $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
 Because the largest E2M1 power of two is $2^2$, the scaled block maximum

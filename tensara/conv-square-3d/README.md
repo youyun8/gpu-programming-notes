@@ -28,12 +28,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input volume, $n^3$, row-major ($x$ contiguous); $\tilde{A}$ is zero outside |
-| $B$ | cubic kernel, $K^3$ taps |
-| $p$ | padding on every face |
-| $C$ | output volume, $n^3$ |
-| $z, y, x$ | output coordinates (depth, row, column) |
-| $a, b, c$ | kernel offsets |
+| $A$ | Input volume, $n^3$, row-major ($x$ contiguous); $\tilde{A}$ is zero outside |
+| $B$ | Cubic kernel, $K^3$ taps |
+| $p$ | Padding on every face |
+| $C$ | Output volume, $n^3$ |
+| $z, y, x$ | Output coordinates (depth, row, column) |
+| $a, b, c$ | Kernel offsets |
 
 ## Approach
 
@@ -58,7 +58,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | floating-point operations |
-| $Q_{\min}$ | compulsory DRAM bytes (read $A$ once, write $C$ once) |
+| $Q_{\min}$ | Compulsory DRAM bytes (read $A$ once, write $C$ once) |
 | $I$ | best-case arithmetic intensity, flops per byte |
 
 For $512^3$ with $K = 9$: $W = 196$ GFLOP and $I = 182$ flop/B, which is

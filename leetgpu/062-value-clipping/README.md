@@ -28,9 +28,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $x_i,\ y_i$ | input and output values |
-| $\ell,\ h$ | lower and upper bounds (`lo`, `hi`) |
+| $N$ | Number of elements |
+| $x_i,\ y_i$ | Input and output values |
+| $\ell,\ h$ | Lower and upper bounds (`lo`, `hi`) |
 
 ## Approach
 

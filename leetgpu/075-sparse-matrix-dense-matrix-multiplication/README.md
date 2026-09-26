@@ -28,11 +28,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N,\ K$ | rows of $A$, inner dimension, columns of $B$ |
-| $A_{ik}$ | sparse matrix element (mostly zero) |
-| $B_{kj}$ | dense matrix element |
-| $C_{ij}$ | output |
-| nnz | number of non-zeros of $A$, ≈ $0.35MN$ |
+| $M,\ N,\ K$ | Rows of $A$, inner dimension, columns of $B$ |
+| $A_{ik}$ | Sparse matrix element (mostly zero) |
+| $B_{kj}$ | Dense matrix element |
+| $C_{ij}$ | Output |
+| nnz | Number of non-zeros of $A$, ≈ $0.35MN$ |
 
 ### Dense vs. Sparse Break-Even
 
@@ -43,8 +43,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W_{\text{dense}}$ | FLOPs of a dense GEMM |
-| $W_{\text{sparse}}$ | useful FLOPs if only non-zeros are processed |
-| $\rho$ | density nnz / $(MN)$, here ≈ 0.3–0.4 |
+| $W_{\text{sparse}}$ | Useful FLOPs if only non-zeros are processed |
+| $\rho$ | Density nnz / $(MN)$, here ≈ 0.3–0.4 |
 
 A sparse kernel saves at most $1/\rho \approx 3\times$ in FLOPs, but:
 

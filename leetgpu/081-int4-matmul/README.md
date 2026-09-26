@@ -34,14 +34,14 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N,\ K$ | tokens (rows of $x$), output features, input features |
+| $M,\ N,\ K$ | Tokens (rows of $x$), output features, input features |
 | $x_{mk}$ | fp16 activation |
-| $b_{ni}$ | packed byte $i$ of weight row $n$ (`w_q`, shape $N \times K/2$) |
-| $q_{nk}$ | unsigned 4-bit code, $0..15$ |
-| $q - 8$ | signed weight in $[-8, 7]$ (offset encoding) |
-| $g$ | quantisation group size along $K$ |
+| $b_{ni}$ | Packed byte $i$ of weight row $n$ (`w_q`, shape $N \times K/2$) |
+| $q_{nk}$ | Unsigned 4-bit code, $0..15$ |
+| $q - 8$ | Signed weight in $[-8, 7]$ (offset encoding) |
+| $g$ | Quantisation group size along $K$ |
 | $s_{n,j}$ | fp16 scale of group $j$ in row $n$ (shape $N\times K/g$) |
-| $W_{nk}$ | dequantised weight |
+| $W_{nk}$ | Dequantised weight |
 | $y_{mn}$ | fp16 output |
 
 ### Why Weight-Only Quantisation Works
@@ -80,8 +80,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W_{\text{flop}}$ | tensor-core FLOPs |
-| $Q_W$ | bytes to read the weights once: 0.5 byte per weight plus the scales |
-| $Q_x$ | bytes to read the activations once |
+| $Q_W$ | Bytes to read the weights once: 0.5 byte per weight plus the scales |
+| $Q_x$ | Bytes to read the activations once |
 
 At the benchmark ($4096^3$, $g = 128$): $Q_W = 8.4$ MB versus 33.5 MB for fp16,
 and $W_{\text{flop}} = 137$ GFLOP, so this large-$M$ case is compute-bound. The

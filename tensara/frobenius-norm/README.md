@@ -27,8 +27,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $X$ | the input tensor, viewed as a flat vector of $n$ elements |
-| $x_k, y_k$ | input and output element $k$ |
+| $X$ | The input tensor, viewed as a flat vector of $n$ elements |
+| $x_k, y_k$ | Input and output element $k$ |
 | $\lVert X\rVert_F$ | Frobenius norm: the L2 norm of the flattened tensor |
 
 The global sum is split into per-block partial sums:
@@ -39,10 +39,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $G$ | number of blocks in the first kernel ($\le 1024$) |
-| $\mathcal{K}_b$ | the indices visited by block $b$'s grid-stride loop |
-| $S_b$ | block partial (stored as `double`) |
-| $r$ | reciprocal norm, `g_inv_norm` |
+| $G$ | Number of blocks in the first kernel ($\le 1024$) |
+| $\mathcal{K}_b$ | The indices visited by block $b$'s grid-stride loop |
+| $S_b$ | Block partial (stored as `double`) |
+| $r$ | Reciprocal norm, `g_inv_norm` |
 
 ## Approach
 

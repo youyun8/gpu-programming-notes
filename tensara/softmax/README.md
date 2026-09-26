@@ -36,11 +36,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S_k$ | size of axis $k$; $d$ is `dim` |
-| $O, R, I$ | outer size, reduced length, inner size (stride of the reduced axis) |
-| $x[o, j, i]$ | element at outer $o$, reduced index $j$, inner $i$ |
-| $m_{oi}$ | maximum along the reduced axis |
-| $s_{oi}$ | normaliser: sum of shifted exponentials |
+| $S_k$ | Size of axis $k$; $d$ is `dim` |
+| $O, R, I$ | Outer size, reduced length, inner size (stride of the reduced axis) |
+| $x[o, j, i]$ | Element at outer $o$, reduced index $j$, inner $i$ |
+| $m_{oi}$ | Maximum along the reduced axis |
+| $s_{oi}$ | Normaliser: sum of shifted exponentials |
 
 Both $m$ and $s$ come from one pass with the online merge
 $(m_1, s_1)\oplus(m_2, s_2) = \bigl(M, s_1e^{m_1-M} + s_2e^{m_2-M}\bigr)$,
@@ -48,7 +48,7 @@ $M = \max(m_1, m_2)$ (see [Log Softmax](../log-softmax/)).
 
 | Symbol | Meaning |
 |---|---|
-| $\oplus$ | associative merge of partial (max, sum) pairs |
+| $\oplus$ | Associative merge of partial (max, sum) pairs |
 
 ## Approach
 
@@ -72,7 +72,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM (or L2) bytes |
-| #exp | exponentials: one in the online pass, one in the write pass |
+| #exp | Exponentials: one in the online pass, one in the write pass |
 
 Largest case $64\times128^3$: 537 MB of input, ~0.8 ms of traffic at
 2 TB/s. For small $R$ (e.g. $(128, 10)$ along dim 1), a warp per row wastes

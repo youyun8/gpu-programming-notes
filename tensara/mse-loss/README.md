@@ -28,10 +28,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S_k$ | size of dimension $k$ |
-| $n$ | total number of elements |
-| $x_i, y_i$ | prediction and target, flattened |
-| MSE | the scalar output |
+| $S_k$ | Size of dimension $k$ |
+| $n$ | Total number of elements |
+| $x_i, y_i$ | Prediction and target, flattened |
+| MSE | The scalar output |
 
 The sum uses a two-level partition, as in [Frobenius Norm](../frobenius-norm/):
 
@@ -41,9 +41,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $G$ | number of blocks of the first kernel ($\le 1024$) |
-| $\mathcal{K}_b$ | the indices block $b$ visits |
-| $P_b$ | block partial sum (fp64) |
+| $G$ | Number of blocks of the first kernel ($\le 1024$) |
+| $\mathcal{K}_b$ | The indices block $b$ visits |
+| $P_b$ | Block partial sum (fp64) |
 
 ## Approach
 

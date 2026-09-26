@@ -41,17 +41,17 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ G,\ S$ | prompts, responses per prompt (group size), tokens per response |
-| $R_{b,g}$ | scalar reward of response $g$ to prompt $b$ |
-| $\mu_b,\ \sigma_b$ | group mean and **population** standard deviation |
+| $B,\ G,\ S$ | Prompts, responses per prompt (group size), tokens per response |
+| $R_{b,g}$ | Scalar reward of response $g$ to prompt $b$ |
+| $\mu_b,\ \sigma_b$ | Group mean and **population** standard deviation |
 | $A_{b,g}$ | group-relative advantage, shared by all $S$ tokens of the response |
 | $\log\pi,\ \log\pi^{\text{old}},\ \log\pi^{\text{ref}}$ | log-probabilities of token $(b, g, s)$ under the current, the sampling, and the reference policy |
-| $r$ | importance ratio |
-| $\varepsilon$ | clip range (`clip_eps`) |
+| $r$ | Importance ratio |
+| $\varepsilon$ | Clip range (`clip_eps`) |
 | $d$ | log-ratio of reference to current policy |
-| $K$ | the "$k_3$" KL estimator $e^d - d - 1 \ge 0$ (unbiased for $\mathrm{KL}(\pi\,\Vert\,\pi^{\text{ref}})$ in expectation, and always non-negative) |
+| $K$ | The "$k_3$" KL estimator $e^d - d - 1 \ge 0$ (unbiased for $\mathrm{KL}(\pi\,\Vert\,\pi^{\text{ref}})$ in expectation, and always non-negative) |
 | $\beta$ | KL penalty weight |
-| $\mathcal L$ | loss (negative objective) |
+| $\mathcal L$ | Loss (negative objective) |
 
 ## Approach
 
@@ -72,8 +72,8 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes: three token-level arrays, plus rewards and advantages |
-| $W$ | per token: two `expf` plus about 10 FLOPs |
+| $Q$ | Bytes: three token-level arrays, plus rewards and advantages |
+| $W$ | Per token: two `expf` plus about 10 FLOPs |
 
 The kernel is memory-bound. The advantage read `adv[i / S]` is the same value
 for $S$ consecutive tokens, so it is always a cache hit.

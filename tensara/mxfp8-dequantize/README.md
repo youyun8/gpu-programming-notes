@@ -27,7 +27,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $q_{ij}$ | E4M3 byte of element $(i, j)$ |
-| $u$ | scale bytes, $M\times K/32$ |
+| $u$ | Scale bytes, $M\times K/32$ |
 | out | FP32 result |
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
@@ -39,9 +39,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $b$ | the byte |
-| $s, e, f$ | sign bit, 4-bit exponent field, 3-bit mantissa field |
-| 448 | largest finite value ($e = 15$, $f = 6$) |
+| $b$ | The byte |
+| $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
+| 448 | Largest finite value ($e = 15$, $f = 6$) |
 
 **E8M0** (the MX block scale) is a bare power of two:
 
@@ -51,7 +51,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $u$ | the scale byte (a biased exponent) |
+| $u$ | The scale byte (a biased exponent) |
 
 ## Approach
 

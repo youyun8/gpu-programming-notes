@@ -29,11 +29,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $M,\ N$ | rows and columns |
-| $x_{mn}$ | input sample, complex; real part at `2(mN+n)`, imaginary at `2(mN+n)+1` |
-| $X_{uv}$ | spectrum coefficient |
-| $\omega_L$ | primitive $L$-th root of unity |
-| $Y_{mv}$ | intermediate: the 1-D DFT of row $m$ |
+| $M,\ N$ | Rows and columns |
+| $x_{mn}$ | Input sample, complex; real part at `2(mN+n)`, imaginary at `2(mN+n)+1` |
+| $X_{uv}$ | Spectrum coefficient |
+| $\omega_L$ | Primitive $L$-th root of unity |
+| $Y_{mv}$ | Intermediate: the 1-D DFT of row $m$ |
 
 **Row–column algorithm:** DFT each row ($M$ transforms of length $N$), then
 DFT each column of the result ($N$ transforms of length $M$). The cost is
@@ -53,10 +53,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $s$ | the row held in shared memory |
-| $h$ | half the current sub-transform size: $1, 2, 4, \dots, L/2$ |
-| $g,\ p$ | butterfly group and position within the group ($0 \le p < h$) |
-| $\omega_L^{p L/(2h)}$ | twiddle factor $= e^{-2\pi i p/(2h)}$ |
+| $s$ | The row held in shared memory |
+| $h$ | Half the current sub-transform size: $1, 2, 4, \dots, L/2$ |
+| $g,\ p$ | Butterfly group and position within the group ($0 \le p < h$) |
+| $\omega_L^{p L/(2h)}$ | Twiddle factor $= e^{-2\pi i p/(2h)}$ |
 
 ## Approach
 
@@ -87,7 +87,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $W$ | real FLOPs (radix-2 estimate) |
+| $W$ | Real FLOPs (radix-2 estimate) |
 | $Q$ | DRAM bytes: each FFT pass and each transpose reads and writes the whole $M\times N$ complex array (8 bytes per element) |
 
 $2048^2$: $W \approx 0.46$ GFLOP and $Q \approx 270$ MB, i.e. ≈ 135 µs of traffic.

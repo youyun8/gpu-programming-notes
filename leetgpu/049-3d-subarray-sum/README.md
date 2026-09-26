@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N,\ M,\ K$ | volume dimensions (depth, rows, columns) |
-| $x_{abc}$ | element at the row-major offset above |
-| $a_0..a_1,\ b_0..b_1,\ c_0..c_1$ | inclusive depth, row and column ranges |
-| $d,\ h,\ w$ | box extents $a_1-a_0+1$, $b_1-b_0+1$, $c_1-c_0+1$ |
-| $i$ | flat index over the box (column fastest) |
+| $N,\ M,\ K$ | Volume dimensions (depth, rows, columns) |
+| $x_{abc}$ | Element at the row-major offset above |
+| $a_0..a_1,\ b_0..b_1,\ c_0..c_1$ | Inclusive depth, row and column ranges |
+| $d,\ h,\ w$ | Box extents $a_1-a_0+1$, $b_1-b_0+1$, $c_1-c_0+1$ |
+| $i$ | Flat index over the box (column fastest) |
 
 The largest possible sum is $10 \cdot 500^3 = 1.25\times10^9 < 2^{31}$.
 
@@ -52,7 +52,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $Q$ | bytes read |
+| $Q$ | Bytes read |
 | $\beta$ | DRAM bandwidth |
 
 The full $500^3$ box is 500 MB, i.e. ≈ 250 µs at 2 TB/s.

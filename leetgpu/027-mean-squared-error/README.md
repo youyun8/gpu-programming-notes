@@ -27,10 +27,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | number of elements |
-| $p_i$ | prediction (float32) |
-| $t_i$ | target (float32) |
-| $\operatorname{MSE}$ | result, stored as float32 |
+| $N$ | Number of elements |
+| $p_i$ | Prediction (float32) |
+| $t_i$ | Target (float32) |
+| $\operatorname{MSE}$ | Result, stored as float32 |
 
 Each squared term can reach $(2000)^2 = 4\times10^6$. The sum of $10^8$ such
 terms can reach $4\times10^{14}$, far beyond float32's 24-bit mantissa for
@@ -59,7 +59,7 @@ $$
 |---|---|
 | $Q$ | DRAM bytes (read both arrays once) |
 | $W$ | FLOPs: subtract, multiply, add per element |
-| $I$ | arithmetic intensity |
+| $I$ | Arithmetic intensity |
 | $\beta$ | DRAM bandwidth |
 
 Benchmark: 400 MB, so ≈ 200 µs at 2 TB/s. The kernel is memory-bound.

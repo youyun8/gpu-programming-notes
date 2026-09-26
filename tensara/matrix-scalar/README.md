@@ -26,9 +26,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input matrix, $n\times n$ float32 |
-| $s$ | scalar multiplier |
-| $C$ | output matrix |
+| $A$ | Input matrix, $n\times n$ float32 |
+| $s$ | Scalar multiplier |
+| $C$ | Output matrix |
 
 ## Approach
 
@@ -54,10 +54,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n$ | number of elements |
-| $Q$ | compulsory DRAM traffic: read the input(s) once, write the output once |
+| $n$ | Number of elements |
+| $Q$ | Compulsory DRAM traffic: read the input(s) once, write the output once |
 | $\beta$ | DRAM bandwidth (about 2–3 TB/s on current data-centre GPUs) |
-| $T_{\min}$ | bandwidth lower bound on the kernel time |
+| $T_{\min}$ | Bandwidth lower bound on the kernel time |
 
 For $n = 9216$: $Q = 680$ MB, about 0.34 ms at 2 TB/s.
 

@@ -30,12 +30,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $S$ | sequence length |
-| $d$ | model/head dimension |
-| $Q_n,\ K_m,\ V_m$ | rows of the query, key and value matrices |
-| $\gamma$ | decay factor in $(0, 1]$ |
-| $D$ | causal decay mask (lower-triangular) |
-| $O_n$ | output row $n$ |
+| $S$ | Sequence length |
+| $d$ | Model/head dimension |
+| $Q_n,\ K_m,\ V_m$ | Rows of the query, key and value matrices |
+| $\gamma$ | Decay factor in $(0, 1]$ |
+| $D$ | Causal decay mask (lower-triangular) |
+| $O_n$ | Output row $n$ |
 
 **Recurrent equivalent** (not used here, but it explains the model):
 
@@ -73,8 +73,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | FLOPs for scores and $PV$ over the causal triangle, plus one `powf` per visible pair |
-| $c_{\text{pow}}$ | cost of `powf` (≈ 20–40 instructions) |
-| $Q_{\min}$ | read $Q, K, V$ and write $O$ once |
+| $c_{\text{pow}}$ | Cost of `powf` (≈ 20–40 instructions) |
+| $Q_{\min}$ | Read $Q, K, V$ and write $O$ once |
 
 Benchmark: ≈ $2.1$ GFLOP + $8.4$M `powf`. A cheaper alternative computes
 $\gamma^{n-j}$ as $\gamma^{n-j_0}\cdot\gamma^{-\ell}$ from two small tables,

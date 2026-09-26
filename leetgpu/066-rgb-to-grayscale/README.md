@@ -26,10 +26,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $p$ | pixel index $yW + x$, $0 \le p < WH$ |
-| $x_k$ | input array (length $3WH$) |
-| $R_p,\ G_p,\ B_p$ | red, green and blue values of pixel $p$ |
-| $Y_p$ | output luma |
+| $p$ | Pixel index $yW + x$, $0 \le p < WH$ |
+| $x_k$ | Input array (length $3WH$) |
+| $R_p,\ G_p,\ B_p$ | Red, green and blue values of pixel $p$ |
+| $Y_p$ | Output luma |
 | 0.299, 0.587, 0.114 | BT.601 weights (they sum to 1; green dominates because the eye is most sensitive to it) |
 
 ## Approach

@@ -31,9 +31,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $x$ | input buffer, $h\cdot w\cdot 3$ floats, channels interleaved |
-| $R, G, B$ | red, green and blue channels of pixel $(i, j)$ |
-| $Y$ | output luma image, $h\times w$ |
+| $x$ | Input buffer, $h\cdot w\cdot 3$ floats, channels interleaved |
+| $R, G, B$ | Red, green and blue channels of pixel $(i, j)$ |
+| $Y$ | Output luma image, $h\times w$ |
 | $0.299, 0.587, 0.114$ | BT.601 weights (sum to 1); green dominates perceived brightness |
 
 ## Approach
@@ -58,7 +58,7 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $Q$ | DRAM bytes: three input floats and one output float per pixel |
-| $W$ | two FMAs and one multiply per pixel |
+| $W$ | Two FMAs and one multiply per pixel |
 | $\beta$ | DRAM bandwidth |
 
 At $3840\times2160$: $Q = 133$ MB, about 66 µs at 2 TB/s. A fully

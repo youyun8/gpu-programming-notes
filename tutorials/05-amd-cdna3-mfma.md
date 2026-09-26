@@ -12,14 +12,14 @@ apart the hand-written assembly GEMMs in **aiter** and the generated ones in
 | CUDA | HIP / AMD | Notes |
 |------|-----------|-------|
 | SM | CU (compute unit) | MI300X: 304 CUs, 38 per XCD, 8 XCDs |
-| warp (32) | **wavefront (64)** | `warpSize == 64` on CDNA; lane masks are 64-bit |
-| shared memory | LDS (local data share) | 64 KiB per CU on gfx942 |
-| registers | VGPRs (per lane), **AGPRs** (per lane, accumulators), SGPRs (per wave, scalar) | up to 512 VGPR+AGPR per lane per wave |
-| tensor cores / `mma.sync` | **MFMA** (`v_mfma_*`) | one instruction per wave, operands spread across 64 lanes |
-| `cp.async` / TMA | `buffer_load … lds` (direct-to-LDS) | global → LDS without passing through VGPRs |
+| Warp (32) | **Wavefront (64)** | `warpSize == 64` on CDNA; lane masks are 64-bit |
+| Shared memory | LDS (local data share) | 64 KiB per CU on gfx942 |
+| Registers | VGPRs (per lane), **AGPRs** (per lane, accumulators), SGPRs (per wave, scalar) | Up to 512 VGPR+AGPR per lane per wave |
+| Tensor cores / `mma.sync` | **MFMA** (`v_mfma_*`) | One instruction per wave, operands spread across 64 lanes |
+| `cp.async` / TMA | `buffer_load … lds` (direct-to-LDS) | Global → LDS without passing through VGPRs |
 | `__syncthreads()` | `s_barrier` (+ fences) | |
-| scoreboard | **explicit** `s_waitcnt vmcnt/lgkmcnt` | the compiler (or you, in asm) waits on counters |
-| L2 per GPU | L2 **per XCD** (4 MiB) + 256 MiB Infinity Cache | workgroup→XCD placement matters |
+| Scoreboard | **Explicit** `s_waitcnt vmcnt/lgkmcnt` | The compiler (or you, in asm) waits on counters |
+| L2 per GPU | L2 **per XCD** (4 MiB) + 256 MiB Infinity Cache | Workgroup→XCD placement matters |
 
 Things that change how you write kernels:
 
@@ -58,9 +58,9 @@ tile, cooperatively across the 64 lanes of a wave.
 
 | Operand | Size per lane | Which elements lane `l` holds (`l ∈ [0, 64)`) |
 |---------|---------------|-----------------------------------------------|
-| `A` (16×16, bf16) | 4 × bf16 = 2 VGPRs | row `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
-| `B` (16×16, bf16) | 4 × bf16 = 2 VGPRs | col `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
-| `C`/`D` (16×16, fp32) | 4 × fp32 = 4 regs | col `l % 16`, rows `4·(l/16) … 4·(l/16)+3` |
+| `A` (16×16, bf16) | 4 × bf16 = 2 VGPRs | Row `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
+| `B` (16×16, bf16) | 4 × bf16 = 2 VGPRs | Col `l % 16`, k = `4·(l/16) … 4·(l/16)+3` |
+| `C`/`D` (16×16, fp32) | 4 × fp32 = 4 regs | Col `l % 16`, rows `4·(l/16) … 4·(l/16)+3` |
 
 In formulas, for lane $\ell$ and register slot $t \in \{0, 1, 2, 3\}$:
 
@@ -76,12 +76,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $\ell$ | lane index, $0 \dots 63$ |
-| $t$ | which of the lane's 4 values (bf16 halves of 2 VGPRs, or 4 accumulator registers) |
-| $a_{\ell,t}, b_{\ell,t}$ | operand values held by lane $\ell$ |
-| $d_{\ell,t}$ | accumulator value held by lane $\ell$ |
+| $\ell$ | Lane index, $0 \dots 63$ |
+| $t$ | Which of the lane's 4 values (bf16 halves of 2 VGPRs, or 4 accumulator registers) |
+| $a_{\ell,t}, b_{\ell,t}$ | Operand values held by lane $\ell$ |
+| $d_{\ell,t}$ | Accumulator value held by lane $\ell$ |
 | $B^{\mathsf T}[j, k]$ | $B[k, j]$: the B operand is indexed by output column, then $k$ |
-| $A, B, C, D$ | the $16\times16$ operand, accumulator-in and result tiles |
+| $A, B, C, D$ | The $16\times16$ operand, accumulator-in and result tiles |
 
 One instruction performs $2\cdot16^3 = 8192$ flops. The chip's peak is
 
@@ -91,9 +91,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $n_{\text{CU}}$ | compute units (304 on MI300X) |
-| $f$ | peak engine clock |
-| $\phi$ | dense bf16 flops per CU per clock (2048 on CDNA3, spread over 4 SIMDs) |
+| $n_{\text{CU}}$ | Compute units (304 on MI300X) |
+| $f$ | Peak engine clock |
+| $\phi$ | Dense bf16 flops per CU per clock (2048 on CDNA3, spread over 4 SIMDs) |
 
 Compare this with the opaque NVIDIA WMMA fragments used in
 [leetgpu/022-gemm](../leetgpu/022-gemm/solution.cu): on AMD the layout is
@@ -212,10 +212,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B_M, B_N, B_K$ | workgroup tile sizes (64, 64, 32 here) |
-| $I_{\text{tile}}$ | flops per byte the workgroup pulls from L2/HBM |
+| $B_M, B_N, B_K$ | Workgroup tile sizes (64, 64, 32 here) |
+| $I_{\text{tile}}$ | Flops per byte the workgroup pulls from L2/HBM |
 | $\beta$ | HBM bandwidth (~5.3 TB/s on MI300X) |
-| $I^{\star}$ | ridge point of the chip |
+| $I^{\star}$ | Ridge point of the chip |
 
 The teaching kernel's $64\times64$ tile gives $I_{\text{tile}} = 32$,
 an eighth of the ridge point: without help from the caches it could
@@ -252,9 +252,9 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T$ | number of output tiles (workgroups without split-K) |
-| waves | rounds of workgroups needed to cover all tiles |
-| $\eta_{\text{fill}}$ | fraction of CU-time doing useful work, ignoring per-tile imbalance |
+| $T$ | Number of output tiles (workgroups without split-K) |
+| Waves | Rounds of workgroups needed to cover all tiles |
+| $\eta_{\text{fill}}$ | Fraction of CU-time doing useful work, ignoring per-tile imbalance |
 
 For $M = N = 2048$ with $256\times256$ tiles, $T = 64$: only 21 % of
 MI300X's 304 CUs are busy. For $T = 320$, two waves are needed and the

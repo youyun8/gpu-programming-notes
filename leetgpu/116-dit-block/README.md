@@ -45,18 +45,18 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $B,\ S$ | batch size and tokens per sample |
-| $X$ | input tokens of one sample, $S\times512$ |
-| $\mathbf c$ | conditioning vector of the sample |
+| $B,\ S$ | Batch size and tokens per sample |
+| $X$ | Input tokens of one sample, $S\times512$ |
+| $\mathbf c$ | Conditioning vector of the sample |
 | $W_{\text{ada}},\ \mathbf b_{\text{ada}}$ | adaLN modulation layer, $3072\times512$ |
-| $\boldsymbol\beta_k,\ \boldsymbol\gamma_k,\ \mathbf g_k$ | shift, scale and gate for sub-block $k$ (MSA = 1, MLP = 2), each length 512 |
+| $\boldsymbol\beta_k,\ \boldsymbol\gamma_k,\ \mathbf g_k$ | Shift, scale and gate for sub-block $k$ (MSA = 1, MLP = 2), each length 512 |
 | LN | LayerNorm **without** affine parameters |
 | MHA | 8-head self-attention with QKV projection $W_{qkv}$ ($1536\times512$) + bias, $d_h = 64$ |
-| $W_o,\ \mathbf b_o$ | attention output projection |
+| $W_o,\ \mathbf b_o$ | Attention output projection |
 | $W_1,\ W_2$ | MLP $512\to2048\to512$ with biases |
 | $\operatorname{GELU}_{\tanh}$ | tanh-approximated GELU |
-| $\odot$ | elementwise product, broadcast over tokens |
-| $Y$ | block output |
+| $\odot$ | Elementwise product, broadcast over tokens |
+| $Y$ | Block output |
 
 **Why "Zero".** DiT initialises $W_{\text{ada}}$ so that $\mathbf g_k = 0$.
 Each block then starts as the identity, which stabilises training of very
@@ -66,14 +66,14 @@ deep diffusion transformers.
 
 | # | Kernel | Fusion |
 |---|---|---|
-| 1 | modulation GEMM $\operatorname{SiLU}(c)W_{\text{ada}}^{\mathsf T}$ | SiLU applied while loading $c$, bias in the epilogue |
+| 1 | Modulation GEMM $\operatorname{SiLU}(c)W_{\text{ada}}^{\mathsf T}$ | SiLU applied while loading $c$, bias in the epilogue |
 | 2 | LayerNorm + **modulate** | $\operatorname{LN}(x)(1+\gamma_1)+\beta_1$ in one warp-per-row kernel; the sample index selects the modulation row |
 | 3 | QKV GEMM (+bias) | – |
-| 4 | batched flash attention | grid.z = batch, strided Q/K/V from the packed rows |
-| 5 | $W_o$ GEMM | epilogue: $x + g_1\odot(v + b_o)$, the **gated residual** |
-| 6 | LayerNorm + modulate | with $\gamma_2, \beta_2$ |
-| 7 | FC1 GEMM | epilogue: bias + GELU |
-| 8 | FC2 GEMM | epilogue: $x' + g_2\odot(v + b_2)$ |
+| 4 | Batched flash attention | grid.z = batch, strided Q/K/V from the packed rows |
+| 5 | $W_o$ GEMM | Epilogue: $x + g_1\odot(v + b_o)$, the **gated residual** |
+| 6 | LayerNorm + modulate | With $\gamma_2, \beta_2$ |
+| 7 | FC1 GEMM | Epilogue: bias + GELU |
+| 8 | FC2 GEMM | Epilogue: $x' + g_2\odot(v + b_2)$ |
 
 The epilogue functors receive the output row index. They derive the sample
 index $b = \lfloor \text{row}/S\rfloor$ and read the right gate vector, so the

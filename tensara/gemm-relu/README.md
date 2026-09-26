@@ -28,12 +28,12 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $A$ | input activations, $B\times N$ |
-| $W$ | weights, $M\times N$: row $c$ holds output feature $c$'s weights |
-| $\mathbf{b}$ | bias, length $M$ |
+| $A$ | Input activations, $B\times N$ |
+| $W$ | Weights, $M\times N$: row $c$ holds output feature $c$'s weights |
+| $\mathbf{b}$ | Bias, length $M$ |
 | $Z$ | pre-activation, $B\times M$ (never stored) |
-| $C$ | output, $B\times M$ |
-| $r, c, n$ | batch row, output feature, input feature |
+| $C$ | Output, $B\times M$ |
+| $r, c, n$ | Batch row, output feature, input feature |
 
 $W_{cn}$ indexed by $(c, n)$ means the product is $AW^{\mathsf T}$: both
 operands are read along their contiguous $n$ axis. In BLAS terms this is
@@ -74,10 +74,10 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $T_M, T_N, T_K$ | block tile: 64, 64, 16 |
+| $T_M, T_N, T_K$ | Block tile: 64, 64, 16 |
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
-| $I_{\text{L2}}$ | flops per byte loaded from L2/DRAM into shared memory |
-| $I_{\text{smem}}$ | flops per byte read from shared memory (16 FMAs per 8 loads) |
+| $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
+| $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):
@@ -94,10 +94,10 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $W$ | floating-point operations (one FMA = 2 flops) |
-| $Q_{\min}$ | compulsory DRAM bytes (each operand read once, output written once) |
+| $Q_{\min}$ | Compulsory DRAM bytes (each operand read once, output written once) |
 | $F$ | FP32 peak (tens of TFLOP/s on current GPUs) |
 | $\beta$ | DRAM bandwidth |
-| $T_{\min}$ | roofline lower bound |
+| $T_{\min}$ | Roofline lower bound |
 
 Unfused (GEMM, then bias, then ReLU) would add two extra read/write passes
 over $B\times M$ floats, i.e. $4\cdot 4BM$ bytes; at $1024\times2048$ that is

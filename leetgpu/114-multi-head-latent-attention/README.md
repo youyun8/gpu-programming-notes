@@ -35,19 +35,19 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $H$ | number of heads |
-| $T$ | number of cached positions (`seq_len`) |
-| $R$ | latent width (`kv_lora_rank`, 512 in DeepSeek-V3) |
-| $d_h$ | head dimension of the content part (`head_dim`) |
-| $r$ | rotary dimension (`rope_dim`, 64) |
-| $\mathbf q^{\text{nope}}_h,\ \mathbf q^{\text{pe}}_h$ | content and rotary parts of head $h$'s query |
-| $\mathbf c_t$ | latent vector of position $t$, shared by all heads (acts as both key and value) |
-| $\mathbf k^{\text{pe}}_t$ | shared rotary key of position $t$ |
-| $W_{UK,h}$ | key up-projection of head $h$, $d_h\times R$ |
-| $W_{UV,h}$ | value up-projection of head $h$, $R\times d_h$ |
+| $H$ | Number of heads |
+| $T$ | Number of cached positions (`seq_len`) |
+| $R$ | Latent width (`kv_lora_rank`, 512 in DeepSeek-V3) |
+| $d_h$ | Head dimension of the content part (`head_dim`) |
+| $r$ | Rotary dimension (`rope_dim`, 64) |
+| $\mathbf q^{\text{nope}}_h,\ \mathbf q^{\text{pe}}_h$ | Content and rotary parts of head $h$'s query |
+| $\mathbf c_t$ | Latent vector of position $t$, shared by all heads (acts as both key and value) |
+| $\mathbf k^{\text{pe}}_t$ | Shared rotary key of position $t$ |
+| $W_{UK,h}$ | Key up-projection of head $h$, $d_h\times R$ |
+| $W_{UV,h}$ | Value up-projection of head $h$, $R\times d_h$ |
 | $\tilde{\mathbf q}_h$ | "absorbed" query in latent space (length $R$) |
-| $s_{h,t}$ | score |
-| $\mathbf o_h$ | output of head $h$ (length $d_h$) |
+| $s_{h,t}$ | Score |
+| $\mathbf o_h$ | Output of head $h$ (length $d_h$) |
 
 ### Weight Absorption
 
@@ -85,7 +85,7 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| cache bytes | KV-cache footprint per position: MLA stores one latent row; MHA stores keys and values for every head |
+| Cache bytes | KV-cache footprint per position: MLA stores one latent row; MHA stores keys and values for every head |
 | $W$ | FLOPs: absorption, scores and weighted sum over $T$ positions, up-projection |
 
 With DeepSeek-V3's numbers ($H = 128$, $d_h = 128$, $R = 512$, $r = 64$):

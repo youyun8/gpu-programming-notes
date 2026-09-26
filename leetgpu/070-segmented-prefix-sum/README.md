@@ -30,11 +30,11 @@ $$
 
 | Symbol | Meaning |
 |---|---|
-| $N$ | array length |
-| $x_j$ | values (float32) |
-| $f_j$ | flag: 1 at a segment head, else 0 |
-| $h(i)$ | index of the head of the segment containing $i$ |
-| $y_i$ | output: exclusive segmented prefix; $y_i = 0$ at every head |
+| $N$ | Array length |
+| $x_j$ | Values (float32) |
+| $f_j$ | Flag: 1 at a segment head, else 0 |
+| $h(i)$ | Index of the head of the segment containing $i$ |
+| $y_i$ | Output: exclusive segmented prefix; $y_i = 0$ at every head |
 
 ### Segmented Scan as an Ordinary Scan
 
@@ -47,8 +47,8 @@ $$
 | Symbol | Meaning |
 |---|---|
 | $(f, s)$ | "contains a head" flag and the sum since the last head (or since the start of the range) |
-| $\lor$ | logical OR |
-| $f_2\,?\,s_2 : s_1+s_2$ | if the right-hand range contains a head, the left-hand sum is discarded |
+| $\lor$ | Logical OR |
+| $f_2\,?\,s_2 : s_1+s_2$ | If the right-hand range contains a head, the left-hand sum is discarded |
 
 $\oplus$ is **associative** (with identity $(0, 0)$), so the whole
 reduce-then-scan machinery of [Prefix Sum](../016-prefix-sum/) applies
