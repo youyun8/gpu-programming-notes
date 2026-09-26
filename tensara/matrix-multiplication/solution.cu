@@ -22,16 +22,26 @@ constexpr int kGemmThreads = 256;
 template <bool kTransB, class Epi>
 __global__ void __launch_bounds__(kGemmThreads)
 gemmKernel(const float* a, int lda, const float* b, int ldb, float* c, int ldc, int rows, int inner, int cols, Epi epi) {
+    // Shared-memory staging buffers for one K-slice. A is stored transposed
+    // ([k][m]) so that both operands are read along rows; +4 padding avoids bank conflicts.
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // Thread coordinates: a 16 x 16 grid of threads, each owning a 4 x 4 patch of
+    // C at rows ty + 16i and columns tx + 16j (stride 16 keeps stores coalesced).
     const int tid = threadIdx.x, tx = tid % 16, ty = tid / 16;
+    // Top-left corner of this block's 64 x 64 output tile.
     const int row0 = blockIdx.y * kTileM, col0 = blockIdx.x * kTileN;
+    // Per-thread accumulators, kept in registers (fully unrolled loops below).
     float acc[4][4] = {};
+    // Main loop over the reduction dimension, 16 columns of A / rows of B at a time.
     for (int k0 = 0; k0 < inner; k0 += kTileK) {
+        // Stage the 64 x 16 panel of A (zero-filled outside the matrix), transposing it.
         for (int i = tid; i < kTileM * kTileK; i += kGemmThreads) {
             const int r = i / kTileK, kk = i % kTileK;
             a_tile[kk][r] = (row0 + r < rows && k0 + kk < inner) ? a[static_cast<size_t>(row0 + r) * lda + k0 + kk] : 0.0f;
         }
+        // Stage the 16 x 64 panel of B. With kTransB, B is stored (cols x inner) and is
+        // transposed while loading; otherwise it is copied row by row (coalesced).
         for (int i = tid; i < kTileK * kTileN; i += kGemmThreads) {
             if (kTransB) {
                 const int cc = i / kTileK, kk = i % kTileK;
@@ -41,7 +51,10 @@ gemmKernel(const float* a, int lda, const float* b, int ldb, float* c, int ldc, 
                 b_tile[kk][cc] = (k0 + kk < inner && col0 + cc < cols) ? b[static_cast<size_t>(k0 + kk) * ldb + col0 + cc] : 0.0f;
             }
         }
+        // Both panels must be complete before any thread reads them.
         __syncthreads();
+        // Inner product: per k, load 4 values of A and 4 of B into registers and do a
+        // 4 x 4 outer product (16 FMAs for 8 shared loads).
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float af[4], bf[4];
@@ -54,8 +67,10 @@ gemmKernel(const float* a, int lda, const float* b, int ldb, float* c, int ldc, 
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(af[i], bf[j], acc[i][j]);
         }
+        // Wait until every thread is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Epilogue: apply the fused operation (bias, activation, ...) and store in bounds.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= rows) continue;
@@ -66,12 +81,14 @@ gemmKernel(const float* a, int lda, const float* b, int ldb, float* c, int ldc, 
     }
 }
 
+// Host helper: one block per 64 x 64 output tile.
 template <bool kTransB, class Epi>
 static void gemm(const float* a, int lda, const float* b, int ldb, float* c, int ldc, int rows, int inner, int cols, Epi epi) {
     const dim3 grid((cols + kTileN - 1) / kTileN, (rows + kTileM - 1) / kTileM);
     gemmKernel<kTransB, Epi><<<grid, kGemmThreads>>>(a, lda, b, ldb, c, ldc, rows, inner, cols, epi);
 }
 
+// Epilogue functors: identity, and "add a per-column bias".
 struct NoEpi {
     __device__ float operator()(float v, int, int) const { return v; }
 };
@@ -81,6 +98,7 @@ struct BiasEpi {
 };
 
 // input_a, input_b, output_c are device pointers
+// C = A B: row-major A (m x k) and B (k x n), identity epilogue.
 extern "C" void solution(const float* input_a, const float* input_b, float* output_c, size_t m, size_t n, size_t k) {
     gemm<false>(input_a, static_cast<int>(k), input_b, static_cast<int>(n), output_c, static_cast<int>(n), static_cast<int>(m),
                 static_cast<int>(k), static_cast<int>(n), NoEpi{});

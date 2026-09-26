@@ -13,6 +13,7 @@ constexpr int kItemsPerThread = 8;
 constexpr int kChunk = kBlockSize * kItemsPerThread;
 
 __device__ __forceinline__ double warpInclusiveScan(double v) {
+    // Hillis-Steele scan inside a warp: lane l adds the value of lane l - offset.
     const int lane = threadIdx.x % 32;
 #pragma unroll
     for (int offset = 1; offset < 32; offset <<= 1) {
@@ -27,6 +28,8 @@ __device__ double blockInclusiveScan(double v, double* total) {
     __shared__ double warp_totals[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Scan each warp, publish the warp totals, scan them in warp 0, then add the
+    // total of all previous warps.
     v = warpInclusiveScan(v);
     if (lane == 31) warp_totals[warp] = v;
     __syncthreads();
@@ -43,6 +46,7 @@ __device__ double blockInclusiveScan(double v, double* total) {
 }
 
 __global__ void blockTotals(const float* input, double* totals, int n) {
+    // Pass 1: total of this block's 2048-element chunk, accumulated in double.
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk;
     double local = 0.0;
     for (int i = 0; i < kItemsPerThread; ++i) {
@@ -68,6 +72,7 @@ __global__ void scanTotals(double* totals, int num_chunks) {
 }
 
 __global__ void scanChunks(const float* input, float* output, const double* offsets, int n) {
+    // Pass 3: scan each chunk and add its offset from pass 2.
     __shared__ float s_data[kChunk];
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk;
     // Coalesced load of the chunk.
@@ -85,7 +90,9 @@ __global__ void scanChunks(const float* input, float* output, const double* offs
     }
     // ...then the per-thread totals are scanned across the block.
     double total;
+    // Pass 3 (continued): thread prefix = exclusive block prefix + chunk offset.
     const double thread_prefix = blockInclusiveScan(running, &total) - running + offsets[blockIdx.x];
+    // Write back through shared memory so that the global store is coalesced.
     for (int i = 0; i < kItemsPerThread; ++i) {
         s_data[threadIdx.x * kItemsPerThread + i] = static_cast<float>(thread_prefix + items[i]);
     }
@@ -98,6 +105,7 @@ __global__ void scanChunks(const float* input, float* output, const double* offs
 
 // input, output are device pointers
 extern "C" void solve(const float* input, float* output, int N) {
+    // Reduce-then-scan: chunk totals, one-block scan of the totals, then per-chunk scans.
     const int num_chunks = (N + kChunk - 1) / kChunk;
     double* totals = nullptr;
     cudaMalloc(&totals, num_chunks * sizeof(double));

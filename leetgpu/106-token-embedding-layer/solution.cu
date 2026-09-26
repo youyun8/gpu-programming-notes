@@ -13,9 +13,11 @@ constexpr int kMaxPerLane = 32;  // D <= 1024
 
 __global__ void embedLayerNorm(const int* token_ids, const int* position_ids, const float* tok_emb, const float* pos_emb,
                                const float* gamma, const float* beta, float* out, int bt, int t_len, int d, float eps) {
+    // One warp per token; lane l holds columns l, l + 32, ... of the row in registers.
     const int lane = threadIdx.x % 32;
     const int token = blockIdx.x * kWarpsPerBlock + threadIdx.x / 32;
     if (token >= bt) return;
+    // Gather the token and position embedding rows and add them.
     const float* tr = tok_emb + static_cast<size_t>(token_ids[token]) * d;
     const float* pr = pos_emb + static_cast<size_t>(position_ids[token % t_len]) * d;
     float vals[kMaxPerLane];
@@ -26,8 +28,10 @@ __global__ void embedLayerNorm(const int* token_ids, const int* position_ids, co
         vals[r] = c < d ? tr[c] + pr[c] : 0.0f;
         sum += vals[r];
     }
+    // LayerNorm: mean by a butterfly sum...
     for (int offset = 16; offset > 0; offset >>= 1) sum += __shfl_xor_sync(0xffffffffu, sum, offset);
     const float mean = sum / d;
+    // ...then the centered variance (two passes over registers, no cancellation)...
     float sq = 0.0f;
 #pragma unroll
     for (int r = 0; r < kMaxPerLane; ++r) {
@@ -39,6 +43,7 @@ __global__ void embedLayerNorm(const int* token_ids, const int* position_ids, co
     }
     for (int offset = 16; offset > 0; offset >>= 1) sq += __shfl_xor_sync(0xffffffffu, sq, offset);
     const float rstd = rsqrtf(sq / d + eps);
+    // ...and the affine output.
     float* o = out + static_cast<size_t>(token) * d;
 #pragma unroll
     for (int r = 0; r < kMaxPerLane; ++r) {

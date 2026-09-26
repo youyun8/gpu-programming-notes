@@ -12,16 +12,20 @@
 
 constexpr int kThreads = 256;
 
+// Global maximum magnitude, stored as float bits so integer atomicMax can update it.
 __device__ unsigned int g_max_bits;
 
 __global__ void resetMax() { g_max_bits = 0u; }
 
 __global__ void magnitude(const float* __restrict__ in, float* __restrict__ out, int h, int w) {
     const size_t total = static_cast<size_t>(h) * w;
+    // Pass 1: one thread per pixel (grid-stride); each thread tracks its own maximum.
     float local_max = 0.0f;
     for (size_t idx = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x; idx < total; idx += static_cast<size_t>(gridDim.x) * blockDim.x) {
         const int x = static_cast<int>(idx % w), y = static_cast<int>(idx / w);
         float m = 0.0f;
+        // Interior pixels only: central differences in x (neighbours +-1) and y (neighbours +-w);
+        // the 1-pixel border stays 0.
         if (x > 0 && y > 0 && x < w - 1 && y < h - 1) {
             const float gx = (in[idx + 1] - in[idx - 1]) * 0.5f;
             const float gy = (in[idx + w] - in[idx - w]) * 0.5f;
@@ -30,11 +34,13 @@ __global__ void magnitude(const float* __restrict__ in, float* __restrict__ out,
         out[idx] = m;
         local_max = fmaxf(local_max, m);
     }
+    // Warp max, then one atomicMax per warp on the raw bits (valid because every magnitude is >= 0).
     for (int o = 16; o > 0; o >>= 1) local_max = fmaxf(local_max, __shfl_xor_sync(0xffffffffu, local_max, o));
     if (threadIdx.x % 32 == 0) atomicMax(&g_max_bits, __float_as_uint(local_max));
 }
 
 __global__ void normalize(float* out, size_t total) {
+    // Pass 2: rescale in place so the maximum becomes 255 (skipped for a flat image).
     const float mx = __uint_as_float(g_max_bits);
     if (!(mx > 0.0f)) return;
     for (size_t idx = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x; idx < total; idx += static_cast<size_t>(gridDim.x) * blockDim.x)
@@ -46,6 +52,7 @@ extern "C" void solution(const float* input_image, float* output_image, size_t h
     const size_t total = height * width;
     size_t blocks = (total + kThreads - 1) / kThreads;
     blocks = blocks > 4096 ? 4096 : blocks;
+    // Reset the global maximum, compute magnitudes, then normalize.
     resetMax<<<1, 1>>>();
     magnitude<<<static_cast<unsigned>(blocks), kThreads>>>(input_image, output_image, static_cast<int>(height), static_cast<int>(width));
     normalize<<<static_cast<unsigned>(blocks), kThreads>>>(output_image, total);

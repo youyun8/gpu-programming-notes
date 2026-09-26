@@ -16,6 +16,7 @@ constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 1024;
 constexpr int kSmemSort = 2048;
 
+// Radix select of the k-th largest key T, one 8-bit digit at a time (most significant first).
 struct SelectState {
     unsigned int prefix;     // high bits of T found so far
     unsigned int mask;       // which bits of prefix are valid
@@ -26,6 +27,8 @@ struct SelectState {
 __device__ SelectState g_state;
 __device__ unsigned int g_hist[256];
 
+// Map floats to unsigned keys whose integer order equals the float order
+// (flip all bits of negatives, set the sign bit of positives).
 __device__ __forceinline__ unsigned int floatToKey(float f) {
     const unsigned int u = __float_as_uint(f);
     return (u & 0x80000000u) ? ~u : (u | 0x80000000u);
@@ -39,6 +42,7 @@ __global__ void initState(int k) {
     g_state = SelectState{0u, 0u, static_cast<unsigned int>(k), 0u};
 }
 
+// Histogram of the current digit over the keys that still match the prefix found so far.
 __global__ void digitHistogram(const float* input, int n, int shift) {
     __shared__ unsigned int s_hist[256];
     s_hist[threadIdx.x] = 0;
@@ -68,6 +72,7 @@ __global__ void chooseDigit(int shift) {
     for (int i = 0; i < 256; ++i) g_hist[i] = 0;
 }
 
+// Collect every key strictly greater than T (order does not matter yet).
 __global__ void gatherGreater(const float* input, int n, unsigned int* selected) {
     const unsigned int t = g_state.prefix;
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += gridDim.x * blockDim.x) {
@@ -109,6 +114,7 @@ __global__ void bitonicSmem(unsigned int* keys, int padded) {
     for (int i = threadIdx.x; i < padded; i += blockDim.x) keys[i] = s[i];
 }
 
+// One compare-exchange step of a global bitonic sort (for more than 2048 keys).
 __global__ void bitonicStep(unsigned int* keys, int padded, int size, int stride) {
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < padded; i += gridDim.x * blockDim.x) {
         const int j = i ^ stride;
@@ -124,6 +130,7 @@ __global__ void bitonicStep(unsigned int* keys, int padded, int size, int stride
     }
 }
 
+// Convert the first k sorted keys back to floats.
 __global__ void writeOutput(const unsigned int* keys, float* output, int k) {
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < k; i += gridDim.x * blockDim.x) output[i] = keyToFloat(keys[i]);
 }
@@ -135,6 +142,7 @@ static int gridFor(long long work) {
 
 // input, output are device pointers
 extern "C" void solve(const float* input, float* output, int N, int k) {
+    // Phase 1: four digit passes find T exactly (histogram, then a one-thread digit choice).
     initState<<<1, 1>>>(k);
     const int grid = gridFor(N);
     for (int shift = 24; shift >= 0; shift -= 8) {
@@ -142,6 +150,7 @@ extern "C" void solve(const float* input, float* output, int N, int k) {
         chooseDigit<<<1, 1>>>(shift);
     }
 
+    // Phase 2: gather keys > T, pad with copies of T up to k (ties) and zeros up to a power of two.
     int padded = 1;
     while (padded < k) padded <<= 1;
     unsigned int* selected = nullptr;
@@ -149,6 +158,7 @@ extern "C" void solve(const float* input, float* output, int N, int k) {
     gatherGreater<<<grid, kBlockSize>>>(input, N, selected);
     fillTail<<<gridFor(padded), kBlockSize>>>(selected, k, padded);
 
+    // Phase 3: sort descending, in one block's shared memory when it fits.
     if (padded <= kSmemSort) {
         bitonicSmem<<<1, 1024>>>(selected, padded);
     } else {

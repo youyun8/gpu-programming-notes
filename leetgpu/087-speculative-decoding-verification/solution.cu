@@ -10,6 +10,7 @@
 constexpr int kThreads = 1024;
 
 __device__ float blockSum(float v, float* scratch) {
+    // Block-wide sum returned to every thread.
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_xor_sync(0xffffffffu, v, offset);
     if (threadIdx.x % 32 == 0) scratch[threadIdx.x / 32] = v;
     __syncthreads();
@@ -23,6 +24,8 @@ __device__ float blockSum(float v, float* scratch) {
 // weight(v) (v = 0..V-1), i.e. torch.searchsorted(cdf, r); V if none.
 template <class WeightFn>
 __device__ int inverseCdf(int vocab, float r, WeightFn weight, float* scratch, int* s_found) {
+    // Scan the weights 1024 at a time (warp scans + warp totals + running carry); the first
+    // index whose running sum reaches r wins (atomicMin), and the loop stops at that chunk.
     if (threadIdx.x == 0) *s_found = vocab;
     __syncthreads();
     float carry = 0.0f;
@@ -56,11 +59,13 @@ __global__ void verify(const int* draft, const float* p_draft, const float* p_ta
                        int vocab) {
     __shared__ float scratch[32];
     __shared__ int s_found;
+    // One block per sequence: clear its output row; u[..., T] is the resampling draw.
     const int b = blockIdx.x;
     for (int i = threadIdx.x; i <= t_len; i += kThreads) out[static_cast<size_t>(b) * (t_len + 1) + i] = 0;
     __syncthreads();
     const float r = u[static_cast<size_t>(b) * (t_len + 1) + t_len];
 
+    // Walk the draft tokens in order: accept token i with probability min(1, q/p).
     for (int i = 0; i < t_len; ++i) {
         const int tok = draft[static_cast<size_t>(b) * t_len + i];
         const float* p = p_draft + (static_cast<size_t>(b) * t_len + i) * vocab;

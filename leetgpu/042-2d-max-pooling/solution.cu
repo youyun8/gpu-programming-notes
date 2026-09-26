@@ -11,14 +11,17 @@ constexpr int kBlockSize = 256;
 __global__ void maxPool2d(const float* input, float* output, int nc, int h, int w, int oh, int ow, int k, int stride,
                           int pad) {
     const size_t total = static_cast<size_t>(nc) * oh * ow;
+    // One thread per output element across all N * C planes (grid-stride).
     for (size_t idx = blockIdx.x * static_cast<size_t>(blockDim.x) + threadIdx.x; idx < total;
          idx += static_cast<size_t>(gridDim.x) * blockDim.x) {
+        // Decode (plane, y, x); the window's top-left corner may lie in the padding.
         const int x = static_cast<int>(idx % ow);
         const int y = static_cast<int>((idx / ow) % oh);
         const size_t plane = idx / (static_cast<size_t>(ow) * oh);
         const float* in = input + plane * h * w;
         const int y0 = y * stride - pad;
         const int x0 = x * stride - pad;
+        // Maximum over the in-bounds window taps (padding never wins).
         float best = -FLT_MAX;
         for (int dy = 0; dy < k; ++dy) {
             const int iy = y0 + dy;
@@ -35,6 +38,7 @@ __global__ void maxPool2d(const float* input, float* output, int nc, int h, int 
 // input, output are device pointers
 extern "C" void solve(const float* input, float* output, int N, int C, int H, int W, int kernel_size, int stride,
                       int padding) {
+    // Output size per axis: floor((X + 2P - k) / S) + 1.
     const int oh = (H + 2 * padding - kernel_size) / stride + 1;
     const int ow = (W + 2 * padding - kernel_size) / stride + 1;
     const size_t total = static_cast<size_t>(N) * C * oh * ow;

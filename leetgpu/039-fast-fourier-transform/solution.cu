@@ -13,6 +13,7 @@
 
 constexpr int kThreads = 256;
 
+// Complex multiply on (re, im) pairs.
 __device__ __forceinline__ float2 cmul(float2 a, float2 b) { return make_float2(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x); }
 
 // One Stockham radix-2 pass; ns = size of the sub-transforms already done.
@@ -20,6 +21,8 @@ __device__ __forceinline__ float2 cmul(float2 a, float2 b) { return make_float2(
 __global__ void stockhamPass(const float2* in, float2* out, int n, int ns, float sign) {
     const int half = n / 2;
     for (int j = blockIdx.x * blockDim.x + threadIdx.x; j < half; j += gridDim.x * blockDim.x) {
+        // Butterfly j combines in[j] and in[j + n/2] with twiddle exp(sign * i pi k / ns)
+        // (sincospif keeps the angle exact in units of pi) and writes the pair ns apart.
         const int k = j % ns;
         float s, c;
         sincospif(sign * static_cast<float>(k) / static_cast<float>(ns), &s, &c);
@@ -31,6 +34,7 @@ __global__ void stockhamPass(const float2* in, float2* out, int n, int ns, float
     }
 }
 
+// Grid for a grid-stride kernel, capped at 4096 blocks.
 static int gridFor(int work) {
     const int b = (work + kThreads - 1) / kThreads;
     return b < 1 ? 1 : (b > 4096 ? 4096 : b);
@@ -40,6 +44,7 @@ static int gridFor(int work) {
 static void fftPow2(float2* a, float2* b, int n, float sign) {
     float2* src = a;
     float2* dst = b;
+    // log2(n) passes, ping-ponging between the two buffers.
     for (int ns = 1; ns < n; ns *= 2) {
         stockhamPass<<<gridFor(n / 2), kThreads>>>(src, dst, n, ns, sign);
         float2* t = src;
@@ -50,6 +55,7 @@ static void fftPow2(float2* a, float2* b, int n, float sign) {
 }
 
 __device__ __forceinline__ float2 chirp(long long idx, int n) {  // exp(-i pi idx^2 / n)
+    // Reduce idx^2 modulo 2n in 64-bit integers first, so the float angle stays small and exact.
     const long long m = (idx * idx) % (2LL * n);
     float s, c;
     sincospif(-static_cast<float>(m) / static_cast<float>(n), &s, &c);
@@ -58,6 +64,7 @@ __device__ __forceinline__ float2 chirp(long long idx, int n) {  // exp(-i pi id
 
 __global__ void bluesteinPrep(const float2* x, float2* a, float2* b, int n, int len) {
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < len; i += gridDim.x * blockDim.x) {
+        // Bluestein: a = x * chirp, zero-padded to len.
         a[i] = i < n ? cmul(x[i], chirp(i, n)) : make_float2(0.0f, 0.0f);
         // b = conj(chirp) at offsets 0..n-1 and their mirror images len-(n-1)..len-1.
         float2 bv = make_float2(0.0f, 0.0f);
@@ -72,11 +79,13 @@ __global__ void bluesteinPrep(const float2* x, float2* a, float2* b, int n, int 
     }
 }
 
+// Convolution theorem: multiply the two spectra.
 __global__ void pointwiseMul(float2* a, const float2* b, int len) {
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < len; i += gridDim.x * blockDim.x) a[i] = cmul(a[i], b[i]);
 }
 
 __global__ void bluesteinFinish(const float2* conv, float2* out, int n, int len) {
+    // Normalize the inverse FFT and multiply by the chirp again: X[k] = chirp(k) * (a conv b)[k].
     const float inv = 1.0f / static_cast<float>(len);
     for (int k = blockIdx.x * blockDim.x + threadIdx.x; k < n; k += gridDim.x * blockDim.x) {
         const float2 c = conv[k];
@@ -88,6 +97,7 @@ __global__ void bluesteinFinish(const float2* conv, float2* out, int n, int len)
 extern "C" void solve(const float* signal, float* spectrum, int N) {
     const float2* x = reinterpret_cast<const float2*>(signal);
     float2* out = reinterpret_cast<float2*>(spectrum);
+    // Power-of-two length: a direct radix-2 Stockham FFT.
     if ((N & (N - 1)) == 0) {
         float2* scratch = nullptr;
         cudaMalloc(&scratch, N * sizeof(float2));
@@ -97,6 +107,8 @@ extern "C" void solve(const float* signal, float* spectrum, int N) {
         cudaFree(scratch);
         return;
     }
+    // Any other length: Bluestein's algorithm, a convolution of length len >= 2N - 1
+    // evaluated with power-of-two FFTs.
     int len = 1;
     while (len < 2 * N - 1) len <<= 1;
     float2* buf = nullptr;

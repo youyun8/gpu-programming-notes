@@ -9,14 +9,18 @@
 constexpr int kThreads = 256;
 constexpr int kMaxBlocks = 1024;
 
+// Device-global scratch: one fp64 partial sum per block.
 __device__ double g_partials[kMaxBlocks];
 
 __device__ double blockSumD(double v) {
+    // Block-wide sum in double; every thread receives the result.
     __shared__ double warp_sums[32];
     __shared__ double total;
+    // Butterfly sum inside each warp; lane 0 publishes the warp total.
     for (int o = 16; o > 0; o >>= 1) v += __shfl_xor_sync(0xffffffffu, v, o);
     if (threadIdx.x % 32 == 0) warp_sums[threadIdx.x / 32] = v;
     __syncthreads();
+    // Thread 0 adds the warp totals and broadcasts the result through shared memory.
     if (threadIdx.x == 0) {
         double t = 0.0;
         for (int w = 0; w < static_cast<int>(blockDim.x / 32); ++w) t += warp_sums[w];
@@ -29,6 +33,8 @@ __device__ double blockSumD(double v) {
 }
 
 __global__ void squaredDiffs(const float* p, const float* t, size_t n) {
+    // Pass 1: grid-stride sum of squared differences, per-thread in float,
+    // then reduced across the block in double.
     const size_t tid = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x;
     const size_t stride = static_cast<size_t>(gridDim.x) * blockDim.x;
     float local = 0.0f;
@@ -41,6 +47,7 @@ __global__ void squaredDiffs(const float* p, const float* t, size_t n) {
 }
 
 __global__ void finalize(float* out, int partials, size_t n) {
+    // Pass 2 (one block): add the partials in double and divide by the element count.
     double v = 0.0;
     for (int i = threadIdx.x; i < partials; i += blockDim.x) v += g_partials[i];
     v = blockSumD(v);
@@ -49,10 +56,12 @@ __global__ void finalize(float* out, int partials, size_t n) {
 
 // predictions, targets, output are device pointers
 extern "C" void solution(const float* predictions, const float* targets, float* output, const size_t* shape, size_t ndim) {
+    // Element count = product of the shape (`shape` may be a host or device pointer).
     size_t host_shape[16];
     cudaMemcpy(host_shape, shape, ndim * sizeof(size_t), cudaMemcpyDefault);
     size_t n = 1;
     for (size_t d = 0; d < ndim; ++d) n *= host_shape[d];
+    // Deterministic two-kernel reduction (no atomics).
     size_t blocks = (n + kThreads - 1) / kThreads;
     blocks = blocks < 1 ? 1 : (blocks > kMaxBlocks ? kMaxBlocks : blocks);
     squaredDiffs<<<static_cast<unsigned>(blocks), kThreads>>>(predictions, targets, n);

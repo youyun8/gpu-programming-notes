@@ -5,6 +5,7 @@
 constexpr int kBlockSize = 256;
 
 __global__ void clipKernel(const float* input, float* output, float lo, float hi, int n) {
+    // One thread per element: clamp to [lo, hi].
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) output[idx] = fminf(fmaxf(input[idx], lo), hi);
 }

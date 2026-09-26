@@ -21,17 +21,20 @@ gemmNtConcat(const float* a0, const float* b0, int k0_len, const float* a1, cons
              int rows, int cols, float scale) {
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // 16 x 16 threads, each owning a 4 x 4 patch of C (rows ty + 16i, columns tx + 16j).
     const int tid = threadIdx.x;
     const int tx = tid % 16;
     const int ty = tid / 16;
     const int row0 = blockIdx.y * kTileM;
     const int col0 = blockIdx.x * kTileN;
     float acc[4][4] = {};
+    // Accumulate both segments of the concatenated reduction into the same registers.
     for (int seg = 0; seg < 2; ++seg) {
         const float* a = seg == 0 ? a0 : a1;
         const float* b = seg == 0 ? b0 : b1;
         const int inner = seg == 0 ? k0_len : k1_len;
         for (int k0 = 0; k0 < inner; k0 += kTileK) {
+            // Stage A (transposed) and B, which is stored (cols x inner) and transposed while loading.
             for (int i = tid; i < kTileM * kTileK; i += kThreads) {
                 const int r = i / kTileK;
                 const int kk = i % kTileK;
@@ -42,7 +45,9 @@ gemmNtConcat(const float* a0, const float* b0, int k0_len, const float* a1, cons
                 const int kk = i % kTileK;
                 b_tile[kk][cc] = (col0 + cc < cols && k0 + kk < inner) ? b[static_cast<size_t>(col0 + cc) * inner + k0 + kk] : 0.0f;
             }
+            // Panels complete before anyone reads them.
             __syncthreads();
+            // Outer products: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
             for (int kk = 0; kk < kTileK; ++kk) {
                 float a_frag[4];
@@ -56,9 +61,11 @@ gemmNtConcat(const float* a0, const float* b0, int k0_len, const float* a1, cons
 #pragma unroll
                     for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
             }
+            // Everyone is done with the panels before the next slice overwrites them.
             __syncthreads();
         }
     }
+    // Scale and store in bounds.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= rows) continue;
@@ -72,6 +79,8 @@ gemmNtConcat(const float* a0, const float* b0, int k0_len, const float* a1, cons
 // x, W, A, B, output are device pointers
 extern "C" void solve(const float* x, const float* W, const float* A, const float* B, float* output, int batch, int d_in,
                       int d_out, int rank, float lora_scale) {
+    // hidden = scale * x A^T (batch x rank), then output = [x | hidden] [W | B]^T:
+    // the base projection and the LoRA update in one GEMM, no extra pass over the output.
     float* hidden = nullptr;
     cudaMalloc(&hidden, static_cast<size_t>(batch) * rank * sizeof(float));
     gemmNtConcat<<<dim3((rank + kTileN - 1) / kTileN, (batch + kTileM - 1) / kTileM), kThreads>>>(

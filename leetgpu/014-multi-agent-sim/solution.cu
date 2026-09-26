@@ -13,28 +13,36 @@ constexpr float kRadiusSq = 25.0f;
 constexpr float kAlpha = 0.05f;
 
 __global__ void flock(const float4* agents, float4* next, int n) {
+    // All-pairs neighbour search, tiled: each agent is (x, y, vx, vy) in one float4.
     __shared__ float4 tile[kBlock];
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
+    // This thread's agent, and the running sum of its neighbours' velocities.
     const float4 me = i < n ? agents[i] : make_float4(0.0f, 0.0f, 0.0f, 0.0f);
     float sum_vx = 0.0f, sum_vy = 0.0f;
     int count = 0;
+    // Stage 256 agents in shared memory, then every thread tests all of them.
     for (int t0 = 0; t0 < n; t0 += kBlock) {
         if (t0 + threadIdx.x < n) tile[threadIdx.x] = agents[t0 + threadIdx.x];
         __syncthreads();
         const int m = min(kBlock, n - t0);
         for (int t = 0; t < m; ++t) {
             const float4 o = tile[t];
+            // Squared distance with explicit round-to-nearest ops (no FMA contraction), to match
+            // the reference bit for bit at the radius boundary.
             const float dx = __fsub_rn(me.x, o.x);
             const float dy = __fsub_rn(me.y, o.y);
             const float d2 = __fadd_rn(__fmul_rn(dx, dx), __fmul_rn(dy, dy));
+            // Neighbour (not itself) strictly within radius 5: add its velocity.
             if (t0 + t != i && d2 < kRadiusSq) {
                 sum_vx += o.z;
                 sum_vy += o.w;
                 ++count;
             }
         }
+        // Everyone is done with this tile before it is overwritten.
         __syncthreads();
     }
+    // Steer towards the average neighbour velocity (alpha = 0.05), then move.
     if (i < n) {
         const float avg_x = count > 0 ? sum_vx / count : me.z;
         const float avg_y = count > 0 ? sum_vy / count : me.w;

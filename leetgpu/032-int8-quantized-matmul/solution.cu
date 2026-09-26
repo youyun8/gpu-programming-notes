@@ -24,6 +24,7 @@ constexpr int kTileK = 32;
 constexpr int kThreads = 128;
 constexpr int kFrag = 16;
 
+// Zero-point correction terms: sum over k of each row of A (one warp per row)...
 __global__ void rowSums(const int8_t* a, int* row_sum, int m, int k) {
     const int lane = threadIdx.x % 32;
     const int row = blockIdx.x * (blockDim.x / 32) + threadIdx.x / 32;
@@ -34,6 +35,7 @@ __global__ void rowSums(const int8_t* a, int* row_sum, int m, int k) {
     if (lane == 0) row_sum[row] = s;
 }
 
+// ...and of each column of B (one thread per column, coalesced across threads).
 __global__ void colSums(const int8_t* b, int* col_sum, int k, int n) {
     const int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col >= n) return;
@@ -45,20 +47,25 @@ __global__ void colSums(const int8_t* b, int* col_sum, int k, int n) {
 __global__ void __launch_bounds__(kThreads)
 imma(const int8_t* a, const int8_t* b, int8_t* c, const int* row_sum, const int* col_sum, int m, int n, int k,
      float scale_a, float scale_b, float scale_c, int za, int zb, int zc) {
+    // Shared tiles stored as 16 x 16 blocks (each block contiguous, leading dimension 16),
+    // plus the int32 C tile for the epilogue.
     __shared__ __align__(32) int8_t a_s[kTileM / kFrag][kTileK / kFrag][kFrag][kFrag];
     __shared__ __align__(32) int8_t b_s[kTileK / kFrag][kTileN / kFrag][kFrag][kFrag];
     __shared__ __align__(32) int c_s[kTileM][kTileN + 8];
 
+    // 4 warps in a 2 x 2 layout; each owns a 32 x 32 sub-tile = 2 x 2 int8 WMMA fragments.
     const int warp = threadIdx.x / 32;
     const int warp_row = (warp / 2) * 32;
     const int warp_col = (warp % 2) * 32;
     const int row0 = blockIdx.y * kTileM;
     const int col0 = blockIdx.x * kTileN;
 
+    // Exact int32 accumulation of the raw int8 products.
     wmma::fragment<wmma::accumulator, 16, 16, 16, int> acc[2][2];
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j) wmma::fill_fragment(acc[i][j], 0);
 
+    // Main loop over K in slices of 32: stage A and B (zero outside) into the blocked layout.
     for (int k0 = 0; k0 < k; k0 += kTileK) {
         for (int i = threadIdx.x; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
@@ -72,7 +79,9 @@ imma(const int8_t* a, const int8_t* b, int8_t* c, const int* row_sum, const int*
             b_s[kk / kFrag][cc / kFrag][kk % kFrag][cc % kFrag] =
                 (k0 + kk < k && col0 + cc < n) ? b[static_cast<size_t>(k0 + kk) * n + col0 + cc] : int8_t(0);
         }
+        // Tiles complete before the tensor-core loads.
         __syncthreads();
+        // Two k-steps of 16: 2 A and 2 B fragments, 4 integer MMAs.
 #pragma unroll
         for (int kb = 0; kb < kTileK / kFrag; ++kb) {
             wmma::fragment<wmma::matrix_a, 16, 16, 16, signed char, wmma::row_major> a_frag[2];
@@ -84,8 +93,10 @@ imma(const int8_t* a, const int8_t* b, int8_t* c, const int* row_sum, const int*
             for (int i = 0; i < 2; ++i)
                 for (int j = 0; j < 2; ++j) wmma::mma_sync(acc[i][j], a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the tiles before the next slice overwrites them.
         __syncthreads();
     }
+    // Spill the accumulators to shared memory for the element-wise epilogue.
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             wmma::store_matrix_sync(&c_s[warp_row + 16 * i][warp_col + 16 * j], acc[i][j], kTileN + 8, wmma::mem_row_major);
@@ -97,7 +108,9 @@ imma(const int8_t* a, const int8_t* b, int8_t* c, const int* row_sum, const int*
         const int gr = row0 + r;
         const int gc = col0 + cc;
         if (gr >= m || gc >= n) continue;
+        // Remove the zero points: sum (a - za)(b - zb) = sum ab - zb * rowsum(A) - za * colsum(B) + k za zb.
         const int acc_true = c_s[r][cc] - zb * row_sum[gr] - za * col_sum[gc] + k * za * zb;
+        // Requantize in the reference's operation order, round to nearest even, add zc, clamp to int8.
         float v = static_cast<float>(acc_true) * scale_a;
         v = v * scale_b;
         v = v / scale_c;
@@ -110,6 +123,7 @@ imma(const int8_t* a, const int8_t* b, int8_t* c, const int* row_sum, const int*
 // A, B, C are device pointers
 extern "C" void solve(const int8_t* A, const int8_t* B, int8_t* C, int M, int N, int K, float scale_A, float scale_B,
                       float scale_C, int zero_point_A, int zero_point_B, int zero_point_C) {
+    // Row and column sums first, then the tensor-core GEMM with the fused requantization.
     int* sums = nullptr;
     cudaMalloc(&sums, (static_cast<size_t>(M) + N) * sizeof(int));
     int* row_sum = sums;

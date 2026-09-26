@@ -19,6 +19,8 @@ constexpr int kThreads = 256;
 __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* v, const float* k_scale,
                                  const float* v_scale, float* part_m, float* part_l, float* part_acc, int seq, int d,
                                  float scale) {
+    // Split-KV decode attention (flash-decoding): each block handles one head and one
+    // chunk of 256 cached keys; a second kernel merges the chunks.
     __shared__ float s_p[kChunk];
     __shared__ float s_red[kThreads / 32];
     const int head = blockIdx.y;
@@ -29,6 +31,7 @@ __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* 
     const int warp = threadIdx.x / 32;
     const float* qh = q + static_cast<size_t>(head) * d;
 
+    // Scores: one warp per key, int8 K dequantized on the fly (per-token scale), warp dot product.
     for (int j = warp; j < keys; j += kThreads / 32) {
         const size_t tok = static_cast<size_t>(head) * seq + key0 + j;
         const int8_t* kr = k + tok * d;
@@ -39,6 +42,7 @@ __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* 
     }
     __syncthreads();
 
+    // Chunk maximum (block reduction).
     float m = -FLT_MAX;
     for (int j = threadIdx.x; j < keys; j += kThreads) m = fmaxf(m, s_p[j]);
     for (int offset = 16; offset > 0; offset >>= 1) m = fmaxf(m, __shfl_xor_sync(0xffffffffu, m, offset));
@@ -48,6 +52,7 @@ __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* 
     for (int w = 1; w < kThreads / 32; ++w) m = fmaxf(m, s_red[w]);
     __syncthreads();
 
+    // p_j = exp(s_j - m) and the chunk's sum l.
     float l = 0.0f;
     for (int j = threadIdx.x; j < keys; j += kThreads) {
         const float p = expf(s_p[j] - m);
@@ -60,6 +65,8 @@ __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* 
     l = 0.0f;
     for (int w = 0; w < kThreads / 32; ++w) l += s_red[w];
 
+    // Unnormalized partial output sum_j p_j v_j (int8 V dequantized with its per-token scale),
+    // plus the chunk's (m, l) for the merge.
     const size_t part = static_cast<size_t>(head) * gridDim.x + chunk;
     for (int c = threadIdx.x; c < d; c += kThreads) {
         float acc = 0.0f;
@@ -76,6 +83,7 @@ __global__ void partialAttention(const float* q, const int8_t* k, const int8_t* 
 }
 
 __global__ void combine(const float* part_m, const float* part_l, const float* part_acc, float* out, int chunks, int d) {
+    // Merge (one block per head): rescale every chunk to the global max, sum, and normalize.
     const int head = blockIdx.x;
     float m = -FLT_MAX;
     for (int i = 0; i < chunks; ++i) m = fmaxf(m, part_m[static_cast<size_t>(head) * chunks + i]);
@@ -97,6 +105,7 @@ __global__ void combine(const float* part_m, const float* part_l, const float* p
 // Q, K_int8, V_int8, k_scale, v_scale, output are device pointers
 extern "C" void solve(const float* Q, const int8_t* K_int8, const int8_t* V_int8, const float* k_scale,
                       const float* v_scale, float* output, int num_heads, int seq_len, int head_dim) {
+    // Scratch for the per-chunk (m, l, acc), then the two kernels.
     const int chunks = (seq_len + kChunk - 1) / kChunk;
     const size_t parts = static_cast<size_t>(num_heads) * chunks;
     float* buf = nullptr;

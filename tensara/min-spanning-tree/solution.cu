@@ -12,19 +12,24 @@
 constexpr int kThreads = 1024;
 
 __global__ void prim(const float* adj, float* best, unsigned char* in_tree, float* result, int n) {
+    // Shared scratch for the block-wide arg-min (one candidate per warp) and the chosen vertex.
     __shared__ float s_val[kThreads / 32];
     __shared__ int s_idx[kThreads / 32];
     __shared__ int s_pick;
     __shared__ float s_pick_val;
     const float inf = __int_as_float(0x7f800000);
+    // Start the tree at vertex 0: best[v] = weight of edge (0, v), +inf if absent (0 = no edge).
     for (int v = threadIdx.x; v < n; v += kThreads) {
         const float w = adj[v];
         best[v] = v == 0 ? 0.0f : (w == 0.0f ? inf : w);
         in_tree[v] = v == 0;
     }
     __syncthreads();
+    // Prim's algorithm: n - 1 steps, each adding the cheapest vertex outside the tree.
+    // The whole loop runs in this one block, synchronized with barriers only.
     double total = 0.0;
     for (int step = 0; step < n - 1; ++step) {
+        // Each thread scans its strided vertices outside the tree (ties -> lowest index)...
         float val = inf;
         int idx = 0x7fffffff;
         for (int v = threadIdx.x; v < n; v += kThreads) {
@@ -33,6 +38,7 @@ __global__ void prim(const float* adj, float* best, unsigned char* in_tree, floa
                 idx = v;
             }
         }
+        // ...then a warp shuffle arg-min...
         for (int o = 16; o > 0; o >>= 1) {
             const float ov = __shfl_xor_sync(0xffffffffu, val, o);
             const int oi = __shfl_xor_sync(0xffffffffu, idx, o);
@@ -46,6 +52,7 @@ __global__ void prim(const float* adj, float* best, unsigned char* in_tree, floa
             s_idx[threadIdx.x / 32] = idx;
         }
         __syncthreads();
+        // ...and thread 0 picks the best of the per-warp candidates.
         if (threadIdx.x == 0) {
             float bv = inf;
             int bi = 0x7fffffff;
@@ -60,12 +67,15 @@ __global__ void prim(const float* adj, float* best, unsigned char* in_tree, floa
         __syncthreads();
         const int u = s_pick;
         const float uv = s_pick_val;
+        // No reachable vertex left: the graph is disconnected (the reference returns +inf).
         if (isinf(uv) || u == 0x7fffffff) {
             if (threadIdx.x == 0) result[0] = inf;
             return;
         }
+        // Add the edge to the total (every thread keeps the same fp64 total) and put u in the tree.
         total += uv;
         if (threadIdx.x == 0) in_tree[u] = 1;
+        // Relax: row u of the matrix (coalesced) may offer cheaper edges into the tree.
         for (int v = threadIdx.x; v < n; v += kThreads) {
             const float w = adj[static_cast<size_t>(u) * n + v];
             if (w != 0.0f && w < best[v]) best[v] = w;
@@ -81,6 +91,7 @@ extern "C" void solution(const float* A, float* min_weight, size_t n) {
         cudaMemset(min_weight, 0, sizeof(float));
         return;
     }
+    // Scratch: best edge weight per vertex and an in-tree flag; one block runs all of Prim.
     void* buf = nullptr;
     cudaMalloc(&buf, n * (sizeof(float) + 1));
     float* best = static_cast<float*>(buf);

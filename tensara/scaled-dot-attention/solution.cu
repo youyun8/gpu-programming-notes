@@ -24,6 +24,7 @@ constexpr int kDimSlice = 128;
 constexpr int kMaxSlices = 8;  // head_dim <= 1024
 constexpr int kColsPerSlice = kDimSlice / 32;
 
+// Problem geometry: row counts, strides and per-head offsets, plus the softmax scale.
 struct AttnGeom {
     int q_rows, kv_rows, head_dim;
     size_t q_stride, kv_stride, o_stride;  // elements between consecutive rows
@@ -33,12 +34,15 @@ struct AttnGeom {
 
 __global__ void __launch_bounds__(kFlashWarps * 32)
 flashForward(const float* q, const float* k, const float* v, float* out, AttnGeom g) {
+    // Dynamic shared memory: this block's 4 (pre-scaled) query rows, one K slice
+    // (padded rows: conflict-free column reads) and one V slice.
     extern __shared__ float smem[];
     float* q_s = smem;                                  // [warps][head_dim]
     float* k_s = q_s + kFlashWarps * g.head_dim;        // [32][kDimSlice + 1]
     float* v_s = k_s + kFlashTile * (kDimSlice + 1);    // [32][kDimSlice]
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // blockIdx.y selects the (batch, head) pair, blockIdx.x a group of 4 query rows (one per warp).
     const int head = blockIdx.y;
     const int row = blockIdx.x * kFlashWarps + warp;
     const bool active = row < g.q_rows;
@@ -47,15 +51,20 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
     const float* kh = k + head * g.kv_head;
     const float* vh = v + head * g.kv_head;
 
+    // Stage this warp's query row, multiplied by the scale 1/sqrt(E) once.
     for (int c = lane; c < hd; c += 32) q_s[warp * hd + c] = active ? qh[row * g.q_stride + c] * g.scale : 0.0f;
 
+    // Output accumulator: lane l owns columns l, l + 32, ... (compile-time indices after unrolling),
+    // plus the online-softmax state (running max and running sum).
     float acc[kMaxSlices * kColsPerSlice];
 #pragma unroll
     for (int r = 0; r < kMaxSlices * kColsPerSlice; ++r) acc[r] = 0.0f;
     float running_max = -FLT_MAX, running_sum = 0.0f;
 
+    // Stream the keys and values in tiles of 32.
     for (int key0 = 0; key0 < g.kv_rows; key0 += kFlashTile) {
         const int tile_keys = min(kFlashTile, g.kv_rows - key0);
+        // Scores: lane l computes q . k_l for key l of the tile, over 128-wide slices of the head dim.
         float score = 0.0f;
         for (int c0 = 0; c0 < hd; c0 += kDimSlice) {
             const int width = min(kDimSlice, hd - c0);
@@ -67,6 +76,8 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
             __syncthreads();
             for (int c = 0; c < width; ++c) score = fmaf(q_s[warp * hd + c0 + c], k_s[lane * (kDimSlice + 1) + c], score);
         }
+        // Online softmax: new max over the tile, rescale factor for the old state,
+        // p = exp(score - new max), and the tile's sum of p.
         if (lane >= tile_keys) score = -FLT_MAX;
         float tile_max = score;
         for (int o = 16; o > 0; o >>= 1) tile_max = fmaxf(tile_max, __shfl_xor_sync(0xffffffffu, tile_max, o));
@@ -77,9 +88,11 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
         for (int o = 16; o > 0; o >>= 1) tile_sum += __shfl_xor_sync(0xffffffffu, tile_sum, o);
         running_sum = running_sum * corr + tile_sum;
         running_max = new_max;
+        // Rescale the accumulator to the new max.
 #pragma unroll
         for (int r = 0; r < kMaxSlices * kColsPerSlice; ++r) acc[r] *= corr;
 
+        // acc += P V for this tile, one 128-wide slice of V at a time through shared memory.
 #pragma unroll
         for (int s = 0; s < kMaxSlices; ++s) {
             const int c0 = s * kDimSlice;
@@ -91,6 +104,7 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
                 v_s[j * kDimSlice + c] = j < tile_keys ? vh[(key0 + j) * g.kv_stride + c0 + c] : 0.0f;
             }
             __syncthreads();
+            // Probability of key j is broadcast from lane j with a shuffle.
             for (int j = 0; j < tile_keys; ++j) {
                 const float pj = __shfl_sync(0xffffffffu, p, j);
 #pragma unroll
@@ -101,6 +115,7 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
             }
         }
     }
+    // Normalize by the running sum and store the output row.
     if (active) {
         const float inv = 1.0f / running_sum;
         float* oh = out + head * g.o_head + row * g.o_stride;
@@ -115,6 +130,7 @@ flashForward(const float* q, const float* k, const float* v, float* out, AttnGeo
     }
 }
 
+// Shared-memory size depends on the head dim; opt in above the 48 KB default when needed.
 static void launchFlash(const float* q, const float* k, const float* v, float* out, const AttnGeom& g, int heads) {
     const size_t smem = (static_cast<size_t>(kFlashWarps) * g.head_dim + kFlashTile * (kDimSlice + 1) +
                          kFlashTile * kDimSlice) * sizeof(float);
@@ -125,6 +141,7 @@ static void launchFlash(const float* q, const float* k, const float* v, float* o
 
 // Q, K, V, output are device pointers
 extern "C" void solution(const float* Q, const float* K, const float* V, float* output, size_t B, size_t H, size_t S, size_t E) {
+    // Every (batch, head) pair is an independent S x E problem: fold B * H into the grid.
     const size_t head = S * E;
     AttnGeom g{static_cast<int>(S), static_cast<int>(S), static_cast<int>(E), E, E, E, head, head, head, 1.0f / sqrtf(static_cast<float>(E))};
     launchFlash(Q, K, V, output, g, static_cast<int>(B * H));

@@ -11,11 +11,14 @@ constexpr int kThreads = 1024;
 __global__ void dpoLoss(const float* lc, const float* lr, const float* lc_ref, const float* lr_ref, float* out, float beta,
                         int b) {
     __shared__ double warp_sums[kThreads / 32];
+    // One block: z = beta * (chosen margin - reference margin), loss term = -log sigmoid(z)
+    // computed stably as max(-z, 0) + log1p(exp(-|z|)).
     double local = 0.0;
     for (int i = threadIdx.x; i < b; i += kThreads) {
         const float z = beta * ((lc[i] - lr[i]) - (lc_ref[i] - lr_ref[i]));
         local += fmaxf(-z, 0.0f) + log1pf(expf(-fabsf(z)));
     }
+    // Block reduction in double; thread 0 writes the mean.
     for (int offset = 16; offset > 0; offset >>= 1) local += __shfl_xor_sync(0xffffffffu, local, offset);
     if (threadIdx.x % 32 == 0) warp_sums[threadIdx.x / 32] = local;
     __syncthreads();

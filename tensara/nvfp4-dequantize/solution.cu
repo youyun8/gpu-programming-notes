@@ -19,6 +19,7 @@
 // atoms of 512 bytes, row r of an atom stored at (r % 32) * 16 + (r / 32) * 4.
 // ---------------------------------------------------------------------------
 __device__ __forceinline__ float e2m1ToFloat(unsigned int code) {
+    // Low 3 bits: magnitude code; bit 3: sign.
     const unsigned int mag = code & 7u;
     // codes 0..3 -> 0, .5, 1, 1.5 (m * 0.5); codes 4..7 -> 2, 3, 4, 6 ((2 + (m & 1)) * 2^((m >> 1) - 2))
     const float v = mag < 4u ? 0.5f * static_cast<float>(mag)
@@ -27,11 +28,13 @@ __device__ __forceinline__ float e2m1ToFloat(unsigned int code) {
 }
 
 __device__ __forceinline__ float e4m3ToFloat(unsigned int b) {
+    // Split the byte into the 4-bit exponent and 3-bit mantissa fields (bias 7).
     const unsigned int e = (b >> 3) & 0xFu, m = b & 7u;
     float v;
     if (e == 15u && m == 7u) v = __int_as_float(0x7fc00000);            // NaN
     else if (e == 0u) v = static_cast<float>(m) * 0.001953125f;          // m/8 * 2^-6
     else v = ldexpf(1.0f + static_cast<float>(m) * 0.125f, static_cast<int>(e) - 7);
+    // Apply the sign bit.
     return (b & 0x80u) ? -v : v;
 }
 
@@ -41,22 +44,27 @@ __device__ __forceinline__ float e8m0ToFloat(unsigned int b) {
 
 // Round to nearest even, saturate to +-448 (the "satfinite" conversion).
 __device__ __forceinline__ unsigned int floatToE4M3(float x) {
+    // Keep the sign bit, then encode the magnitude.
     const unsigned int sign = (__float_as_uint(x) >> 24) & 0x80u;
     const float a = fabsf(x);
+    // NaN in, NaN out; values that would round past 448 saturate to the largest finite code.
     if (a != a) return sign | 0x7Fu;
     if (a >= 464.0f) return sign | 0x7Eu;                      // rounds past 448 -> saturate
     if (a < 0.015625f) {                                         // subnormal range, step 2^-9
         const unsigned int m = static_cast<unsigned int>(rintf(a * 512.0f));
         return sign | m;                                         // m == 8 is exactly the min normal 0x08
     }
+    // Normal range: split a into mantissa and exponent, round the mantissa to 3 bits.
     int e;
     const float frac = frexpf(a, &e);                            // a = frac * 2^e, frac in [0.5, 1)
     unsigned int m = static_cast<unsigned int>(rintf((frac * 2.0f - 1.0f) * 8.0f));
     int exp_field = e - 1 + 7;
+    // Mantissa rounded up to 2.0: carry into the exponent.
     if (m == 8u) {
         m = 0u;
         ++exp_field;
     }
+    // Assemble the code and clamp to 0x7E (448); 0x7F is NaN.
     unsigned int code = (static_cast<unsigned int>(exp_field) << 3) | m;
     if (code > 0x7Eu) code = 0x7Eu;
     return sign | code;
@@ -68,6 +76,8 @@ __device__ __forceinline__ unsigned int floatToE4M3(float x) {
 __device__ __forceinline__ unsigned int floatToE2M1(float x) {
     const float a = fabsf(x);
     unsigned int code = 0u;
+    // Compare against the midpoints between neighbouring E2M1 values
+    // {0, .5, 1, 1.5, 2, 3, 4, 6}; ">" vs ">=" picks the even code on ties.
     code = a > 0.25f ? 1u : code;
     code = a >= 0.75f ? 2u : code;
     code = a > 1.25f ? 3u : code;
@@ -79,17 +89,21 @@ __device__ __forceinline__ unsigned int floatToE2M1(float x) {
 }
 
 __device__ __forceinline__ size_t swizzledScaleIndex(size_t r, size_t c, size_t cols) {
+    // 128 x 4 atoms of 512 bytes; inside an atom, rows r, r+32, r+64, r+96 are interleaved.
     const size_t col_blocks = (cols + 3) / 4;
     const size_t ri = r % 128;
     return ((r / 128) * col_blocks + c / 4) * 512 + (ri % 32) * 16 + (ri / 32) * 4 + c % 4;
 }
 
 __global__ void dequant(const uint8_t* __restrict__ q, const uint8_t* __restrict__ scale, float inv_g, float2* __restrict__ out, size_t m, size_t k) {
+    // One thread per packed byte (two FP4 values), grid-stride.
     const size_t pairs = m * k / 2;
     const size_t scale_cols = k / 16;
     for (size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x; i < pairs; i += static_cast<size_t>(gridDim.x) * blockDim.x) {
+        // Block scale = E4M3 byte (swizzled layout, one per 16 elements) times 1 / global scale.
         const size_t row = (2 * i) / k, col = (2 * i) % k;
         const float s = e4m3ToFloat(scale[swizzledScaleIndex(row, col / 16, scale_cols)]) * inv_g;
+        // Low nibble = even column, high nibble = odd column; write both as one float2.
         const unsigned int b = q[i];
         out[i] = make_float2(e2m1ToFloat(b & 0xFu) * s, e2m1ToFloat(b >> 4) * s);
     }
@@ -97,6 +111,7 @@ __global__ void dequant(const uint8_t* __restrict__ q, const uint8_t* __restrict
 
 // q, scale, out are device pointers
 extern "C" void solution(const uint8_t* q, const uint8_t* scale, const float sf_g, float* out, size_t m, size_t k) {
+    // One thread per byte, capped grid; the global decode factor 1 / sf_g is computed once here.
     size_t blocks = (m * k / 2 + 255) / 256;
     blocks = blocks > 4096 ? 4096 : (blocks < 1 ? 1 : blocks);
     dequant<<<static_cast<unsigned>(blocks), 256>>>(q, scale, 1.0f / sf_g, reinterpret_cast<float2*>(out), m, k);

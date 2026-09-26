@@ -16,27 +16,36 @@ constexpr int kOutPerBlock = kThreads * kOutPerThread;
 constexpr int kTapChunk = 2048;
 
 __global__ void conv1dSame(const float* __restrict__ in, const float* __restrict__ w, float* __restrict__ out, long long n, int k) {
+    // Shared staging: one chunk of taps and the input window those taps touch.
     __shared__ float s_w[kTapChunk];
     __shared__ float s_in[kOutPerBlock + kTapChunk - 1];
+    // This block produces outputs [base, base + 1024); each thread keeps 4 accumulators
+    // for outputs threadIdx.x + r * 256.
     const long long base = static_cast<long long>(blockIdx.x) * kOutPerBlock;
     const int half = k / 2;
     float acc[kOutPerThread] = {};
+    // Process the (up to 8191) taps in chunks of 2048 so shared memory stays bounded.
     for (int t0 = 0; t0 < k; t0 += kTapChunk) {
         const int taps = min(kTapChunk, k - t0);
         const int window = kOutPerBlock + taps - 1;
+        // The previous chunk's data must no longer be in use before it is overwritten.
         __syncthreads();
+        // Stage the taps and the matching input window (zero outside [0, n): the padding).
         for (int i = threadIdx.x; i < taps; i += kThreads) s_w[i] = w[t0 + i];
         for (int i = threadIdx.x; i < window; i += kThreads) {
             const long long g = base + i + t0 - half;
             s_in[i] = (g >= 0 && g < n) ? in[g] : 0.0f;
         }
+        // Staged data visible to all threads.
         __syncthreads();
+        // Cross-correlation: tap j is a broadcast; the 32 lanes read 32 consecutive window words.
         for (int j = 0; j < taps; ++j) {
             const float wj = s_w[j];
 #pragma unroll
             for (int r = 0; r < kOutPerThread; ++r) acc[r] = fmaf(s_in[threadIdx.x + r * kThreads + j], wj, acc[r]);
         }
     }
+    // Store the 4 outputs of this thread (bounds-checked for the last block).
 #pragma unroll
     for (int r = 0; r < kOutPerThread; ++r) {
         const long long o = base + threadIdx.x + r * kThreads;
@@ -46,6 +55,7 @@ __global__ void conv1dSame(const float* __restrict__ in, const float* __restrict
 
 // A, B, C are device pointers
 extern "C" void solution(const float* A, const float* B, float* C, size_t N, size_t K) {
+    // One block per 1024 outputs.
     const unsigned blocks = static_cast<unsigned>((N + kOutPerBlock - 1) / kOutPerBlock);
     conv1dSame<<<blocks, kThreads>>>(A, B, C, static_cast<long long>(N), static_cast<int>(K));
 }

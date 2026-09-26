@@ -8,6 +8,7 @@ constexpr int kBlockSize = 256;
 __global__ void invertColors(uchar4* pixels, int num_pixels) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_pixels) {
+        // Invert R, G, B; alpha (p.w) is left unchanged.
         uchar4 p = pixels[idx];
         p.x = 255 - p.x;
         p.y = 255 - p.y;
@@ -18,6 +19,7 @@ __global__ void invertColors(uchar4* pixels, int num_pixels) {
 
 // image is a device pointer
 extern "C" void solve(unsigned char* image, int width, int height) {
+    // One thread per pixel.
     const int num_pixels = width * height;
     const int num_blocks = (num_pixels + kBlockSize - 1) / kBlockSize;
     invertColors<<<num_blocks, kBlockSize>>>(reinterpret_cast<uchar4*>(image), num_pixels);

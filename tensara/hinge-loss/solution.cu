@@ -9,9 +9,11 @@ constexpr int kThreads = 256;
 constexpr int kMaxBlocks = 4096;
 
 __global__ void lossKernel(const float* __restrict__ pred, const float* __restrict__ targ, float* __restrict__ out, size_t n) {
+    // Grid-stride elementwise map over two inputs (coalesced loads).
     for (size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x; i < n; i += static_cast<size_t>(gridDim.x) * blockDim.x) {
         const float p = pred[i];
         const float t = targ[i];
+        // Hinge: max(0, 1 - p * t) with t in {-1, +1}.
         out[i] = fmaxf(1.0f - p * t, 0.0f);
     }
 }

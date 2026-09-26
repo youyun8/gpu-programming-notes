@@ -15,18 +15,22 @@ constexpr int kMaxColsPerLane = 8;  // d <= 256
 
 __global__ void __launch_bounds__(kWarps * 32)
 retention(const float* q, const float* k, const float* v, float* out, int seq, int d, float gamma, float scale) {
+    // Dynamic shared memory: a tile of 32 keys (odd pitch), 32 values and the block's 8 query rows.
     extern __shared__ float smem[];
     const int pitch = d + 1;
     float* k_tile = smem;
     float* v_tile = k_tile + kTileKeys * pitch;
     float* q_rows = v_tile + kTileKeys * d;
 
+    // One warp per query row; stage the query, pre-scaled by 1/sqrt(d).
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
     const int row = blockIdx.x * kWarps + warp;
     const bool active = row < seq;
     for (int c = lane; c < d; c += 32) q_rows[warp * d + c] = active ? q[static_cast<size_t>(row) * d + c] * scale : 0.0f;
 
+    // No softmax (retention): the output is a plain weighted sum, so no running max is needed.
+    // Keys after the block's last row are masked for every row, so the loop stops there.
     float acc[kMaxColsPerLane] = {};
     const int last_row = min(seq - 1, blockIdx.x * kWarps + kWarps - 1);
     for (int key0 = 0; key0 <= last_row; key0 += kTileKeys) {
@@ -40,6 +44,7 @@ retention(const float* q, const float* k, const float* v, float* out, int seq, i
             v_tile[j * d + c] = valid ? v[g] : 0.0f;
         }
         __syncthreads();
+        // Lane l's weight for key j = key0 + l: (q . k_j) * gamma^(row - j) if j <= row, else 0.
         const int key = key0 + lane;
         float weight = 0.0f;
         if (active && key <= row) {
@@ -47,6 +52,7 @@ retention(const float* q, const float* k, const float* v, float* out, int seq, i
             for (int c = 0; c < d; ++c) s = fmaf(q_rows[warp * d + c], k_tile[lane * pitch + c], s);
             weight = s * powf(gamma, static_cast<float>(row - key));
         }
+        // acc += weight_j * v_j; weight j is broadcast from lane j.
         const int tile_keys = min(kTileKeys, seq - key0);
         for (int j = 0; j < tile_keys; ++j) {
             const float wj = __shfl_sync(0xffffffffu, weight, j);
@@ -57,6 +63,7 @@ retention(const float* q, const float* k, const float* v, float* out, int seq, i
             }
         }
     }
+    // Store the output row.
     if (active) {
 #pragma unroll
         for (int r = 0; r < kMaxColsPerLane; ++r) {
@@ -69,6 +76,7 @@ retention(const float* q, const float* k, const float* v, float* out, int seq, i
 // Q, K, V, output are device pointers
 extern "C" void solve(const float* Q, const float* K, const float* V, float* output, int seq_len, int d_model, float gamma) {
     const int d = d_model;
+    // Shared-memory size depends on d; opt in above the 48 KB default when needed.
     const size_t smem = (static_cast<size_t>(kTileKeys) * (2 * d + 1) + static_cast<size_t>(kWarps) * d) * sizeof(float);
     cudaFuncSetAttribute(retention, cudaFuncAttributeMaxDynamicSharedMemorySize, static_cast<int>(smem));
     retention<<<(seq_len + kWarps - 1) / kWarps, kWarps * 32, smem>>>(Q, K, V, output, seq_len, d, gamma,

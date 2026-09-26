@@ -15,11 +15,13 @@ sgemmBatched(const float* a, const float* b, float* c, int rows, int inner, int 
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
 
+    // blockIdx.z selects the batch: offset the three matrix pointers to it.
     const size_t batch = blockIdx.z;
     a += batch * rows * inner;
     b += batch * inner * cols;
     c += batch * rows * cols;
 
+    // 16 x 16 threads, each owning a 4 x 4 patch of C (rows ty + 16i, columns tx + 16j).
     const int tid = threadIdx.x;
     const int tx = tid % 16;
     const int ty = tid / 16;
@@ -27,7 +29,9 @@ sgemmBatched(const float* a, const float* b, float* c, int rows, int inner, int 
     const int col0 = blockIdx.x * kTileN;
 
     float acc[4][4] = {};
+    // Main loop over K in slices of 16.
     for (int k0 = 0; k0 < inner; k0 += kTileK) {
+        // Stage the 64 x 16 panel of A (transposed) and the 16 x 64 panel of B, zero outside.
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
             const int kk = i % kTileK;
@@ -38,7 +42,9 @@ sgemmBatched(const float* a, const float* b, float* c, int rows, int inner, int 
             const int cc = i % kTileN;
             b_tile[kk][cc] = (k0 + kk < inner && col0 + cc < cols) ? b[static_cast<size_t>(k0 + kk) * cols + col0 + cc] : 0.0f;
         }
+        // Panels complete before anyone reads them.
         __syncthreads();
+        // Register-blocked outer products: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float a_frag[4];
@@ -52,8 +58,10 @@ sgemmBatched(const float* a, const float* b, float* c, int rows, int inner, int 
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Store the 4 x 4 patch in bounds.
 #pragma unroll
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
@@ -68,6 +76,7 @@ sgemmBatched(const float* a, const float* b, float* c, int rows, int inner, int 
 
 // A, B, C are device pointers
 extern "C" void solve(const float* A, const float* B, float* C, int BATCH, int M, int N, int K) {
+    // One block per 64 x 64 output tile per batch (z dimension).
     const dim3 grid((N + kTileN - 1) / kTileN, (M + kTileM - 1) / kTileM, BATCH);
     sgemmBatched<<<grid, kThreads>>>(A, B, C, M, K, N);
     cudaDeviceSynchronize();

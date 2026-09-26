@@ -8,6 +8,7 @@
 constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 1024;
 
+// One fp64 partial per block of the first pass.
 __device__ double g_partials[kMaxBlocks];
 
 __device__ __forceinline__ double warpReduceSum(double v) {
@@ -20,15 +21,18 @@ __device__ double blockReduceSum(double v) {
     __shared__ double warp_sums[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Reduce inside each warp; lane 0 publishes the warp sum.
     v = warpReduceSum(v);
     if (lane == 0) warp_sums[warp] = v;
     __syncthreads();
+    // Warp 0 reduces the warp sums.
     v = threadIdx.x < blockDim.x / 32 ? warp_sums[lane] : 0.0;
     if (warp == 0) v = warpReduceSum(v);
     return v;
 }
 
 __global__ void partialDots(const float* a, const float* b, int n) {
+    // Pass 1: grid-stride FMAs over float4 pairs plus a scalar tail, then a block reduction in double.
     const int tid = blockIdx.x * blockDim.x + threadIdx.x;
     const int stride = gridDim.x * blockDim.x;
     const int num_vec4 = n / 4;
@@ -47,6 +51,7 @@ __global__ void partialDots(const float* a, const float* b, int n) {
 }
 
 __global__ void finalSum(float* result, int num_partials) {
+    // Pass 2 (one block): add the partials in double.
     double v = 0.0;
     for (int i = threadIdx.x; i < num_partials; i += blockDim.x) v += g_partials[i];
     v = blockReduceSum(v);
@@ -55,6 +60,7 @@ __global__ void finalSum(float* result, int num_partials) {
 
 // A, B, result are device pointers
 extern "C" void solve(const float* A, const float* B, float* result, int N) {
+    // Two launches, no atomics: deterministic.
     int num_blocks = (N / 4 + kBlockSize - 1) / kBlockSize;
     num_blocks = num_blocks < 1 ? 1 : (num_blocks > kMaxBlocks ? kMaxBlocks : num_blocks);
     partialDots<<<num_blocks, kBlockSize>>>(A, B, N);

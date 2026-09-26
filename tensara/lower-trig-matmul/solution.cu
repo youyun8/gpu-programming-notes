@@ -19,24 +19,32 @@ constexpr int kThreads = 256;
 __global__ void __launch_bounds__(kThreads) triMatmul(const float* a, const float* b, float* c, int n) {
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // 16 x 16 threads, each owning a 4 x 4 patch of C (rows ty + 16i, columns tx + 16j).
     const int tid = threadIdx.x, tx = tid % 16, ty = tid / 16;
     const int row0 = blockIdx.y * kTileM, col0 = blockIdx.x * kTileN;
+    // Tiles strictly above the diagonal stay zero: skip all loads and FMAs for them.
     float acc[4][4] = {};
     if (!(col0 > row0 + kTileM - 1)) {
+        // Only k in [col0, row0 + 64) can contribute to this tile (C[i][j] needs k between
+        // min(i, j) and max(i, j)); start at a 16-aligned k.
         const int k_begin = (col0) / kTileK * kTileK;
         const int k_end = min(n, row0 + kTileM);
         for (int k0 = k_begin; k0 < k_end; k0 += kTileK) {
+            // Stage A (transposed), masking the other triangle (k <= row) exactly like torch.tril.
             for (int i = tid; i < kTileM * kTileK; i += kThreads) {
                 const int r = i / kTileK, kk = i % kTileK;
                 const int gr = row0 + r, kk_g = k0 + kk;
                 a_tile[kk][r] = (gr < n && kk_g < n && kk_g <= gr) ? a[static_cast<size_t>(gr) * n + kk_g] : 0.0f;
             }
+            // Stage B, masking the other triangle (col <= k).
             for (int i = tid; i < kTileK * kTileN; i += kThreads) {
                 const int kk = i / kTileN, cc = i % kTileN;
                 const int kk_g = k0 + kk, gc = col0 + cc;
                 b_tile[kk][cc] = (kk_g < n && gc < n && gc <= kk_g) ? b[static_cast<size_t>(kk_g) * n + gc] : 0.0f;
             }
+            // Tiles complete before anyone reads them.
             __syncthreads();
+            // Register-blocked inner product: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
             for (int kk = 0; kk < kTileK; ++kk) {
                 float af[4], bf[4];
@@ -49,9 +57,11 @@ __global__ void __launch_bounds__(kThreads) triMatmul(const float* a, const floa
 #pragma unroll
                     for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(af[i], bf[j], acc[i][j]);
             }
+            // Everyone is done with the tiles before the next slice overwrites them.
             __syncthreads();
         }
     }
+    // Store; entries outside the lower triangle are written as exact zeros.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= n) continue;
@@ -65,6 +75,7 @@ __global__ void __launch_bounds__(kThreads) triMatmul(const float* a, const floa
 // input_a, input_b, output_c are device pointers
 extern "C" void solution(const float* input_a, const float* input_b, float* output_c, size_t n) {
     const int ni = static_cast<int>(n);
+    // One block per 64 x 64 output tile.
     const dim3 grid((ni + kTileN - 1) / kTileN, (ni + kTileM - 1) / kTileM);
     triMatmul<<<grid, kThreads>>>(input_a, input_b, output_c, ni);
 }

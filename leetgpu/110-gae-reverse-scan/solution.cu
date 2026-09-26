@@ -17,6 +17,8 @@ __global__ void gae(const float* rewards, const float* values, float* adv, int s
     const float* r = rewards + static_cast<size_t>(blockIdx.x) * s;
     const float* v = values + static_cast<size_t>(blockIdx.x) * s;
     float* a = adv + static_cast<size_t>(blockIdx.x) * s;
+    // GAE: A_t = delta_t + (gamma lambda) A_{t+1}, with delta_t = r_t + gamma V_{t+1} - V_t
+    // (V after the last step is 0). One block per trajectory.
     const double c = static_cast<double>(gamma) * lam;
     auto delta = [&](int t) {
         const float next_v = t + 1 < s ? v[t + 1] : 0.0f;
@@ -77,6 +79,7 @@ __global__ void gae(const float* rewards, const float* values, float* adv, int s
         ea = 0.0;
     }
     const double carry = (warp > 0 ? ea + em * s_add[warp - 1] : ea);
+    // Replay the chunk backwards from the incoming advantage, writing A_t (in double).
     double running = carry;
     for (int t = hi - 1; t >= lo; --t) {
         running = delta(t) + c * running;
@@ -86,6 +89,7 @@ __global__ void gae(const float* rewards, const float* values, float* adv, int s
 
 // rewards, values, advantages are device pointers
 extern "C" void solve(const float* rewards, const float* values, float* advantages, float gamma, float lam, int B, int S) {
+    // One block per batch row.
     gae<<<B, kThreads>>>(rewards, values, advantages, S, gamma, lam);
     cudaDeviceSynchronize();
 }

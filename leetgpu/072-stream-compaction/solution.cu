@@ -14,6 +14,7 @@ constexpr int kItemsPerThread = 8;
 constexpr int kChunk = kBlockSize * kItemsPerThread;
 
 __device__ int blockExclusiveScan(int v, int* total) {
+    // Block-wide exclusive scan of ints; also returns the block total.
     __shared__ int warp_totals[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
@@ -40,6 +41,7 @@ __device__ int blockExclusiveScan(int v, int* total) {
 }
 
 __global__ void chunkCounts(const float* a, int n, int* counts) {
+    // Pass 1: number of positive elements in each 2048-element chunk.
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk;
     int c = 0;
     for (int i = 0; i < kItemsPerThread; ++i) {
@@ -52,6 +54,8 @@ __global__ void chunkCounts(const float* a, int n, int* counts) {
 }
 
 __global__ void scanCounts(int* counts, int num_chunks, int* total_out) {
+    // Pass 2 (one block): exclusive scan of the chunk counts -> each chunk's output offset,
+    // plus the total number of kept elements.
     int carry = 0;
     for (int start = 0; start < num_chunks; start += kBlockSize) {
         const int i = start + threadIdx.x;
@@ -65,6 +69,8 @@ __global__ void scanCounts(int* counts, int num_chunks, int* total_out) {
 }
 
 __global__ void scatter(const float* a, int n, const int* offsets, float* out) {
+    // Pass 3: each thread counts its 8 consecutive items, gets its offset from a block scan,
+    // and writes its positive elements in input order (a stable compaction).
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk + threadIdx.x * kItemsPerThread;
     int c = 0;
     for (int i = 0; i < kItemsPerThread; ++i) {
@@ -83,12 +89,14 @@ __global__ void scatter(const float* a, int n, const int* offsets, float* out) {
 }
 
 __global__ void zeroTail(float* out, int n, const int* total) {
+    // The rest of the output (after the kept elements) is filled with zeros.
     const int k = *total;
     for (int i = k + blockIdx.x * blockDim.x + threadIdx.x; i < n; i += gridDim.x * blockDim.x) out[i] = 0.0f;
 }
 
 // A, out are device pointers
 extern "C" void solve(const float* A, int N, float* out) {
+    // Count, scan, scatter, then zero the tail.
     const int num_chunks = (N + kChunk - 1) / kChunk;
     int* counts = nullptr;
     cudaMalloc(&counts, (num_chunks + 1) * sizeof(int));

@@ -9,6 +9,7 @@ constexpr int kBlockSize = 256;
 __device__ __forceinline__ float silu(float x) { return x / (1.0f + expf(-x)); }
 
 __global__ void siluKernel(const float* input, float* output, int n) {
+    // One thread per element.
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) output[idx] = silu(input[idx]);
 }

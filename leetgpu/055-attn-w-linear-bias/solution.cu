@@ -23,12 +23,14 @@ __global__ void __launch_bounds__(kThreads)
 sgemm(const float* a, const float* b, float* c, int rows, int inner, int cols, float scale, float alpha) {
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // 16 x 16 threads, each owning a 4 x 4 patch of C (rows ty + 16i, columns tx + 16j).
     const int tid = threadIdx.x;
     const int tx = tid % 16;
     const int ty = tid / 16;
     const int row0 = blockIdx.y * kTileM;
     const int col0 = blockIdx.x * kTileN;
     float acc[4][4] = {};
+    // Main loop over K in slices of 16: stage A (transposed) and B (or B^T), zero outside.
     for (int k0 = 0; k0 < inner; k0 += kTileK) {
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
@@ -48,7 +50,9 @@ sgemm(const float* a, const float* b, float* c, int rows, int inner, int cols, f
                 b_tile[kk][cc] = (k0 + kk < inner && col0 + cc < cols) ? b[static_cast<size_t>(k0 + kk) * cols + col0 + cc] : 0.0f;
             }
         }
+        // Panels complete before anyone reads them.
         __syncthreads();
+        // Outer products: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float a_frag[4];
@@ -62,8 +66,10 @@ sgemm(const float* a, const float* b, float* c, int rows, int inner, int cols, f
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Epilogue: for the score GEMM, scale and add the ALiBi bias alpha * (i - j).
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= rows) continue;
@@ -78,6 +84,7 @@ sgemm(const float* a, const float* b, float* c, int rows, int inner, int cols, f
 }
 
 __global__ void rowSoftmax(float* s, int m, int n) {
+    // In-place row softmax, one warp per row: max, then exp and sum, then normalize.
     const int lane = threadIdx.x % 32;
     const int row = blockIdx.x * (blockDim.x / 32) + threadIdx.x / 32;
     if (row >= m) return;
@@ -98,6 +105,7 @@ __global__ void rowSoftmax(float* s, int m, int n) {
 
 // Q, K, V, output are device pointers
 extern "C" void solve(const float* Q, const float* K, const float* V, float* output, int M, int N, int d, float alpha) {
+    // Unfused: scores = Q K^T / sqrt(d) + bias (M x N buffer), row softmax, then output = P V.
     float* scores = nullptr;
     cudaMalloc(&scores, static_cast<size_t>(M) * N * sizeof(float));
     const float scale = 1.0f / sqrtf(static_cast<float>(d));

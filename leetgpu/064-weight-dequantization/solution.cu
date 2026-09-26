@@ -10,9 +10,11 @@ constexpr int kBlockX = 64;
 constexpr int kBlockY = 4;
 
 __global__ void dequantize(const float* x, const float* s, float* y, int m, int n, int tile) {
+    // One thread per element: 64 x 4 threads, x along the contiguous columns (coalesced).
     const int col = blockIdx.x * blockDim.x + threadIdx.x;
     const int row = blockIdx.y * blockDim.y + threadIdx.y;
     if (row >= m || col >= n) return;
+    // Each TILE x TILE block of X shares one scale: S[row / TILE][col / TILE].
     const int s_cols = (n + tile - 1) / tile;
     const size_t idx = static_cast<size_t>(row) * n + col;
     y[idx] = x[idx] * s[(row / tile) * s_cols + col / tile];

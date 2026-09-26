@@ -8,12 +8,14 @@
 constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 1024;
 
+// One fp64 partial sum per block.
 __device__ double g_partials[kMaxBlocks];
 
 __device__ double blockReduceSum(double v) {
     __shared__ double warp_sums[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Block-wide sum: warp shuffle trees, then warp 0 reduces the warp sums (result in thread 0).
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (lane == 0) warp_sums[warp] = v;
     __syncthreads();
@@ -24,6 +26,7 @@ __device__ double blockReduceSum(double v) {
 }
 
 __global__ void partialSums(const float* y, int n) {
+    // Pass 1: grid-stride sum of the samples (float4 plus a scalar tail), block-reduced in double.
     const int tid = blockIdx.x * blockDim.x + threadIdx.x;
     const int stride = gridDim.x * blockDim.x;
     float local = 0.0f;
@@ -37,6 +40,7 @@ __global__ void partialSums(const float* y, int n) {
 }
 
 __global__ void finalize(float* result, int num_partials, float a, float b, int n) {
+    // Pass 2 (one block): integral estimate (b - a) * mean(y).
     double v = 0.0;
     for (int i = threadIdx.x; i < num_partials; i += blockDim.x) v += g_partials[i];
     v = blockReduceSum(v);

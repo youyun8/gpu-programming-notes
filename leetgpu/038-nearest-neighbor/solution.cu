@@ -16,6 +16,7 @@ __global__ void nearestNeighbor(const float* points, int* indices, int n) {
     __shared__ float sx[kBlockSize];
     __shared__ float sy[kBlockSize];
     __shared__ float sz[kBlockSize];
+    // One thread per query point; points are interleaved (x, y, z).
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
     float px = 0.0f, py = 0.0f, pz = 0.0f;
     if (i < n) {
@@ -25,6 +26,8 @@ __global__ void nearestNeighbor(const float* points, int* indices, int n) {
     }
     float best = FLT_MAX;
     int best_j = -1;
+    // All-pairs search in tiles: stage 256 candidate points (split into x, y, z arrays)
+    // in shared memory, then every thread tests all of them (broadcast reads).
     for (int t0 = 0; t0 < n; t0 += kBlockSize) {
         const int j = t0 + threadIdx.x;
         if (j < n) {
@@ -35,16 +38,19 @@ __global__ void nearestNeighbor(const float* points, int* indices, int n) {
         __syncthreads();
         const int tile = min(kBlockSize, n - t0);
         for (int t = 0; t < tile; ++t) {
+            // Squared distance with explicitly rounded ops, so ties resolve exactly like the reference.
             const float dx = __fsub_rn(px, sx[t]);
             const float dy = __fsub_rn(py, sy[t]);
             const float dz = __fsub_rn(pz, sz[t]);
             const float d = __fadd_rn(__fadd_rn(__fmul_rn(dx, dx), __fmul_rn(dy, dy)), __fmul_rn(dz, dz));
             const int j2 = t0 + t;
+            // Skip the point itself; strict "<" keeps the lowest index on ties.
             if (j2 != i && (d < best || best_j < 0)) {
                 best = d;
                 best_j = j2;
             }
         }
+        // Everyone is done with this tile before it is overwritten.
         __syncthreads();
     }
     if (i < n) indices[i] = best_j < 0 ? 0 : best_j;

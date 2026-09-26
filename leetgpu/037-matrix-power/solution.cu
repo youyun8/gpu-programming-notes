@@ -14,6 +14,7 @@ constexpr int kTileK = 16;
 constexpr int kThreads = 256;
 
 __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b, float* c, int n) {
+    // Register-blocked SGEMM: 64 x 64 tile per block, 16 x 16 threads with 4 x 4 outputs each.
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
     const int tid = threadIdx.x;
@@ -22,6 +23,7 @@ __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b
     const int row0 = blockIdx.y * kTileM;
     const int col0 = blockIdx.x * kTileN;
     float acc[4][4] = {};
+    // Main loop over K in slices of 16: stage A (transposed) and B, zero outside.
     for (int k0 = 0; k0 < n; k0 += kTileK) {
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
@@ -33,7 +35,9 @@ __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b
             const int cc = i % kTileN;
             b_tile[kk][cc] = (k0 + kk < n && col0 + cc < n) ? b[static_cast<size_t>(k0 + kk) * n + col0 + cc] : 0.0f;
         }
+        // Panels complete before anyone reads them.
         __syncthreads();
+        // Outer products: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float a_frag[4];
@@ -47,8 +51,10 @@ __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Store the 4 x 4 patch in bounds.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= n) continue;
@@ -67,6 +73,7 @@ static void matmul(const float* a, const float* b, float* c, int n) {
 // input, output are device pointers
 extern "C" void solve(const float* input, float* output, int N, int P) {
     const size_t bytes = static_cast<size_t>(N) * N * sizeof(float);
+    // Small exponents directly: copy, one product, or (A A) A.
     if (P == 1) {
         cudaMemcpy(output, input, bytes, cudaMemcpyDeviceToDevice);
         cudaDeviceSynchronize();
@@ -96,6 +103,8 @@ extern "C" void solve(const float* input, float* output, int N, int P) {
     const float* res_cur = nullptr;
     bool first_z = true;
     int p = P;
+    // Binary exponentiation over the bits of P (least significant first):
+    // z runs through A, A^2, A^4, ...; each set bit multiplies it into the result.
     while (p > 0) {
         const int bit = p % 2;
         p /= 2;
@@ -119,6 +128,7 @@ extern "C" void solve(const float* input, float* output, int N, int P) {
             res_cur = result;
         }
     }
+    // Copy the result out and free the scratch buffers once the GPU is done.
     cudaMemcpy(output, res_cur, bytes, cudaMemcpyDeviceToDevice);
     cudaDeviceSynchronize();
     cudaFree(buf);

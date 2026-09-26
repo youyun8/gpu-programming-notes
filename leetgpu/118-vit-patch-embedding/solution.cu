@@ -15,10 +15,14 @@ constexpr int kTileN = 64;
 constexpr int kTileK = 16;
 constexpr int kThreads = 256;
 
+// Geometry: channels, image size, patch size, patches per row, patches per image,
+// patch vector length C*P*P, embedding dim.
 struct PatchGeom {
     int c, h, w, p, gw, n, cpp, d;
 };
 
+// Implicit im2col: element k of the flattened patch `row` (order: channel, then
+// row i, then column j inside the patch), read directly from the image.
 __device__ __forceinline__ float patchPixel(const float* img, const PatchGeom& g, int row, int k) {
     const int b = row / g.n;
     const int n = row % g.n;
@@ -33,9 +37,12 @@ __global__ void __launch_bounds__(kThreads)
 patchGemm(const float* img, const float* weight, const float* bias, const float* pos, float* out, PatchGeom g, int rows) {
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // Patch embedding as one GEMM: [B * N patches, C*P*P] x weight^T, with the patch
+    // matrix gathered on the fly (never materialized). 4 x 4 outputs per thread.
     const int tid = threadIdx.x, tx = tid % 16, ty = tid / 16;
     const int row0 = blockIdx.y * kTileM, col0 = blockIdx.x * kTileN;
     float acc[4][4] = {};
+    // Main loop over the patch vector in slices of 16: gather A, stage W (transposed).
     for (int k0 = 0; k0 < g.cpp; k0 += kTileK) {
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK, kk = i % kTileK;
@@ -45,7 +52,9 @@ patchGemm(const float* img, const float* weight, const float* bias, const float*
             const int cc = i / kTileK, kk = i % kTileK;
             b_tile[kk][cc] = (col0 + cc < g.d && k0 + kk < g.cpp) ? weight[static_cast<size_t>(col0 + cc) * g.cpp + k0 + kk] : 0.0f;
         }
+        // Tiles complete before anyone reads them.
         __syncthreads();
+        // Outer products: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float af[4], bf[4];
@@ -58,8 +67,10 @@ patchGemm(const float* img, const float* weight, const float* bias, const float*
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(af[i], bf[j], acc[i][j]);
         }
+        // Everyone is done with the tiles before the next slice overwrites them.
         __syncthreads();
     }
+    // Epilogue: + bias + position embedding, written to token n + 1 (token 0 is CLS).
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= rows) continue;
@@ -74,6 +85,7 @@ patchGemm(const float* img, const float* weight, const float* bias, const float*
 }
 
 __global__ void clsRows(const float* cls, const float* pos, float* out, int batch, int n, int d) {
+    // Token 0 of every image: CLS embedding + position 0.
     const int col = blockIdx.x * blockDim.x + threadIdx.x;
     if (col >= d) return;
     const float v = cls[col] + pos[col];
@@ -83,6 +95,7 @@ __global__ void clsRows(const float* cls, const float* pos, float* out, int batc
 // all pointers are device pointers
 extern "C" void solve(const float* images, const float* patch_weight, const float* patch_bias, const float* cls_token,
                       const float* pos_embed, float* output, int B, int C, int H, int W, int P, int D) {
+    // Patch tokens via the fused GEMM, then the CLS rows.
     PatchGeom g{C, H, W, P, W / P, (H / P) * (W / P), C * P * P, D};
     const int rows = B * g.n;
     patchGemm<<<dim3((D + kTileN - 1) / kTileN, (rows + kTileM - 1) / kTileM), kThreads>>>(images, patch_weight, patch_bias,

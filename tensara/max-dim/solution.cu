@@ -17,6 +17,8 @@
 constexpr int kBlockSize = 256;
 
 // Reduction state: running maximum.
+// Reduction accumulator plugged into the two generic kernels below —
+// max: identity -FLT_MAX, combine fmaxf (exact, order-independent).
 struct Acc {
     float v;
     __device__ static Acc identity() { return Acc{-FLT_MAX}; }
@@ -27,21 +29,27 @@ struct Acc {
 };
 
 __global__ void reduceContiguous(const float* __restrict__ in, float* __restrict__ out, long long outer, int r) {
+    // Contiguous case (inner == 1): one warp per output row of r contiguous floats.
     const int lane = threadIdx.x % 32;
     const long long row = (static_cast<long long>(blockIdx.x) * blockDim.x + threadIdx.x) / 32;
     if (row >= outer) return;
     const float* p = in + row * r;
     Acc acc = Acc::identity();
+    // Lanes stride the row (each warp load is one coalesced line) and fold locally...
     for (int j = lane; j < r; j += 32) acc = Acc::combine(acc, Acc::make(p[j], j));
+    // ...then combine the 32 lane results with a shuffle tree; lane 0 writes.
     for (int offset = 16; offset > 0; offset >>= 1) acc = Acc::combine(acc, Acc::shuffle(acc, offset));
     if (lane == 0) out[row] = acc.finish(r);
 }
 
 __global__ void reduceStrided(const float* __restrict__ in, float* __restrict__ out, long long outer, int r, long long inner) {
+    // Strided case (inner > 1): one thread per output (o, i). Neighbouring threads have
+    // neighbouring i, so every step of the j loop is coalesced across the warp.
     const long long idx = static_cast<long long>(blockIdx.x) * blockDim.x + threadIdx.x;
     if (idx >= outer * inner) return;
     const long long o = idx / inner;
     const long long i = idx % inner;
+    // Walk the reduced axis with stride inner.
     const float* p = in + o * r * inner + i;
     Acc acc = Acc::identity();
     for (int j = 0; j < r; ++j) acc = Acc::combine(acc, Acc::make(p[static_cast<long long>(j) * inner], j));
@@ -51,13 +59,16 @@ __global__ void reduceStrided(const float* __restrict__ in, float* __restrict__ 
 // input, output are device pointers
 extern "C" void solution(const float* input, int dim, float* output, const size_t* shape, size_t ndim) {
     size_t host_shape[16];
+    // `shape` may be a host or a device pointer: cudaMemcpyDefault handles both.
     cudaMemcpy(host_shape, shape, ndim * sizeof(size_t), cudaMemcpyDefault);
+    // View the tensor as (outer, r, inner) around the reduced dimension.
     long long outer = 1, inner = 1;
     for (int d = 0; d < static_cast<int>(ndim); ++d) {
         if (d < dim) outer *= static_cast<long long>(host_shape[d]);
         if (d > dim) inner *= static_cast<long long>(host_shape[d]);
     }
     const int r = static_cast<int>(host_shape[dim]);
+    // Pick the kernel: warp-per-row for a contiguous axis, thread-per-output otherwise.
     if (inner == 1) {
         const long long threads = outer * 32;
         reduceContiguous<<<static_cast<unsigned>((threads + kBlockSize - 1) / kBlockSize), kBlockSize>>>(input, output, outer, r);

@@ -8,6 +8,7 @@ constexpr int kBlockSize = 256;
 __global__ void swigluKernel(const float* input, float* output, int half_n) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < half_n) {
+        // The first half is the gate (through SiLU), the second half the value.
         const float x1 = input[idx];
         const float x2 = input[idx + half_n];
         output[idx] = x1 / (1.0f + expf(-x1)) * x2;

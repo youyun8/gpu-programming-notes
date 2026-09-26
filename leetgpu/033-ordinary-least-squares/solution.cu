@@ -13,6 +13,7 @@ constexpr int kTile = 16;
 constexpr int kSolveThreads = 1024;
 
 __global__ void gramTiled(const float* x, double* gram, int n, int f) {
+    // Normal equations, step 1: Gram matrix X^T X (f x f), one 16 x 16 tile per block.
     __shared__ float xi[kTile][kTile + 1];
     __shared__ float xj[kTile][kTile + 1];
     const int i0 = blockIdx.y * kTile;
@@ -20,6 +21,8 @@ __global__ void gramTiled(const float* x, double* gram, int n, int f) {
     const int ti = threadIdx.y;
     const int tj = threadIdx.x;
     double acc = 0.0;
+    // Walk the samples 16 at a time: stage columns i0.. and j0.. of 16 sample rows,
+    // accumulate the products in double.
     for (int s0 = 0; s0 < n; s0 += kTile) {
         const int s = s0 + threadIdx.y;
         xi[threadIdx.y][threadIdx.x] = (s < n && i0 + threadIdx.x < f) ? x[static_cast<size_t>(s) * f + i0 + threadIdx.x] : 0.0f;
@@ -33,6 +36,7 @@ __global__ void gramTiled(const float* x, double* gram, int n, int f) {
 }
 
 __global__ void xtY(const float* x, const float* y, double* rhs, int n, int f) {
+    // Step 2: right-hand side X^T y, one thread per feature (coalesced across threads).
     const int j = blockIdx.x * blockDim.x + threadIdx.x;
     if (j >= f) return;
     double acc = 0.0;
@@ -41,6 +45,7 @@ __global__ void xtY(const float* x, const float* y, double* rhs, int n, int f) {
 }
 
 __device__ double blockSum(double v, double* scratch) {
+    // Block-wide sum returned to every thread (warp trees, then all threads read the warp sums).
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (threadIdx.x % 32 == 0) scratch[threadIdx.x / 32] = v;
     __syncthreads();
@@ -55,6 +60,7 @@ __device__ double blockSum(double v, double* scratch) {
 __global__ void choleskySolve(double* a, const double* b, float* beta, double* z, int f) {
     __shared__ double scratch[32];
     __shared__ double pivot;
+    // Right-looking Cholesky, column k: pivot, scale the column below it, update the trailing matrix.
     for (int k = 0; k < f; ++k) {
         if (threadIdx.x == 0) {
             pivot = sqrt(a[static_cast<size_t>(k) * f + k]);
@@ -72,6 +78,7 @@ __global__ void choleskySolve(double* a, const double* b, float* beta, double* z
         }
         __syncthreads();
     }
+    // Triangular solves: each row's dot product is a block reduction.
     for (int i = 0; i < f; ++i) {  // forward: L z = b
         double partial = 0.0;
         for (int j = threadIdx.x; j < i; j += blockDim.x) partial += a[static_cast<size_t>(i) * f + j] * z[j];
@@ -86,12 +93,14 @@ __global__ void choleskySolve(double* a, const double* b, float* beta, double* z
         if (threadIdx.x == 0) z[i] = (z[i] - s) / a[static_cast<size_t>(i) * f + i];
         __syncthreads();
     }
+    // Round the fp64 solution to float.
     for (int i = threadIdx.x; i < f; i += blockDim.x) beta[i] = static_cast<float>(z[i]);
 }
 
 // X, y, beta are device pointers
 extern "C" void solve(const float* X, const float* y, float* beta, int n_samples, int n_features) {
     const int f = n_features;
+    // Scratch (double): Gram matrix, right-hand side, and the intermediate vector z.
     double* buf = nullptr;
     cudaMalloc(&buf, (static_cast<size_t>(f) * f + 2 * f) * sizeof(double));
     double* gram = buf;

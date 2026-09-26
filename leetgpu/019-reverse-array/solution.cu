@@ -18,6 +18,7 @@ __global__ void reverseInPlace(float* data, int n) {
 
 // input is a device pointer
 extern "C" void solve(float* input, int N) {
+    // One thread per pair; nothing to do for N < 2.
     const int half_n = N / 2;
     const int num_blocks = (half_n + kBlockSize - 1) / kBlockSize;
     if (num_blocks > 0) reverseInPlace<<<num_blocks, kBlockSize>>>(input, N);

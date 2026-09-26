@@ -9,11 +9,13 @@ constexpr int kThreads = 256;
 constexpr int kMaxBlocks = 4096;
 
 __global__ void lossKernel(const float* __restrict__ pred, const float* __restrict__ targ, float* __restrict__ out, size_t n) {
+    // Grid-stride elementwise map over two inputs (coalesced loads).
     for (size_t i = static_cast<size_t>(blockIdx.x) * blockDim.x + threadIdx.x; i < n; i += static_cast<size_t>(gridDim.x) * blockDim.x) {
         const float p = pred[i];
         const float t = targ[i];
         const float d = p - t;
         const float ad = fabsf(d);
+        // Smooth L1: quadratic below |d| = 1, linear above (a select, no divergence).
         out[i] = ad < 1.0f ? 0.5f * d * d : ad - 0.5f;
     }
 }

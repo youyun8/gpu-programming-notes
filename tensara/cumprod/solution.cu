@@ -18,14 +18,18 @@ constexpr int kChunk = kScanThreads * kItems;
 
 template <class Op>
 __device__ double blockInclusiveScan(double v, double* total) {
+    // Block-wide inclusive scan of one value per thread; also returns the block total.
     __shared__ double warp_totals[32];
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
+    // 1) Hillis-Steele scan inside each warp: lane l adds the value of lane l - offset.
     for (int offset = 1; offset < 32; offset <<= 1) {
         const double other = __shfl_up_sync(0xffffffffu, v, offset);
         if (lane >= offset) v = Op::apply(other, v);
     }
+    // 2) The last lane of each warp publishes the warp total.
     if (lane == 31) warp_totals[warp] = v;
     __syncthreads();
+    // 3) Warp 0 scans the warp totals (unused slots hold the identity).
     if (warp == 0) {
         double t = lane < kScanThreads / 32 ? warp_totals[lane] : Op::identity();
         for (int offset = 1; offset < 32; offset <<= 1) {
@@ -35,14 +39,17 @@ __device__ double blockInclusiveScan(double v, double* total) {
         warp_totals[lane] = t;
     }
     __syncthreads();
+    // 4) Add the inclusive total of all previous warps.
     if (warp > 0) v = Op::apply(warp_totals[warp - 1], v);
     *total = warp_totals[kScanThreads / 32 - 1];
+    // Keep warp_totals intact until every thread has read it (the helper is called in loops).
     __syncthreads();
     return v;
 }
 
 template <class Op>
 __global__ void chunkTotals(const float* in, double* totals, size_t n) {
+    // Pass 1: each block folds its 2048-element chunk (8 consecutive items per thread) to one total.
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk + threadIdx.x * kItems;
     double local = Op::identity();
     for (int i = 0; i < kItems; ++i)
@@ -54,6 +61,8 @@ __global__ void chunkTotals(const float* in, double* totals, size_t n) {
 
 template <class Op>
 __global__ void scanTotals(double* totals, int count) {
+    // Pass 2 (one block): turn the chunk totals into exclusive carries, 256 at a time,
+    // carrying the running total from one pass to the next.
     double carry = Op::identity();
     for (int start = 0; start < count; start += kScanThreads) {
         const int i = start + threadIdx.x;
@@ -63,6 +72,7 @@ __global__ void scanTotals(double* totals, int count) {
         __shared__ double s_incl[kScanThreads];
         s_incl[threadIdx.x] = incl;
         __syncthreads();
+        // Exclusive value = inclusive value of the previous thread.
         const double excl = threadIdx.x == 0 ? Op::identity() : s_incl[threadIdx.x - 1];
         if (i < count) totals[i] = Op::apply(carry, excl);
         __syncthreads();
@@ -73,6 +83,7 @@ __global__ void scanTotals(double* totals, int count) {
 template <class Op>
 __global__ void scanChunks(const float* in, float* out, const double* carries, size_t n) {
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk + threadIdx.x * kItems;
+    // Pass 3: reload the chunk and fold each thread's 8 items...
     double items[kItems];
     double local = Op::identity();
     for (int i = 0; i < kItems; ++i) {
@@ -80,10 +91,13 @@ __global__ void scanChunks(const float* in, float* out, const double* carries, s
         local = Op::apply(local, items[i]);
     }
     double total;
+    // ...scan the per-thread totals across the block...
     const double incl = blockInclusiveScan<Op>(local, &total);
     __shared__ double s_incl[kScanThreads];
     s_incl[threadIdx.x] = incl;
     __syncthreads();
+    // ...and walk the 8 items serially, starting from chunk carry + this thread's exclusive prefix.
+    // Rounded to float only at the store.
     double run = Op::apply(carries[blockIdx.x], threadIdx.x == 0 ? Op::identity() : s_incl[threadIdx.x - 1]);
     for (int i = 0; i < kItems; ++i) {
         run = Op::apply(run, items[i]);
@@ -93,6 +107,7 @@ __global__ void scanChunks(const float* in, float* out, const double* carries, s
 
 template <class Op>
 static void inclusiveScan(const float* in, float* out, size_t n) {
+    // Reduce-then-scan: chunk totals, one-block scan of the totals, then per-chunk scans.
     const int chunks = static_cast<int>((n + kChunk - 1) / kChunk);
     double* totals = nullptr;
     cudaMalloc(&totals, chunks * sizeof(double));
@@ -103,6 +118,7 @@ static void inclusiveScan(const float* in, float* out, size_t n) {
     cudaFree(totals);
 }
 
+// The scan operator: multiplication in fp64 (much wider exponent range), identity 1.
 struct Times {
     __device__ static double identity() { return 1.0; }
     __device__ static double apply(double a, double b) { return a * b; }

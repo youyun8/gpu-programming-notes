@@ -9,6 +9,7 @@
 
 constexpr int kThreads = 256;
 
+// Two block-wide sums at once (every thread receives both).
 __device__ void blockSum2(double& a, double& b) {
     __shared__ double s_a[kThreads / 32];
     __shared__ double s_b[kThreads / 32];
@@ -31,11 +32,13 @@ __device__ void blockSum2(double& a, double& b) {
 
 __global__ void groupNorm(const float* x, const float* gamma, const float* beta, float* y, int c, int hw, int groups,
                           float eps) {
+    // One block per (sample, group): the group's C/G channels x H x W values are contiguous.
     const int n = blockIdx.x / groups;
     const int g = blockIdx.x % groups;
     const int cpg = c / groups;
     const size_t count = static_cast<size_t>(cpg) * hw;
     const size_t base = (static_cast<size_t>(n) * c + static_cast<size_t>(g) * cpg) * hw;
+    // Single pass: sum and sum of squares in double (enough precision for E[x^2] - E[x]^2 here).
     double s = 0.0, sq = 0.0;
     for (size_t i = threadIdx.x; i < count; i += kThreads) {
         const double v = x[base + i];
@@ -43,11 +46,13 @@ __global__ void groupNorm(const float* x, const float* gamma, const float* beta,
         sq += v * v;
     }
     blockSum2(s, sq);
+    // Biased variance (clamped at 0), then 1 / sqrt(var + eps).
     const double mean = s / count;
     const double var = sq / count - mean * mean;
     const float mean_f = static_cast<float>(mean);
     const float rstd = static_cast<float>(1.0 / sqrt((var > 0.0 ? var : 0.0) + eps));
     for (size_t i = threadIdx.x; i < count; i += kThreads) {
+        // Normalize with the per-channel affine parameters (channel = group start + i / (H W)).
         const int ch = g * cpg + static_cast<int>(i / hw);
         y[base + i] = (x[base + i] - mean_f) * rstd * gamma[ch] + beta[ch];
     }
@@ -56,6 +61,7 @@ __global__ void groupNorm(const float* x, const float* gamma, const float* beta,
 // X, gamma, beta, Y are device pointers
 extern "C" void solve(const float* X, const float* gamma, const float* beta, float* Y, int N, int C, int H, int W, int G,
                       float eps) {
+    // One block per (sample, group).
     groupNorm<<<N * G, kThreads>>>(X, gamma, beta, Y, C, H * W, G, eps);
     cudaDeviceSynchronize();
 }

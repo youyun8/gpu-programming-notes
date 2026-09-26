@@ -13,6 +13,7 @@ __global__ void interleaveKernel(const float* a, const float* b, float2* output,
 
 // A, B, output are device pointers
 extern "C" void solve(const float* A, const float* B, float* output, int N) {
+    // One thread per output pair (A[i], B[i]).
     const int num_blocks = (N + kBlockSize - 1) / kBlockSize;
     interleaveKernel<<<num_blocks, kBlockSize>>>(A, B, reinterpret_cast<float2*>(output), N);
     cudaDeviceSynchronize();

@@ -14,12 +14,14 @@ constexpr int kMaxTaps = 125;
 
 __global__ void conv3d(const float* input, const float* kernel, float* output, int in_d, int in_r, int in_c, int k_d,
                        int k_r, int k_c) {
+    // Stage the (at most 5 x 5 x 5) kernel in shared memory; reads are broadcasts.
     __shared__ float s_kernel[kMaxTaps];
     const int taps = k_d * k_r * k_c;
     const int tid = threadIdx.y * blockDim.x + threadIdx.x;
     for (int i = tid; i < taps; i += blockDim.x * blockDim.y) s_kernel[i] = kernel[i];
     __syncthreads();
 
+    // One thread per output voxel: column from x (contiguous, coalesced), row from y, depth from z.
     const int out_r = in_r - k_r + 1;
     const int out_c = in_c - k_c + 1;
     const int c = blockIdx.x * blockDim.x + threadIdx.x;
@@ -27,6 +29,7 @@ __global__ void conv3d(const float* input, const float* kernel, float* output, i
     const int z = blockIdx.z;
     if (c >= out_c || r >= out_r) return;
 
+    // "Valid" convolution: every tap is in bounds, so no checks in the loops.
     float acc = 0.0f;
     for (int dz = 0; dz < k_d; ++dz) {
         for (int dr = 0; dr < k_r; ++dr) {
@@ -44,6 +47,7 @@ extern "C" void solve(const float* input, const float* kernel, float* output, in
     const int out_d = input_depth - kernel_depth + 1;
     const int out_r = input_rows - kernel_rows + 1;
     const int out_c = input_cols - kernel_cols + 1;
+    // 32 x 8 blocks per output plane, one plane per blockIdx.z.
     const dim3 block(kBlockX, kBlockY);
     const dim3 grid((out_c + kBlockX - 1) / kBlockX, (out_r + kBlockY - 1) / kBlockY, out_d);
     conv3d<<<grid, block>>>(input, kernel, output, input_depth, input_rows, input_cols, kernel_depth, kernel_rows,

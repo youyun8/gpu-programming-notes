@@ -12,15 +12,19 @@ constexpr int kBlockY = 8;
 constexpr int kMaxTaps = 11 * 11 * 11;
 
 __global__ void conv3dSame(const float* __restrict__ in, const float* __restrict__ w, float* __restrict__ out, int n, int k) {
+    // Stage the whole K^3 kernel (<= 1331 taps) in shared memory; reads are broadcasts.
     __shared__ float s_w[kMaxTaps];
     const int tid = threadIdx.y * kBlockX + threadIdx.x;
     for (int i = tid; i < k * k * k; i += kBlockX * kBlockY) s_w[i] = w[i];
     __syncthreads();
+    // One thread per output voxel: x (contiguous axis) from threadIdx.x, y from threadIdx.y,
+    // z from blockIdx.z.
     const int x = blockIdx.x * kBlockX + threadIdx.x;
     const int y = blockIdx.y * kBlockY + threadIdx.y;
     const int z = blockIdx.z;
     if (x >= n || y >= n) return;
     const int p = k / 2;
+    // Triple loop over the kernel; out-of-range planes and rows are skipped (zero padding).
     float acc = 0.0f;
     for (int dz = 0; dz < k; ++dz) {
         const int zz = z + dz - p;
@@ -30,6 +34,7 @@ __global__ void conv3dSame(const float* __restrict__ in, const float* __restrict
             if (yy < 0 || yy >= n) continue;
             const float* row = in + (static_cast<size_t>(zz) * n + yy) * n;
             const float* wr = s_w + (dz * k + dy) * k;
+            // Innermost axis: neighbouring lanes read neighbouring addresses (coalesced, cached).
             for (int dx = 0; dx < k; ++dx) {
                 const int xx = x + dx - p;
                 if (xx >= 0 && xx < n) acc = fmaf(row[xx], wr[dx], acc);
@@ -42,6 +47,7 @@ __global__ void conv3dSame(const float* __restrict__ in, const float* __restrict
 // A, B, C are device pointers
 extern "C" void solution(const float* A, const float* B, float* C, size_t size, size_t K) {
     const int n = static_cast<int>(size);
+    // Grid: (n / 32) x (n / 8) blocks per plane, one plane per blockIdx.z.
     const dim3 grid((n + kBlockX - 1) / kBlockX, (n + kBlockY - 1) / kBlockY, n);
     conv3dSame<<<grid, dim3(kBlockX, kBlockY)>>>(A, B, C, n, static_cast<int>(K));
 }

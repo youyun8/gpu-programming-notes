@@ -14,26 +14,33 @@ constexpr int kTileK = 16;
 constexpr int kThreads = 256;
 
 __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b, float* c, int n) {
+    // Shared staging for one 16-wide K slice; A is stored transposed, rows padded by 4.
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b_tile[kTileK][kTileN + 4];
+    // 16 x 16 threads, each owning a 4 x 4 patch of C (rows ty + 16i, columns tx + 16j).
     const int tid = threadIdx.x;
     const int tx = tid % 16;
     const int ty = tid / 16;
     const int row0 = blockIdx.y * kTileM;
     const int col0 = blockIdx.x * kTileN;
     float acc[4][4] = {};
+    // Main loop over K in slices of 16.
     for (int k0 = 0; k0 < n; k0 += kTileK) {
+        // Stage the 64 x 16 panel of A (zero outside the matrix), transposing it.
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
             const int kk = i % kTileK;
             a_tile[kk][r] = (row0 + r < n && k0 + kk < n) ? a[static_cast<size_t>(row0 + r) * n + k0 + kk] : 0.0f;
         }
+        // Stage the 16 x 64 panel of B (coalesced rows).
         for (int i = tid; i < kTileK * kTileN; i += kThreads) {
             const int kk = i / kTileN;
             const int cc = i % kTileN;
             b_tile[kk][cc] = (k0 + kk < n && col0 + cc < n) ? b[static_cast<size_t>(k0 + kk) * n + col0 + cc] : 0.0f;
         }
+        // Panels complete before anyone reads them.
         __syncthreads();
+        // Register-blocked inner product: 4 + 4 shared loads feed 16 FMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float a_frag[4];
@@ -47,8 +54,10 @@ __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b
 #pragma unroll
                 for (int j = 0; j < 4; ++j) acc[i][j] = fmaf(a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Store the 4 x 4 patch in bounds.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= n) continue;
@@ -59,11 +68,13 @@ __global__ void __launch_bounds__(kThreads) sgemm(const float* a, const float* b
     }
 }
 
+// One block per 64 x 64 tile of the n x n product.
 static void matmul(const float* a, const float* b, float* c, int n) {
     const dim3 grid((n + kTileN - 1) / kTileN, (n + kTileM - 1) / kTileM);
     sgemm<<<grid, kThreads>>>(a, b, c, n);
 }
 
+// A^0 = I.
 __global__ void identity(float* out, int n) {
     const size_t total = static_cast<size_t>(n) * n;
     for (size_t i = blockIdx.x * static_cast<size_t>(blockDim.x) + threadIdx.x; i < total; i += static_cast<size_t>(gridDim.x) * blockDim.x)
@@ -72,6 +83,7 @@ __global__ void identity(float* out, int n) {
 
 static void matrixPower(const float* input, float* output, int N, int P) {
     const size_t bytes = static_cast<size_t>(N) * N * sizeof(float);
+    // Small exponents: identity, copy, one product, or (A A) A.
     if (P == 0) {
         identity<<<1024, 256>>>(output, N);
         cudaDeviceSynchronize();
@@ -96,6 +108,9 @@ static void matrixPower(const float* input, float* output, int N, int P) {
         return;
     }
     // Four scratch buffers: z, next z, result, next result.
+    // General case, binary exponentiation in torch.linalg.matrix_power's order.
+    // Two ping-pong buffers for the running square z and two for the result, so no product
+    // ever writes into one of its own inputs.
     float* buf = nullptr;
     cudaMalloc(&buf, 4 * bytes);
     float* z = buf;
@@ -106,9 +121,11 @@ static void matrixPower(const float* input, float* output, int N, int P) {
     const float* res_cur = nullptr;
     bool first_z = true;
     int p = P;
+    // Walk the bits of P from the least significant.
     while (p > 0) {
         const int bit = p % 2;
         p /= 2;
+        // z <- z * z (z = A, A^2, A^4, ...; the first z is the input itself).
         if (!first_z) {
             matmul(z_cur, z_cur, z_next, N);
             float* t = z;
@@ -117,6 +134,7 @@ static void matrixPower(const float* input, float* output, int N, int P) {
             z_cur = z;
         }
         first_z = false;
+        // Set bit: result <- result * z (or result = z for the first set bit).
         if (bit == 1) {
             if (res_cur == nullptr) {
                 cudaMemcpy(result, z_cur, bytes, cudaMemcpyDeviceToDevice);
@@ -129,6 +147,7 @@ static void matrixPower(const float* input, float* output, int N, int P) {
             res_cur = result;
         }
     }
+    // Copy the result out and release the scratch buffers once the GPU is done.
     cudaMemcpy(output, res_cur, bytes, cudaMemcpyDeviceToDevice);
     cudaDeviceSynchronize();
     cudaFree(buf);

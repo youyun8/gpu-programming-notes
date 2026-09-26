@@ -11,10 +11,13 @@ constexpr int kBlockX = 32;
 constexpr int kBlockY = 8;
 
 __global__ void jacobi(const float* __restrict__ in, float* __restrict__ out, int rows, int cols) {
+    // One thread per cell: 32 x 8 blocks, x along the contiguous columns.
     const int c = blockIdx.x * blockDim.x + threadIdx.x;
     const int r = blockIdx.y * blockDim.y + threadIdx.y;
     if (r >= rows || c >= cols) return;
     const size_t idx = static_cast<size_t>(r) * cols + c;
+    // Boundary cells are copied; interior cells get the average of their 4 neighbours,
+    // summed in the reference's order (up + down + left + right).
     if (r == 0 || c == 0 || r == rows - 1 || c == cols - 1) {
         out[idx] = in[idx];
     } else {
@@ -24,6 +27,7 @@ __global__ void jacobi(const float* __restrict__ in, float* __restrict__ out, in
 
 // input, output are device pointers
 extern "C" void solve(const float* input, float* output, int rows, int cols) {
+    // One sweep: read `input`, write `output` (no in-place update, so no races).
     const dim3 block(kBlockX, kBlockY);
     const dim3 grid((cols + kBlockX - 1) / kBlockX, (rows + kBlockY - 1) / kBlockY);
     jacobi<<<grid, block>>>(input, output, rows, cols);

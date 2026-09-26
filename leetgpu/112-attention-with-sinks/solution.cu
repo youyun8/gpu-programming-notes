@@ -17,9 +17,11 @@ constexpr int kCols = kMaxDim / 32;
 
 __global__ void sinkAttention(const float* q, const float* k, const float* v, float* out, int m, int d, int sinks, int window,
                               float scale) {
+    // Shared tiles of 32 keys and values (odd pitch) and the 8 query rows of the block.
     __shared__ float k_t[kTile][kPitch];
     __shared__ float v_t[kTile][kPitch];
     __shared__ float q_s[kWarps][kMaxDim];
+    // One warp per query row; stage the query, pre-scaled by 1/sqrt(d).
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
     const int first_row = blockIdx.x * kWarps;
     const int last_row = min(m - 1, first_row + kWarps - 1);
@@ -27,12 +29,15 @@ __global__ void sinkAttention(const float* q, const float* k, const float* v, fl
     const bool active = row < m;
     for (int c = lane; c < d; c += 32) q_s[warp][c] = active ? q[static_cast<size_t>(row) * d + c] * scale : 0.0f;
 
+    // Visible keys for row i: the first `sinks` keys, plus the causal window (i - window, i].
+    // The block only walks those two ranges (the union over its 8 rows).
     float acc[kCols] = {};
     float mx = -FLT_MAX, sum = 0.0f;
     const int win_lo = max(first_row - window + 1, 0);
     // Two key ranges; the second starts after the first to avoid visiting a tile twice.
     const int range_end0 = min(sinks, last_row + 1);
     const int range_start1 = max(win_lo, range_end0);
+    // Pass 0: sink keys; pass 1: the sliding window.
     for (int pass = 0; pass < 2; ++pass) {
         const int begin = pass == 0 ? 0 : range_start1;
         const int end = pass == 0 ? range_end0 : last_row + 1;
@@ -46,6 +51,7 @@ __global__ void sinkAttention(const float* q, const float* k, const float* v, fl
                 v_t[r][c] = ok ? v[g] : 0.0f;
             }
             __syncthreads();
+            // Lane l scores key j0 + l if it is visible to this row.
             const int j = j0 + lane;
             const bool allowed = active && j < end && j <= row && (j < sinks || j >= row - window + 1);
             float s = -FLT_MAX;
@@ -53,6 +59,7 @@ __global__ void sinkAttention(const float* q, const float* k, const float* v, fl
                 s = 0.0f;
                 for (int c = 0; c < d; ++c) s = fmaf(q_s[warp][c], k_t[lane][c], s);
             }
+            // Online softmax update (the first tile's rescale factor is forced to 0 to avoid inf - inf).
             float tile_max = s;
             for (int o = 16; o > 0; o >>= 1) tile_max = fmaxf(tile_max, __shfl_xor_sync(0xffffffffu, tile_max, o));
             const float new_mx = fmaxf(mx, tile_max);
@@ -62,6 +69,7 @@ __global__ void sinkAttention(const float* q, const float* k, const float* v, fl
             for (int o = 16; o > 0; o >>= 1) tile_sum += __shfl_xor_sync(0xffffffffu, tile_sum, o);
             sum = sum * corr + tile_sum;
             mx = new_mx;
+            // Rescale the accumulator, then add P V (probability of key jj broadcast from lane jj).
             for (int r = 0; r < kCols; ++r) acc[r] *= corr;
             for (int jj = 0; jj < min(kTile, end - j0); ++jj) {
                 const float pj = __shfl_sync(0xffffffffu, p, jj);
@@ -72,6 +80,7 @@ __global__ void sinkAttention(const float* q, const float* k, const float* v, fl
             }
         }
     }
+    // Normalize and store the output row.
     if (active) {
         const float inv = 1.0f / sum;
         for (int r = 0; r < kCols; ++r) {

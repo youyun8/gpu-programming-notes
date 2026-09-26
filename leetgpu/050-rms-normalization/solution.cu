@@ -9,6 +9,7 @@
 constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 512;
 
+// Device-global scratch: one fp64 partial per block, and the final 1 / rms.
 __device__ double g_partials[kMaxBlocks];
 __device__ float g_inv_rms;
 
@@ -16,6 +17,7 @@ __device__ double blockReduceSum(double v) {
     __shared__ double warp_sums[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Block-wide sum: warp shuffle trees, then warp 0 reduces the warp sums (result in thread 0).
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (lane == 0) warp_sums[warp] = v;
     __syncthreads();
@@ -26,6 +28,7 @@ __device__ double blockReduceSum(double v) {
 }
 
 __global__ void sumSquares(const float* x, int n) {
+    // Pass 1: grid-stride sum of squares, block-reduced in double.
     float local = 0.0f;
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += gridDim.x * blockDim.x) local = fmaf(x[i], x[i], local);
     const double s = blockReduceSum(local);
@@ -33,6 +36,7 @@ __global__ void sumSquares(const float* x, int n) {
 }
 
 __global__ void computeInvRms(int num_partials, int n, float eps) {
+    // Pass 2 (one block): 1 / sqrt(mean(x^2) + eps) over the whole input.
     double v = 0.0;
     for (int i = threadIdx.x; i < num_partials; i += blockDim.x) v += g_partials[i];
     v = blockReduceSum(v);
@@ -40,12 +44,14 @@ __global__ void computeInvRms(int num_partials, int n, float eps) {
 }
 
 __global__ void scaleShift(const float* x, float* y, int n, float gamma, float beta) {
+    // Pass 3: y = gamma * x / rms + beta.
     const float inv_rms = g_inv_rms;
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += gridDim.x * blockDim.x) y[i] = gamma * (x[i] * inv_rms) + beta;
 }
 
 // input, output are device pointers
 extern "C" void solve(const float* input, float gamma, float beta, float* output, int N, float eps) {
+    // Three launches; the kernel boundaries are the grid-wide barriers.
     int blocks = (N + kBlockSize - 1) / kBlockSize;
     blocks = blocks > kMaxBlocks ? kMaxBlocks : blocks;
     sumSquares<<<blocks, kBlockSize>>>(input, N);

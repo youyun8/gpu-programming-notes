@@ -20,6 +20,7 @@ constexpr int kMaxDim = 128;
 constexpr int kPitch = kMaxDim + 1;
 constexpr int kCols = kMaxDim / 32;
 
+// Butterfly reductions: every lane receives the result.
 __device__ __forceinline__ float warpMax(float v) {
     for (int o = 16; o > 0; o >>= 1) v = fmaxf(v, __shfl_xor_sync(0xffffffffu, v, o));
     return v;
@@ -46,12 +47,15 @@ __global__ void rowStats(const float* q, const float* k, const float* v, const f
     __shared__ float k_t[kTile][kPitch];
     __shared__ float v_t[kTile][kPitch];
     __shared__ float q_s[kWarps][kMaxDim];
+    // Pass 1, one warp per query row: a flash-style forward pass that keeps only
+    // LSE_i = logsumexp_j(s_ij) and Delta_i = dO_i . O_i (the output itself is not stored).
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
     const int row = blockIdx.x * kWarps + warp;
     const bool active = row < m;
     for (int c = lane; c < d; c += 32) q_s[warp][c] = active ? q[static_cast<size_t>(row) * d + c] * scale : 0.0f;
     float acc[kCols] = {};
     float mx = -FLT_MAX, sum = 0.0f;
+    // Stream K and V in tiles of 32: online softmax and the unnormalized output.
     for (int j0 = 0; j0 < n; j0 += kTile) {
         __syncthreads();
         loadTiles(k, v, k_t, v_t, j0, n, d);
@@ -75,6 +79,7 @@ __global__ void rowStats(const float* q, const float* k, const float* v, const f
             }
         }
     }
+    // Delta_i = dO_i . (acc / sum).
     float dot = 0.0f;
     if (active) {
         for (int r = 0; r < kCols; ++r) {
@@ -95,6 +100,8 @@ __global__ void gradQ(const float* q, const float* k, const float* v, const floa
     __shared__ float v_t[kTile][kPitch];
     __shared__ float q_s[kWarps][kMaxDim];
     __shared__ float do_s[kWarps][kMaxDim];
+    // Pass 2, one warp per query row: dQ_i = sum_j dS_ij K_j with
+    // P_ij = exp(s_ij - LSE_i) and dS_ij = P_ij (dO_i . V_j - Delta_i) * scale.
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
     const int row = blockIdx.x * kWarps + warp;
     const bool active = row < m;
@@ -105,6 +112,7 @@ __global__ void gradQ(const float* q, const float* k, const float* v, const floa
     const float li = active ? lse[row] : 0.0f;
     const float di = active ? delta[row] : 0.0f;
     float acc[kCols] = {};
+    // Recompute the scores tile by tile (no M x N matrix is ever stored).
     for (int j0 = 0; j0 < n; j0 += kTile) {
         __syncthreads();
         loadTiles(k, v, k_t, v_t, j0, n, d);
@@ -119,6 +127,7 @@ __global__ void gradQ(const float* q, const float* k, const float* v, const floa
             const float p = expf(s - li);
             ds = p * (dp - di) * scale;
         }
+        // Accumulate dS_ij K_j; dS for key j is broadcast from lane j.
         for (int j = 0; j < min(kTile, n - j0); ++j) {
             const float w = __shfl_sync(0xffffffffu, ds, j);
             for (int r = 0; r < kCols; ++r) {
@@ -142,6 +151,8 @@ __global__ void gradKV(const float* q, const float* k, const float* v, const flo
     __shared__ float d_t[kTile];
     __shared__ float k_s[kWarps][kMaxDim];
     __shared__ float v_s[kWarps][kMaxDim];
+    // Pass 3, one warp per key row: dV_j = sum_i P_ij dO_i and dK_j = sum_i dS_ij Q_i,
+    // streaming Q, dO, LSE and Delta in tiles of 32 query rows.
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
     const int key = blockIdx.x * kWarps + warp;
     const bool active = key < n;
@@ -159,6 +170,7 @@ __global__ void gradKV(const float* q, const float* k, const float* v, const flo
             d_t[i] = i0 + i < m ? delta[i0 + i] : 0.0f;
         }
         __syncthreads();
+        // Lane l recomputes P and dS for query i0 + l against this warp's key.
         float p = 0.0f, ds = 0.0f;
         if (active && i0 + lane < m) {
             float s = 0.0f, dp = 0.0f;
@@ -169,6 +181,7 @@ __global__ void gradKV(const float* q, const float* k, const float* v, const flo
             p = expf(s * scale - l_t[lane]);
             ds = p * (dp - d_t[lane]) * scale;
         }
+        // Accumulate over the tile's queries (P and dS broadcast from lane i).
         for (int i = 0; i < min(kTile, m - i0); ++i) {
             const float pi = __shfl_sync(0xffffffffu, p, i);
             const float dsi = __shfl_sync(0xffffffffu, ds, i);
@@ -194,6 +207,7 @@ __global__ void gradKV(const float* q, const float* k, const float* v, const flo
 // all pointers are device pointers
 extern "C" void solve(const float* Q, const float* K, const float* V, const float* dO, float* dQ, float* dK, float* dV,
                       int M, int N, int d) {
+    // Per-row statistics (LSE, Delta), then the dQ pass and the dK/dV pass.
     float* stats = nullptr;
     cudaMalloc(&stats, 2 * static_cast<size_t>(M) * sizeof(float));
     float* lse = stats;

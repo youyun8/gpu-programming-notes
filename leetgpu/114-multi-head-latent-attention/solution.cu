@@ -25,6 +25,8 @@ constexpr int kMaxSlices = 4;  // value dim R <= 512
 constexpr int kColsPerSlice = kSlice / 32;
 
 __global__ void absorbQuery(const float* q, const float* w_uk, float* q_cat, int heads, int hd, int rank, int rope) {
+    // Weight absorption: q_cat[h] = [q_nope[h] W_UK[h] | q_rope[h]], so attention runs directly
+    // against the compressed cache rows [latent | rope key] without decompressing K.
     const int qdim = rank + rope;
     const int total = heads * qdim;
     for (int t = blockIdx.x * blockDim.x + threadIdx.x; t < total; t += gridDim.x * blockDim.x) {
@@ -44,19 +46,24 @@ __global__ void absorbQuery(const float* q, const float* w_uk, float* q_cat, int
 
 __global__ void __launch_bounds__(kWarps * 32)
 latentAttention(const float* q_cat, const float* cache, float* latent_out, int heads, int seq, int rank, int rope, float scale) {
+    // Dynamic shared memory: the block's 4 absorbed query rows and one 32 x 128 slice of cache rows.
     extern __shared__ float smem[];
     const int qdim = rank + rope;
     float* q_s = smem;                               // [warps][qdim]
     float* t_s = q_s + kWarps * qdim;                // [32][kSlice + 1] (K slice, then V slice)
+    // One warp per head (single decode query); stage the absorbed query, pre-scaled.
     const int lane = threadIdx.x % 32, warp = threadIdx.x / 32;
     const int head = blockIdx.x * kWarps + warp;
     const bool active = head < heads;
     for (int c = lane; c < qdim; c += 32) q_s[warp * qdim + c] = active ? q_cat[static_cast<size_t>(head) * qdim + c] * scale : 0.0f;
 
+    // Latent-space output accumulator (lane l owns columns l, l + 32, ...) and softmax state.
     float acc[kMaxSlices * kColsPerSlice];
 #pragma unroll
     for (int r = 0; r < kMaxSlices * kColsPerSlice; ++r) acc[r] = 0.0f;
     float mx = -FLT_MAX, sum = 0.0f;
+    // Stream the cache 32 positions at a time. Scores: lane l dots the query with cache row l,
+    // over 128-wide slices of the row.
     for (int j0 = 0; j0 < seq; j0 += kTile) {
         const int keys = min(kTile, seq - j0);
         float score = 0.0f;
@@ -71,6 +78,7 @@ latentAttention(const float* q_cat, const float* cache, float* latent_out, int h
             for (int c = 0; c < width; ++c) score = fmaf(q_s[warp * qdim + c0 + c], t_s[lane * (kSlice + 1) + c], score);
         }
         if (lane >= keys) score = -FLT_MAX;
+        // Online softmax update.
         float tile_max = score;
         for (int o = 16; o > 0; o >>= 1) tile_max = fmaxf(tile_max, __shfl_xor_sync(0xffffffffu, tile_max, o));
         const float new_mx = fmaxf(mx, tile_max);
@@ -82,6 +90,7 @@ latentAttention(const float* q_cat, const float* cache, float* latent_out, int h
         mx = new_mx;
 #pragma unroll
         for (int r = 0; r < kMaxSlices * kColsPerSlice; ++r) acc[r] *= corr;
+        // Values are the latent part of the same cache rows: acc += P * latent, one 128-wide slice at a time.
 #pragma unroll
         for (int s = 0; s < kMaxSlices; ++s) {
             const int c0 = s * kSlice;
@@ -103,6 +112,7 @@ latentAttention(const float* q_cat, const float* cache, float* latent_out, int h
             }
         }
     }
+    // Normalized latent output of this head.
     if (active) {
         const float inv = 1.0f / sum;
 #pragma unroll
@@ -116,6 +126,7 @@ latentAttention(const float* q_cat, const float* cache, float* latent_out, int h
 }
 
 __global__ void upProject(const float* latent, const float* w_uv, float* out, int heads, int rank, int hd) {
+    // Up-projection: output[h] = latent[h] W_UV[h].
     const int total = heads * hd;
     for (int t = blockIdx.x * blockDim.x + threadIdx.x; t < total; t += gridDim.x * blockDim.x) {
         const int h = t / hd, j = t % hd;
@@ -131,6 +142,7 @@ __global__ void upProject(const float* latent, const float* w_uv, float* out, in
 extern "C" void solve(const float* q, const float* kv_cache, const float* W_UK, const float* W_UV, float* output,
                       int num_heads, int seq_len, int kv_lora_rank, int head_dim, int rope_dim) {
     const int qdim = kv_lora_rank + rope_dim;
+    // Absorb the query, attend in latent space, then up-project (scale uses head_dim + rope_dim).
     float* buf = nullptr;
     cudaMalloc(&buf, static_cast<size_t>(num_heads) * (qdim + kv_lora_rank) * sizeof(float));
     float* q_cat = buf;

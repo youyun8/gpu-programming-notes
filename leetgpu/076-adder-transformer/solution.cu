@@ -18,11 +18,13 @@ constexpr int kMaxLen = kPromptLen + kOutputDigits;
 constexpr float kRmsEps = 1e-6f;
 constexpr float kEmbedConst = 1000.0f;
 
+// RoPE frequency and attention scale, derived on the host in double precision.
 struct ModelConsts {
     float omega;
     float attn_scale;
 };
 
+// RMSNorm of the 2-D hidden state without a weight.
 __device__ __forceinline__ void unitRmsNorm(float& x0, float& x1) {
     const float r = rsqrtf((x0 * x0 + x1 * x1) * 0.5f + kRmsEps);
     x0 *= r;
@@ -32,9 +34,12 @@ __device__ __forceinline__ void unitRmsNorm(float& x0, float& x1) {
 __device__ __forceinline__ float silu(float x) { return x / (1.0f + expf(-x)); }
 
 __global__ void adderDecode(const int* prompts, float* output, const float* w, int batch, ModelConsts mc) {
+    // One thread runs the whole greedy decode of one batch element: the model has a 2-D
+    // hidden state, so everything fits in registers and local arrays.
     const int bi = blockIdx.x * blockDim.x + threadIdx.x;
     if (bi >= batch) return;
 
+    // Token embeddings built from the parameters: e(d) = (w0 - w1 d^2, -d).
     float emb0[kVocab];
     float emb1[kVocab];
     for (int d = 0; d < kVocab; ++d) {
@@ -42,6 +47,7 @@ __global__ void adderDecode(const int* prompts, float* output, const float* w, i
         emb0[d] = w[0] - w[1] * df * df;
         emb1[d] = -df;
     }
+    // Remaining weights: query projection, value, MLP gates, carry weight and final norm.
     const float q_w0 = w[2], q_w1 = w[3], v_w = w[4];
     const float a_gate = w[5], c_gate = w[6], carry_w = w[7];
     const float norm_w0 = w[8], norm_w1 = w[9];
@@ -63,9 +69,11 @@ __global__ void adderDecode(const int* prompts, float* output, const float* w, i
         val[len] = h1 * v_w;
         ++len;
     };
+    // Prefill: cache the rotated keys and values of the 31 prompt tokens.
     for (int t = 0; t < kPromptLen; ++t) appendToken(prompts[static_cast<size_t>(bi) * kPromptLen + t]);
 
     int last_tok = prompts[static_cast<size_t>(bi) * kPromptLen + kPromptLen - 1];
+    // Greedy decode of 11 output digits.
     for (int step = 0; step < kOutputDigits; ++step) {
         const int pos = len - 1;
         // Query of the last position.
@@ -101,6 +109,7 @@ __global__ void adderDecode(const int* prompts, float* output, const float* w, i
         const float f0 = h0 / rms * norm_w0;
         const float f1 = h1 / rms * norm_w1;
 
+        // Tied output embedding: logits = final hidden state . e(d); write them and take the arg-max.
         float* out = output + (static_cast<size_t>(bi) * kOutputDigits + step) * kVocab;
         int best = 0;
         float best_logit = -FLT_MAX;
@@ -112,6 +121,7 @@ __global__ void adderDecode(const int* prompts, float* output, const float* w, i
                 best = d;
             }
         }
+        // Feed the chosen digit back as the next input token.
         last_tok = best;
         if (len < kMaxLen) appendToken(best);
     }
@@ -119,6 +129,7 @@ __global__ void adderDecode(const int* prompts, float* output, const float* w, i
 
 // prompts, output, weights are device pointers
 extern "C" void solve(const int* prompts, float* output, const float* weights, int batch_size) {
+    // Model constants: RoPE frequency 2 pi / 19 and the attention scale implied by the construction.
     const double pi = 3.14159265358979323846;
     const double omega = 2.0 * pi / 19.0;
     const double amplitude = std::log(10.0) / (std::cos(omega * 0.3) - std::cos(omega * 0.7));

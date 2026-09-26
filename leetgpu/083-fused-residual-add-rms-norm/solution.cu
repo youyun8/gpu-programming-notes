@@ -12,6 +12,7 @@ constexpr int kThreads = 256;
 __device__ float blockSum(float v) {
     __shared__ float warp_sums[kThreads / 32];
     __shared__ float total;
+    // Block-wide sum; every thread receives the result.
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_xor_sync(0xffffffffu, v, offset);
     if (threadIdx.x % 32 == 0) warp_sums[threadIdx.x / 32] = v;
     __syncthreads();
@@ -25,12 +26,14 @@ __device__ float blockSum(float v) {
 }
 
 __global__ void residualRmsNorm(const float* x, const float* r, const float* w, float* out, int c, float eps) {
+    // One block per row.
     const size_t base = static_cast<size_t>(blockIdx.x) * c;
     const float* xr = x + base;
     const float* rr = r + base;
     float* orow = out + base;
     const bool vec = (c % 4) == 0;  // rows are 16-byte aligned only when C % 4 == 0
 
+    // Pass 1: sum of squares of z = x + residual (float4 when rows are aligned).
     float sq = 0.0f;
     if (vec) {
         for (int i = threadIdx.x; i < c / 4; i += kThreads) {
@@ -45,8 +48,11 @@ __global__ void residualRmsNorm(const float* x, const float* r, const float* w, 
             sq += z * z;
         }
     }
+    // 1 / sqrt(mean(z^2) + eps).
     const float inv_rms = rsqrtf(blockSum(sq) / c + eps);
 
+    // Pass 2: recompute z (the row is still in cache) and write z * inv_rms * weight;
+    // z is never stored.
     if (vec) {
         for (int i = threadIdx.x; i < c / 4; i += kThreads) {
             const float4 a = reinterpret_cast<const float4*>(xr)[i];

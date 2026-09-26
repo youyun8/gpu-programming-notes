@@ -9,6 +9,7 @@ constexpr float kInvSqrt2 = 0.70710678118654752f;
 __global__ void gegluKernel(const float* input, float* output, int half_n) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < half_n) {
+        // First half: value; second half: gate through GELU.
         const float x1 = input[idx];
         const float x2 = input[idx + half_n];
         output[idx] = x1 * (0.5f * x2 * (1.0f + erff(x2 * kInvSqrt2)));

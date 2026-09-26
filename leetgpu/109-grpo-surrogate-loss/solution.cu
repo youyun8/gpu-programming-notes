@@ -11,9 +11,12 @@
 constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 1024;
 
+// One fp64 partial per block of the token pass.
 __device__ double g_partials[kMaxBlocks];
 
 __global__ void groupAdvantages(const float* rewards, float* adv, int b, int g) {
+    // One thread per prompt: group-normalized advantages (r - mean) / (std + 1e-8)
+    // over its G sampled completions (population std, computed in double).
     const int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i >= b) return;
     const float* r = rewards + static_cast<size_t>(i) * g;
@@ -30,6 +33,7 @@ __device__ double blockReduceSum(double v) {
     __shared__ double warp_sums[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Block-wide sum: warp shuffle trees, then warp 0 reduces the warp sums (result in thread 0).
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (lane == 0) warp_sums[warp] = v;
     __syncthreads();
@@ -44,6 +48,8 @@ __global__ void tokenSums(const float* adv, const float* log_pi, const float* lo
     float local = 0.0f;
     for (long long i = blockIdx.x * static_cast<long long>(blockDim.x) + threadIdx.x; i < n;
          i += static_cast<long long>(gridDim.x) * blockDim.x) {
+        // Per token: clipped PPO surrogate with the completion's advantage, minus beta times
+        // the k3 KL estimator exp(d) - d - 1 with d = log_ref - log_pi.
         const float a = adv[i / s];
         const float r = expf(log_pi[i] - log_pi_old[i]);
         const float rc = fminf(fmaxf(r, 1.0f - clip_eps), 1.0f + clip_eps);
@@ -56,6 +62,7 @@ __global__ void tokenSums(const float* adv, const float* log_pi, const float* lo
 }
 
 __global__ void finalize(float* out, int num_partials, long long n) {
+    // Pass 3 (one block): loss = -mean over all B * G * S tokens.
     double v = 0.0;
     for (int i = threadIdx.x; i < num_partials; i += blockDim.x) v += g_partials[i];
     v = blockReduceSum(v);
@@ -65,6 +72,7 @@ __global__ void finalize(float* out, int num_partials, long long n) {
 // all pointers are device pointers
 extern "C" void solve(const float* rewards, const float* log_pi, const float* log_pi_old, const float* log_ref,
                       float* output, float clip_eps, float beta, int B, int G, int S) {
+    // Advantages per completion, then token partial sums, then the mean.
     float* adv = nullptr;
     cudaMalloc(&adv, static_cast<size_t>(B) * G * sizeof(float));
     groupAdvantages<<<(B + 127) / 128, 128>>>(rewards, adv, B, G);

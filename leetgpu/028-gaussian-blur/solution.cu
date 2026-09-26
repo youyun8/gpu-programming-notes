@@ -14,29 +14,36 @@ constexpr int kRowsPerThread = kTileY / kBlockY;
 
 __global__ void gaussianBlur(const float* input, const float* kernel, float* output, int rows, int cols, int k_rows,
                              int k_cols) {
+    // Dynamic shared memory: the kernel, then the input window around this 32 x 32 output tile.
     extern __shared__ float smem[];
     const int win_cols = kTileX + k_cols - 1;
     const int win_rows = kTileY + k_rows - 1;
     float* s_kernel = smem;
     float* s_input = smem + k_rows * k_cols;
 
+    // The window starts half a kernel above and to the left of the tile ("same" convolution).
     const int row0 = blockIdx.y * kTileY - k_rows / 2;
     const int col0 = blockIdx.x * kTileX - k_cols / 2;
     const int tid = threadIdx.y * blockDim.x + threadIdx.x;
     const int num_threads = blockDim.x * blockDim.y;
 
+    // Stage the kernel and the window, zero outside the image (zero padding).
     for (int i = tid; i < k_rows * k_cols; i += num_threads) s_kernel[i] = kernel[i];
     for (int i = tid; i < win_rows * win_cols; i += num_threads) {
         const int r = row0 + i / win_cols;
         const int c = col0 + i % win_cols;
         s_input[i] = (r >= 0 && r < rows && c >= 0 && c < cols) ? input[static_cast<size_t>(r) * cols + c] : 0.0f;
     }
+    // Staged data visible to all threads.
     __syncthreads();
 
+    // Each thread computes 4 output rows of one column; weights are broadcasts,
+    // lanes read consecutive window columns.
     float acc[kRowsPerThread] = {};
     for (int kr = 0; kr < k_rows; ++kr) {
         for (int kc = 0; kc < k_cols; ++kc) {
             const float w = s_kernel[kr * k_cols + kc];
+            // Store in bounds.
 #pragma unroll
             for (int r = 0; r < kRowsPerThread; ++r) {
                 acc[r] = fmaf(s_input[(threadIdx.y + r * kBlockY + kr) * win_cols + threadIdx.x + kc], w, acc[r]);

@@ -16,11 +16,13 @@ constexpr int kMaxK = 1000;
 
 __global__ void assignPoints(const float* x, const float* y, int* labels, const float* cx, const float* cy, double* sum_x,
                              double* sum_y, unsigned int* counts, int n, int k) {
+    // Per block: the centroids, plus private per-cluster sums and counts in shared memory.
     __shared__ float s_cx[kMaxK];
     __shared__ float s_cy[kMaxK];
     __shared__ double s_sx[kMaxK];
     __shared__ double s_sy[kMaxK];
     __shared__ unsigned int s_cnt[kMaxK];
+    // Load the current centroids and clear the private accumulators.
     for (int c = threadIdx.x; c < k; c += blockDim.x) {
         s_cx[c] = cx[c];
         s_cy[c] = cy[c];
@@ -29,11 +31,13 @@ __global__ void assignPoints(const float* x, const float* y, int* labels, const 
         s_cnt[c] = 0;
     }
     __syncthreads();
+    // Assignment step: nearest centroid for each point (first index wins ties).
     for (int i = blockIdx.x * blockDim.x + threadIdx.x; i < n; i += gridDim.x * blockDim.x) {
         const float px = x[i], py = y[i];
         float best = FLT_MAX;
         int best_c = 0;
         for (int c = 0; c < k; ++c) {
+            // Explicitly rounded ops (no FMA contraction) so that distances, and thus ties, match the reference.
             const float dx = __fsub_rn(px, s_cx[c]);
             const float dy = __fsub_rn(py, s_cy[c]);
             const float d = __fadd_rn(__fmul_rn(dx, dx), __fmul_rn(dy, dy));
@@ -42,12 +46,14 @@ __global__ void assignPoints(const float* x, const float* y, int* labels, const 
                 best_c = c;
             }
         }
+        // Record the label and accumulate the point into its cluster (shared-memory atomics, fp64 sums).
         labels[i] = best_c;
         atomicAdd(&s_sx[best_c], static_cast<double>(px));
         atomicAdd(&s_sy[best_c], static_cast<double>(py));
         atomicAdd(&s_cnt[best_c], 1u);
     }
     __syncthreads();
+    // Merge this block's per-cluster sums and counts into the global accumulators.
     for (int c = threadIdx.x; c < k; c += blockDim.x) {
         if (s_cnt[c]) {
             atomicAdd(&sum_x[c], s_sx[c]);
@@ -58,6 +64,8 @@ __global__ void assignPoints(const float* x, const float* y, int* labels, const 
 }
 
 __global__ void updateCentroids(float* cx, float* cy, double* sum_x, double* sum_y, unsigned int* counts, int k) {
+    // Update step, one thread per centroid: mean of its points (an empty cluster keeps
+    // its centroid), then clear the accumulators for the next iteration.
     const int c = blockIdx.x * blockDim.x + threadIdx.x;
     if (c >= k) return;
     if (counts[c]) {
@@ -73,8 +81,11 @@ __global__ void updateCentroids(float* cx, float* cy, double* sum_x, double* sum
 extern "C" void solve(const float* data_x, const float* data_y, int* labels, float* initial_centroid_x,
                       float* initial_centroid_y, float* final_centroid_x, float* final_centroid_y, int sample_size, int k,
                       int max_iterations) {
+    // Iterate in place on the output centroids, starting from the initial ones.
     cudaMemcpy(final_centroid_x, initial_centroid_x, k * sizeof(float), cudaMemcpyDeviceToDevice);
     cudaMemcpy(final_centroid_y, initial_centroid_y, k * sizeof(float), cudaMemcpyDeviceToDevice);
+    // Global accumulators: sum_x, sum_y (double) and counts, zero-initialised once
+    // (updateCentroids clears them after every iteration).
     void* buf = nullptr;
     cudaMalloc(&buf, k * (2 * sizeof(double) + sizeof(unsigned int)));
     cudaMemset(buf, 0, k * (2 * sizeof(double) + sizeof(unsigned int)));
@@ -83,6 +94,7 @@ extern "C" void solve(const float* data_x, const float* data_y, int* labels, flo
     unsigned int* counts = reinterpret_cast<unsigned int*>(sum_y + k);
     int blocks = (sample_size + kThreads - 1) / kThreads;
     blocks = blocks > 1024 ? 1024 : blocks;
+    // Exactly max_iterations rounds of assign + update, like the reference.
     for (int it = 0; it < max_iterations; ++it) {
         assignPoints<<<blocks, kThreads>>>(data_x, data_y, labels, final_centroid_x, final_centroid_y, sum_x, sum_y, counts,
                                            sample_size, k);

@@ -12,16 +12,19 @@ constexpr int kPositionsPerThread = 8;
 constexpr int kMaxK = 8;
 
 __global__ void causalDwConv(const float* x, const float* w, const float* bias, float* out, int len, int d, int k) {
+    // x = channel (contiguous in memory: coalesced), y = a group of 8 positions, z = batch.
     const int ch = blockIdx.x * blockDim.x + threadIdx.x;
     const int b = blockIdx.z;
     const int l0 = blockIdx.y * kPositionsPerThread;
     if (ch >= d) return;
+    // This channel's filter taps and bias, kept in registers.
     float wk[kMaxK];
 #pragma unroll
     for (int t = 0; t < kMaxK; ++t) wk[t] = t < k ? w[static_cast<size_t>(ch) * k + t] : 0.0f;
     const float bv = bias[ch];
     const float* xb = x + static_cast<size_t>(b) * len * d;
     float* ob = out + static_cast<size_t>(b) * len * d;
+    // Causal: output l only sees inputs l - k + 1 .. l; taps before position 0 are zero padding.
     for (int l = l0; l < min(l0 + kPositionsPerThread, len); ++l) {
         float acc = bv;
         for (int t = k - 1; t >= 0; --t) {  // oldest tap first, like conv1d on the padded input
@@ -34,6 +37,7 @@ __global__ void causalDwConv(const float* x, const float* w, const float* bias, 
 
 // x, weight, bias, output are device pointers
 extern "C" void solve(const float* x, const float* weight, const float* bias, float* output, int B, int L, int D, int K) {
+    // One thread per (channel, 8 positions, batch).
     const dim3 grid((D + kBlockD - 1) / kBlockD, (L + kPositionsPerThread - 1) / kPositionsPerThread, B);
     causalDwConv<<<grid, kBlockD>>>(x, weight, bias, output, L, D, K);
     cudaDeviceSynchronize();

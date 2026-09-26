@@ -8,6 +8,7 @@ constexpr int kBlockSize = 256;
 __global__ void copyKernel(const float* src, float* dst, int total) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     const int num_vec4 = total / 4;
+    // Bulk: one 16-byte copy per thread; the first total % 4 threads also copy one tail element.
     if (idx < num_vec4) reinterpret_cast<float4*>(dst)[idx] = reinterpret_cast<const float4*>(src)[idx];
     if (idx < total % 4) dst[num_vec4 * 4 + idx] = src[num_vec4 * 4 + idx];
 }
@@ -15,6 +16,7 @@ __global__ void copyKernel(const float* src, float* dst, int total) {
 // A, B are device pointers
 extern "C" void solve(const float* A, float* B, int N) {
     const int total = N * N;
+    // Enough threads for every float4, and at least one block for the tail.
     const int num_blocks = (total / 4 + kBlockSize) / kBlockSize;
     copyKernel<<<num_blocks, kBlockSize>>>(A, B, total);
     cudaDeviceSynchronize();

@@ -9,6 +9,7 @@ constexpr int kBlockSize = 256;
 __global__ void grayscaleKernel(const float* input, float* output, int num_pixels) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < num_pixels) {
+        // BT.601 luma weights on the interleaved R, G, B of this pixel.
         const float* p = input + 3 * static_cast<size_t>(idx);
         output[idx] = 0.299f * p[0] + 0.587f * p[1] + 0.114f * p[2];
     }

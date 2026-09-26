@@ -10,12 +10,14 @@
 constexpr int kBlockSize = 256;
 constexpr int kMaxBlocks = 1024;
 
+// One fp64 partial per block.
 __device__ double g_partials[kMaxBlocks];
 
 __device__ double blockReduceSum(double v) {
     __shared__ double warp_sums[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Block-wide sum: warp shuffle trees, then warp 0 reduces the warp sums (result in thread 0).
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (lane == 0) warp_sums[warp] = v;
     __syncthreads();
@@ -28,6 +30,7 @@ __device__ double blockReduceSum(double v) {
 __global__ void partialDots(const half* a, const half* b, int n) {
     const int tid = blockIdx.x * blockDim.x + threadIdx.x;
     const int stride = gridDim.x * blockDim.x;
+    // Pass 1: grid-stride over half2 pairs, converted to float and accumulated with FMAs...
     float local = 0.0f;
     const half2* a2 = reinterpret_cast<const half2*>(a);
     const half2* b2 = reinterpret_cast<const half2*>(b);
@@ -37,12 +40,14 @@ __global__ void partialDots(const half* a, const half* b, int n) {
         local = fmaf(x.x, y.x, local);
         local = fmaf(x.y, y.y, local);
     }
+    // ...plus the odd last element; then a block reduction in double.
     if (tid == 0 && (n & 1)) local = fmaf(__half2float(a[n - 1]), __half2float(b[n - 1]), local);
     const double s = blockReduceSum(local);
     if (threadIdx.x == 0) g_partials[blockIdx.x] = s;
 }
 
 __global__ void finalSum(half* result, int num_partials) {
+    // Pass 2 (one block): add the partials and round once to half.
     double v = 0.0;
     for (int i = threadIdx.x; i < num_partials; i += blockDim.x) v += g_partials[i];
     v = blockReduceSum(v);

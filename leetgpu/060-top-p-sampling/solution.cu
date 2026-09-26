@@ -18,6 +18,7 @@
 
 constexpr int kThreads = 1024;
 
+// Block-wide sum and max; every thread receives the result.
 __device__ float blockSum(float v, float* scratch) {
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_xor_sync(0xffffffffu, v, offset);
     if (threadIdx.x % 32 == 0) scratch[threadIdx.x / 32] = v;
@@ -38,6 +39,7 @@ __device__ float blockMax(float v, float* scratch) {
     return total;
 }
 
+// SplitMix64: a well-mixed 64-bit hash of the seed.
 __device__ unsigned long long splitMix64(unsigned long long x) {
     x += 0x9E3779B97F4A7C15ull;
     x = (x ^ (x >> 30)) * 0xBF58476D1CE4E5B9ull;
@@ -50,6 +52,7 @@ __global__ void topPSample(const float* logits, const float* p_ptr, const int* s
     __shared__ int chunk_hit;
     const float p = p_ptr[0];
 
+    // Softmax normalizer: global max, then the sum of exp(logit - max).
     float local_max = -FLT_MAX;
     for (int i = threadIdx.x; i < v; i += kThreads) local_max = fmaxf(local_max, logits[i]);
     const float mx = blockMax(local_max, scratch);
@@ -69,6 +72,7 @@ __global__ void topPSample(const float* logits, const float* p_ptr, const int* s
         if (blockSum(mass, scratch) >= p) threshold = candidate;
     }
 
+    // Total probability of the nucleus (tokens with prob >= threshold).
     float nucleus = 0.0f;
     for (int i = threadIdx.x; i < v; i += kThreads) {
         const float prob = expf(logits[i] - mx) * inv_total;
@@ -76,6 +80,7 @@ __global__ void topPSample(const float* logits, const float* p_ptr, const int* s
     }
     const float nucleus_mass = blockSum(nucleus, scratch);
 
+    // Uniform draw in [0, nucleus mass): 24 random bits scaled into the nucleus.
     const unsigned long long bits = splitMix64(static_cast<unsigned long long>(seed_ptr[0]));
     const float target = static_cast<float>((bits >> 40) * (1.0 / 16777216.0)) * nucleus_mass;
 

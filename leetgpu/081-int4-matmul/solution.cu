@@ -24,10 +24,13 @@ constexpr int kPadFloat = 4;
 
 __global__ void __launch_bounds__(kThreads)
 w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, int m, int n, int k, int group) {
+    // Shared tiles: activations x, dequantized weights stored [n][k] (read as a column-major
+    // B fragment, i.e. W^T), and the fp32 C tile for the epilogue.
     __shared__ __align__(32) __half x_s[kTileM][kTileK + kPadHalf];
     __shared__ __align__(32) __half w_s[kTileN][kTileK + kPadHalf];  // [n][k]
     __shared__ __align__(32) float c_s[kTileM][kTileN + kPadFloat];
 
+    // 4 warps in a 2 x 2 layout; each owns a 32 x 32 sub-tile = 2 x 2 WMMA fragments.
     const int warp = threadIdx.x / 32;
     const int warp_row = (warp / 2) * 32;
     const int warp_col = (warp % 2) * 32;
@@ -35,11 +38,13 @@ w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, 
     const int col0 = blockIdx.x * kTileN;
     const int num_groups = k / group;
 
+    // fp32 accumulators.
     wmma::fragment<wmma::accumulator, 16, 16, 16, float> acc[2][2];
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j) wmma::fill_fragment(acc[i][j], 0.0f);
 
     const __half zero = __float2half(0.0f);
+    // Main loop over K in slices of 32: stage x (zero outside)...
     for (int k0 = 0; k0 < k; k0 += kTileK) {
         for (int i = threadIdx.x; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
@@ -54,6 +59,8 @@ w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, 
             const int gk = k0 + kk;
             __half w0 = zero, w1 = zero;
             if (gn < n && gk < k) {
+                // ...and dequantize W on the fly: high nibble = even k, low nibble = odd k,
+                // value = (nibble - 8) * group scale.
                 const uint8_t byte = w_q[static_cast<size_t>(gn) * (k / 2) + gk / 2];
                 const float s0 = __half2float(scales[static_cast<size_t>(gn) * num_groups + gk / group]);
                 const float s1 = __half2float(scales[static_cast<size_t>(gn) * num_groups + (gk + 1) / group]);
@@ -63,7 +70,9 @@ w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, 
             w_s[nn][kk] = w0;
             w_s[nn][kk + 1] = w1;
         }
+        // Tiles complete before the tensor-core loads.
         __syncthreads();
+        // Two k-steps of 16: 2 x and 2 W fragments, 4 tensor-core MMAs.
 #pragma unroll
         for (int kk = 0; kk < kTileK; kk += 16) {
             wmma::fragment<wmma::matrix_a, 16, 16, 16, __half, wmma::row_major> a_frag[2];
@@ -73,8 +82,10 @@ w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, 
             for (int i = 0; i < 2; ++i)
                 for (int j = 0; j < 2; ++j) wmma::mma_sync(acc[i][j], a_frag[i], b_frag[j], acc[i][j]);
         }
+        // Everyone is done with the tiles before the next slice overwrites them.
         __syncthreads();
     }
+    // Epilogue: accumulators -> shared fp32 tile -> half, stored in bounds.
     for (int i = 0; i < 2; ++i)
         for (int j = 0; j < 2; ++j)
             wmma::store_matrix_sync(&c_s[warp_row + 16 * i][warp_col + 16 * j], acc[i][j], kTileN + kPadFloat, wmma::mem_row_major);
@@ -89,6 +100,7 @@ w4a16Gemm(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, 
 // x, w_q, scales, y are device pointers
 extern "C" void solve(const __half* x, const uint8_t* w_q, const __half* scales, __half* y, int M, int N, int K,
                       int group_size) {
+    // One 128-thread block per 64 x 64 tile of y.
     const dim3 grid((N + kTileN - 1) / kTileN, (M + kTileM - 1) / kTileM);
     w4a16Gemm<<<grid, kThreads>>>(x, w_q, scales, y, M, N, K, group_size);
     cudaDeviceSynchronize();

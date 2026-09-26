@@ -12,6 +12,7 @@
 constexpr int kThreads = 1024;
 
 __device__ int blockInclusiveScan(int v, int* warp_totals) {
+    // Block-wide inclusive scan of ints: warp scans, then a scan of the 32 warp totals.
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
     for (int offset = 1; offset < 32; offset <<= 1) {
@@ -37,6 +38,8 @@ __global__ void maxWindowSum(const int* input, int* prefix, int* output, int n, 
     __shared__ int warp_totals[32];
     __shared__ int carry;
     __shared__ int warp_max[32];
+    // Single block. Pass 1: prefix sums P[0..N] (P[0] = 0), 1024 elements per step
+    // with a running carry between steps.
     if (threadIdx.x == 0) {
         carry = 0;
         prefix[0] = 0;
@@ -51,6 +54,8 @@ __global__ void maxWindowSum(const int* input, int* prefix, int* output, int n, 
         if (threadIdx.x == kThreads - 1) carry = inclusive;
         __syncthreads();
     }
+    // Pass 2: every window sum is P[i + w] - P[i]; take the maximum over all windows
+    // (per thread, then warp shuffles, then thread 0 over the warp maxima).
     int best = INT_MIN;
     for (int i = threadIdx.x; i + w <= n; i += kThreads) best = max(best, prefix[i + w] - prefix[i]);
     for (int offset = 16; offset > 0; offset >>= 1) best = max(best, __shfl_xor_sync(0xffffffffu, best, offset));
@@ -65,6 +70,7 @@ __global__ void maxWindowSum(const int* input, int* prefix, int* output, int n, 
 
 // input, output are device pointers
 extern "C" void solve(const int* input, int* output, int N, int window_size) {
+    // Temporary prefix array of N + 1 ints.
     int* prefix = nullptr;
     cudaMalloc(&prefix, (N + 1) * sizeof(int));
     maxWindowSum<<<1, kThreads>>>(input, prefix, output, N, window_size);

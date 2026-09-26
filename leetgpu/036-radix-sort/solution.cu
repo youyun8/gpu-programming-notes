@@ -24,6 +24,7 @@ constexpr int kRadix = 256;
 constexpr int kScanChunk = 2048;
 
 __global__ void digitCounts(const unsigned int* keys, int n, int shift, unsigned int* hist, int num_tiles) {
+    // Pass 1 of each digit: per-tile histogram of the current 8-bit digit (shared-memory atomics).
     __shared__ unsigned int s_hist[kRadix];
     s_hist[threadIdx.x] = 0;
     __syncthreads();
@@ -33,10 +34,13 @@ __global__ void digitCounts(const unsigned int* keys, int n, int shift, unsigned
         if (i < static_cast<size_t>(n)) atomicAdd(&s_hist[(keys[i] >> shift) & 0xFFu], 1u);
     }
     __syncthreads();
+    // Store digit-major (digit * num_tiles + tile): an exclusive scan of this table then gives
+    // every (digit, tile) pair its global output offset, in stable order.
     hist[static_cast<size_t>(threadIdx.x) * num_tiles + blockIdx.x] = s_hist[threadIdx.x];
 }
 
 __device__ unsigned int blockExclusiveScanU(unsigned int v, unsigned int* total) {
+    // Block-wide exclusive scan of unsigned values: warp scans, a scan of the warp totals, then combine.
     __shared__ unsigned int warp_totals[32];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
@@ -59,11 +63,13 @@ __device__ unsigned int blockExclusiveScanU(unsigned int v, unsigned int* total)
     if (warp > 0) incl += warp_totals[warp - 1];
     *total = warp_totals[blockDim.x / 32 - 1];
     __syncthreads();
+    // Exclusive = inclusive - own value.
     return incl - v;
 }
 
 // Device-wide exclusive scan in three kernels (chunk sums, scan of sums, apply).
 __global__ void scanChunkSums(const unsigned int* data, int n, unsigned int* sums) {
+    // Scan pass 1: total of each 2048-element chunk.
     const size_t base = static_cast<size_t>(blockIdx.x) * kScanChunk;
     unsigned int local = 0;
     for (int i = threadIdx.x; i < kScanChunk; i += blockDim.x)
@@ -74,6 +80,7 @@ __global__ void scanChunkSums(const unsigned int* data, int n, unsigned int* sum
 }
 
 __global__ void scanSums(unsigned int* sums, int count) {
+    // Scan pass 2 (one block): exclusive scan of the chunk totals with a running carry.
     unsigned int carry = 0;
     for (int start = 0; start < count; start += blockDim.x) {
         const int i = start + threadIdx.x;
@@ -87,6 +94,7 @@ __global__ void scanSums(unsigned int* sums, int count) {
 
 // Each thread owns 8 consecutive entries of the chunk.
 __global__ void scanApply(unsigned int* data, int n, const unsigned int* sums) {
+    // Scan pass 3: each thread scans its 8 values serially from chunk carry + block prefix.
     const size_t base = static_cast<size_t>(blockIdx.x) * kScanChunk + threadIdx.x * (kScanChunk / kSortThreads);
     unsigned int vals[kScanChunk / kSortThreads];
     unsigned int local = 0;
@@ -103,6 +111,7 @@ __global__ void scanApply(unsigned int* data, int n, const unsigned int* sums) {
 }
 
 static void exclusiveScan(unsigned int* data, int n, unsigned int* sums) {
+    // Three-kernel reduce-then-scan over the histogram table.
     const int chunks = (n + kScanChunk - 1) / kScanChunk;
     scanChunkSums<<<chunks, kSortThreads>>>(data, n, sums);
     scanSums<<<1, kSortThreads>>>(sums, chunks);
@@ -115,8 +124,10 @@ __global__ void scatterStable(const unsigned int* keys_in, unsigned int* keys_ou
     __shared__ unsigned int s_warp[kSortWarps][kRadix];
     const int lane = threadIdx.x % 32;
     const int warp = threadIdx.x / 32;
+    // Pass 2 of each digit: stable scatter. Thread t owns digit t's running output position for this tile.
     s_base[threadIdx.x] = offsets[static_cast<size_t>(threadIdx.x) * num_tiles + blockIdx.x];
     const size_t tile = static_cast<size_t>(blockIdx.x) * kSortTile;
+    // Process the tile 256 keys at a time, in order, so equal digits keep their input order.
     for (int c = 0; c < kSortChunks; ++c) {
         for (int w = 0; w < kSortWarps; ++w) s_warp[w][threadIdx.x] = 0;
         __syncthreads();
@@ -124,11 +135,14 @@ __global__ void scatterStable(const unsigned int* keys_in, unsigned int* keys_ou
         const bool valid = i < static_cast<size_t>(n);
         const unsigned int key = valid ? keys_in[i] : 0u;
         const unsigned int digit = valid ? ((key >> shift) & 0xFFu) : kRadix;  // invalid keys form their own group
+        // Lanes with the same digit find each other; rank = number of such lanes before me.
+        // The first lane of each group records the group size for its warp.
         const unsigned int peers = __match_any_sync(0xffffffffu, digit);
         const unsigned int rank = __popc(peers & ((1u << lane) - 1u));
         if (valid && lane == __ffs(peers) - 1) s_warp[warp][digit] = __popc(peers);
         __syncthreads();
         // Thread d turns the per-warp counts of digit d into start offsets.
+        // Thread t turns the per-warp counts of digit t into per-warp start offsets (warps in order).
         unsigned int run = s_base[threadIdx.x];
         for (int w = 0; w < kSortWarps; ++w) {
             const unsigned int cnt = s_warp[w][threadIdx.x];
@@ -137,6 +151,7 @@ __global__ void scatterStable(const unsigned int* keys_in, unsigned int* keys_ou
         }
         s_base[threadIdx.x] = run;
         __syncthreads();
+        // Scatter: warp offset for my digit + my rank inside the warp.
         if (valid) keys_out[s_warp[warp][digit] + rank] = key;
         __syncthreads();
     }
@@ -144,6 +159,7 @@ __global__ void scatterStable(const unsigned int* keys_in, unsigned int* keys_ou
 
 // Sorts keys[0..n) ascending; tmp has room for n keys. Result ends in keys.
 static void radixSort(unsigned int* keys, unsigned int* tmp, int n) {
+    // LSD radix sort: four 8-bit passes, ping-ponging between keys and tmp.
     const int num_tiles = (n + kSortTile - 1) / kSortTile;
     const int table = kRadix * num_tiles;
     unsigned int* hist = nullptr;
@@ -164,6 +180,7 @@ static void radixSort(unsigned int* keys, unsigned int* tmp, int n) {
 
 // input, output are device pointers
 extern "C" void solve(const unsigned int* input, unsigned int* output, int N) {
+    // Sort a copy in the output buffer; tmp is the ping-pong buffer of the radix passes.
     unsigned int* tmp = nullptr;
     cudaMalloc(&tmp, static_cast<size_t>(N) * sizeof(unsigned int));
     cudaMemcpy(output, input, static_cast<size_t>(N) * sizeof(unsigned int), cudaMemcpyDeviceToDevice);

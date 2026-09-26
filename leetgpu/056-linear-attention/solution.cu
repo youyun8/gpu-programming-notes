@@ -12,9 +12,12 @@
 
 constexpr int kMaxDim = 128;
 
+// Feature map phi(x) = elu(x) + 1: x + 1 for x > 0, e^x otherwise (always positive).
 __device__ __forceinline__ float phi(float x) { return x > 0.0f ? x + 1.0f : expf(x); }
 
 __global__ void kvState(const float* k, const float* v, float* s, float* z, int m, int d) {
+    // Threads 0 .. d*d-1: S = phi(K)^T V (d x d). Threads d*d .. d*d+d-1: z = column sums of phi(K).
+    // Both accumulate over all M rows in double.
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < d * d) {
         const int i = idx / d, j = idx % d;
@@ -30,6 +33,7 @@ __global__ void kvState(const float* k, const float* v, float* s, float* z, int 
 }
 
 __global__ void applyState(const float* q, const float* s, const float* z, float* out, int d) {
+    // One block per query row: phi(q), then denominator phi(q) . z ...
     __shared__ float phi_q[kMaxDim];
     __shared__ float denom;
     const size_t row = blockIdx.x;
@@ -41,6 +45,7 @@ __global__ void applyState(const float* q, const float* s, const float* z, float
         denom = t;
     }
     __syncthreads();
+    // ... and output column j = (phi(q) . S[:, j]) / denominator.
     for (int j = threadIdx.x; j < d; j += blockDim.x) {
         float num = 0.0f;
         for (int i = 0; i < d; ++i) num = fmaf(phi_q[i], s[i * d + j], num);
@@ -50,6 +55,7 @@ __global__ void applyState(const float* q, const float* s, const float* z, float
 
 // Q, K, V, output are device pointers
 extern "C" void solve(const float* Q, const float* K, const float* V, float* output, int M, int d) {
+    // The d x d state and the normalizer replace the M x M attention matrix.
     float* state = nullptr;
     cudaMalloc(&state, (static_cast<size_t>(d) * d + d) * sizeof(float));
     kvState<<<(d * d + d + 255) / 256, 256>>>(K, V, state, state + d * d, M, d);

@@ -17,8 +17,11 @@ constexpr int kTimeChunk = 32;
 __global__ void __launch_bounds__(kThreads)
 selectiveScan(const float* u, const float* delta, const float* a, const float* b_proj, const float* c_proj,
               const float* skip, float* y, int seq, int d_model, int d_state) {
+    // B_t and C_t of 32 time steps, shared by all channels of the block.
     __shared__ float s_b[kTimeChunk][kMaxState];
     __shared__ float s_c[kTimeChunk][kMaxState];
+    // One thread per (batch, channel d): the whole state vector h (d_state <= 64) and the
+    // channel's row of A stay in registers for the entire sequence.
     const int batch = blockIdx.y;
     const int d = blockIdx.x * kThreads + threadIdx.x;
     const bool active = d < d_model;
@@ -32,6 +35,8 @@ selectiveScan(const float* u, const float* delta, const float* a, const float* b
     }
     const float skip_d = active ? skip[d] : 0.0f;
 
+    // Walk the sequence in chunks of 32 steps: stage B and C (every thread must reach
+    // the barriers, hence the late `continue` for inactive threads).
     for (int t0 = 0; t0 < seq; t0 += kTimeChunk) {
         const int steps = min(kTimeChunk, seq - t0);
         __syncthreads();
@@ -44,6 +49,7 @@ selectiveScan(const float* u, const float* delta, const float* a, const float* b
         }
         __syncthreads();
         if (!active) continue;
+        // Sequential recurrence per channel: h = exp(dt A) h + dt B u, y = C . h + D u.
         for (int tt = 0; tt < steps; ++tt) {
             const size_t idx = (static_cast<size_t>(batch) * seq + t0 + tt) * d_model + d;
             const float dt = delta[idx];

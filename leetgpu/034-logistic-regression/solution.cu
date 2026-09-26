@@ -17,6 +17,8 @@ constexpr double kTol = 1e-8;
 constexpr double kL2 = 1e-6;
 
 __global__ void sampleTerms(const float* x, const float* y, const double* beta, double* w, double* r, int n, int f) {
+    // Per sample (one warp each): z = x . beta, p = sigmoid(z), Newton weight
+    // w = p (1 - p) (floored for stability) and residual r = p - y.
     const int lane = threadIdx.x % 32;
     const int s = blockIdx.x * (blockDim.x / 32) + threadIdx.x / 32;
     if (s >= n) return;
@@ -31,6 +33,7 @@ __global__ void sampleTerms(const float* x, const float* y, const double* beta, 
 }
 
 __global__ void weightedGram(const float* x, const double* w, double* h, int n, int f) {
+    // Hessian H = X^T diag(w) X + l2 I, one 16 x 16 tile per block, samples staged 16 at a time.
     __shared__ double xi[kTile][kTile + 1];
     __shared__ double xj[kTile][kTile + 1];
     const int i0 = blockIdx.y * kTile;
@@ -52,6 +55,7 @@ __global__ void weightedGram(const float* x, const double* w, double* h, int n, 
 }
 
 __global__ void gradient(const float* x, const double* r, const double* beta, double* g, int n, int f) {
+    // Gradient g = X^T r + l2 beta, one thread per feature (coalesced across threads).
     const int j = blockIdx.x * blockDim.x + threadIdx.x;
     if (j >= f) return;
     double acc = 0.0;
@@ -60,6 +64,7 @@ __global__ void gradient(const float* x, const double* r, const double* beta, do
 }
 
 __device__ double blockSum(double v, double* scratch) {
+    // Block-wide sum returned to every thread.
     for (int offset = 16; offset > 0; offset >>= 1) v += __shfl_down_sync(0xffffffffu, v, offset);
     if (threadIdx.x % 32 == 0) scratch[threadIdx.x / 32] = v;
     __syncthreads();
@@ -73,6 +78,7 @@ __device__ double blockSum(double v, double* scratch) {
 __global__ void newtonStep(double* a, const double* g, double* z, double* beta, double* step_sq, int f) {
     __shared__ double scratch[32];
     __shared__ double pivot;
+    // Cholesky factorization of H in place (right-looking, column by column).
     for (int k = 0; k < f; ++k) {
         if (threadIdx.x == 0) {
             pivot = sqrt(a[static_cast<size_t>(k) * f + k]);
@@ -89,6 +95,7 @@ __global__ void newtonStep(double* a, const double* g, double* z, double* beta, 
         }
         __syncthreads();
     }
+    // Forward substitution L z = g.
     for (int i = 0; i < f; ++i) {
         double partial = 0.0;
         for (int j = threadIdx.x; j < i; j += blockDim.x) partial += a[static_cast<size_t>(i) * f + j] * z[j];
@@ -96,7 +103,9 @@ __global__ void newtonStep(double* a, const double* g, double* z, double* beta, 
         if (threadIdx.x == 0) z[i] = (g[i] - s) / a[static_cast<size_t>(i) * f + i];
         __syncthreads();
     }
+    // Back substitution L^T delta = z (in place in z).
     for (int i = f - 1; i >= 0; --i) {
+        // Newton update beta -= delta, and ||delta||^2 for the convergence test.
         double partial = 0.0;
         for (int j = i + 1 + threadIdx.x; j < f; j += blockDim.x) partial += a[static_cast<size_t>(j) * f + i] * z[j];
         const double s = blockSum(partial, scratch);
@@ -121,6 +130,7 @@ __global__ void writeBeta(const double* beta_d, float* beta, int f) {
 extern "C" void solve(const float* X, const float* y, float* beta, int n_samples, int n_features) {
     const int n = n_samples;
     const int f = n_features;
+    // One zeroed fp64 workspace: H, g, z, beta (starts at 0), w, r and the step norm.
     double* buf = nullptr;
     const size_t count = static_cast<size_t>(f) * f + 3 * static_cast<size_t>(f) + 2 * static_cast<size_t>(n) + 1;
     cudaMalloc(&buf, count * sizeof(double));
@@ -134,6 +144,7 @@ extern "C" void solve(const float* X, const float* y, float* beta, int n_samples
     double* step_sq = r + n;
 
     const dim3 gram_grid((f + kTile - 1) / kTile, (f + kTile - 1) / kTile);
+    // Newton iterations until the step is below the tolerance (one host read per iteration).
     for (int it = 0; it < kMaxIter; ++it) {
         sampleTerms<<<(n + 7) / 8, 256>>>(X, y, beta_d, w, r, n, f);
         weightedGram<<<gram_grid, dim3(kTile, kTile)>>>(X, w, h, n, f);

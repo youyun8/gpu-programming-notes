@@ -25,10 +25,12 @@ __device__ __forceinline__ float2 twiddle(long long k, int n) {
 }
 
 __global__ void fftRows(const float2* in, float2* out, int n) {
+    // One block transforms one row entirely in shared memory.
     extern __shared__ float2 s_row[];
     const float2* src = in + static_cast<size_t>(blockIdx.x) * n;
     float2* dst = out + static_cast<size_t>(blockIdx.x) * n;
     const bool pow2 = (n & (n - 1)) == 0;
+    // Power-of-two length: load in bit-reversed order, then log2(n) in-place radix-2 stages.
     if (pow2) {
         int log_n = 0;
         while ((1 << log_n) < n) ++log_n;
@@ -37,6 +39,7 @@ __global__ void fftRows(const float2* in, float2* out, int n) {
             s_row[rev] = src[i];
         }
         __syncthreads();
+        // Stage with butterfly span `half`: n/2 independent butterflies, a barrier between stages.
         for (int half = 1; half < n; half <<= 1) {
             for (int t = threadIdx.x; t < n / 2; t += blockDim.x) {
                 const int group = t / half;
@@ -51,8 +54,10 @@ __global__ void fftRows(const float2* in, float2* out, int n) {
             }
             __syncthreads();
         }
+        // Write the transformed row back.
         for (int i = threadIdx.x; i < n; i += blockDim.x) dst[i] = s_row[i];
     } else {
+        // Other lengths: direct O(n^2) DFT from shared memory, one output frequency per thread.
         for (int i = threadIdx.x; i < n; i += blockDim.x) s_row[i] = src[i];
         __syncthreads();
         for (int k = threadIdx.x; k < n; k += blockDim.x) {
@@ -69,6 +74,8 @@ __global__ void fftRows(const float2* in, float2* out, int n) {
 
 // out (cols x rows) = in (rows x cols)^T for complex elements.
 __global__ void transposeComplex(const float2* in, float2* out, int rows, int cols) {
+    // Tiled transpose through shared memory (padding avoids bank conflicts); both
+    // the read and the write are coalesced.
     __shared__ float2 tile[kTile][kTile + 1];
     int x = blockIdx.x * kTile + threadIdx.x;
     int y = blockIdx.y * kTile + threadIdx.y;
@@ -85,6 +92,8 @@ __global__ void transposeComplex(const float2* in, float2* out, int rows, int co
 extern "C" void solve(const float* signal, float* spectrum, int M, int N) {
     const float2* in = reinterpret_cast<const float2*>(signal);
     float2* out = reinterpret_cast<float2*>(spectrum);
+    // 2-D FFT = 1-D FFTs of the rows, then of the columns. The column pass is done as a
+    // row pass on the transposed matrix, then transposed back.
     float2* tmp = nullptr;
     cudaMalloc(&tmp, static_cast<size_t>(M) * N * sizeof(float2));
     const int max_len = M > N ? M : N;

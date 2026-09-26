@@ -15,15 +15,18 @@ constexpr int kBlockSize = 256;
 constexpr int kItemsPerThread = 8;
 constexpr int kChunk = kBlockSize * kItemsPerThread;
 
+// Segmented-scan element: a "segment starts here" flag and a running sum (fp64).
 struct Seg {
     int flag;
     double sum;
 };
 
+// Associative combine: if b starts a segment, a's sum is discarded.
 __device__ __forceinline__ Seg combine(Seg a, Seg b) { return Seg{a.flag | b.flag, b.flag ? b.sum : a.sum + b.sum}; }
 
 // Inclusive segmented scan across the block; *total receives the block aggregate.
 __device__ Seg blockScan(Seg v, Seg* total) {
+    // Warp scans, a scan of the warp aggregates in warp 0, then combine.
     __shared__ int s_flag[32];
     __shared__ double s_sum[32];
     const int lane = threadIdx.x % 32;
@@ -53,6 +56,7 @@ __device__ Seg blockScan(Seg v, Seg* total) {
     return v;
 }
 
+// Aggregate of one thread's 8 consecutive items.
 __device__ Seg threadAggregate(const float* values, const int* flags, size_t base, int n) {
     Seg agg{0, 0.0};
     for (int i = 0; i < kItemsPerThread; ++i) {
@@ -63,6 +67,7 @@ __device__ Seg threadAggregate(const float* values, const int* flags, size_t bas
 }
 
 __global__ void chunkAggregates(const float* values, const int* flags, int* chunk_flag, double* chunk_sum, int n) {
+    // Pass 1: aggregate of each 2048-element chunk.
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk + threadIdx.x * kItemsPerThread;
     Seg total;
     blockScan(threadAggregate(values, flags, base, n), &total);
@@ -95,6 +100,7 @@ __global__ void scanAggregates(const int* chunk_flag, double* chunk_sum, int num
 }
 
 __global__ void scanChunks(const float* values, const int* flags, const double* chunk_carry, float* output, int n) {
+    // Pass 3: exclusive thread prefix inside the chunk, combined with the chunk carry.
     const size_t base = static_cast<size_t>(blockIdx.x) * kChunk + threadIdx.x * kItemsPerThread;
     const Seg agg = threadAggregate(values, flags, base, n);
     Seg total;
@@ -106,6 +112,7 @@ __global__ void scanChunks(const float* values, const int* flags, const double* 
     prev_sum[threadIdx.x] = inclusive.sum;
     __syncthreads();
     const Seg before = threadIdx.x == 0 ? Seg{0, 0.0} : Seg{prev_flag[threadIdx.x - 1], prev_sum[threadIdx.x - 1]};
+    // Walk the thread's items: output is the exclusive running sum, reset at every flag.
     double running = combine(Seg{0, chunk_carry[blockIdx.x]}, before).sum;
     for (int i = 0; i < kItemsPerThread; ++i) {
         const size_t g = base + i;
@@ -118,6 +125,7 @@ __global__ void scanChunks(const float* values, const int* flags, const double* 
 
 // values, flags, output are device pointers
 extern "C" void solve(const float* values, const int* flags, float* output, int N) {
+    // Reduce-then-scan with the segmented operator: chunk aggregates, one-block scan, per-chunk scans.
     const int num_chunks = (N + kChunk - 1) / kChunk;
     void* buf = nullptr;
     cudaMalloc(&buf, num_chunks * (sizeof(double) + sizeof(int)));

@@ -21,6 +21,7 @@ __device__ __forceinline__ unsigned int fnv1a(unsigned int x) {
 __global__ void rainbowKernel(const int* input, unsigned int* output, int n, int rounds) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) {
+        // Apply the hash R times to the element's bit pattern.
         unsigned int h = static_cast<unsigned int>(input[idx]);
         for (int r = 0; r < rounds; ++r) h = fnv1a(h);
         output[idx] = h;

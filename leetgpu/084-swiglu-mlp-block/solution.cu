@@ -17,6 +17,8 @@ constexpr int kThreads = 256;
 template <bool kDual>
 __global__ void __launch_bounds__(kThreads)
 gemm(const float* a, const float* b0, const float* b1, float* c, int rows, int inner, int cols) {
+    // Register-blocked SGEMM (64 x 64 tile, 4 x 4 outputs per thread). With kDual it computes two
+    // products that share A (x W_gate and x W_up) in the same pass.
     __shared__ float a_tile[kTileK][kTileM + 4];
     __shared__ float b0_tile[kTileK][kTileN + 4];
     __shared__ float b1_tile[kDual ? kTileK : 1][kTileN + 4];
@@ -27,6 +29,7 @@ gemm(const float* a, const float* b0, const float* b1, float* c, int rows, int i
     const int col0 = blockIdx.x * kTileN;
     float acc0[4][4] = {};
     float acc1[4][4] = {};
+    // Main loop over K in slices of 16: stage A (transposed) and the B panel(s), zero outside.
     for (int k0 = 0; k0 < inner; k0 += kTileK) {
         for (int i = tid; i < kTileM * kTileK; i += kThreads) {
             const int r = i / kTileK;
@@ -41,7 +44,9 @@ gemm(const float* a, const float* b0, const float* b1, float* c, int rows, int i
             b0_tile[kk][cc] = ok ? b0[g] : 0.0f;
             if (kDual) b1_tile[kk][cc] = ok ? b1[g] : 0.0f;
         }
+        // Panels complete before anyone reads them.
         __syncthreads();
+        // Outer products: each A fragment feeds both accumulators.
 #pragma unroll
         for (int kk = 0; kk < kTileK; ++kk) {
             float a_frag[4];
@@ -62,8 +67,10 @@ gemm(const float* a, const float* b0, const float* b1, float* c, int rows, int i
                     if (kDual) acc1[i][j] = fmaf(a_frag[i], b1_frag[j], acc1[i][j]);
                 }
         }
+        // Everyone is done with the panels before the next slice overwrites them.
         __syncthreads();
     }
+    // Epilogue: fused SwiGLU silu(gate) * up for the first GEMM, plain store for the second.
     for (int i = 0; i < 4; ++i) {
         const int r = row0 + ty + 16 * i;
         if (r >= rows) continue;
@@ -80,6 +87,7 @@ gemm(const float* a, const float* b0, const float* b1, float* c, int rows, int i
 // x, W_gate, W_up, W_down, output are device pointers
 extern "C" void solve(const float* x, const float* W_gate, const float* W_up, const float* W_down, float* output, int M,
                       int d_model, int d_ffn) {
+    // hidden = silu(x W_gate) * (x W_up) in one kernel, then output = hidden W_down.
     float* hidden = nullptr;
     cudaMalloc(&hidden, static_cast<size_t>(M) * d_ffn * sizeof(float));
     gemm<true><<<dim3((d_ffn + kTileN - 1) / kTileN, (M + kTileM - 1) / kTileM), kThreads>>>(x, W_gate, W_up, hidden, M, d_model, d_ffn);

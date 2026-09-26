@@ -12,6 +12,8 @@
 
 constexpr int kThreads = 1024;
 
+// h_t = a_t h_{t-1} + x_t is the affine map h -> a h + x; maps compose associatively,
+// so the recurrence is a scan over maps.
 struct Affine {
     double a;
     double x;
@@ -24,6 +26,7 @@ __device__ __forceinline__ Affine compose(Affine first, Affine second) {
 __global__ void linearRecurrence(const float* a, const float* x, float* h, int len) {
     __shared__ double s_a[32];
     __shared__ double s_x[32];
+    // One block per sequence; thread t owns one contiguous chunk of it.
     const float* ar = a + static_cast<size_t>(blockIdx.x) * len;
     const float* xr = x + static_cast<size_t>(blockIdx.x) * len;
     float* hr = h + static_cast<size_t>(blockIdx.x) * len;
@@ -65,6 +68,7 @@ __global__ void linearRecurrence(const float* a, const float* x, float* h, int l
     const Affine before_warp = warp > 0 ? Affine{s_a[warp - 1], s_x[warp - 1]} : Affine{1.0, 0.0};
     double h_prev = compose(before_warp, excl_in_warp).x;
 
+    // Replay the chunk from the incoming state, writing h_t (computed in double).
     for (int t = begin; t < end; ++t) {
         const double cur = (t == 0 ? 0.0 : static_cast<double>(ar[t]) * h_prev) + xr[t];
         hr[t] = static_cast<float>(cur);
@@ -74,6 +78,7 @@ __global__ void linearRecurrence(const float* a, const float* x, float* h, int l
 
 // a, x, h are device pointers
 extern "C" void solve(const float* a, const float* x, float* h, int B, int L) {
+    // One block per batch row.
     linearRecurrence<<<B, kThreads>>>(a, x, h, L);
     cudaDeviceSynchronize();
 }

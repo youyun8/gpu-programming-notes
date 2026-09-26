@@ -9,11 +9,14 @@
 constexpr int kThreads = 256;
 
 __device__ float blockSum(float v) {
+    // Block-wide sum; every thread receives the result.
     __shared__ float warp_sums[32];
     __shared__ float total;
+    // Butterfly sum inside each warp; lane 0 publishes the warp total.
     for (int o = 16; o > 0; o >>= 1) v += __shfl_xor_sync(0xffffffffu, v, o);
     if (threadIdx.x % 32 == 0) warp_sums[threadIdx.x / 32] = v;
     __syncthreads();
+    // Thread 0 adds the warp totals and broadcasts the result through shared memory.
     if (threadIdx.x == 0) {
         float t = 0.0f;
         for (int w = 0; w < static_cast<int>(blockDim.x / 32); ++w) t += warp_sums[w];
@@ -26,8 +29,10 @@ __device__ float blockSum(float v) {
 }
 
 __global__ void cosineRows(const float* p, const float* t, float* out, size_t d) {
+    // One block per row: this block's prediction and target rows.
     const float* pr = p + blockIdx.x * d;
     const float* tr = t + blockIdx.x * d;
+    // Single pass over the row: accumulate p.t, p.p and t.t together.
     float dot = 0.0f, pp = 0.0f, tt = 0.0f;
     for (size_t j = threadIdx.x; j < d; j += kThreads) {
         const float a = pr[j], b = tr[j];
@@ -35,13 +40,16 @@ __global__ void cosineRows(const float* p, const float* t, float* out, size_t d)
         pp += a * a;
         tt += b * b;
     }
+    // Reduce the three partial sums across the block.
     dot = blockSum(dot);
     pp = blockSum(pp);
     tt = blockSum(tt);
+    // 1 - cos(p, t), with the product of squared norms clamped at eps^2 = 1e-16 like PyTorch.
     if (threadIdx.x == 0) out[blockIdx.x] = 1.0f - dot / sqrtf(fmaxf(pp * tt, 1e-16f));
 }
 
 // predictions, targets, output are device pointers
 extern "C" void solution(const float* predictions, const float* targets, float* output, size_t n, size_t d) {
+    // One block per row.
     cosineRows<<<static_cast<unsigned>(n), kThreads>>>(predictions, targets, output, d);
 }
