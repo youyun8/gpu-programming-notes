@@ -64,16 +64,20 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 6. **Static assets.** It copies `site_assets/` to `assets/` in the site:
    the stylesheet, the favicon, the KaTeX loader and the vendored KaTeX and
    font files (section 9).
-7. **Figures.** A tutorial line that holds nothing but a Markdown image of
-   an SVG from `tutorials/figures/` is replaced by the SVG itself, inside a
-   `<figure>` with the caption. Inlined, the figure's colours come from the
-   `--fig-*` CSS properties in `extra.css`, so it follows the light/dark
-   toggle; on GitHub the same line renders as an ordinary image with the
-   light colours.
+7. **Figures.** A tutorial line that contains only a Markdown image becomes a
+   `<figure>`. Its caption is numbered `Fig. 1.`, `Fig. 2.`, and so on, in
+   IEEE style. SVGs are inlined, so their colours come from the `--fig-*` CSS
+   properties and follow the light/dark theme. Raster images remain image
+   elements. On GitHub, the same line renders as an ordinary image.
 
 The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
 plugin system Material depends on.
+
+`mkdocs-static-i18n` builds English at the site root and Traditional Chinese
+under `/zh-Hant/`. The floating `Aa` control stores theme, text size, content
+width, and line spacing in `localStorage`; it also links to the same page in
+the other language.
 
 ### 1.1 What Is *Not* Published
 
@@ -194,7 +198,7 @@ would publish something broken or wrong:
 | `cuemu tests (leetgpu / tensara)` | Every solution produces correct results against the platforms' reference implementations, on the CPU emulator (see [tools/cuemu](../tools/cuemu/README.md)) |
 | `GEMM tutorial programs (cuemu)` | Every program in `tutorials/gemm/` passes its `--test` shapes on the CPU emulator |
 | `Chapter 09-13 example programs (cuemu)` | Every program in `tutorials/examples/` passes its checks on the CPU emulator |
-| `Chapter 14 Triton kernels (interpreter)` | The Triton kernels in `tutorials/examples/14-triton/` match PyTorch in the Triton interpreter |
+| `Chapters 14-15 Triton kernels (interpreter)` | The Triton kernels in `tutorials/examples/14-triton/` and `15-triton-k3/` match PyTorch references in the Triton interpreter |
 | `AMD tutorial code` | `tutorials/amd/mfma_gemm.hip` compiles for gfx942 with `-Werror` |
 | `README index and site build` | The README tables and the figures are current, and the site builds with no broken links |
 
@@ -227,6 +231,11 @@ or one baseline. `make figures` runs it too. A label that has to sit on a grid o
 line can be given an opaque background with `plate=True`. Pages in a sub-directory of `tutorials/` (such as
 `gemm/`) appear in the navigation after the chapter named in
 `TUTORIAL_SECTIONS` in `scripts/build_site.py`.
+
+Every English article has a mirrored Traditional Chinese source under
+`locale/zh-Hant/`. Keep file names, relative links, image paths, code, and
+formulas unchanged. Translate prose and visible labels. A strict build reports
+any missing translation.
 
 ## 9. How Math and Code Are Rendered
 

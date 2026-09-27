@@ -1,7 +1,8 @@
 # GPU Programming Notes
 
-Tutorials on GPU programming, covering CUDA fundamentals and an AMD track on
-how AITER and hipBLASLt build high-performance GEMMs. They come with **tested
+GPU programming tutorials from CUDA fundamentals to production model kernels.
+The advanced paths cover Triton in Quark, Kimi K3, and SGLang, plus AITER,
+FlyDSL, and hipBLASLt on AMD GPUs. They come with **tested
 solutions to every [LeetGPU challenge](https://leetgpu.com/challenges) (101)
 and every [Tensara problem](https://tensara.org/problems) (84)**.
 
@@ -12,7 +13,7 @@ problem, with the full solution source. How to deploy it is covered in
 ## Layout
 
 ```
-tutorials/            concept chapters, organised in five parts (see tutorials/README.md); amd/ holds HIP
+tutorials/            concept chapters, organised in six paths (see tutorials/README.md); amd/ holds HIP
                       example code, gemm/ the GEMM deep-dive pages and programs, examples/ the tested
                       programs of chapters 09-14, figures/ the generated SVG figures
 leetgpu/NNN-slug/     README.md (write-up) + solution.cu (solution.py for PyTorch-only challenges)
@@ -61,11 +62,12 @@ to `main`.
 
 | Part | Chapters | Topic |
 |---|---|---|
-| I · CUDA Foundations | 00–03, 09 | Toolchain, execution model, memory hierarchy, reduction, profiling (Nsight Systems/Compute, rocprof) |
+| I · Foundations | 00–03, 09 | Toolchain, execution model, memory hierarchy, reduction, profiling (Nsight Systems/Compute, rocprof) |
 | II · Parallel Patterns | 10–13 | Warp primitives and cooperative groups, scan (decoupled look-back), convolution and stencils, softmax/LayerNorm/FlashAttention; each with a tested program |
 | III · Matrix Multiplication | 04, 04.1–04.7 | Tiled GEMM, then one page and one tested program per technique: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` |
-| IV · AMD GPUs | 05–07 | CDNA3 & MFMA, AITER's hand-written asm GEMM, hipBLASLt & TensileLite |
-| V · Tools & Publishing | 14, 08 | Triton (vector add, fused softmax, autotuned matmul, FlashAttention), deploying this site (GitHub Pages, static hosts, EPUB/PDF) |
+| IV · Portable Model Kernels | 14–15 | Triton fundamentals, then Quark quantization, Kimi K3 KDA, and SGLang serving patterns |
+| V · AMD Production Kernels | 05–07, 16 | CDNA3 and MFMA, AITER assembly, hipBLASLt/TensileLite, AITER/FlyDSL's K3 MoE path |
+| VI · Publishing | 08 | GitHub Pages, static hosts, EPUB/PDF, bilingual content, and figure conventions |
 
 See [tutorials/](tutorials/README.md).
 

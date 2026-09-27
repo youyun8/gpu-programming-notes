@@ -18,9 +18,10 @@ theme:
   features:
     - navigation.tabs
     - navigation.tabs.sticky
-    - navigation.instant
-    - navigation.instant.progress
     - navigation.tracking
+    - navigation.indexes
+    - navigation.path
+    - navigation.prune
     - navigation.sections
     - navigation.top
     - navigation.footer
@@ -31,7 +32,6 @@ theme:
     - content.code.annotate
     - content.tooltips
     - toc.follow
-    - toc.integrate      # section links live in the left sidebar; no right-hand panel
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -49,6 +49,42 @@ theme:
         name: Switch to light mode
 
 plugins:
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh-Hant
+          name: 繁體中文
+          build: true
+          nav_translations:
+            Home: 首頁
+            Tutorials: 教學
+            Part I · Foundations: 第一部 · 基礎
+            Part II · Parallel Patterns: 第二部 · 平行運算模式
+            Part III · Matrix Multiplication: 第三部 · 矩陣乘法
+            Part IV · Portable Model Kernels: 第四部 · 可攜式模型 Kernel
+            Part V · AMD Production Kernels: 第五部 · AMD 生產環境 Kernel
+            Part VI · Publishing: 第六部 · 發布
+            LeetGPU: LeetGPU
+            Tensara: Tensara
+            Topics: 主題
+            Tools: 工具
+            Example Code: 範例程式
+            Chapter 14 · Triton Fundamentals: 第 14 章 · Triton 基礎
+            Chapter 15 · Triton Model Kernels: 第 15 章 · Triton 模型 Kernel
+            Chapters 09–13 · CUDA Examples: 第 09–13 章 · CUDA 範例
+            Chapter 04.x · GEMM Programs: 第 04.x 章 · GEMM 程式
+            AMD Examples: AMD 範例
+            Other Examples: 其他範例
+            Easy: 初階
+            Medium: 中階
+            Hard: 進階
   - search
   - tags
 
@@ -94,6 +130,7 @@ extra_javascript:
   - assets/vendor/katex/katex.min.js
   - assets/vendor/katex/contrib/auto-render.min.js
   - assets/javascripts/katex.js
+  - assets/javascripts/reading-controls.js
 
 validation:
   links:

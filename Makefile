@@ -41,9 +41,10 @@ gemm-test:
 examples-test:
 	@set -e; for f in $(EXAMPLES); do $(CUEMU_RUN) $$f; done
 
-# The Triton kernels of chapter 14 (needs torch and triton; uses the interpreter without a GPU).
+# The Triton kernels of chapters 14-15 (needs torch and triton; uses the interpreter without a GPU).
 triton-test:
 	cd tutorials/examples/14-triton && python3 test_kernels.py
+	cd tutorials/examples/15-triton-k3 && python3 test_model_kernels.py
 
 # Regenerate the tutorial figures (tutorials/figures/*.svg) from scripts/figures/
 figures:
