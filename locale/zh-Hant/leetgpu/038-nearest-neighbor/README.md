@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/nearest-neighbor)
 
-## 問題
+## 題意
 
 對三維空間中的每個 $N$ 個點，找出距離最近的*另一個*點之索引
 （$1 \le N \le 10^5$，座標範圍為 $[-1000, 1000]$；
@@ -20,7 +20,13 @@ status: solved
 與 PyTorch 的 `argmin` 相同。因此，本題不只是分塊練習，也是在處理
 浮點運算的可重現性。
 
-## 公式
+## 圖解
+
+![最近鄰：每個點掃描所有其他點，保留最小的距離](figure.svg)
+
+每個箭頭從一個點指向離它最近的另一點；互為最近鄰時會出現雙向箭頭。結果必須與 PyTorch 逐位元一致，包括平手的情況。
+
+## 數學表述
 
 $$
 \operatorname{nn}(i) = \arg\min_{j \ne i} d_{ij}, \qquad
@@ -50,7 +56,7 @@ $\Delta x^2 + \Delta y^2$ 合併成 FMA；如此只會捨入一次，而非兩�
 argmin 就可能翻轉。核心函式使用永遠不會合併的 `__fsub_rn`、
 `__fmul_rn` 與 `__fadd_rn`。
 
-## 方法
+## 解題思路
 
 - 每個查詢點 $i$ 使用一個執行緒（暫存器保存 $x_i, y_i, z_i$、
   最短距離與最佳索引）。
@@ -91,7 +97,7 @@ $$
 所有 LeetGPU 測試案例均在 [cuemu](../../tools/cuemu/README.md) 中完全相符，
 包括重複的點與 $N = 1, 2$。
 
-## 相關內容
+## 延伸閱讀
 
 - [多代理模擬](../014-multi-agent-sim/)（相同的分塊方式）、
   [K-Means](../020-kmeans-clustering/)。

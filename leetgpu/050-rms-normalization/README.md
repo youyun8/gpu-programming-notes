@@ -20,6 +20,14 @@ $N = 10^5$; tolerance `1e-5`). Unlike LayerNorm, RMSNorm does not subtract
 the mean. It is the normalisation used in LLaMA-style transformers (there
 with a per-feature $\gamma$ and no $\beta$).
 
+## Visual Overview
+
+![RMS normalisation of one vector: a global reduction, then an elementwise pass](figure.svg)
+
+All inputs feed a single statistic, the RMS; every output then uses that same
+number. This two-phase structure (reduce, then broadcast) is the heart of
+every normalisation kernel.
+
 ## Formulation
 
 $$

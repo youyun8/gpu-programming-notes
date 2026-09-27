@@ -20,6 +20,14 @@ $\lvert y_i \rvert \le 10^4$; benchmark $n = 10^7$; tolerance `1e-2`). The
 random sampling is already done, so the GPU work is a mean. The page also
 covers why the estimator works and how accurate it is.
 
+## Visual Overview
+
+![Monte Carlo integration: (b − a) times the mean of the sampled function values](figure.svg)
+
+The shaded area is the integral. The orange samples are the given values yᵢ =
+f(xᵢ); their mean is the green line, and the estimate is the rectangle of that
+height over [a, b].
+
 ## Formulation
 
 $$

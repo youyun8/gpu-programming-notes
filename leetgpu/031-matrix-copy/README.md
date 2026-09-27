@@ -19,6 +19,14 @@ benchmark $N = 4096$). There is nothing to compute. The problem measures how
 close a kernel gets to the **peak copy bandwidth** of the GPU, which is the
 ceiling for every memory-bound problem on this site.
 
+## Visual Overview
+
+![Matrix copy at peak bandwidth: 16-byte vector loads and stores, fully coalesced](figure.svg)
+
+Each thread moves one float4 (four cells of the same shade). A warp therefore
+moves 512 contiguous bytes per instruction, which is as close to the copy
+bandwidth of the GPU as a kernel gets.
+
 ## Formulation
 
 $$

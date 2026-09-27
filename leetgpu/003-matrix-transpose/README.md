@@ -21,6 +21,14 @@ involved at all. The whole problem is about moving memory efficiently, which
 makes it the textbook example of **coalescing** and **shared-memory bank
 conflicts**.
 
+## Visual Overview
+
+![Transpose through a shared-memory tile: coalesced reads and coalesced writes](figure.svg)
+
+Follow row 1 (dark blue): it is read as a contiguous row, stored in the shared
+tile, and written out as row 1 of the output (dark green). The extra grey
+column is the padding that removes bank conflicts.
+
 ## Formulation
 
 $$

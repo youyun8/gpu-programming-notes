@@ -20,6 +20,14 @@ attend to keys $j \le i$, as in every decoder-only language model during
 training or prefill. The mask removes about half of the work, and a good
 kernel skips it instead of computing and discarding it.
 
+## Visual Overview
+
+![Causal attention: query i may only look at keys j ≤ i](figure.svg)
+
+Only the lower triangle of the score matrix exists. Row 6 (green) mixes keys 0
+… 6; tiles that lie entirely above the diagonal are skipped, which halves the
+work.
+
 ## Formulation
 
 $$

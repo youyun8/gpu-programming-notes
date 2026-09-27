@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目敘述](https://tensara.org/problems/swish)
 
-## 問題
+## 題意
 
 對 $M\times N$ 的 float32 矩陣逐元素套用 Swish（SiLU）；參考公式為
 `x * torch.sigmoid(x)`。測試矩陣從 $4096\times4096$ 到
 $8192\times8192$（最多 6,700 萬個元素）。檢查條件為
 `rtol = 1e-4`、`atol = 4e-5`。
 
-## 公式
+## 圖解
+
+![矩陣上的 Swish（SiLU）：x · σ(x)](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。紅點標示最小值 ≈ −0.2785。
+
+## 數學表述
 
 $$
 C_{ij} = x\,\sigma(x) = \frac{x}{1 + e^{-x}}, \qquad x = A_{ij}
@@ -42,7 +48,7 @@ $$
 |---|---|
 | $x$ | Swish 達到最小值時的輸入 |
 
-## 方法
+## 解題思路
 
 所有 Tensara 逐元素問題都使用同一種核心結構：
 
@@ -74,7 +80,7 @@ $$
 
 對 $8192\times8192$ 而言，$Q = 537$ MB；在 2 TB/s 時約為 0.27 ms。
 
-## 注意事項
+## 常見陷阱
 
 - **很大的負 $x$**：$e^{-x} = \infty$ 會得到 $x/\infty = -0$，
   這是正確的極限。
@@ -86,7 +92,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [Sigmoid](../sigmoid/)、[矩陣乘法 + Swish](../matmul-swish/)、
   LeetGPU [SiLU](../../leetgpu/052-silu/)。

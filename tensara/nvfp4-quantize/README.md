@@ -20,6 +20,13 @@ elements in the swizzled 128×4 layout, following FlashInfer's
 `nvfp4_quantize`. The check (after dequantizing both sides) is
 `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![NVFP4 quantisation: an E4M3 scale per 16 values on top of a global factor g](figure.svg)
+
+The block scale is g·α/6 rounded to E4M3 (1.75 here). The elements are then
+divided by that rounded scale (times g) and rounded to E2M1.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an

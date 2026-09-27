@@ -46,8 +46,9 @@ TUTORIAL_PARTS = [
     ("Part VII · Publishing", ("08-",)),
 ]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
-# A figure is an image alone on its line. SVG is inlined so its palette follows the theme.
-FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.(?:svg|png|jpe?g|webp))\)[ \t]*$", re.M | re.I)
+# A figure is an image alone on its line (its caption may contain balanced brackets, e.g. A[i]).
+# SVG is inlined so its palette follows the theme.
+FIGURE_RE = re.compile(r"^!\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\(([^)\s]+\.(?:svg|png|jpe?g|webp))\)[ \t]*$", re.M | re.I)
 
 
 def parse_front_matter(text: str):

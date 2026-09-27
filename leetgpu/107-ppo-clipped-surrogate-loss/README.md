@@ -19,6 +19,14 @@ used in RLHF for LLMs. Given per-token advantages and the log-probabilities
 of the sampled tokens under the current and the old policy (all $B\times S$
 float32), return the scalar loss (tolerance `1e-4`).
 
+## Visual Overview
+
+![PPO's clipped objective: no extra reward for moving the ratio beyond 1 ± ε](figure.svg)
+
+For a positive advantage (green) the objective stops growing once r > 1 + ε;
+for a negative advantage (red) it stops improving once r < 1 − ε. The loss is
+minus the mean over all tokens.
+
 ## Formulation
 
 $$

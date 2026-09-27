@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/layer-normalization)
 
-## 問題
+## 題意
 
 對 $N\times C$ float32 矩陣執行 LayerNorm 前向傳播：每列（樣本或權杖）會在其 $C$ 個特徵上正規化，再以每個特徵的權重與偏置進行縮放和平移（$N \le 65\,536$、$C \le 4096$、$\varepsilon = 10^{-5}$；效能測試為 $N = 65\,536$、$C = 512$；容許誤差 `1e-4`）。
 
-## 公式
+## 圖解
+
+![LayerNorm：每一列在其 C 個特徵上計算統計量，再套用逐特徵的仿射轉換](figure.svg)
+
+標示的列代表一個 token。它的平均與變異數只來自自己的 C 個值，而逐特徵的 w 與 b 由所有列共用。
+
+## 數學表述
 
 $$
 \mu_i = \frac1C\sum_{j=0}^{C-1} x_{ij}, \qquad
@@ -37,7 +43,7 @@ $$
 
 當 $\lvert\mu\rvert \gg \sigma$ 時，單次走訪公式 $\sigma^2 = E[x^2] - \mu^2$ 會將兩個很大且極為接近的數相減。相對誤差約為 $u\cdot\mu^2/\sigma^2$，其中 $u$ 是 float32 的單位捨入誤差。若輸入最大為 100 且分布範圍很小，這會在 float32 中徹底破壞結果。中心化形式 $\frac1C\sum(x - \mu)^2$ 則沒有消去誤差。
 
-## 方法
+## 解題思路
 
 **每列使用一個 warp**（每個含 256 個執行緒的區塊處理 8 列）：
 
@@ -61,7 +67,7 @@ $$
 
 效能測試：268 MB，亦即在 2 TB/s 下約為 134 µs。
 
-## 常見問題
+## 常見陷阱
 
 - 此處若使用**無偏變異數**（$C - 1$）會出錯。
 - 當 $C$ **非常大**時（例如 16K 以上），每列一個 warp 將無法讓資料常駐 L1，而且每列的平行度太低。此時應改為每列一個區塊。
@@ -70,6 +76,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-4` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，包括 $C = 1$（輸出 = 偏置）。
 
-## 相關內容
+## 延伸閱讀
 
 - [RMS 正規化](../050-rms-normalization/)、[群組正規化](../105-group-normalization/)、[批次正規化](../040-batch-normalization/)、[權杖嵌入](../106-token-embedding-layer/)。Tensara [層正規化](../../tensara/layer-norm/)。

@@ -20,6 +20,14 @@ stability. The tolerance is `1e-5`. Softmax turns arbitrary scores into a
 probability distribution. It is the heart of attention and of every
 classification head.
 
+## Visual Overview
+
+![Softmax with the maximum subtracted: every exponent is at most 0, so nothing overflows](figure.svg)
+
+Read the rows from top to bottom: subtract the maximum m, exponentiate, then
+divide by the sum s. The largest input always becomes e⁰ = 1, which is why the
+computation cannot overflow.
+
 ## Formulation
 
 $$

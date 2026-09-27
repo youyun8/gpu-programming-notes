@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/linear-self-attention)
 
-## 問題
+## 題意
 
 使用特徵映射 $\phi(x) = \operatorname{ELU}(x) + 1$ 的線性注意力
 （Katharopoulos 等人，〈Transformers are RNNs〉），作用於
@@ -22,7 +22,13 @@ $Q, K, V \in \mathbb R^{M\times d}$（$M \le 10^4$、$d \le 128$，
 $\phi(\mathbf q)\cdot\phi(\mathbf k)$，可利用**結合律**把
 $O(M^2 d)$ 注意力降為 $O(Md^2)$。
 
-## 公式
+## 圖解
+
+![線性注意力：利用結合律，把 M × M 的乘積變成 d × d 的狀態](figure.svg)
+
+先算 (φ(Q)φ(K)ᵀ)V 會產生 M × M 矩陣；改算 φ(Q)(φ(K)ᵀV) 則只需要 d × d 的狀態 S 與向量 z。下排是 kernel 採用的順序，右上小圖是特徵映射 φ。
+
+## 數學表述
 
 $$
 O_{i,:} = \frac{\phi(\mathbf q_i)^{\mathsf T}\, S}{\phi(\mathbf q_i)^{\mathsf T}\, \mathbf z}, \qquad
@@ -51,7 +57,7 @@ $\sum_j \frac{\operatorname{sim}(\mathbf q_i, \mathbf k_j)}{\sum_{j'}\operatorna
 $\sum_j \phi(\mathbf q_i)^{\mathsf T}\phi(\mathbf k_j)\mathbf v_j^{\mathsf T} = \phi(\mathbf q_i)^{\mathsf T}\bigl(\sum_j \phi(\mathbf k_j)\mathbf v_j^{\mathsf T}\bigr)$。
 內部總和只需計算一次，所有查詢都可共用。
 
-## 方法
+## 解題思路
 
 1. **`kvState`**：$S_{ab}$ 的每個項目各使用一個執行緒（另有 $d$ 個執行緒處理
    $z_a$）。每個執行緒走訪所有 $M$ 列，以 float64 累加
@@ -81,7 +87,7 @@ $$
 $d^2 + d \approx 16$K 個執行緒，每個都要走訪 $10^4$ 列。分割 M
 的歸約（每個區塊建立部分狀態，再加總）可提高平行度。
 
-## 注意事項
+## 常見陷阱
 
 - **$\phi$ 必須為正值**，如此分母才會是正值。ELU + 1 在所有位置皆為正值。
 - **$e^{x}$ 不可能溢位**，因為指數分支只會在 $x \le 0$ 時執行。
@@ -92,7 +98,7 @@ $d^2 + d \approx 16$K 個執行緒，每個都要走訪 $10^4$ 列。分割 M
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆以
 `1e-4` 通過，包括 $M = 1$ 與 $d = 1$。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax 注意力](../006-softmax-attention/)、[SSM 選擇性掃描](../094-ssm-selective-scan/)
   （另一種線性時間序列模型）、[線性遞迴](../082-linear-recurrence/)。

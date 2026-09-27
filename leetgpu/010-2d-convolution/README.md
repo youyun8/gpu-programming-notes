@@ -21,6 +21,14 @@ $(R - K_r + 1) \times (C - K_c + 1)$ and the tolerance is `1e-5`. This is the
 2-D version of the halo-tiling idea from [1D Convolution](../009-1d-convolution/),
 and the basic operation behind blurs, edge detectors and CNN layers.
 
+## Visual Overview
+
+![Valid 2-D convolution: each output pixel is a K × K window of the input](figure.svg)
+
+The red square is the 3 × 3 window that produces the highlighted output pixel.
+Sliding the window by one pixel reuses six of its nine inputs, so a block
+stages its tile plus a halo in shared memory.
+
 ## Formulation
 
 $$

@@ -21,6 +21,14 @@ Prim's algorithm and returns $+\infty$ for a disconnected graph (the
 statement says $-1$; the reference wins). The check is `rtol = 1e-4`,
 `atol = 1e-3`.
 
+## Visual Overview
+
+![Minimum spanning tree by Prim's algorithm: repeatedly add the cheapest edge leaving the tree](figure.svg)
+
+The green edges form the minimum spanning tree (total weight 9). Each step of
+Prim's algorithm is an argmin over the current key values followed by an
+update from the new vertex's row.
+
 ## Formulation
 
 $$

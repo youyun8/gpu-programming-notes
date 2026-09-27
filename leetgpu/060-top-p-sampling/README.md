@@ -22,6 +22,14 @@ seed. It is the default decoding strategy of most LLM APIs. The textbook
 implementation sorts the whole vocabulary. This solution **finds the nucleus
 without sorting**.
 
+## Visual Overview
+
+![Top-p (nucleus) sampling: keep the most likely tokens until their mass reaches p](figure.svg)
+
+Tokens are shown in decreasing probability. With p = 0.7 the first four tokens
+(green) are kept because their cumulative mass 0.77 first reaches p; the
+sample is drawn from them after renormalising.
+
 ## Formulation
 
 $$

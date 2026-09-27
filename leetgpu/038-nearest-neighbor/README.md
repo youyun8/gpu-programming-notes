@@ -20,6 +20,14 @@ The check is **exact**: every returned index must equal PyTorch's `argmin`.
 That makes this a lesson in floating-point reproducibility as much as in
 tiling.
 
+## Visual Overview
+
+![Nearest neighbour: every point scans all others and keeps the smallest distance](figure.svg)
+
+Each arrow points from a point to its nearest other point. Mutual nearest
+neighbours show a double arrow; the result must match PyTorch bit for bit,
+including ties.
+
 ## Formulation
 
 $$

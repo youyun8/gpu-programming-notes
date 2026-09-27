@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/token-embedding-layer)
 
-## 問題
+## 題意
 
 BERT 類模型的輸入層：對 $B\times T$ 個權杖中的每一個，擷取其權杖嵌入與位置嵌入，兩者相加後，再套用具有可學習 $\gamma, \beta$ 的 LayerNorm（$B \le 64$、$T \le 1024$、$V \le 50\,000$、$P \le 4096$、$D \le 1024$；效能測試為 $B = 32$、$T = 512$、$D = 768$；容許誤差 `1e-4`）。
 
-## 公式
+## 圖解
+
+![詞嵌入層：從兩張表各取一列相加，再對總和做 LayerNorm](figure.svg)
+
+token 編號 3 從詞嵌入表取出一列，位置 1 從位置嵌入表取出一列。兩者相加後做 LayerNorm，只寫出一次。
+
+## 數學表述
 
 $$
 \mathbf s_{b,t} = E_T[\tau_{b,t}] + E_P[\pi_t] \in \mathbb R^{D}, \qquad
@@ -42,7 +48,7 @@ $$
 | $\gamma_d,\ \beta_d$ | LayerNorm 的縮放與平移 |
 | $y_{b,t,d}$ | 輸出，形狀為 $(B, T, D)$ |
 
-## 方法
+## 解題思路
 
 **每個權杖使用一個 warp**，並將整列保存在暫存器中：
 
@@ -66,7 +72,7 @@ $$
 
 效能測試：$B T D = 12.6$M 個元素，因此約有 100–150 MB 流量，耗時約 60 µs。核心受記憶體頻寬限制。
 
-## 常見問題
+## 常見陷阱
 
 - **位置 ID 由整個批次共用**：索引應為 `position_ids[t]`，而非 `[b, t]`。
 - 若使用**無偏變異數**（除以 $D-1$），將無法符合容許誤差。
@@ -76,6 +82,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-4` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，包括 $D < 32$ 與 $D = 1024$。
 
-## 相關內容
+## 延伸閱讀
 
 - [層正規化](../113-layer-normalization/)、[GPT-2 區塊](../074-gpt2-block/)、[ViT 圖塊嵌入](../118-vit-patch-embedding/)。

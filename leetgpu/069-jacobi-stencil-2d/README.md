@@ -21,6 +21,14 @@ Jacobi iterations solve Laplace/Poisson equations (heat diffusion,
 electrostatics). The stencil is the canonical **memory-bound, high-reuse**
 access pattern.
 
+## Visual Overview
+
+![Jacobi 5-point stencil: each interior cell becomes the mean of its 4 neighbours](figure.svg)
+
+The four blue cells are the neighbours of the highlighted output cell; the
+centre itself is not used. The output is a separate grid, so no cell reads a
+value that was already updated.
+
 ## Formulation
 
 $$

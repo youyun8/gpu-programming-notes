@@ -18,6 +18,13 @@ Multiply an $n\times n$ float32 matrix by a scalar $s$ ($n$ = 8192 or
 9216, $s \in \{0.1, 0.2, -0.3, 0.4, -0.5\}$). The check is `rtol = 1e-4`,
 `atol = 7e-6`.
 
+## Visual Overview
+
+![Matrix × scalar: every element is multiplied by the same s (s = −0.3 here)](figure.svg)
+
+The matrix is treated as one flat array; each thread scales its elements by
+the scalar, which stays in a register.
+
 ## Formulation
 
 $$

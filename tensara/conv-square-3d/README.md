@@ -19,6 +19,13 @@ a $K\times K\times K$ kernel ($K$ odd, $3 \le K \le 11$) and zero padding
 $K/2$. Volumes range from $32^3$ to $512^3$. The check is `rtol = 1e-3`,
 `atol = 1e-2`.
 
+## Visual Overview
+
+!["Same" 3-D convolution: a K³ box around each voxel, zero outside the volume](figure.svg)
+
+For output voxel (0, 0, 0) the 3 × 3 × 3 box starts one plane, one row and one
+column outside the volume; all red cells read 0.
+
 ## Formulation
 
 $$

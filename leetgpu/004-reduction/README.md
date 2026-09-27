@@ -21,6 +21,14 @@ Reduction is the canonical "many inputs → one output" pattern. Softmax, norms,
 losses, dot products and every `*-dim` problem on this site reuse its
 building blocks.
 
+## Visual Overview
+
+![Parallel reduction: partial sums combined as a balanced tree](figure.svg)
+
+The top row holds per-thread partial sums. Each level halves the number of
+values, first inside a warp with shuffles, then across warps through shared
+memory, and finally across blocks.
+
 ## Formulation
 
 $$

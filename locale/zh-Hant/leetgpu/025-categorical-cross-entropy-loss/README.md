@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目敘述](https://leetgpu.com/challenges/categorical-cross-entropy-loss)
 
-## 問題
+## 題意
 
 計算一個批次的平均類別交叉熵：`logits` 是 $N \times C$ 的 float32
 矩陣，`true_labels` 則存放 $N$ 個類別索引
@@ -21,7 +21,13 @@ status: solved
 數值運算的重點是 **log-sum-exp**，絕不能直接以
 `log(sum(exp(z)))` 這種方式計算。
 
-## 公式
+## 圖解
+
+![交叉熵：每一列取 logits 的 log-sum-exp，再減去正確類別的 logit](figure.svg)
+
+每一列是一個樣本，紅色格是其正確類別。該列的損失等於 log-sum-exp 減去紅格的 logit；整批的損失是右側三個數值的平均。
+
+## 數學表述
 
 $$
 \mathcal L = \frac{1}{N}\sum_{j=0}^{N-1} \ell_j, \qquad
@@ -48,7 +54,7 @@ LSE 使用 [Softmax](../005-softmax/) 的線上 $(m, s)$ 配對合併，
 $(m_1,s_1)\oplus(m_2,s_2) = (m, s_1e^{m_1-m} + s_2e^{m_2-m})$，
 其中 $\operatorname{LSE} = m + \log s$。
 
-## 方法
+## 解題思路
 
 1. **`sampleLosses`**（≤ 1024 個區塊 × 8 個 warp）。每個樣本使用
    **一個 warp**（以網格跨步方式走訪各列）：
@@ -82,7 +88,7 @@ $$
 20 µs。每個 logit 的 `expf`（各約 20 條指令）使其接近平衡點，
 但在大型 GPU 上仍大致受限於記憶體。
 
-## 常見問題
+## 常見陷阱
 
 - **直接計算 log-sum-exp。** $e^{10}$ 在此沒有問題，但相同程式碼在
   logits > 88 時會溢位。一律要先減去最大值。
@@ -95,7 +101,7 @@ $$
 所有 LeetGPU 測試案例都已在 [cuemu](../../tools/cuemu/README.md)
 以 `1e-5` 容許誤差通過，包括 $C = 2$ 與 $C = 1000$。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax](../005-softmax/)、Tensara
   [Log-Softmax](../../tensara/log-softmax/)、

@@ -22,6 +22,14 @@ $[\text{batch}, 11, 10]$ (tolerance `1e-2`). The model is trivial. The
 lesson is how inference is organised: **KV caching** and only computing the
 last position.
 
+## Visual Overview
+
+![Autoregressive decoding with a KV cache: prefill once, then one position per step](figure.svg)
+
+The prompt (blue) is processed once and its keys and values are cached. Each
+decode step (row of boxes) only computes the newest position, attends to the
+cache, and appends its own K and V.
+
 ## Formulation
 
 Model (one layer, pre-norm, $d = 2$, vocabulary $\{0..9\}$, tied embeddings):

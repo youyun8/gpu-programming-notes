@@ -18,6 +18,14 @@ Multiply two upper-triangular $N\times N$ FP32 matrices ($N$ = 2048 …
 8192). The reference applies `torch.triu` to both and does a dense
 matmul. The check is `rtol = 1e-4`, `atol = 1e-3`.
 
+## Visual Overview
+
+![Upper-triangular product: each tile only needs r₀ ≤ k < c₀ + 64](figure.svg)
+
+Grey cells are the zero lower triangles. Tiles below the diagonal are written
+as zeros, and every other tile only loops over the k where both factors can be
+non-zero.
+
 ## Formulation
 
 $$

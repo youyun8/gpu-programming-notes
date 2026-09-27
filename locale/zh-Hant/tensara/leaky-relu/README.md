@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目說明](https://tensara.org/problems/leaky-relu)
 
-## 問題
+## 題意
 
 對 $M\times N$ 的 float32 矩陣（$4096\times4096$ 與
 $6144\times4096$）逐元素套用執行時斜率 $\alpha$（測試中為 0.01 … 0.2）的
 Leaky ReLU，結果須與 `F.leaky_relu(x, alpha)` 一致。檢查條件為
 `rtol = 1e-4`、`atol = 1e-6`。
 
-## 公式
+## 圖解
+
+![斜率 α 於執行期給定的 Leaky ReLU（圖示 α = 0.2，即測試中的最大值）](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。α = 0.2 時，x = −4 對應到 −0.8（紅點）。
+
+## 數學表述
 
 $$
 C_{ij} = \begin{cases} x, & x > 0 \\ \alpha x, & x \le 0 \end{cases} = \max(x, 0) + \alpha\,\min(x, 0), \qquad x = A_{ij}
@@ -32,7 +38,7 @@ $$
 | $x$ | 一個輸入元素 $A_{ij}$ |
 | $\alpha$ | 負值區段的斜率，$0 < \alpha < 1$ |
 
-## 方法
+## 解題思路
 
 所有 Tensara 的逐元素問題都共用同一種核心形態：
 
@@ -63,7 +69,7 @@ $$
 
 對 $6144\times4096$ 而言：$Q = 201$ MB，在 2 TB/s 下約為 0.1 ms。
 
-## 注意事項
+## 常見陷阱
 
 - **引數順序**：簽章為 `(input, alpha, output, n, m)`，$\alpha$ 位於兩個指標之間。
 - **嚴格的 `atol = 1e-6`**：結果必須正好是 fp32 的 $\alpha x$，因此不要用
@@ -74,6 +80,6 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [ReLU](../relu/)、[ELU](../elu/)、LeetGPU [Leaky ReLU](../../leetgpu/023-leaky-relu/)。

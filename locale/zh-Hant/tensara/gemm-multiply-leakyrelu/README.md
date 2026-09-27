@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目說明](https://tensara.org/problems/gemm-multiply-leakyrelu)
 
-## 問題
+## 題意
 
 計算 $O = \operatorname{LeakyReLU}_\alpha\bigl((AB)\odot C\bigr)$，其中
 $A$ 的大小為 $M\times K$、$B$ 為 $K\times N$，逐元素乘數 $C$ 為
 $M\times N$（各維大小為 512 … 1024）。檢查條件為
 `rtol = 3e-4`、`atol = 1e-4`。
 
-## 公式
+## 圖解
+
+![GEMM、逐元素相乘與 LeakyReLU，全部在暫存器中對分塊完成](figure.svg)
+
+輸出分塊的計算與一般 GEMM 相同；右側方框是 epilogue：先乘上 C 再套用 LeakyReLU，最後只寫出一次。
+
+## 數學表述
 
 $$
 G_{ij} = \sum_{k=0}^{K-1} A_{ik}B_{kj}, \qquad
@@ -37,7 +43,7 @@ $$
 | $\alpha$ | LeakyReLU 斜率 |
 | $O$ | 輸出，$M\times N$ |
 
-## 方法
+## 解題思路
 
 使用共享核心與 epilogue `MulLeakyEpi{C, ld, alpha}`：它從與儲存相同的
 合併存取位置載入 $C_{ij}$，執行乘法並套用斜率。$C$ 恰好讀取一次，
@@ -102,7 +108,7 @@ $$
 $16\times16 = 256$ 個區塊，每個 SM 約分到 2 個；延遲與尾端效應會很
 明顯，使用 split-K 或較小的磚塊可更充分利用 GPU。
 
-## 注意事項
+## 常見陷阱
 
 - **參數順序**：`(A, B, C, alpha, output, M, N, K)`；`alpha` 位於輸入
   和輸出之間。
@@ -113,7 +119,7 @@ $16\times16 = 256$ 個區塊，每個 SM 約分到 2 個；延遲與尾端效應
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [GEMM + ReLU](../gemm-relu/)、[Leaky ReLU](../leaky-relu/)、
   [MatMul + Swish + Scaling](../matmul-swish-scaling/)。

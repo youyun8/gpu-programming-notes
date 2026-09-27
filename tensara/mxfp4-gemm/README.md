@@ -19,6 +19,14 @@ $B$ ($N\times K$) are MXFP4 tensors: packed E2M1 elements with E8M0 scales
 per 32 elements in the swizzled 128×4 layout. The reference is
 `torch._scaled_mm`. The check is `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![MXFP4 GEMM: block-scaled dot products, C = Â B̂ᵀ in FP32](figure.svg)
+
+Along K both rows are split into blocks of 32 elements, each with its own
+scale σ. Inside a block the codes are multiplied directly; the two scales are
+applied once per block.
+
 ## Formulation
 
 $$

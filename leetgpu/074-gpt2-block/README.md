@@ -23,6 +23,14 @@ problem ties together GEMM, LayerNorm, attention and the activation
 function, and shows how **kernel fusion** removes most of the elementwise
 traffic.
 
+## Visual Overview
+
+![GPT-2 block: pre-LayerNorm attention and MLP, each wrapped in a residual add](figure.svg)
+
+Follow the boxes left to right, then continue on the second row. The dashed
+red arcs are the residual connections that add the block's input back after
+attention and after the MLP.
+
 ## Formulation
 
 Pre-LayerNorm residual block with $d = 768$, $H = 12$ heads of $d_h = 64$, and

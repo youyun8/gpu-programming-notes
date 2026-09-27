@@ -20,6 +20,14 @@ GPUs the fastest general-purpose choice for 32-bit keys is **LSD radix
 sort**, which needs no comparisons at all. Its only obstacle, the sign and
 exponent encoding of IEEE floats, is removed with a bit trick.
 
+## Visual Overview
+
+![Sorting floats with LSD radix sort: an order-preserving map from float bits to unsigned keys](figure.svg)
+
+The table maps four floats to unsigned keys: negative values have all bits
+flipped and non-negative values get the sign bit set. The ranks of the keys
+equal the ranks of the floats, so four 8-bit passes sort the data.
+
 ## Formulation
 
 Find a permutation $\pi$ such that

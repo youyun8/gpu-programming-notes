@@ -20,6 +20,14 @@ $P = 3$). It matches `F.avg_pool1d` with its default
 `count_include_pad=True`: padded positions count as zeros, and the divisor is
 always $k$.
 
+## Visual Overview
+
+![1-D average pooling: window k, stride S, zero padding P, and a divisor that is always k](figure.svg)
+
+Output 1 averages the three highlighted inputs. Padded zeros (grey) count in
+the sum and in the divisor, as with PyTorch's default
+`count_include_pad=True`.
+
 ## Formulation
 
 $$

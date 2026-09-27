@@ -20,6 +20,13 @@ $8192\times4096$). The reference literally builds `torch.diag(A) @ B`, an
 $N^3$-flop GEMM, but the result is just every row of $B$ scaled by one
 number. The check is `rtol = 1e-4`, `atol = 3e-5`.
 
+## Visual Overview
+
+![diag(a) · B: never build the N × N diagonal matrix, just scale row i of B by aᵢ](figure.svg)
+
+Each row of B is multiplied by one number from a, producing the matching row
+of C. The whole problem is a streaming elementwise kernel.
+
 ## Formulation
 
 $$

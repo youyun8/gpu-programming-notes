@@ -13,11 +13,17 @@ cuemu_max_elements: 16777216
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/diffusion-transformer-block)
 
-## 問題
+## 題意
 
 對一批圖塊權杖序列 $x \in \mathbb R^{B\times S\times 512}$ 執行一個 **DiT 區塊**（Diffusion Transformer：DiT、Stable Diffusion 3、Flux），並以每個樣本的向量 $c \in \mathbb R^{B\times512}$（時間步 + 類別／文字嵌入）作為條件。封裝的權重緩衝區包含 adaLN、QKV、輸出與 MLP 權重（容許誤差 `1e-3`）。與 LLM 區塊不同，正規化**沒有可學習的仿射參數**。其縮放、平移與殘差**閘門**會依每個樣本從 $c$ 預測（adaLN-Zero），因此批次中的每個樣本都會以不同方式正規化。
 
-## 公式
+## 圖解
+
+![採用 adaLN-Zero 的 DiT 區塊：由條件向量預測縮放、平移與殘差閘門](figure.svg)
+
+第一列對每個樣本只執行一次，產生六個調變向量，分別控制下方兩個 LayerNorm 的 (γ, β) 以及兩條殘差分支的閘門 g。
+
+## 數學表述
 
 調節（每個樣本一次）：
 
@@ -53,7 +59,7 @@ $$
 
 **為何稱為「Zero」。** DiT 會初始化 $W_{\text{ada}}$，使 $\mathbf g_k = 0$。如此每個區塊一開始都是恆等映射，可穩定訓練非常深的擴散 Transformer。
 
-## 方法
+## 解題思路
 
 | # | 核心 | 融合 |
 |---|---|---|
@@ -80,7 +86,7 @@ $$
 
 當 $B = 4$ 且 $S = 1024$（32 × 32 潛在圖塊網格）時：投影約需 25 GFLOP，注意力約需 8.6 GFLOP。GEMM 占主要成本。融合可省去約 10 次逐元素走訪，資料範圍涵蓋 $B\cdot S\cdot 512$ 至寬度 2048 的張量。
 
-## 常見問題
+## 常見陷阱
 
 - **調節順序。** 寬度 3072 的輸出會依序切成 `[shift_msa, scale_msa, gate_msa, shift_mlp, scale_mlp, gate_mlp]`。
 - 使用 **$(1 + \gamma)$，而不是 $\gamma$。** 預測出的縮放值是以 1 為基準的殘差。
@@ -91,6 +97,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-3` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，且大型案例使用提高後的 `cuemu_max_elements`。
 
-## 相關內容
+## 延伸閱讀
 
 - [GPT-2 區塊](../074-gpt2-block/)、[LLaMA 區塊](../093-llama-transformer-block/)、[ViT 圖塊嵌入](../118-vit-patch-embedding/)、[群組正規化](../105-group-normalization/)。

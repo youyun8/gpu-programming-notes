@@ -19,6 +19,13 @@ $k\times k\times k$ window, stride $S$ and zero padding $P$, matching
 `torch.nn.functional.avg_pool3d` (`count_include_pad=True`, so the divisor is
 always $k^3$). The check is `rtol = 2e-4`, `atol = 1e-5`.
 
+## Visual Overview
+
+![3-D average pooling: a k³ box at stride S, and a divisor that is always k³](figure.svg)
+
+The same 3 × 3 square is taken from three consecutive depths; its 27 values
+are averaged into one output voxel.
+
 ## Formulation
 
 $$

@@ -19,6 +19,13 @@ $A$ of size $M\times K$, $B$ of size $K\times N$ and an elementwise
 multiplier $C$ of size $M\times N$ (sizes 512 … 1024). The check is
 `rtol = 3e-4`, `atol = 1e-4`.
 
+## Visual Overview
+
+![GEMM, elementwise multiply and LeakyReLU, all applied to the tile in registers](figure.svg)
+
+The output tile is computed like any GEMM; the box on the right is the
+epilogue that multiplies by C and applies LeakyReLU before the single store.
+
 ## Formulation
 
 $$

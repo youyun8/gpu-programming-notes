@@ -18,6 +18,13 @@ Row-wise log-softmax of an $M\times N$ float32 matrix ($4096^2$ …
 $8192^2$), matching `F.log_softmax(x, dim=1)`. The check is
 `rtol = 1e-4`, `atol = 2e-5`.
 
+## Visual Overview
+
+![Log-softmax per row: subtract the row's log-sum-exp from every entry](figure.svg)
+
+One pass over the row finds its log-sum-exp (purple); the output row is simply
+the input minus that number.
+
 ## Formulation
 
 $$

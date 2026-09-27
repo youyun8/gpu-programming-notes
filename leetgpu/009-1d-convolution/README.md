@@ -22,6 +22,14 @@ With $K$ in the thousands, the naive kernel re-reads every input element $K$
 times from global memory. The fix is **shared-memory tiling of the input
 window**.
 
+## Visual Overview
+
+![Valid 1-D convolution: each output is a weighted sum of K consecutive inputs](figure.svg)
+
+Output y₃ (dark green) combines inputs x₃, x₄ and x₅ (dark blue) with the
+weights w. Neighbouring outputs share most of their inputs, which is what the
+shared-memory tile with a halo exploits.
+
 ## Formulation
 
 $$

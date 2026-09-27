@@ -21,6 +21,14 @@ and must match exactly. Histograms are the textbook case of **write
 contention**: many threads want to increment the same few counters at the
 same time.
 
+## Visual Overview
+
+![Histogram with privatisation: per-block counts in shared memory, then one merge](figure.svg)
+
+Block 0 (blue) and block 1 (orange) each count their half of the input into
+private shared-memory bins. Only the final merge (green) touches global
+memory, once per bin and block.
+
 ## Formulation
 
 $$

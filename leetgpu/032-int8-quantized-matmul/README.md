@@ -21,6 +21,14 @@ $M = 8192$, $N = 4096$, $K = 2048$). The check is **bit-exact**. This is how
 int8 inference works: integer tensor-core matmuls, followed by a float
 "requantisation" epilogue.
 
+## Visual Overview
+
+![INT8 GEMM: exact integer accumulation, then a float requantisation epilogue](figure.svg)
+
+The tiles work exactly like an ordinary GEMM, but in int8 with int32
+accumulation. The box on the right is the epilogue that turns the exact sum
+back into an int8 value, in the reference's operation order.
+
 ## Formulation
 
 $$

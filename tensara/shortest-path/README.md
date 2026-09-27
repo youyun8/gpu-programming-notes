@@ -20,6 +20,14 @@ weights (0 means no edge) and a source $s$. Unreachable vertices get
 $-1$. The reference runs $N - 1$ Bellman–Ford sweeps. The check is
 `rtol = 1e-4`, `atol = 1e-3`.
 
+## Visual Overview
+
+![Single-source shortest paths by Bellman–Ford: relax every edge until nothing changes](figure.svg)
+
+Red edges form the shortest-path tree from source 0, and the table lists the
+final distances. Each sweep relaxes all edges in parallel; the loop stops when
+a sweep changes nothing.
+
 ## Formulation
 
 $$

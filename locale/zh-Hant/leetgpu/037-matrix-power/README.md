@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/matrix-power)
 
-## 問題
+## 題意
 
 對一個 $N \times N$ float32 矩陣計算 $A^P$
 （$1 \le N \le 1024$、$1 \le P \le 20$、$\lvert A_{ij}\rvert \le 10$；
@@ -21,7 +21,13 @@ $P - 1$ 次矩陣乘法。**平方求冪法**只需 $O(\log P)$ 次。乘法順�
 影響 float32 的捨入結果，因此本方法選用與 `torch.linalg.matrix_power`
 相同的順序。
 
-## 公式
+## 圖解
+
+![以反覆平方求矩陣冪：A²⁰ 只需 5 次 GEMM，而非 19 次](figure.svg)
+
+反覆平方得到 A、A²、A⁴、A⁸、A¹⁶。20 的二進位 10100₂ 選出 A⁴ 與 A¹⁶（綠色），兩者相乘即為 A²⁰。
+
+## 數學表述
 
 將 $P$ 寫成二進位：$P = \sum_{j} b_j 2^j$，其中 $b_j \in \{0, 1\}$。則
 
@@ -62,7 +68,7 @@ $A^{20}$ 的動態範圍非常大，採用不同的結合順序會讓相對差�
 | 3 | $(A \cdot A)\cdot A$ |
 | ≥ 4 | 從最低有效位元開始走訪。第一個位元之後執行 $Z \leftarrow Z^2$。遇到設為 1 的位元時，執行 $\text{res} \leftarrow \text{res}\cdot Z$（第一個設為 1 的位元直接複製 $Z$） |
 
-## 方法
+## 解題思路
 
 - 每次乘法都使用[矩陣乘法](../002-matrix-multiplication/)中的
   64 × 64 暫存器分塊 SGEMM；網格大小為 $\lceil N/64\rceil^2$，
@@ -101,6 +107,6 @@ $$
 [cuemu](../../tools/cuemu/README.md) 通過，涵蓋 $P = 1..20$，
 包括 $P \le 3$ 的特殊情況。
 
-## 相關內容
+## 延伸閱讀
 
 - [矩陣乘法](../002-matrix-multiplication/)、Tensara [矩陣冪](../../tensara/matrix-power/)。

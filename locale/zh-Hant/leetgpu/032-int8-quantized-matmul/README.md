@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目敘述](https://leetgpu.com/challenges/int8-quantized-matmul)
 
-## 問題
+## 題意
 
 計算量化矩陣乘法。$A$（$M\times K$）與 $B$（$K \times N$）是 int8，
 縮放係數為 $s_A, s_B$，零點為 $z_A, z_B$。int8 輸出 $C$
@@ -21,7 +21,13 @@ status: solved
 $K = 2048$）。檢查要求**逐位元完全相同**。int8 推論就是這樣運作：
 先執行整數張量核心矩陣乘法，再於 float「再量化」收尾階段完成轉換。
 
-## 公式
+## 圖解
+
+![INT8 GEMM：以整數精確累加，再以浮點 epilogue 重新量化](figure.svg)
+
+分塊流程與一般 GEMM 相同，只是改用 int8 輸入、int32 累加。右側方框是 epilogue：依照參考實作的運算順序，把精確的整數和轉回 int8。
+
+## 數學表述
 
 $$
 C_{ij} = \operatorname{clamp}\!\Bigl(\operatorname{rne}\bigl(\operatorname{fl}\bigl(\operatorname{fl}(\operatorname{fl}(S_{ij}\, s_A)\, s_B) / s_C\bigr)\bigr) + z_C,\ -128,\ 127\Bigr),
@@ -59,7 +65,7 @@ $$
 $\lvert P\rvert \le 4096 \cdot 128^2 \approx 6.7\times10^7 < 2^{31}$，
 不會發生溢位。
 
-## 方法
+## 解題思路
 
 1. **`rowSums`**（每列一個 warp，使用 shuffle 歸約）與
    **`colSums`**（每欄一個執行緒，各欄之間合併存取）
@@ -101,7 +107,7 @@ $$
 int8 將位元組數減半，並讓張量核心速率加倍，這正是量化推論快速的原因。
 採用同步暫存的 64 × 64 分塊只能達到峰值的一部分。
 
-## 常見問題
+## 常見陷阱
 
 - **捨入模式。** `roundf` 會在平手時向遠離零的方向捨入，
   `torch.round` 則在平手時取偶數。`rintf` 才符合參考實作。
@@ -116,7 +122,7 @@ int8 將位元組數減半，並讓張量核心速率加倍，這正是量化推
 通過逐位元精確檢查。模擬器會模擬 int8 WMMA 及其對齊規則。
 測試涵蓋非 16 倍數的形狀與極端零點。
 
-## 相關內容
+## 延伸閱讀
 
 - [GEMM（fp16）](../022-gemm/)、
   [INT4 矩陣乘法](../081-int4-matmul/)、

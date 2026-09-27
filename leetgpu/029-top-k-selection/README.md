@@ -21,6 +21,14 @@ be $O(N\log N)$ or 4+ radix passes of scatter traffic, even though only 100
 values are needed. **Radix select** finds the $k$-th largest value with a few
 read-only histogram passes. Only the survivors are then sorted.
 
+## Visual Overview
+
+![Top-k by radix select: find the k-th largest value τ, then keep everything above it](figure.svg)
+
+With k = 4 the threshold τ is the 4th largest value (dashed line). Green bars
+are strictly larger than τ, orange bars equal τ and fill the remaining slots;
+only these survivors are sorted.
+
 ## Formulation
 
 Let $x_{(0)} \ge x_{(1)} \ge \dots \ge x_{(N-1)}$ be the input sorted in

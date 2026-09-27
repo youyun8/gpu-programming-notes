@@ -20,6 +20,14 @@ elements, the scales in the **swizzled 128×4 layout** produced by
 `to_mx(..., is_swizzled_scales=True)`. The reference is
 `torch._scaled_mm`. The check is `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![MXFP8 GEMM: E4M3 blocks of 32 with power-of-two scales, C = Â B̂ᵀ](figure.svg)
+
+The picture is the same as for MXFP4, with E4M3 elements: block products run
+on low-precision tensor cores and each block contributes σᴬ σᴮ times its
+partial sum.
+
 ## Formulation
 
 $$

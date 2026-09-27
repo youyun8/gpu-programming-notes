@@ -20,6 +20,14 @@ benchmark $N = 5\times10^4$). The result must be exact. The sequential
 sliding window is $O(N)$ but serial. The parallel formulation uses **prefix
 sums**.
 
+## Visual Overview
+
+![Maximum window sum: every window is a difference of two prefix sums](figure.svg)
+
+The purple row is the exclusive prefix sum P, drawn between the inputs it
+separates. The best window (dark blue) has sum P[5] − P[2] = 8, the maximum of
+the green row.
+
 ## Formulation
 
 $$

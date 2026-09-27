@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** easy · [題目敘述](https://leetgpu.com/challenges/relu)
 
-## 問題
+## 題意
 
 對 $N$ 個 float32 值逐元素套用修正線性單元
 （$1 \le N \le 10^8$；基準測試為 $N = 2.5\times10^7$）。
 ReLU 是 CNN 與 MLP 的預設非線性函數。作為核心函式，它與
 [向量加法](../001-vector-add/)使用相同模式，只是輸入資料流從兩個減為一個。
 
-## 公式
+## 圖解
+
+![ReLU：正數保留，負數變成 0](figure.svg)
+
+曲線為 y = max(0, x)。橘色點表示負輸入被映射為 0；紅色點表示正輸入原樣通過。
+
+## 數學表述
 
 $$
 y_i = \operatorname{ReLU}(x_i) = \max(0, x_i) =
@@ -35,7 +41,7 @@ $$
 其導數（反向傳播需要，但此處不需要）是階躍函數
 $\mathbb 1[x > 0]$。
 
-## 方法
+## 解題思路
 
 - **向量化主體。** 執行緒 $t < \lfloor N/4\rfloor$ 載入一個 `float4`，
   對每個 lane 套用 `fmaxf(v, 0.0f)`，再儲存一個 `float4`。`fmaxf`
@@ -63,7 +69,7 @@ $T_{\min} \approx 100\ \mu s$。在實際網路中，ReLU 幾乎都會**融合**
 到前一個 GEMM 或卷積的收尾階段（請參閱 Tensara
 [GEMM + ReLU](../../tensara/gemm-relu/)），以省下整趟 DRAM 往返。
 
-## 常見問題
+## 常見陷阱
 
 - **NaN 處理。** `fmaxf(NaN, 0) = 0`，但 `torch.relu(NaN) = NaN`。
   測試輸入不含 NaN。傳播 NaN 的版本可寫成
@@ -76,7 +82,7 @@ $T_{\min} \approx 100\ \mu s$。在實際網路中，ReLU 幾乎都會**融合**
 所有 LeetGPU 測試案例都已在 [cuemu](../../tools/cuemu/README.md) 通過，
 包括 $N = 1, 2, 3$（只走尾端路徑）。
 
-## 相關內容
+## 延伸閱讀
 
 - [Leaky ReLU](../023-leaky-relu/)、[Sigmoid](../068-sigmoid/)、[SiLU](../052-silu/)。
 - Tensara [ReLU](../../tensara/relu/)。

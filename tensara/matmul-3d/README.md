@@ -19,6 +19,14 @@ shape $K\times L$, giving $N\times M\times L$. The tests are big (for
 example $64\times4096\times4096$ times $4096\times8192$, 8.8 TFLOP). The
 check is `rtol = 2e-4`, `atol = 3e-3`.
 
+## Visual Overview
+
+![3-D tensor × matrix: fold the batch into the rows and run one big GEMM](figure.svg)
+
+The batches of A (stacked copies) are contiguous, and B is the same for all of
+them, so A can be read as one (N·M) × K matrix and a single GEMM does the
+whole job.
+
 ## Formulation
 
 $$

@@ -22,6 +22,14 @@ algorithm is Floyd–Warshall, as in the reference. The encoding of "no edge"
 and "unreachable" is what differs from the
 [LeetGPU version](../../leetgpu/073-all-pairs-shortest-paths/).
 
+## Visual Overview
+
+![All-pairs shortest paths: Floyd–Warshall with 0 meaning "no edge" and −1 meaning unreachable](figure.svg)
+
+The graph on the left produces the distance table on the right. Vertex 0
+reaches 3 more cheaply through 1 and 2 (6) than directly (7); grey cells
+cannot be reached and are reported as −1.
+
 ## Formulation
 
 $$

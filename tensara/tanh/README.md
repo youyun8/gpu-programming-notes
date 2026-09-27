@@ -18,6 +18,13 @@ Apply the hyperbolic tangent elementwise to an $M\times N$ float32
 matrix, matching `torch.tanh`. Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The check is `rtol = 1e-4`,
 `atol = 6e-5`.
 
+## Visual Overview
+
+![tanh squashes into (−1, 1); it equals 2σ(2x) − 1](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores.
+
 ## Formulation
 
 $$

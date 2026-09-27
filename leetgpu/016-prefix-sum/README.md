@@ -21,6 +21,14 @@ compaction, radix sort, sparse-matrix construction and many recurrences.
 Unlike a reduction it produces $N$ outputs, each depending on all earlier
 inputs.
 
+## Visual Overview
+
+![Inclusive prefix sum: yᵢ adds up every input up to and including xᵢ](figure.svg)
+
+The lines show that y₅ = 23 depends on x₀ … x₅. In the reduce-then-scan scheme
+each chunk is scanned locally and then shifted by the total of all earlier
+chunks (its offset).
+
 ## Formulation
 
 $$

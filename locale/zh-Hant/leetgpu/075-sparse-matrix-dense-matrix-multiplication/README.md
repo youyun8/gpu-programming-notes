@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/sparse-matrix-dense-matrix-multiplication)
 
-## 問題
+## 題意
 
 計算 $C = AB$，其中 $A$（$M\times N$）有 60–70% 的零，但以稠密格式儲存；
 $B$（$N \times K$）則是稠密矩陣，兩者皆為 float32 列優先格式
@@ -20,7 +20,13 @@ $B$（$N \times K$）則是稠密矩陣，兩者皆為 float32 列優先格式
 容許誤差 `1e-3`）。利用稀疏性值得嗎？在這個密度下，**不值得**。以下用
 數字說明原因。
 
-## 公式
+## 圖解
+
+![密度 35% 的稀疏 × 稠密乘法：稠密分塊 GEMM 仍然較快](figure.svg)
+
+A 中的灰色格為零。在這種密度下略過零只能省下約三分之二的運算量，卻會帶來不規則的讀取，所以一般的分塊 GEMM 反而更快。
+
+## 數學表述
 
 $$
 C_{ij} = \sum_{k=0}^{N-1} A_{ik} B_{kj} = \sum_{k\,:\,A_{ik}\neq 0} A_{ik}B_{kj}
@@ -58,7 +64,7 @@ $$
 GPU 上的交叉點通常在 $\rho \approx 1$–$5\%$。當密度為 35% 時，稠密核心
 較快，這也符合 cuSPARSE 本身的建議。
 
-## 方法
+## 解題思路
 
 使用[矩陣乘法](../002-matrix-multiplication/)的 64 × 64 暫存器分塊 SGEMM：
 256 個執行緒，將 $A$（以轉置方式存放）與 $B$ 沿 $K$ 的 16 寬切片放入
@@ -89,7 +95,7 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-3`
 通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [稀疏矩陣－向量乘法](../018-sparse-matrix-vector-multiplication/)（對 GEMV 也適用相同論點）、
   [矩陣乘法](../002-matrix-multiplication/)。

@@ -21,6 +21,14 @@ $W = 4096$). Each of R, G, B is replaced by $255 - v$, and alpha is left
 unchanged. The problem is trivial arithmetically. Its lesson is **access
 granularity**: moving bytes one at a time wastes most of the memory system.
 
+## Visual Overview
+
+![Colour inversion: R, G and B become 255 − v while alpha stays unchanged](figure.svg)
+
+Bytes 0–3 form pixel 0 and bytes 4–7 form pixel 1. Bytes 3 and 7 are alpha and
+pass through unchanged; loading a whole pixel as one 32-bit word lets a single
+XOR invert R, G and B.
+
 ## Formulation
 
 $$

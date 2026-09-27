@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 困難 · [題目說明](https://tensara.org/problems/matmul-3d)
 
-## 問題
+## 題意
 
 將形狀為 $N\times M\times K$ 的 3D 張量 $A$ 與形狀為 $K\times L$
 的矩陣 $B$ 相乘，得到 $N\times M\times L$。測試規模很大（例如
 $64\times4096\times4096$ 乘以 $4096\times8192$，共 8.8 TFLOP）。
 檢查條件為 `rtol = 2e-4`、`atol = 3e-3`。
 
-## 公式
+## 圖解
+
+![三維張量 × 矩陣：把批次併入列數，執行一次大型 GEMM](figure.svg)
+
+A 的各批次（疊影）在記憶體中是連續的，且所有批次共用同一個 B，所以 A 可以直接視為 (N·M) × K 的矩陣，一次 GEMM 就能完成。
+
+## 數學表述
 
 $$
 C_{bil} = \sum_{k=0}^{K-1} A_{bik}\,B_{kl}
@@ -44,7 +50,7 @@ $$
 | $\rho$ | 將批次與列攤平後的列索引 |
 | $NM$ | 攤平後 GEMM 的列數 |
 
-## 方法
+## 解題思路
 
 只需啟動共用核心一次，設定 `rows = n*m`、`inner = k`、`cols = l`。
 不需要批次迴圈，而且較大的網格比 $N$ 次獨立 GEMM 更能充分利用 GPU。
@@ -104,7 +110,7 @@ $$
 最大案例為 $2\cdot64\cdot4096\cdot4096\cdot8192 = 1.76\times10^{13}$
 次浮點運算；以峰值的 50% 執行 FP32 運算仍需數秒。
 
-## 注意事項
+## 常見陷阱
 
 - **重塑，不要分批**：批次 GEMM 若使用 $N$ 份 $B$，浪費的只是啟動成本；
   重塑更簡單也更快。
@@ -115,7 +121,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [4D 矩陣乘法](../matmul-4d/)、[矩陣乘法](../matrix-multiplication/)、
   LeetGPU [批次矩陣乘法](../../leetgpu/030-batched-matrix-multiplication/)。

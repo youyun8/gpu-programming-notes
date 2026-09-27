@@ -19,6 +19,13 @@ per 32 elements) back to an $M\times K$ FP32 matrix, with TorchAO
 `MXTensor.to_dtype` semantics. Sizes up to $8192\times4096$; the check is
 `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![MXFP4 dequantisation: decode two E2M1 codes per byte and multiply by the block's power of two](figure.svg)
+
+Each byte holds two 4-bit codes (low nibble first). The codes decode to small
+values, and the whole block is multiplied by its shared scale 2^(u − 127).
+
 ## Formulation
 
 $$

@@ -20,6 +20,13 @@ window, stride $S$ and zero padding $P$. The reference is
 `count_include_pad=True`: padded positions count as zeros **and** in the
 divisor. The check is `rtol = 2e-4`, `atol = 2e-5`.
 
+## Visual Overview
+
+![2-D average pooling: k × k windows at stride S, with padding counted as zeros](figure.svg)
+
+The red window belongs to the highlighted output. Where it covers padding (red
+cells) those zeros still count, and the divisor stays k².
+
 ## Formulation
 
 $$

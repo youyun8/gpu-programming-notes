@@ -18,6 +18,13 @@ Apply ReLU elementwise to an $M\times N$ float32 matrix, matching
 `torch.relu`. Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The check is `rtol = 6e-5`, `atol = 3e-5`. This is the
 simplest possible bandwidth benchmark: the arithmetic is a single `max`.
 
+## Visual Overview
+
+![ReLU on a matrix: the simplest bandwidth benchmark](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores.
+
 ## Formulation
 
 $$

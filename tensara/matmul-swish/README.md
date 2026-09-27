@@ -20,6 +20,13 @@ $x$ of size $B\times\text{in}$ and $W$ of size $\text{out}\times\text{in}$
 (for example $B = 128$, in = 1024, out = 512, $s = 2$). The check is
 `rtol = 3e-4`, `atol = 1e-5`.
 
+## Visual Overview
+
+![Linear layer + Swish + scale: z = x Wᵀ + b, out = s · z · σ(z)](figure.svg)
+
+The GEMM has nn.Linear's transposed weight layout; the bias, the Swish
+activation and the scale are all fused into the epilogue.
+
 ## Formulation
 
 $$

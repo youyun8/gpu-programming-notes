@@ -20,6 +20,13 @@ LayerNorm with learnable $\gamma, \beta$ ($B \le 64$, $T \le 1024$,
 $V \le 50\,000$, $P \le 4096$, $D \le 1024$; benchmark $B = 32$, $T = 512$,
 $D = 768$; tolerance `1e-4`).
 
+## Visual Overview
+
+![Token embedding: gather two table rows, add them, then LayerNorm the sum](figure.svg)
+
+Token id 3 selects a row of the token table and position 1 a row of the
+position table. Their sum is normalised with LayerNorm and written once.
+
 ## Formulation
 
 $$

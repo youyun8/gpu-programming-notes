@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** hard · [題目敘述](https://leetgpu.com/challenges/multi-head-cross-attention)
 
-## 問題
+## 題意
 
 計算編碼器—解碼器 Transformer（T5、Whisper、Stable Diffusion 的
 文字條件）所使用的多頭**交叉**注意力。解碼器查詢 $Q$ 的形狀為
@@ -21,7 +21,13 @@ $(M, H, D)$（$M, N \le 4096$、$H \le 64$、$D \le 256$；
 基準測試為 $M = 1024$、$N = 2048$、$H = 16$、$D = 128$；
 容許誤差為 `1e-4`）。這裡沒有遮罩，而且通常 $M \ne N$。
 
-## 公式
+## 圖解
+
+![交叉注意力：M 個解碼器查詢注意全部 N 個編碼器鍵，沒有遮罩](figure.svg)
+
+分數矩陣是長方形（M ≠ N）且全部可見。第 2 列（綠）會混合全部 N 個 value 向量；每個 head 各自獨立重複此計算。
+
+## 數學表述
 
 對每個頭 $h$：
 
@@ -58,7 +64,7 @@ $$
 | `q_head`, `kv_head`, `o_head` | $D$ |
 | `scale` | $1/\sqrt D$ |
 
-## 方法
+## 解題思路
 
 此核心函式是通用的 FlashAttention 風格前向運算：
 
@@ -92,7 +98,7 @@ $$
 與共享記憶體載入吞吐量，而非 DRAM。下一步可改用張量核心版本，
 並使用 64–128 列查詢的分塊。
 
-## 常見問題
+## 常見陷阱
 
 - **縮放。** 應使用 $1/\sqrt D$（每個頭的維度），不是
   $1/\sqrt{HD}$。
@@ -107,7 +113,7 @@ $$
 所有 LeetGPU 測試案例都已在 [cuemu](../../tools/cuemu/README.md)
 以 `1e-4` 容許誤差通過，包括 $M = 1$、$N = 1$ 與 $D = 256$。
 
-## 相關內容
+## 延伸閱讀
 
 - [多頭注意力](../012-multi-head-attention/)、
   [分組查詢注意力](../080-grouped-query-attention/)、

@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** easy · [題目說明](https://tensara.org/problems/l1-norm)
 
-## 問題
+## 題意
 
 對 $B\times D$ float32 矩陣逐列執行 L1 正規化
 （$B = 128, 256$；$D = 4096 \dots 16384$）：將每列的每個元素除以
 其絕對值總和再加上 $\epsilon = 10^{-10}$。檢查條件為
 `rtol = 7e-4`、`atol = 5e-5`。
 
-## 公式
+## 圖解
+
+![逐列 L1 正規化：除以絕對值總和](figure.svg)
+
+標示的列先歸約出 $s_{b}$ = Σ|x|，再把該列每個元素除以 $s_{b}$ + ε。
+
+## 數學表述
 
 $$
 s_b = \sum_{d=0}^{D-1} \lvert x_{bd} \rvert, \qquad y_{bd} = \frac{x_{bd}}{s_b + \epsilon}
@@ -34,7 +40,7 @@ $$
 
 正規化後，$\sum_d \lvert y_{bd}\rvert = s_b/(s_b + \epsilon) \approx 1$。
 
-## 方法
+## 解題思路
 
 **每列使用一個區塊**，每個區塊有 256 個執行緒：
 
@@ -61,7 +67,7 @@ $$
 會成為限制。若將列拆分到一組區塊上（Hopper 的分散式共享記憶體），或以
 更多執行緒讓每列使用數個 warp，可以改善效能。
 
-## 注意事項
+## 常見陷阱
 
 - **$\epsilon$ 是加上去的**，不是用來設定下限。
 - **絕對值**：加總帶正負號的 $x$ 會得到另一種（且錯誤的）正規化。
@@ -72,7 +78,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [L2 範數](../l2-norm/)、[Frobenius 範數](../frobenius-norm/)、
   [RMS 範數](../rms-norm/)。

@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/all-pairs-shortest-paths)
 
-## 問題
+## 題意
 
 在稠密的 $N\times N$ 距離矩陣上，以 **Floyd–Warshall** 計算全點對最短路徑
 （$N \le 4096$，$+\infty$ = 無邊，對角線為零，且沒有負權環；基準測試
@@ -21,7 +21,13 @@ $k = 0, \dots, N-1$ 鬆弛所有點對。Floyd–Warshall 與 GEMM 一樣是
 $O(N^3)$，但使用 $(\min, +)$ 半環。為提高快取效率而設計的分塊版本，
 是經典的 GPU 實作方式。
 
-## 公式
+## 圖解
+
+![分塊 Floyd–Warshall：每個對角分塊都分成三個相依的階段](figure.svg)
+
+對樞紐分塊 k 而言：階段 1 更新樞紐分塊本身（紅），階段 2 更新同列與同行的分塊（橘），階段 3 再用這兩者更新其餘所有分塊（藍）。
+
+## 數學表述
 
 $$
 d^{(k+1)}_{ij} = \min\bigl(d^{(k)}_{ij},\ d^{(k)}_{ik} + d^{(k)}_{kj}\bigr), \qquad d^{(0)} = \text{dist}, \qquad \text{output} = d^{(N)}
@@ -62,7 +68,7 @@ $$
 階段 3 的結果是精確的，因為該輪的面板完成後，其餘 tile 只需對此輪區塊
 內的 $k$ 取 $\min$，而 $\min$ 具有結合律與交換律。
 
-## 方法
+## 解題思路
 
 每輪啟動三個核心，執行緒區塊大小為 $32 \times 32$（每個 tile 元素一個
 執行緒）：
@@ -113,7 +119,7 @@ $Q_{\text{blocked}} \approx 3.2$ GB，相較之下未分塊版本約為 100 GB�
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-2`
 通過，包括 $N$ 不是 32 的倍數，以及含有 $+\infty$ 結果的不連通圖。
 
-## 相關內容
+## 延伸閱讀
 
 - [BFS 最短路徑](../046-bfs-shortest-path/)、Tensara [全點對最短路徑](../../tensara/all-pairs-shortest-path/)、
   [矩陣乘法](../002-matrix-multiplication/)（使用 $(+, \times)$ 的對應運算）。

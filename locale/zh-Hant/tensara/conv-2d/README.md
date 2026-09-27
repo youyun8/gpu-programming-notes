@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/conv-2d)
 
-## 問題
+## 題意
 
 對 $H\times W$ 的 float32 影像，以奇數大小的
 $K_h\times K_w$ 核心和零填補執行「same」二維互相關。測試範圍從使用 $13\times13$ 核心的 $16384^2$ 影像，到使用
 $127\times127$ 核心的 $4096^2$ 影像，因此不論核心大小，共享記憶體用量都必須維持在固定範圍內。檢查誤差為 `rtol = 2e-4`、`atol = 1e-3`。
 
-## 公式
+## 圖解
+
+![「same」二維卷積：零填補讓輸出與輸入大小相同](figure.svg)
+
+標示輸出的視窗延伸到填補邊界（紅色格）。由於卷積核可大到 127 × 127，kernel 會把卷積核分段載入共享記憶體。
+
+## 數學表述
 
 $$
 C[i, j] = \sum_{u=0}^{K_h-1} \sum_{v=0}^{K_w-1} \tilde{A}\bigl[i + u - p_h,\ j + v - p_w\bigr]\; B[u, v], \qquad
@@ -45,7 +51,7 @@ $$
 | $T_y, T_x$ | 輸出圖塊高度與寬度（32 × 32） |
 | $b$ | 每趟處理的核心列數（8） |
 
-## 方法
+## 解題思路
 
 1. 使用 **$32\times32$ 輸出圖塊**及 $32\times8$ 執行緒區塊，每個執行緒在暫存器中保留 4 個輸出列。
 2. **每次處理 8 個核心列。**每個帶狀區域中，執行緒區塊會將該區域的核心列（$8\times K_w$）及其輸入視窗
@@ -82,7 +88,7 @@ $W = 91$ GFLOP，而必要流量為 2 GB，仍受限於運算效能。和一維�
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [一維卷積](../conv-1d/)、[Conv2D + ReLU + HardSwish](../conv2d-relu-hardswish/)、
   [方框模糊](../box-blur/)、LeetGPU [二維卷積](../../leetgpu/010-2d-convolution/)。

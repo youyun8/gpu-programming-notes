@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/int8-kv-cache-attention)
 
-## 問題
+## 題意
 
 **解碼階段**的多頭注意力：每個頭的一個新查詢權杖，會對儲存為 **int8** 且每個權杖各有縮放值的長 KV 快取進行注意力運算（$H \le 64$ 個頭、$S \le 32\,768$ 個快取權杖、頭維度 $8 \le D \le 256$；效能測試為 $H = 32$、$S = 8192$、$D = 128$；容許誤差 `1e-3`）。相較於 fp16，int8 快取可將記憶體流量減半；相較於 fp32，則只需四分之一。解碼注意力完全受記憶體頻寬限制，因此流量降低會直接轉化成速度提升。
 
-## 公式
+## 圖解
+
+![在 int8 KV 快取上做解碼注意力，並分散到多個區塊（flash-decoding）](figure.svg)
+
+快取被切成數個片段，各由一個區塊處理並產生部分 softmax 狀態 (m, ℓ, a)，最後再精確地合併成最終輸出。
+
+## 數學表述
 
 $$
 K_{h,j,c} = \kappa_{h,j}\,\hat K_{h,j,c}, \qquad V_{h,j,c} = \nu_{h,j}\,\hat V_{h,j,c}
@@ -55,7 +61,7 @@ $$
 
 這與 [Softmax 注意力](../006-softmax-attention/)中可結合的 $(m, \ell, \mathbf a)$ 合併相同，只是此處在區塊之間套用，而非分塊之間。
 
-## 方法
+## 解題思路
 
 1. **`partialAttention`**，在效能測試中使用網格 $(\lceil S/256\rceil, H)$ = 1024 個區塊：
    - **分數**：每個鍵使用一個 warp，各 lane 處理 $D$ 維；將 int8 載入值轉成 float，以 shuffle 歸約，再乘上 $\kappa_j/\sqrt D$ 並存入共享記憶體；
@@ -77,7 +83,7 @@ $$
 
 效能測試：$Q \approx 67$ MB，而 float32 快取需 268 MB；在 2 TB/s 下約為 34 µs。$W/Q \approx 2$ FLOP/byte，因此核心明顯受頻寬限制，int8 快取相較於 fp32 確實可獲得 4 倍效益。
 
-## 常見問題
+## 常見陷阱
 
 - 若不切分，區塊數量會**太少**（每個頭一個區塊），導致多數 SM 閒置。
 - **每個權杖各有縮放值**：應將 $\kappa$ 套用到整個內積，並將 $\nu$ 套用到值資料列，而不是對每個元素重複套用兩次。
@@ -87,6 +93,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-3` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，包括 $S = 1$ 與 $S$ 無法被 256 整除的情況。
 
-## 相關內容
+## 延伸閱讀
 
 - [GQA](../080-grouped-query-attention/)、[Softmax 注意力](../006-softmax-attention/)、[INT8 矩陣乘法](../032-int8-quantized-matmul/)。

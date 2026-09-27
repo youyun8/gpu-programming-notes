@@ -21,6 +21,14 @@ dimensions, prepend a learned CLS token, and add learned positional
 embeddings (tolerance `1e-4`). This is a convolution with kernel = stride =
 $P$, and it is implemented as a GEMM.
 
+## Visual Overview
+
+![ViT patch embedding: cut the image into P × P patches and project each one with a GEMM](figure.svg)
+
+Each coloured quadrant is one patch; flattened, it becomes one row of the GEMM
+input. After the projection, a CLS token is prepended and position embeddings
+are added.
+
 ## Formulation
 
 $$

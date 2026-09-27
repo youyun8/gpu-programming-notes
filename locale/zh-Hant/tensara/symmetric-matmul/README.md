@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** 中等 · [題目敘述](https://tensara.org/problems/symmetric-matmul)
 
-## 問題
+## 題意
 
 將兩個對稱的 $N\times N$ FP32 矩陣相乘（$N$ = 4096 … 9216）。
 檢查條件為 `rtol = 1e-6`、`atol = 5e-3`，因此實際上以絕對容許誤差
 為主。值得探討的是對稱性是否能提供幫助。
 
-## 公式
+## 圖解
+
+![對稱的輸入、一般的輸出：只有 A 與 B 可交換時，AB 才會對稱](figure.svg)
+
+即使 A 與 B 都是對稱矩陣，乘積通常並不對稱，因此仍以一般的分塊 SGEMM 計算全部 N² 個輸出。
+
+## 數學表述
 
 $$
 A = A^{\mathsf T},\quad B = B^{\mathsf T}, \qquad C_{ij} = \sum_{k=0}^{N-1} A_{ik}B_{kj}
@@ -44,7 +50,7 @@ $$
 （BLAS `SSYMM` 節省的是儲存空間，而非 flops）。對稱性只允許將 $B$
 當作 $B^{\mathsf T}$ 讀取，也就是可選用「NN」或「NT」暫存路徑。
 
-## 方法
+## 解題思路
 
 不加修改地使用共用核心（`NoEpi`、NN 配置）。
 
@@ -104,7 +110,7 @@ $$
 
 與[方形矩陣乘法](../square-matmul/)相同。
 
-## 注意事項
+## 常見陷阱
 
 - **不要只計算一半的 $C$ 再鏡射**：$C$ 並不對稱。
 - **`rtol = 1e-6`** 看似嚴格，但對大小為 $O(\sqrt{N})$ 的元素而言，
@@ -115,7 +121,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [方形矩陣乘法](../square-matmul/)、[下三角矩陣乘法](../lower-trig-matmul/)、
   [上三角矩陣乘法](../upper-trig-matmul/)。

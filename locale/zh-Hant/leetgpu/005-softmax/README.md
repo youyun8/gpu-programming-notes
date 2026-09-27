@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目說明](https://leetgpu.com/challenges/softmax)
 
-## 問題
+## 題意
 
 計算長度為 $N$ 的 float32 向量之 softmax（$1 \le N \le 500\,000$，
 基準 $N = 500\,000$），並使用減去最大值的技巧維持數值穩定性。
 容許誤差為 `1e-5`。Softmax 將任意分數轉為機率分布，
 是注意力與所有分類輸出層的核心。
 
-## 公式
+## 圖解
+
+![先減去最大值的 softmax：所有指數都不大於 0，因此不會溢位](figure.svg)
+
+由上往下讀：先減去最大值 m、取指數，再除以總和 s。最大的輸入一定變成 e⁰ = 1，所以計算不可能溢位。
+
+## 數學表述
 
 $$
 \sigma(x)_i = \frac{e^{x_i - m}}{\displaystyle\sum_{j=0}^{N-1} e^{x_j - m}}, \qquad m = \max_{0 \le j < N} x_j
@@ -55,7 +61,7 @@ $$
 單一元素 $x$ 的配對是 $(x, 1)$。由於 $\oplus$ 具結合律，
 可像[歸約](../004-reduction/)中的加總一樣，用任何歸約樹計算。
 
-## 方法
+## 解題思路
 
 使用三個核心：
 
@@ -87,7 +93,7 @@ $$
 `expf`）。當 $N = 5\times10^5$，整個向量（2 MB）可放入 L2，
 第二次讀取大多命中 L2。此時啟動延遲居主導，三個小核心約需 10–20 µs。
 
-## 常見問題
+## 常見陷阱
 
 - **省略最大值平移。** 輸入約為 100 時會得到
   $\infty/\infty = \text{NaN}$。
@@ -101,7 +107,7 @@ $$
 所有 LeetGPU 案例都在 [cuemu](../../tools/cuemu/README.md) 上通過，
 包括 $N = 1$（輸出恰為 1）及絕對值很大的輸入。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax 注意力](../006-softmax-attention/)：對每個查詢列套用相同的線上合併。
 - Tensara [Softmax](../../tensara/softmax/)、[Log-Softmax](../../tensara/log-softmax/)。

@@ -21,6 +21,13 @@ $M = N = K = 256$; tolerance `1e-5`). Batched GEMM appears in attention
 (one matmul per head) and in grouped convolutions. The batch is simply a third
 grid dimension.
 
+## Visual Overview
+
+![Batched GEMM: the batch index is simply a third grid dimension](figure.svg)
+
+The stacked copies behind each matrix are the other batch entries. Every entry
+is an independent GEMM; blockIdx.z selects which one a block works on.
+
 ## Formulation
 
 $$

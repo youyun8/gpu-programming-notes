@@ -12,12 +12,18 @@ status: solved
 
 **平台：** Tensara · **難度：** easy · [題目敘述](https://tensara.org/problems/avg-pool-1d)
 
-## 問題
+## 題意
 
 在一個很長的 float32 向量上，使用視窗 $k$、步幅 $S$ 和零填補 $P$ 執行一維平均池化（$H$ 最大為 $6.7\times10^7$；例如 $k = 7$、$S = 4$、$P = 3$）。其行為與使用預設值的 `F.avg_pool1d` 相同，也就是
 `count_include_pad=True`：填補位置視為零並計入數量，除數一律為 $k$。
 
-## 公式
+## 圖解
+
+![一維平均池化：視窗 k、步幅 S、零填補 P，除數固定為 k](figure.svg)
+
+輸出 1 是三個標示輸入的平均。填補的 0（灰色）同時計入總和與除數，與 PyTorch 預設的 `count_include_pad=True` 相同。
+
+## 數學表述
 
 $$
 H_{\text{out}} = \left\lfloor\frac{H + 2P - k}{S}\right\rfloor + 1, \qquad
@@ -35,7 +41,7 @@ $$
 | $\tilde x$ | 以零填補的輸入 |
 | $y_i$ | 輸出：使用固定除數 $k$ 的視窗平均值 |
 
-## 方法
+## 解題思路
 
 每個輸出 $i$ 使用一個執行緒（以網格跨步走訪 $H_{\text{out}}$）。視窗從 $t_0 = Si - P$ 開始。執行緒加總範圍內的元素並略過範圍外的位置（等同於加零），最後乘以 $1/k$。
 
@@ -65,6 +71,6 @@ $$
 所有測試案例（官方形狀的縮小及奇數大小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [二維平均池化](../avg-pool-2d/)、[三維平均池化](../avg-pool-3d/)、[一維最大池化](../max-pool-1d/)。

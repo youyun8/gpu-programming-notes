@@ -20,6 +20,14 @@ each under the trainable policy and under the frozen reference model. Return
 the mean loss for temperature $\beta$ (tolerance `1e-4`). DPO fine-tunes LLMs
 on human preferences without training a reward model or running RL.
 
+## Visual Overview
+
+![DPO loss −log σ(z) = softplus(−z): small once the policy prefers the chosen answer](figure.svg)
+
+z measures how much more the policy prefers the chosen answer than the
+reference model does. The loss falls towards 0 as z grows and equals log 2 at
+z = 0 (red dot).
+
 ## Formulation
 
 $$

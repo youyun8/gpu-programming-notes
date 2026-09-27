@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目說明](https://tensara.org/problems/matrix-vector)
 
-## 問題
+## 題意
 
 對大小為 $M\times K$ 的 $A$ 計算矩陣向量乘積
 $\mathbf{c} = A\mathbf{b}$（$M$ = 4096 … 9216、$K = 4096$）。
 檢查條件為 `rtol = 2e-4`、`atol = 3e-3`。與 GEMM 不同，$A$ 的每個元素
 只使用一次，因此重點是以完整頻寬串流讀取 $A$。
 
-## 公式
+## 圖解
+
+![矩陣乘向量：一個 warp 以 float4 載入串流讀取 A 的一列](figure.svg)
+
+warp 2 讀取 A 中標示的列：各 lane 交錯地取 float4 分組，與 b 中對應的分組相乘，再以 shuffle 合併部分和得到 c₂。
+
+## 數學表述
 
 $$
 c_i = \sum_{k=0}^{K-1} A_{ik}\,b_k, \qquad 0 \le i < M
@@ -43,7 +49,7 @@ $$
 | $\mathbf{a}^{(4)}_{iq}, \mathbf{b}^{(4)}_q$ | 第 $i$ 列與 $\mathbf{b}$ 中的第 $q$ 個 `float4` |
 | $p_\ell$ | Lane 的部分總和 |
 
-## 方法
+## 解題思路
 
 1. **每列使用一個 warp**，每個區塊 8 個 warp。每個 lane 以步距 32 讀取
    `float4`，因此一個 warp 指令會讀取 $A$ 中連續的 512 位元組。
@@ -66,7 +72,7 @@ $$
 
 在 $9216\times4096$ 時為 151 MB，以 2 TB/s 計約 75 µs。
 
-## 注意事項
+## 常見陷阱
 
 - **不要使用 $N = 1$ 的 SGEMM**：其圖塊會有 98% 是填補內容。
 - **對齊**：`float4` 路徑要求 $K \bmod 4 = 0$（並使用按 16 位元組對齊的緩衝區，
@@ -77,7 +83,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [NVFP4 GEMV](../nvfp4-gemv/)、[矩陣乘法](../matrix-multiplication/)、
   LeetGPU [點積](../../leetgpu/017-dot-product/)。

@@ -20,6 +20,13 @@ and $\mathbf x_2$ and output $\mathbf x_1 \odot \operatorname{GELU}(\mathbf x_2)
 gated MLP activation of T5 v1.1 and several diffusion transformers. Note
 that here the **second** half is activated, unlike [SwiGLU](../054-swiglu/).
 
+## Visual Overview
+
+![GEGLU: the first half times GELU of the second half](figure.svg)
+
+Here the second half (orange) is the gate that goes through GELU, and the
+first half (blue) is the value. Output i combines element i of both halves.
+
 ## Formulation
 
 $$

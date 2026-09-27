@@ -21,6 +21,14 @@ $B \times d_{\text{in}}$, and `output` must receive $B \times d_{\text{out}}$
 `solution.py`. The point is to express the layer as **one fused library call**
 that writes straight into the provided output buffer.
 
+## Visual Overview
+
+![A linear layer is one GEMM with a bias epilogue: Y = X Wᵀ + b](figure.svg)
+
+X is B × dᵢₙ, Wᵀ is dᵢₙ × dₒᵤₜ and Y is B × dₒᵤₜ. A single library call
+computes the product and adds the bias while writing straight into the output
+buffer.
+
 ## Formulation
 
 $$

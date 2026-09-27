@@ -19,6 +19,13 @@ Compute $A^P$ for a $512\times512$ FP32 matrix and $P \in \{2, 4, 8\}$
 `atol = 1e-3`, so the order of multiplications matters for matching the
 reference's rounding.
 
+## Visual Overview
+
+![A^P for P = 8 by repeated squaring: 3 GEMMs instead of 7](figure.svg)
+
+Squaring three times gives A², A⁴ and A⁸. For other exponents the binary
+digits of P decide which squares are multiplied together.
+
 ## Formulation
 
 $$

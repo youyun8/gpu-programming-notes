@@ -21,6 +21,14 @@ benchmark $M = 512$, $N = 256$). The tolerance is `1e-4`. With $M = N = 10^5$
 the score matrix alone would take 40 GB, so it must **never be materialised**.
 This is the core idea of FlashAttention.
 
+## Visual Overview
+
+![FlashAttention: a block of queries streams over key tiles and never stores the score matrix](figure.svg)
+
+The green rows are one block of queries; the blue shades mark tiles of keys.
+For each tile the block computes a small piece of S, updates the running (m,
+ℓ, a) and discards the piece.
+
 ## Formulation
 
 $$

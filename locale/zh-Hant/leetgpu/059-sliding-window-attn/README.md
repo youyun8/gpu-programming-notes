@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/sliding-window-self-attention)
 
-## 問題
+## 題意
 
 滑動視窗自注意力：查詢 $i$ 只注意鍵 $j$，且須符合
 $\lvert i - j\rvert \le w$（對稱、非因果的帶狀範圍），作用於
@@ -21,7 +21,13 @@ $Q, K, V \in \mathbb R^{M\times d}$（容許誤差 `1e-5`）。
 **只要核心完全不存取帶狀範圍外的鍵**，成本便可從 $O(M^2 d)$
 降至 $O(M w d)$。
 
-## 公式
+## 圖解
+
+![滑動視窗注意力：查詢 i 只看距離 w 以內的鍵](figure.svg)
+
+可見的分數在對角線附近形成寬度 2w + 1 的帶狀區域。第 5 列（綠）看得到鍵 3 … 7；kernel 只走訪與帶狀區域相交的鍵分塊。
+
+## 數學表述
 
 $$
 s_{ij} = \frac{\mathbf q_i\cdot\mathbf k_j}{\sqrt d}, \qquad
@@ -39,7 +45,7 @@ $$
 | $m_i$ | 視窗內的最大值 |
 | $O_{i,:}$ | 輸出列 |
 
-## 方法
+## 解題思路
 
 使用 FlashAttention 風格的核心（每個查詢列一個 warp、每區塊 8 列、
 共享記憶體中每塊 32 個鍵、每個 lane 為一個鍵評分、線上 softmax），
@@ -69,7 +75,7 @@ $$
 （每塊有 32 個鍵，每列的帶狀範圍為 $2w+1$），因此較大的 $w$ 或每區塊更多列
 可提高效率。
 
-## 注意事項
+## 常見陷阱
 
 - **對稱視窗。** 參考實作會遮罩兩側所有 $\lvert j - i\rvert > w$ 的位置；
   這不是因果注意力。
@@ -82,7 +88,7 @@ $$
 `1e-5` 通過，包括 $w = 0$（每個查詢只看自己：輸出 = $V$），以及
 $w \ge M$（完整注意力）。
 
-## 相關內容
+## 延伸閱讀
 
 - [因果注意力](../053-casual-attention/)、[Softmax 注意力](../006-softmax-attention/)、
   [含匯聚點的注意力](../112-attention-with-sinks/)。

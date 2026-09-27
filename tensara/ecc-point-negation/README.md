@@ -19,6 +19,14 @@ $y^2 \equiv x^3 + 7 \pmod p$ with the Mersenne prime $p = 2^{61} - 1$.
 Coordinates are `uint64` in $[0, p)$. The output interleaves
 $(x_i, -y_i)$ in one array of length $2N$, and the check is exact equality.
 
+## Visual Overview
+
+![Elliptic-curve point negation: −(x, y) is the mirror image (x, −y mod p)](figure.svg)
+
+The curve is drawn over the real numbers for intuition: negating a point
+reflects it in the x-axis. Over the field Fₚ, −y becomes p − y (and 0 stays
+0).
+
 ## Formulation
 
 On a short Weierstrass curve the inverse of a point is its mirror image in

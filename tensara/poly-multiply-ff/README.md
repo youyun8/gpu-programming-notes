@@ -19,6 +19,14 @@ field $\mathbb{F}_p$, $p = 2^{31} - 1$, returning the $2n - 1$ coefficients
 of the product. Coefficients are `uint32` in $[0, p)$, $n$ is a power of
 two (up to 1024 in the tests), and the output must match exactly.
 
+## Visual Overview
+
+![Polynomial product = linear convolution: cₖ adds every aᵢ bⱼ with i + j = k (mod p)](figure.svg)
+
+Every cell is one product aᵢbⱼ. Coefficient c₄ is the sum of the green
+anti-diagonal; each output thread sums one anti-diagonal and reduces it modulo
+p.
+
 ## Formulation
 
 $$

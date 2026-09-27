@@ -12,12 +12,18 @@ status: solved
 
 **平台：** Tensara · **難度：** hard · [題目敘述](https://tensara.org/problems/avg-pool-3d)
 
-## 問題
+## 題意
 
 對 $H\times W\times D$ 的 float32 張量，以
 $k\times k\times k$ 視窗、步幅 $S$ 和零填補 $P$ 執行三維平均池化，並與 `torch.nn.functional.avg_pool3d` 的行為一致（`count_include_pad=True`，因此除數一律為 $k^3$）。檢查誤差為 `rtol = 2e-4`、`atol = 1e-5`。
 
-## 公式
+## 圖解
+
+![三維平均池化：以步幅 S 移動的 k³ 方塊，除數固定為 k³](figure.svg)
+
+在三個連續深度上取同一個 3 × 3 區域，這 27 個值的平均就是一個輸出體素。
+
+## 數學表述
 
 $$
 X_{\text{out}} = \left\lfloor \frac{X + 2P - k}{S} \right\rfloor + 1 \quad \text{for } X \in \{H, W, D\}
@@ -49,7 +55,7 @@ $$
 |---|---|
 | $t$ | 由一個執行緒處理的扁平輸出索引 |
 
-## 方法
+## 解題思路
 
 每個輸出使用一個執行緒（網格跨步），透過三層巢狀視窗迴圈，提早略過超出邊界的平面、列和欄。相鄰執行緒具有連續的 $c$，也就是連續軸，因此最內層迴圈的讀取能在 warp 間形成合併存取，重疊視窗則會命中快取。最後將總和除以 $k^3$。
 
@@ -78,7 +84,7 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [一維平均池化](../avg-pool-1d/)、[二維平均池化](../avg-pool-2d/)、
   [三維最大池化](../max-pool-3d/)、[三維方形卷積](../conv-square-3d/)。

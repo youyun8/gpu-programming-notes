@@ -21,6 +21,13 @@ $(D-K_d+1) \times (R-K_r+1) \times (C-K_c+1)$. This is the basic operation of
 video and volumetric (medical-imaging) CNNs. With at most $5^3 = 125$ taps,
 the kernel is small and the input fits comfortably in the cache hierarchy.
 
+## Visual Overview
+
+![3-D convolution: a small box of voxels produces one output voxel](figure.svg)
+
+The same 3 × 3 window (red) is taken from three consecutive depth slices;
+together the 27 taps produce the highlighted voxel of the output slice.
+
 ## Formulation
 
 $$

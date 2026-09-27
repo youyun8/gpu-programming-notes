@@ -18,6 +18,14 @@ Apply the Scaled Exponential Linear Unit elementwise to an $M\times N$
 float32 matrix, matching `torch.selu`. Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The check is `rtol = 1e-4`,
 `atol = 8e-5`.
 
+## Visual Overview
+
+![SELU: a scaled ELU whose constants make activations self-normalising](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores. The dashed line is the saturation
+level −λα ≈ −1.758.
+
 ## Formulation
 
 $$

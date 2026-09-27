@@ -22,6 +22,14 @@ halve memory traffic compared with fp16 (and quarter it compared with fp32).
 Decode attention is purely bandwidth-bound, so that translates directly
 into speed.
 
+## Visual Overview
+
+![Decode attention over an int8 KV cache, split across blocks (flash-decoding)](figure.svg)
+
+The cache is cut into splits, each handled by its own block, which produces a
+partial softmax state (m, ℓ, a). The partial states are merged exactly into
+the final output.
+
 ## Formulation
 
 $$

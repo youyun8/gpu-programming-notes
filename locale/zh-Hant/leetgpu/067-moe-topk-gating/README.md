@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/moe-top-k-gating)
 
-## 問題
+## 題意
 
 混合專家層的路由器：對 $M$ 個 token 中的每一個，選出最大的 $k$ 個專家
 logit；專家總數為 $E$（降冪排列；相同值時依 `torch.topk` 的行為選擇較小索引），
@@ -21,7 +21,13 @@ logit；專家總數為 $E$（降冪排列；相同值時依 `torch.topk` 的行
 容許誤差 `1e-5`）。輸出為 `topk_indices` 與 `topk_weights`，兩者形狀皆為
 $M \times k$。
 
-## 公式
+## 圖解
+
+![MoE 閘控：為每個 token 挑出 k 個最佳專家，只對它們的 logits 做 softmax](figure.svg)
+
+對單一 token，最大的兩個 logits（綠色）決定所選專家。專家 1 與 4 同為 2.1，依規則由較小的索引優先；softmax 只在被選中的 logits 上計算。
+
+## 數學表述
 
 $$
 (j_0, \dots, j_{k-1}) = \operatorname{TopK}(\mathbf z, k), \qquad z_{j_0} \ge z_{j_1} \ge \dots \ge z_{j_{k-1}}
@@ -45,7 +51,7 @@ $$
 $\sum_t w_t\,\operatorname{Expert}_{j_t}(\mathbf x)$。只有 $k$ 個專家會執行，
 而專家總數為 $E$，因此 MoE 處理每個 token 的成本很低。
 
-## 方法
+## 解題思路
 
 **每個 token 使用一個 warp。** $E \le 256$ 表示每個 lane 最多處理 8 個 logit，
 全都保留在暫存器中：
@@ -80,7 +86,7 @@ $$
 當 $k$ 很大（最高為 $E$）時，$k$ 輪的成本成為 $O(kE)$。
 此時對 256 個值進行 bitonic sort 會更合適，但路由器通常使用 $k \le 8$。
 
-## 注意事項
+## 常見陷阱
 
 - **同值時的選擇規則。** `torch.topk` 在 CPU 參考路徑上，對相同值會先回傳
   較小索引。蝶形歸約在值相等時會比較索引。測試使用小整數值時，
@@ -94,7 +100,7 @@ $$
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆通過，
 包括 $k = E$（完整排序）、$E = 1$ 與含重複 logit 的列。
 
-## 相關內容
+## 延伸閱讀
 
 - [Top-K 選擇](../029-top-k-selection/)、[Softmax](../005-softmax/)、
   [SwiGLU MLP 區塊](../084-swiglu-mlp-block/)（專家執行的內容）。

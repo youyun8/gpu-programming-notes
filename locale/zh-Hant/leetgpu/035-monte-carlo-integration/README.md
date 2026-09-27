@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/monte-carlo-integration)
 
-## 問題
+## 題意
 
 從 $n$ 個預先計算的樣本 $y_i = f(x_i)$ 估算
 $\int_a^b f(x)\,dx$，其中 $x_i$ 均勻分布於 $[a, b]$
@@ -21,7 +21,13 @@ $\lvert y_i \rvert \le 10^4$；效能評測使用 $n = 10^7$；容許誤差為 `
 隨機取樣已經完成，因此 GPU 的工作就是計算平均值。本頁也會說明這個估計量
 為何有效，以及它的準確度。
 
-## 公式
+## 圖解
+
+![蒙地卡羅積分：(b − a) 乘上取樣函數值的平均](figure.svg)
+
+陰影面積就是積分值。橘色點是題目給定的樣本 yᵢ = f(xᵢ)，其平均為綠線；估計值就是以該高度、寬為 [a, b] 的長方形面積。
+
+## 數學表述
 
 $$
 I = \int_a^b f(x)\,dx \;\approx\; \hat I_n = (b - a)\cdot\frac{1}{n}\sum_{i=0}^{n-1} y_i, \qquad y_i = f(x_i),\ x_i \sim \mathcal U[a, b]
@@ -52,7 +58,7 @@ $$
 GPU 只需準確計算**樣本平均值**。它本身的捨入誤差必須遠低於統計誤差；
 使用 float64 部分總和即可輕鬆達成。
 
-## 方法
+## 解題思路
 
 採用[歸約](../004-reduction/)中的兩階段歸約：
 
@@ -88,6 +94,6 @@ $$
 所有 LeetGPU 測試案例均以 `1e-2` 的容許誤差在
 [cuemu](../../tools/cuemu/README.md) 通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [歸約](../004-reduction/)、[均方誤差](../027-mean-squared-error/)。

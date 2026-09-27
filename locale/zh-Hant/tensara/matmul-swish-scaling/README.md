@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** 中等 · [題目說明](https://tensara.org/problems/matmul-swish-scaling)
 
-## 問題
+## 題意
 
 對大小為 $M\times K$ 的 $A$ 與 $K\times N$ 的 $B$（尺寸為 512 … 1024），
 計算 $O = \text{scale}\cdot\operatorname{swish}(AB)$。
 檢查條件為 `rtol = 5e-4`、`atol = 2e-4`。
 
-## 公式
+## 圖解
+
+![O = scale · swish(AB)：一般 GEMM 加上 Swish 與縮放的 epilogue](figure.svg)
+
+GEMM 分塊留在暫存器中；epilogue 方框套用 Swish 激活與縮放後才寫出，全程只寫一次。
+
+## 數學表述
 
 $$
 G_{ij} = \sum_{k=0}^{K-1} A_{ik}B_{kj}, \qquad O_{ij} = \text{scale}\cdot G_{ij}\,\sigma(G_{ij}), \qquad \sigma(t) = \frac{1}{1 + e^{-t}}
@@ -32,7 +38,7 @@ $$
 | Scale | 純量乘數 |
 | $O$ | 輸出，$M\times N$ |
 
-## 方法
+## 解題思路
 
 使用「NN」配置的共用核心，搭配執行 Swish 與縮放的尾聲。與
 [矩陣乘法 + Swish](../matmul-swish/) 唯一的差別是沒有偏置，且 $B$ 不轉置。
@@ -92,7 +98,7 @@ $$
 在 $1024^3$ 時：256 個區塊執行 2.1 GFLOP。與其他小型融合 GEMM 一樣，
 充分利用整台機器比內部迴圈更重要。
 
-## 注意事項
+## 常見陷阱
 
 - 先對**乘積執行 Swish**，再縮放：$\text{scale}\cdot\operatorname{swish}(G)$，
   而非 $\operatorname{swish}(\text{scale}\cdot G)$。
@@ -102,7 +108,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [矩陣乘法 + Swish](../matmul-swish/)、
   [GEMM × LeakyReLU](../gemm-multiply-leakyrelu/)、[Swish](../swish/)。

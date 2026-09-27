@@ -18,6 +18,13 @@ Multiply two symmetric $N\times N$ FP32 matrices ($N$ = 4096 … 9216).
 The check is `rtol = 1e-6`, `atol = 5e-3`, so effectively an absolute
 tolerance. The interesting question is whether symmetry helps.
 
+## Visual Overview
+
+![Symmetric inputs, general output: AB is symmetric only if A and B commute](figure.svg)
+
+Even though A and B are symmetric, their product usually is not, so all N²
+outputs are computed with the general tiled SGEMM.
+
 ## Formulation
 
 $$

@@ -13,7 +13,7 @@ cuemu_max_elements: 16777216
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/gpt-2-transformer-block)
 
-## 問題
+## 題意
 
 以 float32 實作一個完整的 **GPT-2（124M）解碼器區塊**。輸入
 $x \in \mathbb R^{S \times 768}$，以及一個包含區塊所有參數的封裝權重緩衝區
@@ -21,7 +21,13 @@ $x \in \mathbb R^{S \times 768}$，以及一個包含區塊所有參數的封裝
 產生區塊輸出（容許誤差 `1e-3`）。本題結合 GEMM、LayerNorm、注意力與
 活化函數，並展示**核心融合**如何消除大部分逐元素流量。
 
-## 公式
+## 圖解
+
+![GPT-2 區塊：Pre-LayerNorm 的注意力與 MLP，各自外包一條殘差連接](figure.svg)
+
+先由左至右讀第一列，再接到第二列。紅色虛線弧是殘差連接：在注意力與 MLP 之後，把輸入加回去。
+
+## 數學表述
 
 Pre-LayerNorm 殘差區塊，$d = 768$、$H = 12$ 個注意力頭，每頭
 $d_h = 64$，MLP 寬度為 $4d = 3072$：
@@ -57,7 +63,7 @@ $$
 | $\operatorname{GELU}_{\tanh}$ | 使用 tanh 近似的 GELU（與參考實作的 `approximate="tanh"` 相同） |
 | $Y$ | 區塊輸出 |
 
-## 方法
+## 解題思路
 
 ### 核心執行順序
 
@@ -130,7 +136,7 @@ GFLOP。GEMM 佔主要成本，因此 SGEMM 的效率決定執行時間。在 $S
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-3`
 通過。較長的序列由本題的 `cuemu_max_elements` 設定支援。
 
-## 相關內容
+## 延伸閱讀
 
 - [LLaMA Transformer 區塊](../093-llama-transformer-block/)、[DiT 區塊](../116-dit-block/)、
   [多頭注意力](../012-multi-head-attention/)、[Layer Norm](../113-layer-normalization/)。

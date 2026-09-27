@@ -20,6 +20,14 @@ $N \le 10^8$) to the front of `out`, preserving order, and fill the rest with
 lists on the GPU: active rays, surviving particles, non-zero entries, BFS
 frontiers.
 
+## Visual Overview
+
+![Stream compaction: a predicate, an exclusive scan, then a scatter](figure.svg)
+
+Kept elements (A > 0) are highlighted in every row. The exclusive scan o gives
+each kept element its destination, so the lines never cross and the order is
+preserved.
+
 ## Formulation
 
 $$

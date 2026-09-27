@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 中等 · [題目說明](https://tensara.org/problems/matrix-multiplication)
 
-## 問題
+## 題意
 
 計算一般 FP32 矩陣乘積 $C = AB$；$A$ 的大小為 $M\times K$，$B$ 的大小為
 $K\times N$，採列優先配置，尺寸從 $4096^3$ 到 $8192^3$。
 檢查條件為 `rtol = 2e-4`、`atol = 5e-3`，嚴格到無法使用 TF32
 張量核心（10 位元尾數）：這是真正的 SGEMM。
 
-## 公式
+## 圖解
+
+![SGEMM：64 × 64 的區塊分塊、每個執行緒做暫存器分塊，不使用 Tensor Core](figure.svg)
+
+一個區塊利用載入共享記憶體的 A、B 片段，計算 C 的深綠色分塊；每個執行緒再把分塊中 8 × 8 的一小塊保存在暫存器裡。
+
+## 數學表述
 
 $$
 C_{ij} = \sum_{k=0}^{K-1} A_{ik}\,B_{kj}, \qquad 0 \le i < M,\ 0 \le j < N
@@ -44,7 +50,7 @@ $$
 | $\mathcal{I}, \mathcal{J}$ | 一個輸出圖塊的 64 列與 64 欄 |
 | $\mathcal{K}_s$ | 第 $s$ 個切片，含 16 個歸約索引 |
 
-## 方法
+## 解題思路
 
 啟動核心時使用 `NoEpi`（恆等尾聲）與 `kTransB = false`。
 
@@ -104,7 +110,7 @@ $$
 $W/Q_{\min} \approx 1365$ flop/byte 遠高於任何 GPU 的效能轉折點，
 因此核心受運算限制；速度取決於內部迴圈能多接近每個 lane 每週期一次 FMA。
 
-## 注意事項
+## 常見陷阱
 
 - **TF32**：啟用 `allow_tf32` 時，cuBLAS 可能使用 TF32；參考實作會停用
   autocast，而且在 $K$ 很大時，容許誤差不接受 TF32。
@@ -117,7 +123,7 @@ $W/Q_{\min} \approx 1365$ flop/byte 遠高於任何 GPU 的效能轉折點，
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [方陣乘法](../square-matmul/)、[3D 矩陣乘法](../matmul-3d/)、
   [GEMM + ReLU](../gemm-relu/)、

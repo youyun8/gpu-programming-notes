@@ -20,6 +20,13 @@ shape $(F, D_1, D_2)$ and $\epsilon = 10^{-5}$, matching
 `F.layer_norm(x, x.shape[1:], gamma, beta, eps)`. The check is
 `rtol = 2e-4`, `atol = 1e-4`.
 
+## Visual Overview
+
+![LayerNorm over (F, D₁, D₂): one mean and variance per sample, elementwise γ and β](figure.svg)
+
+Each row is one whole sample of F·D₁·D₂ values. Its statistics normalise the
+row, and γ, β have the same shape as the sample.
+
 ## Formulation
 
 $$

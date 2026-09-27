@@ -19,6 +19,13 @@ returned as fp16 ($N \le 10^8$; benchmark $N = 10^8$; tolerance `0.05`).
 Halving the bytes per element (compared with float32) halves the runtime of
 a bandwidth-bound reduction, as long as the accumulation stays in fp32.
 
+## Visual Overview
+
+![FP16 dot product: half the bytes of fp32, but accumulate in fp32](figure.svg)
+
+The inputs are fp16 (top row), but each product and every partial sum is kept
+in fp32; only the final result is rounded to fp16.
+
 ## Formulation
 
 $$

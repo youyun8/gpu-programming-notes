@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 困難 · [題目說明](https://tensara.org/problems/matmul-4d)
 
-## 問題
+## 題意
 
 對形狀為 $B\times I\times J\times L$ 的 4D 張量 $A$ 與形狀為
 $L\times K$ 的矩陣計算 `einsum("bijl,lk->bijk", A, B)`（最大案例：
 $16\times256\times512\times256$ 乘以 $256\times768$）。
 檢查條件為 `rtol = 2e-4`、`atol = 6e-4`。
 
-## 公式
+## 圖解
+
+![einsum("bijl,lk->bijk")：把自由索引 b、i、j 攤平成一個列索引](figure.svg)
+
+A 的所有自由索引都位於被縮併的索引 l 之前，因此不必搬移任何資料就能合併成單一列索引；這個 einsum 就成了一般的 GEMM。
+
+## 數學表述
 
 $$
 C_{bijk} = \sum_{l=0}^{L-1} A_{bijl}\,W_{lk}
@@ -44,7 +50,7 @@ $$
 | $\rho$ | 攤平後的列索引 |
 | $BIJ$ | 攤平後 GEMM 的列數（最大案例中為 2 M） |
 
-## 方法
+## 解題思路
 
 只需啟動共用核心一次，設定 `rows = b*i*j`、`inner = l`、`cols = k`。
 這些形狀高而窄（$L = 32 \dots 256$），因此每個區塊只執行 2–16 個 K 切片；
@@ -106,7 +112,7 @@ $$
 而 $Q_{\min} \approx 8.6$ GB。運算強度（約 95 flop/byte）高於 FP32 的
 效能轉折點，但高出不多，因此運算與頻寬都很重要。
 
-## 注意事項
+## 常見陷阱
 
 - **名稱衝突**：簽章中的 `B` 是矩陣；批次大小是 `b`。
 - **引數順序** `(A, B, C, b, i, j, l, k)`：$l$ 位於 $k$ 之前。
@@ -116,6 +122,6 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [3D 矩陣乘法](../matmul-3d/)、[矩陣乘法](../matrix-multiplication/)。

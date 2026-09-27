@@ -19,6 +19,13 @@ tensor's Frobenius norm. Only the total element count $n$ is passed; the
 tests have 4 M to 33 M elements (for example $(4, 16, 32, 128, 128)$). The
 check is `rtol = 3e-3`, `atol = 1e-6`.
 
+## Visual Overview
+
+![Frobenius normalisation: reduce Σx² over the whole tensor, then divide every element by the norm](figure.svg)
+
+The tree adds the squares of all elements; the square root gives the norm
+(4.899 here). A second pass divides every element by it.
+
 ## Formulation
 
 $$

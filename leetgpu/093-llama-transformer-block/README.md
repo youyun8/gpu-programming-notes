@@ -21,6 +21,14 @@ hidden width 1408. None of the projections have biases. Inputs are $x$
 tables ($S \times 32$); tolerance `1e-3`. Compared with the
 [GPT-2 block](../074-gpt2-block/), every component is the "modern" variant.
 
+## Visual Overview
+
+![LLaMA block: RMSNorm, RoPE, grouped-query causal attention and a SwiGLU MLP](figure.svg)
+
+Read the first row, then the second. Compared with GPT-2 every component is
+the modern variant; the red arc is the residual around the MLP (the attention
+residual is fused into the O projection).
+
 ## Formulation
 
 $$

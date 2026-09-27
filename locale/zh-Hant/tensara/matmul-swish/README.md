@@ -12,7 +12,7 @@ status: solved
 
 **平台：** Tensara · **難度：** 中等 · [題目說明](https://tensara.org/problems/matmul-swish)
 
-## 問題
+## 題意
 
 線性層後接 Swish 與縮放：
 $\text{out} = s\cdot\operatorname{swish}(xW^{\mathsf T} + \mathbf{b})$。
@@ -20,7 +20,13 @@ $x$ 的大小為 $B\times\text{in}$，$W$ 的大小為 $\text{out}\times\text{in
 （例如 $B = 128$、in = 1024、out = 512、$s = 2$）。
 檢查條件為 `rtol = 3e-4`、`atol = 1e-5`。
 
-## 公式
+## 圖解
+
+![線性層 + Swish + 縮放：z = x Wᵀ + b，out = s · z · σ(z)](figure.svg)
+
+GEMM 使用 nn.Linear 的轉置權重配置；偏差、Swish 激活與縮放都融合在 epilogue 中。
+
+## 數學表述
 
 $$
 z_{rc} = \sum_{n=0}^{\text{in}-1} x_{rn}W_{cn} + b_c, \qquad
@@ -37,7 +43,7 @@ $$
 | $s$ | `scaling_factor` |
 | out | 結果，$B\times\text{out}$ |
 
-## 方法
+## 解題思路
 
 使用 `kTransB = true` 的共用核心，並在尾聲中加入偏置、套用
 $z\,\sigma(z)$，再乘以 $s$。
@@ -98,7 +104,7 @@ $$
 網格只有 $8\times2 = 16$ 個 $64\times64$ 區塊，遠少於 SM 數量：
 此尺寸受延遲限制，可用 split-K（沿歸約方向讓多個區塊處理同一輸出圖塊）改善。
 
-## 注意事項
+## 常見陷阱
 
 - **嚴格的 `atol = 1e-5`**：當 $z$ 很小時輸出也很小；偏置 → swish → 縮放
   的順序必須與參考實作一致。
@@ -109,7 +115,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [矩陣乘法 + Swish + 縮放](../matmul-swish-scaling/)、[Swish](../swish/)、
   [GEMM + ReLU](../gemm-relu/)、LeetGPU [SwiGLU MLP 區塊](../../leetgpu/084-swiglu-mlp-block/)。

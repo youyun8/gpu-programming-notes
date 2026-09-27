@@ -21,6 +21,14 @@ $256^3$; tolerance `0.05`). It combines the tensor-core kernel of
 [GEMM (fp16)](../022-gemm/) with the batching of
 [Batched MatMul](../030-batched-matrix-multiplication/).
 
+## Visual Overview
+
+![FP16 batched GEMM: tensor-core fragments, fp32 accumulation, one fp16 rounding](figure.svg)
+
+Each batch entry (the stacked copies) is an independent fp16 GEMM on tensor
+cores. The accumulators are fp32 and are rounded to fp16 only once, when C is
+written.
+
 ## Formulation
 
 $$

@@ -21,6 +21,14 @@ output $\operatorname{SiLU}(\mathbf x_1)\odot\mathbf x_2$ of length $N/2$
 In an LLM's MLP, $\mathbf x_1$ and $\mathbf x_2$ are the "gate" and "up"
 projections.
 
+## Visual Overview
+
+![SwiGLU gate: SiLU of the first half times the second half](figure.svg)
+
+The first half (orange) is the gate and the second half (blue) the value.
+Output i pairs element i of each half, so the output is half as long as the
+input.
+
 ## Formulation
 
 $$

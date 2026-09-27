@@ -19,6 +19,14 @@ Mean squared error between two float32 arrays of length $N$
 tolerance `1e-5`), written to `mse[0]`. It is a reduction with a
 transform on the way in: square the difference.
 
+## Visual Overview
+
+![Mean squared error: square each difference, reduce, divide by N](figure.svg)
+
+Each thread squares its differences (second row); the tree adds them up and
+the last step divides by N. The numbers are the real values of the eight
+example pairs.
+
 ## Formulation
 
 $$

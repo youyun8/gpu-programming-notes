@@ -21,6 +21,14 @@ L2 term until the step norm drops below $10^{-8}$. Matching its fixed point
 within `1e-2` essentially requires running the same algorithm. Plain
 gradient descent converges far too slowly on separable-ish data.
 
+## Visual Overview
+
+![Logistic regression by Newton's method (IRLS): repeat until the step is tiny](figure.svg)
+
+One Newton iteration is the row of boxes; the red loop repeats it until ‖Δ‖ <
+10⁻⁸. The small plot is the sigmoid that turns xᵀβ into the predicted
+probability p.
+
 ## Formulation
 
 Maximise the log-likelihood, equivalently minimise its negative plus a small

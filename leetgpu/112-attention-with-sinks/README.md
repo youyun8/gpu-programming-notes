@@ -22,6 +22,13 @@ sinks $\le 16$). This keeps the KV cache bounded for arbitrarily long streams
 without the quality collapse that plain windowing suffers when the initial
 tokens (which absorb large attention mass) are evicted.
 
+## Visual Overview
+
+![Attention with sinks: the first nₛ tokens plus a sliding window of the last w](figure.svg)
+
+Every query sees the two sink columns (orange) and a window of the three most
+recent keys (blue). Row 9 (green) therefore attends to keys 0, 1, 7, 8 and 9.
+
 ## Formulation
 
 $$

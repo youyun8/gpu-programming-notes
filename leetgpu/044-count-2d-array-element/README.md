@@ -19,6 +19,13 @@ Count occurrences of $K$ in an $N \times M$ int32 matrix
 $N = M = 10^4$, $K = 1$). The matrix is contiguous, so the 2-D shape only
 determines the element count.
 
+## Visual Overview
+
+![Counting in a 2-D array: the matrix is contiguous, so count over the flat array](figure.svg)
+
+The green cells equal K = 1. Read row by row, the matrix is the flat array on
+the right, so the 1-D counting kernel applies unchanged.
+
 ## Formulation
 
 $$

@@ -20,6 +20,14 @@ scales per 16 elements (swizzled) and one global encode factor per operand
 ($g_A$, $g_B$). The reference is `torch._scaled_mm`. The check is
 `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![NVFP4 GEMM: E2M1 blocks of 16 with E4M3 scales and one global factor per operand](figure.svg)
+
+Blocks are only 16 elements long, so the scales follow local magnitudes
+closely. The two global factors are applied once, at the end of the
+accumulation.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an

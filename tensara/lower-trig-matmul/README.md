@@ -18,6 +18,14 @@ Multiply two lower-triangular $N\times N$ FP32 matrices ($N$ = 2048 …
 8192). The reference applies `torch.tril` to both inputs and then does a
 dense matmul. The check is `rtol = 8e-4`, `atol = 2e-2`.
 
+## Visual Overview
+
+![Lower-triangular product: skip every tile that is structurally zero](figure.svg)
+
+Grey cells are the zero upper triangles of A, B and C. Tiles above the
+diagonal are written as zeros without any work, and for the others the k-loop
+only covers the range where both factors can be non-zero.
+
 ## Formulation
 
 $$

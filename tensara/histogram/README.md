@@ -20,6 +20,13 @@ values are integers stored as floats; the reference clamps them to
 $[0, n_b - 1]$ and uses `torch.bincount`. The counts are returned as
 floats and compared exactly.
 
+## Visual Overview
+
+![Image histogram: clamp each pixel to a bin, count per block in shared memory, then merge](figure.svg)
+
+Values outside 0 … $n_{b}$ − 1 are clamped to the first or last bin (red). The
+bars are the resulting counts.
+
 ## Formulation
 
 $$

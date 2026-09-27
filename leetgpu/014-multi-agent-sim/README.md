@@ -22,6 +22,14 @@ new velocity. The result goes to `agents_next`, with tolerance `1e-5`. It is
 an all-pairs ($N$-body-style) interaction, the classic showcase for
 shared-memory tiling of a quadratic loop.
 
+## Visual Overview
+
+![Boids alignment: agent i steers 5% of the way towards the mean velocity of its neighbours](figure.svg)
+
+The red agent looks at the agents inside the dashed circle (orange); grey
+agents are too far away. The formulas on the right apply the update to its
+velocity with the numbers from the picture.
+
 ## Formulation
 
 $$

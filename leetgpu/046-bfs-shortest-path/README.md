@@ -21,6 +21,14 @@ must match exactly. BFS is irregular (the frontier size varies wildly), it
 is sequential across levels, and a maze can have $O(\text{rows}\cdot\text{cols})$
 levels. All three are hard for GPUs.
 
+## Visual Overview
+
+![BFS on a grid: frontier ℓ holds the cells at distance ℓ from the start](figure.svg)
+
+Numbers are BFS distances from the red start cell; dark cells are obstacles.
+Alternating colours show successive frontiers, and the goal (bottom right) is
+reached at the distance printed next to the grid.
+
 ## Formulation
 
 Model the grid as a graph $G = (V, E)$ with the free cells as vertices and

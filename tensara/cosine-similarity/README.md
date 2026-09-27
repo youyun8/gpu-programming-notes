@@ -20,6 +20,14 @@ $1 - \cos(\mathbf{p}_i, \mathbf{t}_i)$. The reference is
 `1 - F.cosine_similarity(p, t, dim=1)` with $\epsilon = 10^{-8}$. The check
 is `rtol = atol = 1e-4`.
 
+## Visual Overview
+
+![Cosine distance per row: 1 − (p · t) / (‖p‖ ‖t‖)](figure.svg)
+
+Each row pair is two vectors; only the angle θ between them matters. The block
+reduces the dot product and both squared norms in one pass and outputs 1 − cos
+θ.
+
 ## Formulation
 
 $$

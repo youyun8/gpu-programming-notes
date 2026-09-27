@@ -19,6 +19,13 @@ $w$ ($1024\times768$ to $3840\times2160$) with a runtime threshold $\theta$
 (64, 128 or 192): pixels strictly above $\theta$ become 255, all others 0.
 The checker compares exactly.
 
+## Visual Overview
+
+![Binary thresholding: 255 where the pixel is strictly above θ, otherwise 0](figure.svg)
+
+The output jumps from 0 to 255 just after θ = 128; the red dot shows that a
+pixel exactly equal to θ still maps to 0.
+
 ## Formulation
 
 $$

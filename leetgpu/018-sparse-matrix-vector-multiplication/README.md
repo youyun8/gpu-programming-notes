@@ -21,6 +21,14 @@ about 60–70% zeros, but **stored densely** in row-major order
 lesson is to look at what actually limits a kernel before optimising: here
 it is the bytes, not the FLOPs.
 
+## Visual Overview
+
+![Sparse matrix stored densely: one warp per row streams the row and reduces with shuffles](figure.svg)
+
+Grey zeros are stored like any other value, so the kernel must read them. Warp
+2 (blue row) multiplies its row with x and produces y₂; the numbers are the
+real products of the picture.
+
 ## Formulation
 
 $$

@@ -19,6 +19,13 @@ Apply the rectified linear unit elementwise to $N$ float32 values
 nonlinearity in CNNs and MLPs. As a kernel it is the same pattern as
 [Vector Addition](../001-vector-add/), with one input stream instead of two.
 
+## Visual Overview
+
+![ReLU keeps positive inputs and replaces negative ones with 0](figure.svg)
+
+The curve is y = max(0, x). The orange dot shows a negative input mapped to 0;
+the red dot a positive input passed through unchanged.
+
 ## Formulation
 
 $$

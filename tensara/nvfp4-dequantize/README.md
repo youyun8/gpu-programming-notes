@@ -18,6 +18,13 @@ Expand an NVFP4 matrix (packed E2M1, swizzled E4M3 block scales, global
 factor $g$) to FP32, with FlashInfer's `e2m1_and_ufp8sf_scale_to_float`
 semantics. Sizes up to $8192\times4096$; `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![NVFP4 dequantisation: â = e2m1(code) · e4m3(s) / g](figure.svg)
+
+Every block of 16 codes shares one E4M3 scale, and the whole tensor shares the
+global factor g. Here each code is multiplied by 3.25 / 2 = 1.625.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an

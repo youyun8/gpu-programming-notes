@@ -12,11 +12,17 @@ status: solved
 
 **平台：** Tensara · **難度：** 中等 · [題目說明](https://tensara.org/problems/mxfp4-quantize)
 
-## 問題
+## 題意
 
 將 $M\times K$ FP32 矩陣量化為 **MXFP4**：每個位元組存兩個 4 位元 E2M1 元素，且沿 $K$ 每 32 個元素使用一個 E8M0 縮放值，結果需符合 TorchAO 的 `MXTensor` 參考路徑。縮放值輸出按列優先排列（$M\times K/32$，不交錯）。尺寸最大為 $8192\times4096$。檢查器會反量化兩邊的輸出，再以 `rtol = atol = 1e-3` 比較，因此實際上編碼必須完全一致。
 
-## 公式
+## 圖解
+
+![MXFP4 量化：每 32 個值共用一個 2 的冪縮放，元素採 E2M1](figure.svg)
+
+區塊最大值 10.2 決定指數 E = 1，因此縮放為 2。除以 2 後四捨五入到最接近的 E2M1 值，就得到下排的編碼值。
+
+## 數學表述
 
 **MX**（OCP Microscaling）張量會沿 $K$ 將每一列切成連續的 32 元素區塊；每個區塊共用一個 2 次方縮放值。依照 TorchAO `to_mx` 預設的 FLOOR 縮放值捨入方式：
 
@@ -57,7 +63,7 @@ $$
 
 因為 E2M1 最大的 2 次方是 $2^2$，縮放後的區塊最大值 $\alpha_b / 2^{E_b}$ 會落在 $[4, 8)$；大於 6 的值會飽和為 6。
 
-## 方法
+## 解題思路
 
 1. **每個 32 元素區塊使用一個 warp**（以網格跨步方式處理區塊）：lane $l$ 載入元素 $l$（合併存取的 128 位元組），經過五步 `__shfl_xor_sync` 最大值運算，讓每個 lane 都取得 $\alpha_b$。
 2. **從位元讀取指數**：`(__float_as_uint(amax) >> 23) & 0xFF` 就是帶偏差的指數，因此取得 $\lfloor\log_2\alpha_b\rfloor$ 不需呼叫 `log2f`（次正規的 $\alpha_b$ 會比照 TorchAO 進行截限）。
@@ -79,7 +85,7 @@ $$
 
 當尺寸為 $8192\times4096$ 時：共 152 MB，在 2 TB/s 下約需 76 µs。寫入採用半個 warp 的位元組儲存（每個 warp 16 位元組）；若每 8 個 lane 封裝成 32 位元字組，便能加寬寫入。
 
-## 注意事項
+## 常見陷阱
 
 - **縮放值捨入模式**：FLOOR（TorchAO 的預設值）與 OCP 規格建議的捨入方式，會讓部分區塊得到不同指數。
 - **同距值**：2.5 必須捨入為 2（偶數編碼），而非 3。
@@ -90,6 +96,6 @@ $$
 
 所有測試案例（官方尺寸的縮小版本）都已在 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [MXFP4 反量化](../mxfp4-dequantize/)、[MXFP4 GEMM](../mxfp4-gemm/)、[MXFP8 量化](../mxfp8-quantize/)、[NVFP4 量化](../nvfp4-quantize/)、LeetGPU [權重反量化](../../leetgpu/064-weight-dequantization/)。

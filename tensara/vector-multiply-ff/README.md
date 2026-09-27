@@ -17,6 +17,13 @@ status: solved
 Elementwise product of two `uint32` vectors in $\mathbb{F}_p$,
 $p = 2^{31} - 1$, for $n = 2^{20} \dots 2^{25}$. The output must be exact.
 
+## Visual Overview
+
+![Multiplication in Fₚ with p = 2³¹ − 1: a 62-bit product folded without division](figure.svg)
+
+Each thread multiplies one pair into a 62-bit product and folds it twice using
+2³¹ ≡ 1 (mod p), followed by at most one subtraction of p.
+
 ## Formulation
 
 $$

@@ -20,6 +20,14 @@ tensor is contiguous and the problem reduces to a flat count over
 $NMK \le 10^9$ elements. That count can exceed $2^{31}$ **only as a byte
 count**, which is why the offsets are 64-bit.
 
+## Visual Overview
+
+![Counting in a 3-D array: still one flat, contiguous count](figure.svg)
+
+Two slices of the tensor are shown; in memory they follow each other, so the
+whole tensor is again one flat array. Only the byte offsets need 64-bit
+arithmetic.
+
 ## Formulation
 
 $$

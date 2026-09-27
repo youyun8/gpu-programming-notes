@@ -21,6 +21,13 @@ output is $(M, H, D)$ ($M, N \le 4096$, $H \le 64$, $D \le 256$; benchmark
 $M = 1024$, $N = 2048$, $H = 16$, $D = 128$; tolerance `1e-4`). There is no
 mask, and $M \ne N$ in general.
 
+## Visual Overview
+
+![Cross-attention: M decoder queries attend to all N encoder keys, without a mask](figure.svg)
+
+The score matrix is rectangular (M ≠ N) and completely visible. Row 2 (green)
+mixes all N value vectors; every head repeats this independently.
+
 ## Formulation
 
 For each head $h$:

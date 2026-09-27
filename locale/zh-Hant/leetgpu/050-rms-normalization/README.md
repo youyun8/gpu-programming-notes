@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/rms-normalization)
 
-## 問題
+## 題意
 
 使用**純量**縮放 $\gamma$ 與平移 $\beta$，對一個長度為 $N$ 的 float32
 向量執行 RMS 正規化（$N \le 10^5$、$\varepsilon = 10^{-5}$；
@@ -20,7 +20,13 @@ status: solved
 RMSNorm 不會減去平均值。LLaMA 類 Transformer 採用的就是這種正規化
 （其中使用每個特徵各自的 $\gamma$，而且沒有 $\beta$）。
 
-## 公式
+## 圖解
+
+![單一向量的 RMS 正規化：先做全域歸約，再逐元素處理](figure.svg)
+
+所有輸入共同決定一個統計量 RMS，之後每個輸出都使用同一個值。這種「先歸約、再廣播」的兩階段結構是所有正規化 kernel 的核心。
+
+## 數學表述
 
 $$
 \operatorname{rms} = \sqrt{\frac{1}{N}\sum_{i=0}^{N-1} x_i^2 + \varepsilon}, \qquad
@@ -39,7 +45,7 @@ $$
 輸出取決於整個向量的**全域**統計值。因此，運算方式是先歸約，
 再執行廣播的逐元素處理。
 
-## 方法
+## 解題思路
 
 在同一個 stream 中執行三個核心函式：
 
@@ -84,7 +90,7 @@ $N = 10^5$ 只有 400 KB，可留在 L2 快取中，且受核心函式啟動延�
 所有 LeetGPU 測試案例均以 `1e-5` 的容許誤差在
 [cuemu](../../tools/cuemu/README.md) 通過，包括 $N = 1$。
 
-## 相關內容
+## 延伸閱讀
 
 - [融合殘差相加 + RMSNorm](../083-fused-residual-add-rms-norm/)、
   [層正規化](../113-layer-normalization/)、

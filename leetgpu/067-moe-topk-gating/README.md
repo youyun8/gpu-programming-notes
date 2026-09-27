@@ -21,6 +21,14 @@ $k$ largest of its $E$ expert logits (descending, ties to the lower index as
 tolerance `1e-5`). The outputs are `topk_indices` and `topk_weights`, both
 $M \times k$.
 
+## Visual Overview
+
+![MoE gating: pick the k best experts per token and softmax only their logits](figure.svg)
+
+For one token the two largest logits (green) select the experts. Experts 1 and
+4 tie at 2.1, so the lower index wins; the softmax is taken over the selected
+logits only.
+
 ## Formulation
 
 $$

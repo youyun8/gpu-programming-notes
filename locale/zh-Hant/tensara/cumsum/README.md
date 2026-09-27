@@ -12,12 +12,18 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/cumsum)
 
-## 問題
+## 題意
 
 計算長度為 $N$（64 K … 1 M）的 float32 向量之內含式前綴和，行為與 `torch.cumsum(x, dim=0)` 相同。檢查誤差為
 `rtol = 3e-2`、`atol = 1e-2`。這是經典的掃描問題；解法以泛型方式撰寫一次，並由 [cumprod](../cumprod/) 重複使用。
 
-## 公式
+## 圖解
+
+![累積和：分 chunk 的包含式掃描，chunk 之間以進位值串接](figure.svg)
+
+輸出 6 是輸入 0 … 6 的總和。chunk 1 從進位值 9（chunk 0 的總和）開始累加。
+
+## 數學表述
 
 $$
 y_i = \sum_{j=0}^{i} x_j
@@ -52,7 +58,7 @@ $$
 | $\ell$ | 通道索引，$0 \dots 31$ |
 | $v^{(s)}_\ell$ | 步驟 $s$ 後，通道 $\ell$ 的部分總和（使用 $2^s$ 作為 `__shfl_up_sync` 的位移量） |
 
-## 方法
+## 解題思路
 
 1. **`chunkTotals`**：每個執行緒加總其 8 個連續元素，再對 256 個執行緒的值執行區塊掃描，得到 $T_c$。
 2. **`scanTotals`**：使用單一區塊，以每次 256 個值的方式掃描總值（最多 512 個），在各趟之間保留累計總值，並寫入互斥進位值 $E_c$。
@@ -85,7 +91,7 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [累積乘積](../cumprod/)、[一維移動總和](../running-sum-1d/)、
   LeetGPU [前綴和](../../leetgpu/016-prefix-sum/)、

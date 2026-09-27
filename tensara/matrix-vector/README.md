@@ -19,6 +19,14 @@ Matrix–vector product $\mathbf{c} = A\mathbf{b}$ for $A$ of size $M\times K$
 Unlike GEMM, every element of $A$ is used exactly once, so the problem is
 about streaming $A$ at full bandwidth.
 
+## Visual Overview
+
+![Matrix–vector product: one warp streams one row of A with float4 loads](figure.svg)
+
+Warp 2 reads the highlighted row of A; its lanes take interleaved float4
+groups and multiply them with the matching groups of b, then combine their
+partial sums with shuffles into c₂.
+
 ## Formulation
 
 $$

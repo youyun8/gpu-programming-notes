@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** easy · [題目說明](https://tensara.org/problems/hard-sigmoid)
 
-## 問題
+## 題意
 
 將分段線性的「硬式」sigmoid 逐元素套用至 $M\times N$ float32 矩陣，
 結果須與 `F.hardsigmoid` 一致。測試矩陣從 $4096\times4096$ 至
 $8192\times8192$（最多 67 M 個元素）。檢查條件為
 `rtol = 1e-4`、`atol = 6e-5`。
 
-## 公式
+## 圖解
+
+![Hard sigmoid：從 (−3, 0) 到 (3, 1) 的直線斜坡，區間外截斷](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。紅點標示兩個轉折處，虛線是平滑的 sigmoid。
+
+## 數學表述
 
 $$
 C_{ij} = \operatorname{hsig}(A_{ij}), \qquad
@@ -37,7 +43,7 @@ $$
 它是 logistic sigmoid 飽和點間的線性插值，在沒有快速指數函式的硬體
 （行動 NPU）上成本較低。
 
-## 方法
+## 解題思路
 
 所有 Tensara 逐元素問題都採用同一種核心形狀：
 
@@ -69,7 +75,7 @@ $$
 
 在 $8192\times8192$ 時：$Q = 537$ MB，以 2 TB/s 計算約需 0.27 ms。
 
-## 注意事項
+## 常見陷阱
 
 - **斜率 1/6 與偏移 1/2**：有些框架（Keras）使用 $0.2x + 0.5$，
   轉折點為 $\pm2.5$；PyTorch 則使用 $x/6 + 1/2$。
@@ -81,6 +87,6 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [Sigmoid](../sigmoid/)、[Swish](../swish/)、[ReLU](../relu/)。

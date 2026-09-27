@@ -18,6 +18,13 @@ Element-wise hinge loss for $N$ real predictions and targets in
 $\{-1, +1\}$ (1 M … 67 M elements). The output is the per-element loss,
 before any averaging. The check is `rtol = atol = 1e-4`.
 
+## Visual Overview
+
+![Hinge loss: zero once the prediction is on the right side with a margin of at least 1](figure.svg)
+
+The loss depends only on the margin x·y. It is 0 from margin 1 on (red dot)
+and grows linearly below it.
+
 ## Formulation
 
 $$

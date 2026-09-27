@@ -20,6 +20,13 @@ each sequence (tolerance `1e-3`). GAE feeds the advantages of
 [PPO](../107-ppo-clipped-surrogate-loss/). Its right-to-left dependency is a
 scan that runs backwards.
 
+## Visual Overview
+
+![GAE: a discounted scan that runs from the end of the trajectory backwards](figure.svg)
+
+Aₜ depends on δₜ and on Aₜ₊₁, so the dependency runs right to left (arrow). A₂
+collects δ₂ … δ₅ with weights 1, c, c², c³.
+
 ## Formulation
 
 $$

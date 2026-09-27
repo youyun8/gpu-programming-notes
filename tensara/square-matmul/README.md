@@ -19,6 +19,13 @@ check is `rtol = 2e-4`, `atol = 5e-3`. It is [Matrix Multiplication](../matrix-m
 with $M = N = K$; $N = 6144, 7168, 9216$ are multiples of 64, so no
 partial tiles occur.
 
+## Visual Overview
+
+![Square SGEMM: the tiled kernel with M = N = K, and test sizes that divide by 64](figure.svg)
+
+The same tiled kernel as for the general case. Because the sizes are multiples
+of 64, no tile is partial and the inner loop needs no bounds checks.
+
 ## Formulation
 
 $$

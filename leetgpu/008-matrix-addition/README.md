@@ -20,6 +20,14 @@ contiguously in row-major order, so the 2-D structure is irrelevant to the
 computation. This problem shows how to exploit that fact with **vectorised
 128-bit accesses**.
 
+## Visual Overview
+
+![Matrix addition on the flattened array: float4 groups plus a scalar tail](figure.svg)
+
+The matrix is contiguous in memory, so its 2-D shape does not matter. Each
+thread adds one float4 group (blue shades); the last N² mod 4 elements (red)
+are handled one at a time.
+
 ## Formulation
 
 $$

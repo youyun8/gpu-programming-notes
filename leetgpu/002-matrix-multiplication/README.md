@@ -25,6 +25,15 @@ GEMM is the most important kernel in deep learning, and this problem is the
 classic place to learn **data reuse**: the naive kernel is ~30× slower than a
 tiled one on the same hardware.
 
+## Visual Overview
+
+![Tiled matrix multiplication: one block owns a tile of C and walks the inner dimension](figure.svg)
+
+The dark green cells are the output tile of one thread block. To compute it,
+the block repeatedly loads a slice of A (dark blue) and a slice of B (dark
+orange) into shared memory; the light strips show the full row and column
+bands it will visit.
+
 ## Formulation
 
 $$

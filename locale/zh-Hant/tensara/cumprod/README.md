@@ -12,12 +12,18 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/cumprod)
 
-## 問題
+## 題意
 
 計算長度為 $N$（64 K … 1 M）的 float32 向量之內含式前綴乘積，行為與 `torch.cumprod(x, dim=0)` 相同。大量隨機數的乘積很快就會下溢為 0 或上溢為 $\infty$，因此檢查誤差較寬鬆
 （`rtol = 1e-2`、`atol = 2e-2`）；本題的重點是掃描。
 
-## 公式
+## 圖解
+
+![累積乘積：同樣的掃描，改用乘法、單位元為 1](figure.svg)
+
+輸出 4 是輸入 0 … 4 的乘積。每個 chunk 先在內部掃描，再乘上所有前面 chunk 的乘積（進位值）。
+
+## 數學表述
 
 $$
 y_i = \prod_{j=0}^{i} x_j = y_{i-1}\,x_i, \qquad y_{-1} = 1
@@ -45,7 +51,7 @@ $$
 | $E_c$ | 傳入分段 $c$ 的互斥進位值：所有先前分段的總乘積 |
 | $c(i)$ | 包含 $i$ 的分段 |
 
-## 方法
+## 解題思路
 
 使用與 [cumsum](../cumsum/) 相同的三核心函式**先縮減再掃描**方法，並將運算子作為範本參數（`Times`：單位元素為 1，套用 $a\cdot b$）：
 
@@ -80,7 +86,7 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [累積總和](../cumsum/)、[一維移動總和](../running-sum-1d/)、
   LeetGPU [前綴和](../../leetgpu/016-prefix-sum/)。

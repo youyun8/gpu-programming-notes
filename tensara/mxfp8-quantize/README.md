@@ -19,6 +19,14 @@ element and one E8M0 scale per 32 elements along $K$ (row-major scales),
 matching TorchAO `to_mx`. Sizes go up to $8192\times4096$. The checker
 dequantizes both outputs and compares with `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![MXFP8 quantisation: one power-of-two scale per 32 values, with E4M3 elements](figure.svg)
+
+The block maximum 10.2 gives E = −5, a scale of 1/32. The scaled values have
+three mantissa bits, so they are rounded finely (for example 326.4 becomes
+320).
+
 ## Formulation
 
 An **MX** (OCP Microscaling) tensor splits every row into blocks of 32

@@ -19,6 +19,13 @@ matching `torch.cumsum(x, dim=0)`. The check is `rtol = 3e-2`,
 `atol = 1e-2`. This is the textbook scan problem; the solution is written
 once, generically, and reused by [cumprod](../cumprod/).
 
+## Visual Overview
+
+![Cumulative sum: a chunked inclusive scan with carries between chunks](figure.svg)
+
+Output 6 adds inputs 0 … 6. Chunk 1 starts from the carry 9, the total of
+chunk 0.
+
 ## Formulation
 
 $$

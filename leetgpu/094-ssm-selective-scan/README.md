@@ -22,6 +22,13 @@ vector $\mathbf s \in \mathbb R^{D}$; the output is $y$ ($B \le 16$,
 $L \le 8192$, $D \le 2048$, $N \le 64$; benchmark $B = 4$, $L = 4096$,
 $D = 512$, $N = 16$; tolerance `1e-3`).
 
+## Visual Overview
+
+![Mamba selective scan: an input-dependent linear recurrence per (channel, state)](figure.svg)
+
+Each state hₜ is the previous state scaled by Āₜ plus the input term B̄ₜ uₜ.
+Because Ā and B̄ depend on the input through Δ, the recurrence is "selective".
+
 ## Formulation
 
 For batch $b$, channel $d$, state index $n$ and time $t$ (with $h_{-1} = 0$):

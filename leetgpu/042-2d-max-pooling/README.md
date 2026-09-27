@@ -20,6 +20,14 @@ with a square window of size $k$, stride $s$ and zero-width padding $p$
 $N = 4$, $k = 3$, $s = 2$; tolerance `1e-5`). It matches
 `F.max_pool2d(…, kernel_size=k, stride=s, padding=p)`.
 
+## Visual Overview
+
+![2-D max pooling: k × k windows moved by the stride; padding never wins](figure.svg)
+
+The red square is the 3 × 3 window of output (1, 2), moved two cells per
+output step. Grey cells are padding: they act as −∞, so they can never be the
+maximum.
+
 ## Formulation
 
 $$

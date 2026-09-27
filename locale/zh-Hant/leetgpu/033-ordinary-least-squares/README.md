@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目敘述](https://leetgpu.com/challenges/ordinary-least-squares)
 
-## 問題
+## 題意
 
 以最小平方法擬合線性模型：給定 $X \in \mathbb R^{n\times f}$ 與
 $\mathbf y \in \mathbb R^n$（float32；$n \le 10^5$、$f \le 1000$、
@@ -22,7 +22,13 @@ Cholesky 分解來解**正規方程式**。這是 GPU 上的小型密集線性�
 先計算 Gram 矩陣（類似 GEMM），再進行分解
 （沿 $k$ 循序執行，每一步內部平行），最後解兩次三角方程組。
 
-## 公式
+## 圖解
+
+![以正規方程式解最小平方法：Gram 矩陣、Cholesky 分解、兩次三角求解](figure.svg)
+
+流程由左至右閱讀。下方是涉及的矩陣形狀：稠密且對稱的 Gram 矩陣 G，以及三角因子 L 與 Lᵀ（灰色半邊為 0）。
+
+## 數學表述
 
 $$
 \boldsymbol\beta = \arg\min_{\boldsymbol\beta} \lVert X\boldsymbol\beta - \mathbf y\rVert_2^2
@@ -59,7 +65,7 @@ $$
 | $G_{ij}$ | 尾端子矩陣，就地更新（只更新下三角） |
 | $L_{ik}$ | $L$ 的第 $k$ 欄，覆寫 $G$ 的該欄 |
 
-## 方法
+## 解題思路
 
 1. **`gramTiled`**：以分塊的「$A^{\mathsf T}A$」GEMM 計算
    $G = X^{\mathsf T}X$。一個 $16\times16$ 區塊計算 $G$ 的一個
@@ -112,7 +118,7 @@ $W_G = 2\times10^{11}$（float64），是主要成本。對基準測試
 含 $O(f)$ 個屏障的單一區塊很合適。大型 $f$ 則應使用分塊、多區塊的
 Cholesky（如 cuSOLVER）。
 
-## 常見問題
+## 常見陷阱
 
 - **float32 Gram 矩陣。** 在條件不佳的輸入上，可能無法達到
   `1e-2` 容許誤差。
@@ -126,7 +132,7 @@ Cholesky（如 cuSOLVER）。
 所有 LeetGPU 測試案例都已在 [cuemu](../../tools/cuemu/README.md)
 以 `1e-2` 容許誤差通過，包括 $n = f$（方形系統）與 $f = 1$。
 
-## 相關內容
+## 延伸閱讀
 
 - [邏輯斯迴歸](../034-logistic-regression/)
   （Newton 法內使用相同的 Gram + Cholesky）。

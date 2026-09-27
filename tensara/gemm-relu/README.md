@@ -20,6 +20,13 @@ $M\times N$ (PyTorch `nn.Linear` layout) and bias $\mathbf{b}$ of length $M$.
 Sizes: $B = 512 \dots 1024$, $N$ up to 8192, $M$ up to 2048. The check is
 `rtol = 3e-3`, `atol = 2e-4`.
 
+## Visual Overview
+
+![Linear layer with ReLU: an NT GEMM with bias and ReLU fused into the epilogue](figure.svg)
+
+W is stored as nn.Linear's out × in, so the kernel reads it transposed. The
+bias add and the ReLU happen in registers, and Z is never written.
+
 ## Formulation
 
 $$

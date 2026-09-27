@@ -22,6 +22,14 @@ $Q$ has shape $(H_q, S, D)$, $K$ and $V$ have shape $(H_{kv}, S, D)$
 $H_q = 32$, $H_{kv} = 8$, $S = 1024$, $D = 128$; tolerance `1e-4`). GQA
 shrinks the KV cache by $G\times$ with little quality loss.
 
+## Visual Overview
+
+![Grouped-query attention: G consecutive query heads share one K/V head](figure.svg)
+
+Blue query heads 0–3 read K/V head 0 and orange heads 4–7 read K/V head 1. The
+KV cache is therefore G = 4 times smaller than with one K/V head per query
+head.
+
 ## Formulation
 
 $$

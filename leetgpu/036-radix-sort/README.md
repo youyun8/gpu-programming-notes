@@ -20,6 +20,14 @@ Sort $N$ unsigned 32-bit integers ascending with a **radix sort**
 and it combines three primitives from earlier problems: **histograms**,
 **scans**, and a **stable scatter**.
 
+## Visual Overview
+
+![One LSD radix-sort pass: count digits, scan the counts, scatter stably](figure.svg)
+
+The keys are coloured by the digit of this pass. The counts per digit are
+scanned into starting offsets, and each key is written to its digit's offset
+plus its rank among equal digits, which keeps the pass stable.
+
 ## Formulation
 
 Write each key in base $R = 2^8$:

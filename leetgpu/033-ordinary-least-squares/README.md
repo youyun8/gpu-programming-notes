@@ -23,6 +23,14 @@ dense linear-algebra pipeline on the GPU: a Gram matrix (GEMM-like),
 a factorisation (sequential in $k$, parallel within each step), and two
 triangular solves.
 
+## Visual Overview
+
+![Least squares via the normal equations: Gram matrix, Cholesky factorisation, two triangular solves](figure.svg)
+
+The pipeline reads left to right. Below it are the shapes involved: the dense
+symmetric Gram matrix G and the triangular factors L and Lᵀ (the grey halves
+are zero).
+
 ## Formulation
 
 $$

@@ -19,6 +19,13 @@ of size $K\times N$, row-major, for sizes from $4096^3$ to $8192^3$. The
 check is `rtol = 2e-4`, `atol = 5e-3`, tight enough that TF32 tensor cores
 (10-bit mantissa) are not an option: this is a true SGEMM.
 
+## Visual Overview
+
+![SGEMM: 64 × 64 block tiles, register-blocked per thread, without tensor cores](figure.svg)
+
+One block computes the dark green tile of C from slices of A and B staged in
+shared memory; each thread then keeps an 8 × 8 piece of the tile in registers.
+
 ## Formulation
 
 $$

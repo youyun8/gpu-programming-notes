@@ -19,6 +19,14 @@ $B\times I\times J\times L$ and a matrix of shape $L\times K$ (largest:
 $16\times256\times512\times256$ times $256\times768$). The check is
 `rtol = 2e-4`, `atol = 6e-4`.
 
+## Visual Overview
+
+![einsum("bijl,lk->bijk"): flatten the free indices b, i, j into one row index](figure.svg)
+
+All free indices of A come before the contracted index l, so they collapse
+into a single row index without moving any data; the einsum is then an
+ordinary GEMM.
+
 ## Formulation
 
 $$

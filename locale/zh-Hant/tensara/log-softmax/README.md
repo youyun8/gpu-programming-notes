@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目說明](https://tensara.org/problems/log-softmax)
 
-## 問題
+## 題意
 
 對 $M\times N$ 的 float32 矩陣（$4096^2$ … $8192^2$）逐列計算
 log-softmax，結果須與 `F.log_softmax(x, dim=1)` 一致。檢查條件為
 `rtol = 1e-4`、`atol = 2e-5`。
 
-## 公式
+## 圖解
+
+![逐列 log-softmax：每個元素減去該列的 log-sum-exp](figure.svg)
+
+掃過一列一次即可求出 log-sum-exp（紫色）；輸出列就是輸入減去這個數。
+
+## 數學表述
 
 $$
 y_{ij} = \ln\frac{e^{x_{ij}}}{\sum_{k} e^{x_{ik}}} = x_{ij} - \operatorname{LSE}_i, \qquad
@@ -44,7 +50,7 @@ $$
 | $\oplus$ | 具結合律的合併；新元素 $x$ 以 $(x, 1)$ 合併 |
 | $M$ | 兩個最大值中較大者 |
 
-## 方法
+## 解題思路
 
 1. **每列使用一個 warp。** 每個 lane 以 $\oplus$ 將跨步取得的元素合併到私有的
    $(m, s)$ 數對；再用 5 步 `__shfl_xor_sync` 蝶形運算合併 32 個數對，
@@ -66,7 +72,7 @@ $$
 在 $8192^2$ 時：輸入與輸出共 268 MB，以 2 TB/s 計約 0.27 ms。
 與 softmax 不同，寫入階段不需要第二次指數運算。
 
-## 注意事項
+## 常見陷阱
 
 - **穩定性**：當 $x > 88$ 時，$\ln\sum e^{x}$ 會溢位；務必先減去最大值。
 - **初始值 $m = -\text{FLT\_MAX}$**（而非 $-\infty$），如此
@@ -78,7 +84,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax](../softmax/)、[KL 損失](../kl-loss/)、
   LeetGPU [Softmax](../../leetgpu/005-softmax/)、

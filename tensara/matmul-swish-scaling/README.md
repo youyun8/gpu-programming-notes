@@ -18,6 +18,13 @@ Compute $O = \text{scale}\cdot\operatorname{swish}(AB)$ for $A$ of size
 $M\times K$ and $B$ of size $K\times N$ (sizes 512 … 1024). The check is
 `rtol = 5e-4`, `atol = 2e-4`.
 
+## Visual Overview
+
+![O = scale · swish(AB): a plain GEMM with a Swish-and-scale epilogue](figure.svg)
+
+The GEMM tile stays in registers; the epilogue box applies the Swish
+activation and the scale before the only write.
+
 ## Formulation
 
 $$

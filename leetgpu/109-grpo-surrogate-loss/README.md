@@ -22,6 +22,14 @@ response's $S$ tokens in a PPO-style clipped objective, plus a KL penalty to
 a reference policy. Inputs: rewards $(B, G)$ and three log-probability
 tensors $(B, G, S)$. Output: the scalar loss (tolerance `1e-4`).
 
+## Visual Overview
+
+![GRPO: advantages are rewards standardised within each group of G responses](figure.svg)
+
+The four rewards of one prompt are standardised to advantages (green row).
+Each advantage is then broadcast to all S tokens of its response (bars), which
+enter a PPO-style objective.
+
 ## Formulation
 
 $$

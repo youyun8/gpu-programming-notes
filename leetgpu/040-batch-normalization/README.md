@@ -21,6 +21,14 @@ $\varepsilon = 10^{-5}$; benchmark $N = 5000$; tolerance `1e-5`). The
 statistics are a *column* reduction over a row-major matrix, which dictates
 the thread layout.
 
+## Visual Overview
+
+![BatchNorm: statistics per column (channel), taken over the batch](figure.svg)
+
+The highlighted column is one channel. Its mean and variance are computed over
+all N rows and then used to normalise that column; every channel is
+independent.
+
 ## Formulation
 
 $$

@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/attention-with-sinks)
 
-## 問題
+## 題意
 
 **StreamingLLM** 的注意力模式：每個查詢都能看到前 `num_sinks` 個權杖（「注意力匯聚權杖」），以及由最近 `window_size` 個權杖組成的滑動視窗（$Q, K, V \in \mathbb R^{M\times d}$、$M \le 10^4$、$d \le 128$、匯聚權杖數 $\le 16$）。這可讓任意長度串流的 KV 快取維持固定大小，同時避免單純視窗法在逐出起始權杖時造成品質崩潰；這些起始權杖通常會吸收大量注意力權重。
 
-## 公式
+## 圖解
+
+![Attention sink：前 nₛ 個 token 加上最近 w 個 token 的滑動視窗](figure.svg)
+
+每個查詢都看得到兩個 sink 欄（橘）與最近三個鍵組成的視窗（藍）。因此第 9 列（綠）注意的是鍵 0、1、7、8、9。
+
+## 數學表述
 
 $$
 \mathcal A_i = \bigl\{\, j \le i \ :\ j < n_s\ \ \lor\ \ j \ge i - w + 1 \,\bigr\}, \qquad
@@ -35,7 +41,7 @@ $$
 
 $\lvert\mathcal A_i\rvert \le n_s + w$，因此每個查詢的成本固定，而非 $O(i)$。
 
-## 方法
+## 解題思路
 
 Flash 風格核心（8 個 warp = 每區塊 8 個查詢資料列 $[r_0, r_1]$、每次 32 個 K/V 的分塊、每個 lane 負責一個鍵的評分、線上 softmax）只會走訪**兩個鍵範圍**：
 
@@ -57,7 +63,7 @@ $$
 
 成本與 $M$ 呈線性關係。當 $w$ 很小時，一個分塊內的大多數 lane 都會被遮罩，這與[滑動視窗注意力](../059-sliding-window-attn/)有相同的效率問題。
 
-## 常見問題
+## 常見陷阱
 
 - 早期資料列的**匯聚權杖與視窗會重疊**：第二個範圍從第一個範圍的末端開始，因此不會重複走訪任何鍵，避免在 softmax 中重複計算。
 - **因果性也適用於匯聚權杖**：當 $n_s = 4$ 時，資料列 0 仍只能看到鍵 0。
@@ -67,6 +73,6 @@ $$
 
 所有 LeetGPU 測試案例都在 [cuemu](../../tools/cuemu/README.md) 上通過，包括 $n_s \ge M$（完整因果注意力）與 $w = 1$。
 
-## 相關內容
+## 延伸閱讀
 
 - [滑動視窗注意力](../059-sliding-window-attn/)、[因果注意力](../053-casual-attention/)、[INT8 KV 快取注意力](../096-int8-kv-cache-attention/)。

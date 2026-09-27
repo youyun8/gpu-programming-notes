@@ -21,6 +21,13 @@ $0 < \gamma \le 1$; benchmark $S = 4096$, $d = 64$; tolerance `1e-3`).
 Retention has an equivalent *recurrent* form with $O(1)$ state per step. That
 is its selling point for inference.
 
+## Visual Overview
+
+![Retention: causal scores scaled by γ^(n−m), without a softmax](figure.svg)
+
+Darker cells carry more weight: the factor γ^(n−m) decays with the distance to
+the query. Future keys (upper triangle) get weight 0.
+
 ## Formulation
 
 $$

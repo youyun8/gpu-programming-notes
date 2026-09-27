@@ -12,7 +12,7 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目說明](https://tensara.org/problems/gemm-relu)
 
-## 問題
+## 題意
 
 含 ReLU 的全連接層：
 $C = \operatorname{ReLU}(AW^{\mathsf T} + \mathbf{b})$，其中 $A$ 的大小
@@ -21,7 +21,13 @@ $C = \operatorname{ReLU}(AW^{\mathsf T} + \mathbf{b})$，其中 $A$ 的大小
 $B = 512 \dots 1024$、$N$ 最大為 8192、$M$ 最大為 2048。檢查條件為
 `rtol = 3e-3`、`atol = 2e-4`。
 
-## 公式
+## 圖解
+
+![帶 ReLU 的線性層：偏差與 ReLU 融合進 epilogue 的 NT GEMM](figure.svg)
+
+W 以 nn.Linear 的 out × in 配置存放，所以 kernel 以轉置方式讀取。加偏差與 ReLU 都在暫存器中完成，Z 從不寫回記憶體。
+
+## 數學表述
 
 $$
 Z_{rc} = \sum_{n=0}^{N-1} A_{rn}\,W_{cn} + b_c, \qquad C_{rc} = \max(Z_{rc}, 0)
@@ -39,7 +45,7 @@ $$
 以 $(c, n)$ 索引 $W_{cn}$ 表示乘積為 $AW^{\mathsf T}$：兩個運算元都沿
 連續的 $n$ 軸讀取。以 BLAS 術語來說，這是「NT」GEMM。
 
-## 方法
+## 解題思路
 
 共享核心使用 `kTransB = true`（逐列讀取 $W$，並在共享磚塊中將它
 轉置）以及 epilogue `BiasReluEpi`：`fmaxf(v + bias[c], 0)`。偏差是每欄
@@ -105,7 +111,7 @@ $$
 $1024\times2048$ 時為 34 MB，約需 17 µs，相較之下 GEMM 本身約需
 0.4 ms。
 
-## 注意事項
+## 常見陷阱
 
 - **$W$ 的配置**：將 $W$ 當作 $N\times M$ 會讀取錯誤元素；測試中的
   $W$ 並非全都是方陣，因此錯誤會很明顯。
@@ -116,7 +122,7 @@ $1024\times2048$ 時為 34 MB，約需 17 µs，相較之下 GEMM 本身約需
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [GEMM × LeakyReLU](../gemm-multiply-leakyrelu/)、
   [MatMul + Swish](../matmul-swish/)、[ReLU](../relu/)、

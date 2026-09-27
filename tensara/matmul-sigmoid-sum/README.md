@@ -18,6 +18,14 @@ Return the single scalar $\sum_{i,j}\sigma\bigl((AB)_{ij}\bigr)$ for $A$ of
 size $M\times K$ and $B$ of size $K\times N$ (sizes 512 … 1024). The check
 is loose: `rtol = 5e-2`, `atol = 1e-2`.
 
+## Visual Overview
+
+![Σ σ(AB): each block reduces σ over its own output tile, then adds it with one atomic](figure.svg)
+
+The product is never stored. Each block applies σ to its output tile in
+registers, reduces the tile to one number, and adds it to the result with a
+single atomicAdd.
+
 ## Formulation
 
 $$
