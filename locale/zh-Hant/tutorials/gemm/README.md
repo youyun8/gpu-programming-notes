@@ -1,27 +1,26 @@
-# 04.x – GEMM 深入解析：最佳化階梯的其餘部分
+# 矩陣乘法：1–9 路線圖
 
-> **第三部分 · 矩陣乘法** · 先備知識：[04 – 分塊矩陣乘法](../04-tiled-matmul.md) ·
-> 下一篇：[04.1 – 向量化載入](01-vectorized-loads.md)
+> **第三部分 · 矩陣乘法** · 起點：[矩陣乘法 1 – 基礎](../04-tiled-matmul.md)
 
-[第 04 章](../04-tiled-matmul.md)最後列出一系列技巧，能讓使用暫存器分塊的
-SGEMM 從約 cuBLAS 一半的效能，提升到僅差幾個百分點，接著再進入 tensor core。
-本節各頁會說明每一項技巧，並將它實作成完整且經過測試的程式：
+這條獨立路線先介紹算術與記憶體模型，再逐項加入技巧來建構快速的分塊
+kernel，最後說明在實際系統中部署 GEMM 所需的決策。請依序閱讀各章：
+每個實作章節都以前一個程式為起點，並只做一項主要變更。
 
-| 頁面 | 技巧 | 程式 |
-|---|---|---|
-| [04.1](01-vectorized-loads.md) | 128 位元全域與共享記憶體存取，以及無衝突的 fragment 配置 | [`01-vectorized.cu`](01-vectorized.cu) |
-| [04.2](02-double-buffering.md) | 雙緩衝：載入下一個切片時，同時進行運算 | [`02-double-buffering.cu`](02-double-buffering.cu) |
-| [04.3](03-async-copies.md) | `cp.async` 多階段 pipeline，以及 Hopper 上的 TMA | [`03-cp-async.cu`](03-cp-async.cu) |
-| [04.4](04-warp-tiling.md) | Warp 分塊：block → warp → lane | [`04-warp-tiling.cu`](04-warp-tiling.cu) |
-| [04.5](05-tile-swizzling.md) | 為 L2 重用安排 swizzle（「分組」）分塊順序 | [`05-tile-swizzle.cu`](05-tile-swizzle.cu) |
-| [04.6](06-split-k-stream-k.md) | 輸出分塊太少時使用 Split-K 與 Stream-K | [`06-split-k.cu`](06-split-k.cu)、[`07-stream-k.cu`](07-stream-k.cu) |
-| [04.7](07-tensor-cores.md) | Tensor core：先用 WMMA，再以 `ldmatrix` + `mma.sync` 搭配 swizzle 共享記憶體；以及 Hopper 的 `wgmma` | [`08-wmma.cu`](08-wmma.cu)、[`09-mma-sync.cu`](09-mma-sync.cu) |
+| 步驟 | 章節 | 核心概念 | 程式 |
+|---|---|---|---|
+| 1 | [基礎](../04-tiled-matmul.md) | 算術強度、共享記憶體分塊、暫存器分塊與融合 epilogue | 行內 kernel |
+| 2 | [向量化載入](01-vectorized-loads.md) | 128 位元全域與共享記憶體存取，以及無衝突的 fragment 配置 | [`01-vectorized.cu`](01-vectorized.cu) |
+| 3 | [雙緩衝](02-double-buffering.md) | 讓下一個切片的載入與目前的運算重疊 | [`02-double-buffering.cu`](02-double-buffering.cu) |
+| 4 | [非同步複製](03-async-copies.md) | `cp.async` 多階段 pipeline，以及 Hopper TMA | [`03-cp-async.cu`](03-cp-async.cu) |
+| 5 | [Warp 分塊](04-warp-tiling.md) | 對應 block → warp → lane 的硬體階層 | [`04-warp-tiling.cu`](04-warp-tiling.cu) |
+| 6 | [分塊 Swizzle](05-tile-swizzling.md) | 將分塊啟動分組，以提高 L2 重用 | [`05-tile-swizzle.cu`](05-tile-swizzle.cu) |
+| 7 | [Split-K 與 Stream-K](06-split-k-stream-k.md) | 輸出分塊太少時增加平行度 | [`06-split-k.cu`](06-split-k.cu)、[`07-stream-k.cu`](07-stream-k.cu) |
+| 8 | [Tensor Core](07-tensor-cores.md) | WMMA、`ldmatrix`、`mma.sync`、共享記憶體 swizzle 與 `wgmma` | [`08-wmma.cu`](08-wmma.cu)、[`09-mma-sync.cu`](09-mma-sync.cu) |
+| 9 | [Production GEMM](08-production-gemm.md) | Persistent 與 grouped kernel、融合、精度、調校、dispatch 與量測 | 設計指南 |
 
-請依序閱讀。每支程式都以前一支為起點，且只改一件事，因此比較相鄰檔案的
-差異，就能清楚看出該技巧增加了哪些程式碼。
-
-每一頁的結構都相同：學習目標、搭配圖解的概念、成本模型（公式與符號表）、
-關鍵程式碼、常見陷阱、重點整理，以及附答案的練習。
+步驟 2–8 都包含經完整測試的程式。比較相鄰程式的差異，即可看出每項
+最佳化增加了哪些程式碼。步驟 9 會整合這些技巧，並說明何時應在
+production 環境改用函式庫。
 
 ## 每一頁都會改進的階層
 
@@ -47,10 +46,11 @@ $$
 | Warp | （warp 所見的共享記憶體） | $64\times32$ | 從共享記憶體讀取每個元素可進行 21.3 次 FMA |
 | Lane | 暫存器 | $8\times8$ | 讀入暫存器的每個元素可進行 4 次 FMA |
 
-第 04 章建立了 block 與 lane 兩個層級。接下來各頁會加寬載入（04.1）、
-隱藏載入延遲（04.2、04.3）、加入 warp 層級（04.4）、讓 block 透過 L2
-合作（04.5）、在分塊很少時仍讓所有 SM 保持忙碌（04.6），最後以
-tensor-core 指令取代 lane 層級的 FMA（04.7）。
+[矩陣乘法 1 – 基礎](../04-tiled-matmul.md)會建立 block 與 lane 兩個層級。
+步驟 2 會加寬載入；步驟 3 與 4 隱藏載入延遲；步驟 5 加入 warp 層級；
+步驟 6 讓 block 透過 L2 合作；步驟 7 在分塊很少時仍讓所有 SM 保持忙碌；
+步驟 8 以 tensor-core 指令取代 lane 層級的 FMA。步驟 9 則把 kernel
+知識轉化為 production 環境的 dispatch 與驗證策略。
 
 ## 執行程式
 

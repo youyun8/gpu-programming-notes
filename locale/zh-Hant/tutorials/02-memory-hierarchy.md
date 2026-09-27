@@ -49,7 +49,7 @@ extern __shared__ float dynamic_smem[];           // size given at launch:
 myKernel<<<grid, block, bytes>>>(...);            //   third launch parameter
 ```
 
-它可用來：(1) 重複使用只從全域記憶體載入一次的資料（分塊，第 04 章）；(2) 在區塊中的執行緒間交換資料（歸約，第 03 章）；(3) 重排存取，讓全域存取保持合併（第 5 節的轉置）。需要超過 48 KB 的區塊必須使用動態共享記憶體，並透過 `cudaFuncSetAttribute` 選擇啟用。
+它可用來：(1) 重複使用只從全域記憶體載入一次的資料（矩陣乘法 1 的分塊）；(2) 在區塊中的執行緒間交換資料（歸約，第 03 章）；(3) 重排存取，讓全域存取保持合併（第 5 節的轉置）。需要超過 48 KB 的區塊必須使用動態共享記憶體，並透過 `cudaFuncSetAttribute` 選擇啟用。
 
 ### 1.4 L1 與 L2
 
@@ -136,7 +136,7 @@ Sector 邊界在位址空間中固定不變。連續但從 sector 中間開始�
 const float4 v = reinterpret_cast<const float4*>(in)[i];   // i indexes float4s
 ```
 
-編譯器有時會自行向量化相鄰純量存取，但前提是能證明對齊；明確轉型可確保向量化。務必搭配執行時對齊檢查（或前導維度檢查）和純量備援，就像 [04.1](gemm/01-vectorized-loads.md) 的程式一樣：未對齊的向量存取會造成 fault，而非只是變慢。
+編譯器有時會自行向量化相鄰純量存取，但前提是能證明對齊；明確轉型可確保向量化。務必搭配執行時對齊檢查（或前導維度檢查）和純量備援，就像 [矩陣乘法 2](gemm/01-vectorized-loads.md) 的程式一樣：未對齊的向量存取會造成 fault，而非只是變慢。
 
 ## 4. 共享記憶體與 Bank 衝突
 
@@ -198,11 +198,11 @@ $$
 | $c'$ | 第 $r$ 列邏輯欄 $c$ 的實體儲存欄 |
 | $\oplus$ | 位元 XOR |
 
-固定邏輯欄 $c$ 且令 $r = 0 \dots 31$ 時，$c \oplus r$ 的值全都不同，因此讀取一欄不會衝突；讀取一列也仍是 32 個 bank 的置換。Tensor core kernel 會將相同概念套用到 16 位元組區塊而非 word；[04.7](gemm/07-tensor-cores.md#4-swizzled-shared-memory) 有完整推導，而 AMD 產生的 kernel（第 07 章）則會搜尋這類模式。
+固定邏輯欄 $c$ 且令 $r = 0 \dots 31$ 時，$c \oplus r$ 的值全都不同，因此讀取一欄不會衝突；讀取一列也仍是 32 個 bank 的置換。Tensor core kernel 會將相同概念套用到 16 位元組區塊而非 word；[矩陣乘法 8](gemm/07-tensor-cores.md#4-swizzled-shared-memory) 有完整推導，而 AMD 產生的 kernel（第 07 章）則會搜尋這類模式。
 
 ### 4.5 較寬的存取
 
-warp 的 64 位元共享存取要求 256 位元組，128 位元存取則要求 512 位元組，超過一次跨 32 個 bank 的 128 位元組傳輸。因此硬體會分別以半個 warp（64 位元）或四分之一個 warp（128 位元）處理；規則也變成：每組 16 或 8 個 lane 中，任兩個不同位址都不可共用 bank。無衝突的 128 位元存取需要 4 次傳輸，這是 512 位元組的最低次數。[04.1](gemm/01-vectorized-loads.md) 會說明 GEMM 如何安排 fragment 來符合此規則。
+warp 的 64 位元共享存取要求 256 位元組，128 位元存取則要求 512 位元組，超過一次跨 32 個 bank 的 128 位元組傳輸。因此硬體會分別以半個 warp（64 位元）或四分之一個 warp（128 位元）處理；規則也變成：每組 16 或 8 個 lane 中，任兩個不同位址都不可共用 bank。無衝突的 128 位元存取需要 4 次傳輸，這是 512 位元組的最低次數。[矩陣乘法 2](gemm/01-vectorized-loads.md) 會說明 GEMM 如何安排 fragment 來符合此規則。
 
 ## 5. 完整範例：合併存取的轉置
 

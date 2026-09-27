@@ -7,9 +7,9 @@
 ## 目錄配置
 
 ```
-tutorials/            concept chapters, organised in six paths (see tutorials/README.md); amd/ holds HIP
+tutorials/            concept chapters, organised in seven paths (see tutorials/README.md); amd/ holds HIP
                       example code, gemm/ the GEMM deep-dive pages and programs, examples/ the tested
-                      programs of chapters 09-14, figures/ the generated SVG figures
+                      programs of chapters 09-15, figures/ the generated SVG figures
 leetgpu/NNN-slug/     README.md (write-up) + solution.cu (solution.py for PyTorch-only challenges)
 tensara/slug/         README.md (write-up) + solution.cu
 tools/cuemu/          CPU CUDA emulator + test runner: checks solutions without a GPU
@@ -42,7 +42,7 @@ CI（`.github/workflows/ci.yml`）會執行：
 - 使用 `nvcc` 編譯每個解答與教學程式；
 - 在 [cuemu](tools/cuemu/README.md) CPU emulator 上，將每個解答與平台的參考實作比較；
 - 在 cuemu 上執行 GEMM 深入教學程式（`tutorials/gemm/`），包括 `cp.async`、`ldmatrix` 與 `mma.sync` code path；
-- 在 cuemu 上執行第 09–13 章的範例程式，並在 Triton interpreter 中執行第 14 章的 Triton kernel；
+- 在 cuemu 上執行第 09–13 章的範例程式，並在 Triton interpreter 中執行第 14–15 章的 Triton kernel；
 - 為 gfx942 編譯 AMD 範例；
 - 檢查本索引、圖片與網站 build 是否為最新狀態。
 
@@ -54,10 +54,11 @@ CI（`.github/workflows/ci.yml`）會執行：
 |---|---|---|
 | I · 基礎 | 00–03、09 | Toolchain、execution model、memory hierarchy、reduction、profiling（Nsight Systems/Compute、rocprof） |
 | II · 平行模式 | 10–13 | Warp primitive 與 cooperative group、scan（decoupled look-back）、convolution 與 stencil、softmax/LayerNorm/FlashAttention；各附測試程式 |
-| III · 矩陣乘法 | 04、04.1–04.7 | Tiled GEMM，接著每項技術各有一頁與一個測試程式：`float4`、double buffering、`cp.async`、warp tiling、tile swizzling、split-K/Stream-K、WMMA 與 `mma.sync` |
-| IV · 可攜式模型 Kernel | 14–15 | Triton 基礎，接著是 Quark quantization、Kimi K3 KDA 與 SGLang serving pattern |
-| V · AMD Production Kernel | 05–07、16 | CDNA3 與 MFMA、AITER assembly、hipBLASLt/TensileLite、AITER/FlyDSL 的 K3 MoE 路徑 |
-| VI · 發布 | 08 | GitHub Pages、static host、EPUB/PDF、雙語內容與圖片規範 |
+| III · 矩陣乘法 | 步驟 1–9 | 基礎、向量化載入、pipeline、warp/L2 排程、Split-K/Stream-K、tensor core、persistent/grouped GEMM、CUTLASS/CuTe 與 production dispatch |
+| IV · Triton | 14 | 從入門到生產環境的獨立教學，包含六個通過測試的 kernel |
+| V · AMD 架構與函式庫 | 05–07 | CDNA3 與 MFMA、AITER 組語、hipBLASLt/TensileLite |
+| VI · Kimi K3 案例 | 15–16 | SGLang 中的 Triton 與 AITER 中的 FlyDSL，並清楚標示 backend 邊界 |
+| VII · 發布 | 08 | GitHub Pages、static host、EPUB/PDF、雙語內容與圖片規範 |
 
 請見 [tutorials/](tutorials/README.md)。
 

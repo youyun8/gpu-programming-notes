@@ -122,4 +122,4 @@ $W/Q_{\min} \approx 1365$ flop/byte 遠高於任何 GPU 的效能轉折點，
 - [方陣乘法](../square-matmul/)、[3D 矩陣乘法](../matmul-3d/)、
   [GEMM + ReLU](../gemm-relu/)、
   LeetGPU [矩陣乘法](../../leetgpu/002-matrix-multiplication/)、
-  教學 [04 – 分塊矩陣乘法](../../tutorials/04-tiled-matmul.md)。
+  教學[矩陣乘法 1 – 基礎](../../tutorials/04-tiled-matmul.md)。

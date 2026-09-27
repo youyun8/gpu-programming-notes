@@ -275,7 +275,7 @@ __global__ void blockSumCg(const float* in, float* block_sums, int n) {
   other's shared memory (*distributed shared memory*,
   `cluster.map_shared_rank(ptr, rank)`) and synchronize with
   `cluster.sync()`. Hopper GEMMs use clusters to multicast TMA loads
-  ([04.7](gemm/07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)).
+  ([Matrix Multiplication 8](gemm/07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)).
 - **Coalesced and labeled groups.** `cg::coalesced_threads()` is the set of
   lanes that reached this point together, handy for warp-aggregated atomics
   inside a divergent branch; `cg::labeled_partition(tile, label)` groups

@@ -1,10 +1,10 @@
-# 04.2 – Double Buffering
+# Matrix Multiplication 3 – Double Buffering
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Program: [`02-double-buffering.cu`](02-double-buffering.cu) · Builds on: [04.1](01-vectorized-loads.md) ·
-> Next: [04.3 – Asynchronous Copies](03-async-copies.md)
+> **Part III · Matrix Multiplication** ·
+> Program: [`02-double-buffering.cu`](02-double-buffering.cu) · Prerequisite: [Matrix Multiplication 2 – Vectorized Loads](01-vectorized-loads.md) ·
+> Next: [Matrix Multiplication 4 – Async Copies](03-async-copies.md)
 
-In the kernel of 04.1 every $k$ slice goes through the same four phases:
+In the Vectorized Loads kernel every $k$ slice goes through the same four phases:
 issue the global loads, wait for them, store them to shared memory, compute.
 While a warp waits for its loads it has nothing else to do, and the whole
 block waits at the barrier for its slowest warp. Double buffering overlaps
@@ -118,7 +118,7 @@ is why the program does not spell it out; hand-written kernels
 
 1. Issue the global loads of slice $s+1$ before the math of slice $s$; the warp only stalls where the loaded registers are used.
 2. With two buffers, the barrier at the end of step $s$ both publishes slice $s+1$ and frees buffer $s$.
-3. Prefetching through registers costs registers and two instructions per element; `cp.async` (04.3) removes both.
+3. Prefetching through registers costs registers and two instructions per element; [Async Copies](03-async-copies.md) removes both with `cp.async`.
 
 ## Exercises
 
@@ -132,7 +132,7 @@ is why the program does not spell it out; hand-written kernels
 
     </details>
 2. Make it triple-buffered with registers. Why does it not help much, and
-   what does [04.3](03-async-copies.md) do instead?
+   what does [Matrix Multiplication 4 – Async Copies](03-async-copies.md) do instead?
 
     <details markdown="1"><summary>Answer</summary>
 

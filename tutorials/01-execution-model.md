@@ -306,7 +306,8 @@ const float4 v0 = in4[i], v1 = in4[i + stride], v2 = in4[i + 2 * stride], v3 = i
 
 This **instruction-level parallelism** (ILP) is the alternative to
 occupancy, and the one fast GEMMs rely on: they run few warps, each with
-many independent FMAs and loads (chapter 04 and the 04.x pages).
+many independent FMAs and loads, as seen in Matrix Multiplication 1 and
+throughout the Matrix Multiplication path.
 
 ## 6. Occupancy
 
@@ -401,7 +402,7 @@ $$
 A grid of 1.1 waves wastes almost half of the second wave
 ($\eta \approx 55\%$); 10.1 waves waste little ($\eta \approx 92\%$). Many
 small blocks (or a grid-stride loop with a few waves) keep the tail short;
-when blocks must be large, see Stream-K ([04.6](gemm/06-split-k-stream-k.md)).
+when blocks must be large, see Stream-K ([Matrix Multiplication 7](gemm/06-split-k-stream-k.md)).
 
 ## 8. Synchronization and Communication
 
@@ -429,7 +430,7 @@ any order unless you say so. `__threadfence()` makes a thread's earlier
 writes visible device-wide before its later writes. The standard pattern is
 "write data, fence, then set a flag (atomically)"; the reader checks the
 flag, fences, then reads the data. Chapter 03 (section 5) and the Stream-K
-kernel of [04.6](gemm/06-split-k-stream-k.md) use it.
+kernel of [Matrix Multiplication 7](gemm/06-split-k-stream-k.md) use it.
 
 ### 8.4 Atomics
 

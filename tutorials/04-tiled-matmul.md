@@ -1,7 +1,7 @@
-# 04 – Tiled Matrix Multiplication
+# Matrix Multiplication 1 – Foundations
 
 > **Part III · Matrix Multiplication** · Prerequisites: [01](01-execution-model.md), [02](02-memory-hierarchy.md) ·
-> Next: [04.x – GEMM Deep Dive](gemm/README.md)
+> Next: [Matrix Multiplication 2 – Vectorized Loads](gemm/01-vectorized-loads.md)
 
 Matrix multiplication is the opposite of the kernels in chapters 01–03: it
 has plenty of arithmetic per byte, so it *can* be compute-bound, but only if
@@ -12,7 +12,7 @@ optimisation ladder:
 2. shared-memory tiling;
 3. register tiling;
 4. the techniques that get to 80–90 % of cuBLAS (each with its own page in
-   the [04.x deep dive](gemm/README.md)).
+   the [Matrix Multiplication roadmap](gemm/README.md)).
 
 Throughout, $C = AB$ with $A$ of size $M\times K$, $B$ of size $K\times N$
 and $C$ of size $M\times N$, all row-major FP32.
@@ -166,7 +166,7 @@ Each phase needs two barriers, for two different hazards:
    tiles, which slower threads may still be reading.
 
 Removing the second barrier gives results that are right most of the time,
-which is the worst kind of bug. [04.2](gemm/02-double-buffering.md) shows
+which is the worst kind of bug. [Matrix Multiplication 3 – Double Buffering](gemm/02-double-buffering.md) shows
 how two buffers reduce this to one barrier per phase.
 
 ### 3.4 Access Patterns
@@ -279,18 +279,19 @@ accumulators no longer fit and the compiler spills.
 ## 5. The Rest of the Ladder
 
 Each technique below has its own page in the
-[GEMM deep dive](gemm/README.md), with a complete program that is tested
+[Matrix Multiplication roadmap](gemm/README.md), with a complete program that is tested
 on the CPU emulator:
 
 | Technique | Why it helps | Page |
 |-----------|-----|---|
-| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments | [04.1](gemm/01-vectorized-loads.md) |
-| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two | [04.2](gemm/02-double-buffering.md) |
-| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous | [04.3](gemm/03-async-copies.md) |
-| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse | [04.4](gemm/04-warp-tiling.md) |
-| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 | [04.5](gemm/05-tile-swizzling.md) |
-| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU | [04.6](gemm/06-split-k-stream-k.md) |
-| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow | [04.7](gemm/07-tensor-cores.md) |
+| `float4` shared loads (`LDS.128`) | 4× fewer shared-load instructions for the fragments | [2 – Vectorized Loads](gemm/01-vectorized-loads.md) |
+| Double buffering (two sets of tiles) | Load slice $s+1$ while computing slice $s$; one barrier per slice instead of two | [3 – Double Buffering](gemm/02-double-buffering.md) |
+| `cp.async` (sm_80+) / TMA (sm_90) | Global → shared copies without going through registers, asynchronous | [4 – Async Copies](gemm/03-async-copies.md) |
+| Warp tiling | A warp owns a $64\times32$ sub-tile; matches the hardware hierarchy block → warp → thread and improves register reuse | [5 – Warp Tiling](gemm/04-warp-tiling.md) |
+| Swizzled tile order ("grouped" launch) | Blocks that run together share rows of $A$ and columns of $B$ in L2 | [6 – Tile Swizzling](gemm/05-tile-swizzling.md) |
+| Split-K / Stream-K | More parallelism when $M\cdot N$ has too few tiles to fill the GPU | [7 – Split-K and Stream-K](gemm/06-split-k-stream-k.md) |
+| Tensor cores (WMMA, `mma.sync`, `wgmma`, CUTLASS/CuTe) | 8–16× the FLOPs for FP16/BF16/TF32/FP8; changes the whole data flow | [8 – Tensor Cores](gemm/07-tensor-cores.md) |
+| Production design | Select, fuse, tune, validate and operate GEMM kernels across real workloads | [9 – Production GEMM](gemm/08-production-gemm.md) |
 
 A typical progression on one GPU, as a fraction of cuBLAS FP32:
 
@@ -395,7 +396,7 @@ TensileLite's activation fusions in chapter 07).
 
     128 accumulators plus 24 fragment values plus addresses: over 160
     registers, which limits the SM to 1–2 blocks of 256 threads and usually
-    spills. Tensor cores ([04.7](gemm/07-tensor-cores.md)) are the way to
+    spills. [Matrix Multiplication 8 – Tensor Cores](gemm/07-tensor-cores.md) is the way to
     get more work per register.
 
     </details>

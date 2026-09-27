@@ -255,10 +255,10 @@ for (int z = 1; z < nz - 1; ++z) {
 
 - **Global loads**: one per point (the plane above), plus the halo
   ($2 \cdot 32 + 2 \cdot 8 = 80$ per $32\times8$ plane, 31 %).
-- **Two barriers per plane**, for the two hazards of chapter 04
-  (section 3.3): the plane is fully written before anyone reads it, and fully
-  read before the next plane overwrites it. Removing the first one makes the
-  program's checks fail.
+- **Two barriers per plane**, for the two hazards in section 3.3 of
+  Matrix Multiplication 1: the plane is fully written before anyone reads it,
+  and fully read before the next plane overwrites it. Removing the first one
+  makes the program's checks fail.
 - **Parallelism**: only $\frac{n_x}{32}\cdot\frac{n_y}{8}$ blocks. For a
   $512\times512$ cross-section that is 1024 blocks, enough; for thin domains,
   split $z$ into a few chunks, each with its own halo planes.

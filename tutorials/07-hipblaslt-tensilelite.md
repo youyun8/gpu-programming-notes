@@ -1,7 +1,7 @@
 # 07 – hipBLASLt and TensileLite: GEMM Kernels Written by a Program
 
-> **Part IV · AMD GPUs** · Prerequisites: [05](05-amd-cdna3-mfma.md), [06](06-aiter-asm-gemm.md) ·
-> Next: [14 – Triton](14-triton.md) (Part V)
+> **Part V · AMD Architecture & Libraries** · Prerequisites: [05](05-amd-cdna3-mfma.md), [06](06-aiter-asm-gemm.md) ·
+> Next: [15 – Triton in SGLang: Serving Kimi K3](15-triton-model-systems.md)
 
 AITER (chapter 06) hand-writes a few dozen GEMM kernels.
 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) ships **thousands**: ROCm's `libhipblaslt` holds one set of code objects per GPU
@@ -17,7 +17,7 @@ ship.
   the tile hierarchy (`MatrixInstruction`, `DepthU`), global and local reads,
   LDS layout, instruction scheduling, work decomposition and tile order;
 - how each parameter corresponds to a technique you saw by hand in
-  chapters 05–06 (and in the NVIDIA pages 04.1–04.7);
+  chapters 05–06 (and in the Matrix Multiplication 2–8 pages for NVIDIA);
 - how to decode a `Cijk_…` kernel name from a profile;
 - how hipBLASLt chooses a kernel at run time, and how to tune that choice
   for your own shapes;

@@ -1,8 +1,8 @@
-# 04.5 – 利用 Swizzle 分塊順序提高 L2 重用
+# 矩陣乘法 6 – 分塊 Swizzle
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`05-tile-swizzle.cu`](05-tile-swizzle.cu) · 延續：[04.4](04-warp-tiling.md) ·
-> 下一篇：[04.6 – Split-K 與 Stream-K](06-split-k-stream-k.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`05-tile-swizzle.cu`](05-tile-swizzle.cu) · 先備知識：[矩陣乘法 5 – Warp 分塊](04-warp-tiling.md) ·
+> 下一篇：[矩陣乘法 7 – Split-K 與 Stream-K](06-split-k-stream-k.md)
 
 每個 block 都會讀取完整的一個 $A$ 橫向 panel（$128\times K$）及一個 $B$
 縱向 panel（$K\times128$）。整個網格中的每個 panel 都會由多個 block
@@ -112,7 +112,7 @@ Row-major 順序中，一個 wave 需要超過 H100 的 50 MB L2；group 大小�
 - **1-D grid 也有自己的限制。** `gridDim.x` 最大可達 $2^{31} - 1$，
   因此 1-D grid 通常沒問題；2-D grid 的 `gridDim.y` 則限制為 65535。
 - **程式設計模型不保證分派順序。** 實務上會依序分派，對快取最佳化而言
-  已足夠；正確性絕不能依賴它（可比較 [04.6](06-split-k-stream-k.md)
+  已足夠；正確性絕不能依賴它（可比較[矩陣乘法 7 – Split-K 與 Stream-K](06-split-k-stream-k.md)
   的 Stream-K 修正）。
 
 ## 重點整理
@@ -125,5 +125,5 @@ Row-major 順序中，一個 wave 需要超過 H100 的 50 MB L2；group 大小�
 
 1. 擴充 `--footprint`，計算每個 wave 中有多少 panel 已由前一個 wave
    使用過（作為粗略的 L2 hit 估計）。
-2. 使用 `ncu --metrics lts__t_sector_hit_rate.pct`，比較 04.4 與此程式在
+2. 使用 `ncu --metrics lts__t_sector_hit_rate.pct`，比較 Warp 分塊程式與此程式在
    $8192\times8192\times8192$ 問題上的 L2 hit rate。

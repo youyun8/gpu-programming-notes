@@ -1,6 +1,6 @@
 # 08 – Deploying This Site
 
-> **Part V · Tools & Publishing** · Prerequisites: none (Python, Git) ·
+> **Part VII · Publishing** · Prerequisites: none (Python, Git) ·
 > Back to: [Tutorials index](README.md)
 
 This repository renders to a static website. It contains:

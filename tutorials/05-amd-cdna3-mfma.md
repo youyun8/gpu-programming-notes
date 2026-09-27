@@ -1,10 +1,11 @@
 # 05 – AMD CDNA3 and MFMA: From CUDA to wave64 Matrix Cores
 
-> **Part IV · AMD GPUs** · Prerequisites: [04](04-tiled-matmul.md) (and ideally [04.7](gemm/07-tensor-cores.md)) ·
+> **Part V · AMD Architecture & Libraries** · Prerequisites: [Matrix Multiplication 1](04-tiled-matmul.md) (and ideally [Matrix Multiplication 8](gemm/07-tensor-cores.md)) ·
 > Next: [06 – Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md)
 
-Chapters 01–04 used CUDA vocabulary. This chapter maps it onto AMD's
-data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA target `gfx942`). It
+Chapters 01–03 and Matrix Multiplication 1 used CUDA vocabulary. This chapter
+maps it onto AMD's data-centre GPUs (CDNA3: MI300X / MI300A / MI325X, ISA
+target `gfx942`). It
 then builds a small bf16 GEMM with the MFMA matrix-core instruction and reads
 the ISA the compiler emits. Chapters 06 and 07 use this vocabulary to take
 apart the hand-written assembly GEMMs in **AITER** and the generated ones in

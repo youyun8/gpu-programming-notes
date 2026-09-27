@@ -334,15 +334,17 @@ in chunks, so round $r$ up to a multiple of 8 first. The runtime computes
 the exact value with `cudaOccupancyMaxActiveBlocksPerMultiprocessor`.
 
 High occupancy is a means, not a goal. It hides latency by having other
-warps to switch to; a kernel with enough ILP (chapter 04's register tiles)
-runs at full speed with 25 % occupancy. Two occupancy problems do matter:
+warps to switch to; a kernel with enough ILP (such as the register tiles in
+Matrix Multiplication 1) runs at full speed with 25 % occupancy. Two
+occupancy problems do matter:
 
 - **Achieved far below theoretical** means the SMs are starved: too few
   blocks (a grid smaller than one wave), or blocks that finish at very
   different times.
 - **The tail effect.** A grid of 1.1 waves runs the last 0.1 wave on a
   nearly empty GPU. When the kernel is long, choose the grid so the number
-  of waves is close to an integer, or use a persistent grid (chapter 04.6).
+  of waves is close to an integer, or use a persistent grid (see Matrix
+  Multiplication 7).
 
 ### 5.7 Source Counters
 
@@ -395,7 +397,8 @@ which shifts each row by one bank and removes the conflicts.
 
 The padded version should reach roughly the bandwidth of `copyCoalesced`;
 that comparison, not the naive version, is the right yardstick. Chapter
-02, sections 4 and 5, and chapter 04.5 (swizzling) cover the banks in depth.
+02, sections 4 and 5, and Matrix Multiplication 6 (swizzling) cover the
+banks in depth.
 
 ### 6.3 Divergence
 

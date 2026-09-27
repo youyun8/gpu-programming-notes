@@ -1,8 +1,8 @@
-# 04.7 – Tensor Cores: WMMA, `mma.sync` and `wgmma`
+# Matrix Multiplication 8 – Tensor Cores
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Programs: [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) · Builds on: [04.3](03-async-copies.md), [04.4](04-warp-tiling.md) ·
-> Next: [05 – AMD CDNA3 and MFMA](../05-amd-cdna3-mfma.md)
+> **Part III · Matrix Multiplication** ·
+> Programs: [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) · Prerequisites: [Matrix Multiplication 4 – Async Copies](03-async-copies.md), [Matrix Multiplication 5 – Warp Tiling](04-warp-tiling.md) ·
+> Next: [Matrix Multiplication 9 – Production GEMM](08-production-gemm.md)
 
 Tensor cores execute a small matrix multiply-accumulate per warp
 instruction. For 16-bit inputs they deliver roughly 8–16× the FP32 FMA
@@ -34,7 +34,7 @@ documented.
 ## 2. WMMA: The Easy Entry
 
 [`08-wmma.cu`](08-wmma.cu) keeps the block tile ($128\times128$, $B_K = 32$),
-the 8 warps of 04.4 (each a $64\times32$ warp tile) and a double-buffered
+the 8 warps of the Warp Tiling kernel (each a $64\times32$ warp tile) and a double-buffered
 `cp.async` pipeline. Each warp holds $4\times2$ accumulator fragments of
 $16\times16$:
 
@@ -193,7 +193,7 @@ On sm_90 the best kernels change shape again:
   accumulators stay in registers. It is asynchronous: `wgmma.fence`,
   `wgmma.commit_group` and `wgmma.wait_group` bracket it, much like
   `cp.async` groups.
-- **TMA** ([04.3](03-async-copies.md#4-tma-on-hopper)) fills the stages; the
+- **TMA** ([Async Copies](03-async-copies.md#4-tma-on-hopper)) fills the stages; the
   shared-memory swizzle of the tensor map must match the descriptor's.
 - **Warp specialization.** A producer warp (often with fewer registers,
   `setmaxnreg`) only issues TMA copies; one or two consumer warpgroups only

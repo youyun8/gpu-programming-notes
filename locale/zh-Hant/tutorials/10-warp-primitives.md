@@ -262,7 +262,7 @@ __global__ void blockSumCg(const float* in, float* block_sums, int n) {
   區塊。它們可以讀取彼此的共享記憶體（*分散式共享記憶體*，
   `cluster.map_shared_rank(ptr, rank)`），並透過 `cluster.sync()` 同步。
   Hopper GEMM 使用叢集多播 TMA 載入
-  （[04.7](gemm/07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)）。
+  （[矩陣乘法 8](gemm/07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)）。
 - **合併與標記群組。** `cg::coalesced_threads()` 是一起抵達目前位置的
   lane 集合，適合在分歧分支中進行 warp 聚合原子操作；
   `cg::labeled_partition(tile, label)` 依值將 lane 分組，類似

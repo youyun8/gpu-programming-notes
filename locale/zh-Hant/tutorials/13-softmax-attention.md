@@ -1,9 +1,9 @@
 # 13 – Softmax、LayerNorm 與 FlashAttention
 
 > **第二部分 · 平行模式** · 先備知識：[03](03-parallel-reduction.md)、[10](10-warp-primitives.md)；
-> 第 5 節也會使用 [04](04-tiled-matmul.md) 的分塊方式 ·
+> 第 5 節也會使用 [矩陣乘法 1](04-tiled-matmul.md) 的分塊方式 ·
 > 程式：[`examples/13-softmax-attention.cu`](examples/13-softmax-attention.cu) ·
-> 下一章：[04 – 分塊矩陣乘法](04-tiled-matmul.md)（第三部分）
+> 下一章：[矩陣乘法 1 – 基礎](04-tiled-matmul.md)（第三部分）
 
 Transformer 在 GEMM 以外的大部分時間，都花在三種操作：softmax、
 正規化（LayerNorm、RMSNorm）和注意力。注意力會結合兩次 GEMM，並在
@@ -318,7 +318,7 @@ $B_q$ 可進一步減少 $K/V$ 重複讀取，代價則是共享記憶體與暫�
 
 | 功能 | 概念 |
 |---|---|
-| Tensor core | 使用 FP16/BF16 的 `mma.sync`／`wgmma` tile 計算 $S = QK^{\mathsf T}$ 和 $O \mathrel{+}= PV$（[04.7](gemm/07-tensor-cores.md)）；softmax 直接對暫存器中的累加器片段執行 |
+| Tensor core | 使用 FP16/BF16 的 `mma.sync`／`wgmma` tile 計算 $S = QK^{\mathsf T}$ 和 $O \mathrel{+}= PV$（[矩陣乘法 8](gemm/07-tensor-cores.md)）；softmax 直接對暫存器中的累加器片段執行 |
 | FlashAttention-2 | 同時對 query 區塊和 head/batch 平行化；warp 分割 query 而不是 key，因此不需跨 warp 歸約 |
 | FlashAttention-3（Hopper） | TMA 載入及非同步 `wgmma`、生產者／消費者 warp，讓一個 tile 的 softmax 與下一個 tile 的 GEMM 重疊 |
 | 反向傳播 | 逐 tile 從 $Q$、$K$ 和已儲存的 $(m, \ell)$ 重新計算 $S$ 與 $P$，而不儲存 $P$ |

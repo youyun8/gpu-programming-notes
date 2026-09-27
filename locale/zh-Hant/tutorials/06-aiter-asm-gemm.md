@@ -1,6 +1,6 @@
 # 06 – 手寫 AMD GEMM 內部：AITER 的 bf16 Asm Kernel
 
-> **第五部 · AMD Production Kernel** · 先備知識：[05 – CDNA3 與 MFMA](05-amd-cdna3-mfma.md) ·
+> **第五部 · AMD 架構與函式庫** · 先備知識：[05 – CDNA3 與 MFMA](05-amd-cdna3-mfma.md) ·
 > 下一章：[07 – hipBLASLt 與 TensileLite](07-hipblaslt-tensilelite.md)
 
 [AITER](https://github.com/ROCm/aiter) 是 AMD 用於 LLM inference 的 operator library；vLLM 與 SGLang 在 MI300、MI355 上都會使用它。大多數效能關鍵 kernel 以直接用 GCN/CDNA assembly 撰寫及調校的**預先組譯 code object（`.co`）**發布。本章拆解其中一個：

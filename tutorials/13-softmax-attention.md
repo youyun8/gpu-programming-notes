@@ -1,9 +1,9 @@
 # 13 – Softmax, LayerNorm and FlashAttention
 
 > **Part II · Parallel Patterns** · Prerequisites: [03](03-parallel-reduction.md), [10](10-warp-primitives.md);
-> section 5 also uses the tiling of [04](04-tiled-matmul.md) ·
+> section 5 also uses the tiling of [Matrix Multiplication 1](04-tiled-matmul.md) ·
 > Program: [`examples/13-softmax-attention.cu`](examples/13-softmax-attention.cu) ·
-> Next: [04 – Tiled Matrix Multiplication](04-tiled-matmul.md) (Part III)
+> Next: [Matrix Multiplication 1 – Foundations](04-tiled-matmul.md) (Part III)
 
 Transformers spend most of their non-GEMM time in three operations: softmax,
 normalization (LayerNorm, RMSNorm) and attention, which combines two GEMMs
@@ -321,7 +321,7 @@ of shared memory and registers.
 
 | Feature | Idea |
 |---|---|
-| Tensor cores | $S = QK^{\mathsf T}$ and $O \mathrel{+}= PV$ as `mma.sync` / `wgmma` tiles in FP16/BF16 ([04.7](gemm/07-tensor-cores.md)); the softmax runs on the accumulator fragments in registers |
+| Tensor cores | $S = QK^{\mathsf T}$ and $O \mathrel{+}= PV$ as `mma.sync` / `wgmma` tiles in FP16/BF16 ([Matrix Multiplication 8](gemm/07-tensor-cores.md)); the softmax runs on the accumulator fragments in registers |
 | FlashAttention-2 | Parallelize over query blocks *and* heads/batch; warps split queries rather than keys, so no inter-warp reduction is needed |
 | FlashAttention-3 (Hopper) | TMA loads and asynchronous `wgmma`, producer/consumer warps, softmax of one tile overlapped with the GEMM of the next |
 | Backward pass | Recompute $S$ and $P$ tile by tile from $Q$, $K$ and the saved $(m, \ell)$ instead of storing $P$ |

@@ -1,7 +1,7 @@
-# 04 – 分塊矩陣乘法
+# 矩陣乘法 1 – 基礎
 
 > **第三部分 · 矩陣乘法** · 先備知識：[01](01-execution-model.md)、[02](02-memory-hierarchy.md) ·
-> 下一篇：[04.x – GEMM 深入解析](gemm/README.md)
+> 下一篇：[矩陣乘法 2 – 向量化載入](gemm/01-vectorized-loads.md)
 
 矩陣乘法與第 01–03 章的 kernel 相反：每個位元組有大量運算，因此*可能*
 受運算能力限制，但前提是資料能從快速記憶體重複使用。本章會建立標準的
@@ -11,7 +11,7 @@
 2. 共享記憶體分塊；
 3. 暫存器分塊；
 4. 達到 cuBLAS 80–90 % 效能的技巧（每項技巧都在
-   [04.x 深入解析](gemm/README.md)中有獨立頁面）。
+   [矩陣乘法路線圖](gemm/README.md)中有獨立頁面）。
 
 以下皆假設 $C = AB$，$A$ 大小為 $M\times K$、$B$ 為 $K\times N$、
 $C$ 為 $M\times N$，且全部是 row-major FP32。
@@ -159,7 +159,7 @@ __global__ void matmulTiled(const float* a, const float* b, float* c, int m, int
    讀取的分塊。
 
 移除第二個 barrier 後，結果大多數時候仍然正確，這是最糟的 bug 類型。
-[04.2](gemm/02-double-buffering.md) 說明如何用兩個緩衝區，將每個階段
+[矩陣乘法 3 – 雙緩衝](gemm/02-double-buffering.md)說明如何用兩個緩衝區，將每個階段
 減少為一個 barrier。
 
 ### 3.4 存取模式
@@ -263,18 +263,19 @@ $8\times8$ 後，累加器放不下，編譯器會 spill。
 
 ## 5. 最佳化階梯的其餘部分
 
-以下每項技巧都在 [GEMM 深入解析](gemm/README.md)中有獨立頁面，並附上
+以下每項技巧都在[矩陣乘法路線圖](gemm/README.md)中有獨立頁面，並附上
 可在 CPU 模擬器測試的完整程式：
 
 | 技巧 | 幫助 | 頁面 |
 |-----------|-----|---|
-| `float4` 共享載入（`LDS.128`） | Fragment 共享載入指令減少 4 倍 | [04.1](gemm/01-vectorized-loads.md) |
-| 雙緩衝（兩組分塊） | 運算切片 $s$ 時載入 $s+1$；每個切片由兩個 barrier 減為一個 | [04.2](gemm/02-double-buffering.md) |
-| `cp.async`（sm_80+）/ TMA（sm_90） | 不經暫存器、非同步地從全域記憶體複製到共享記憶體 | [04.3](gemm/03-async-copies.md) |
-| Warp 分塊 | 每個 warp 負責 $64\times32$ 子分塊；對應 block → warp → thread 硬體階層，並提高暫存器重用 | [04.4](gemm/04-warp-tiling.md) |
-| Swizzle 分塊順序（「grouped」啟動） | 同時執行的 block 可在 L2 共用 $A$ 列與 $B$ 欄 | [04.5](gemm/05-tile-swizzling.md) |
-| Split-K / Stream-K | 當 $M\cdot N$ 的分塊太少，無法填滿 GPU 時提高平行度 | [04.6](gemm/06-split-k-stream-k.md) |
-| Tensor core（WMMA、`mma.sync`、`wgmma`、CUTLASS/CuTe） | FP16/BF16/TF32/FP8 的 FLOP 提高 8–16 倍；整個資料流都會改變 | [04.7](gemm/07-tensor-cores.md) |
+| `float4` 共享載入（`LDS.128`） | Fragment 共享載入指令減少 4 倍 | [2 – 向量化載入](gemm/01-vectorized-loads.md) |
+| 雙緩衝（兩組分塊） | 運算切片 $s$ 時載入 $s+1$；每個切片由兩個 barrier 減為一個 | [3 – 雙緩衝](gemm/02-double-buffering.md) |
+| `cp.async`（sm_80+）/ TMA（sm_90） | 不經暫存器、非同步地從全域記憶體複製到共享記憶體 | [4 – 非同步複製](gemm/03-async-copies.md) |
+| Warp 分塊 | 每個 warp 負責 $64\times32$ 子分塊；對應 block → warp → thread 硬體階層，並提高暫存器重用 | [5 – Warp 分塊](gemm/04-warp-tiling.md) |
+| Swizzle 分塊順序（「grouped」啟動） | 同時執行的 block 可在 L2 共用 $A$ 列與 $B$ 欄 | [6 – 分塊 Swizzle](gemm/05-tile-swizzling.md) |
+| Split-K / Stream-K | 當 $M\cdot N$ 的分塊太少，無法填滿 GPU 時提高平行度 | [7 – Split-K 與 Stream-K](gemm/06-split-k-stream-k.md) |
+| Tensor core（WMMA、`mma.sync`、`wgmma`、CUTLASS/CuTe） | FP16/BF16/TF32/FP8 的 FLOP 提高 8–16 倍；整個資料流都會改變 | [8 – Tensor Core](gemm/07-tensor-cores.md) |
+| Production 設計 | 為實際工作負載選擇、融合、調校、驗證及維運 GEMM kernel | [9 – Production GEMM](gemm/08-production-gemm.md) |
 
 在同一台 GPU 上，相對 cuBLAS FP32 的典型進展：
 
@@ -372,7 +373,7 @@ for (int i = 0; i < 4; ++i)
     128 個累加器加上 24 個 fragment 值與位址：超過 160 個暫存器，因此
     每個 SM 只能容納 1–2 個 256-thread block，而且通常會 spill。
     若要提高每個暫存器的工作量，應使用 tensor core
-    （[04.7](gemm/07-tensor-cores.md)）。
+    （[矩陣乘法 8 – Tensor Core](gemm/07-tensor-cores.md)）。
 
     </details>
 

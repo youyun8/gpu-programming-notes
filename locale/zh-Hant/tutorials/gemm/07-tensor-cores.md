@@ -1,8 +1,8 @@
-# 04.7 – Tensor Core：WMMA、`mma.sync` 與 `wgmma`
+# 矩陣乘法 8 – Tensor Core
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`08-wmma.cu`](08-wmma.cu)、[`09-mma-sync.cu`](09-mma-sync.cu) · 延續：[04.3](03-async-copies.md)、[04.4](04-warp-tiling.md) ·
-> 下一篇：[05 – AMD CDNA3 與 MFMA](../05-amd-cdna3-mfma.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`08-wmma.cu`](08-wmma.cu)、[`09-mma-sync.cu`](09-mma-sync.cu) · 先備知識：[矩陣乘法 4 – 非同步複製](03-async-copies.md)、[矩陣乘法 5 – Warp 分塊](04-warp-tiling.md) ·
+> 下一篇：[矩陣乘法 9 – Production GEMM](08-production-gemm.md)
 
 Tensor core 每條 warp 指令會執行一次小型矩陣乘加。使用 16 位元輸入時，
 吞吐量約為同一 GPU FP32 FMA 的 8–16 倍（A100：dense FP16/BF16 為
@@ -32,7 +32,7 @@ pipeline、warp 分塊）；改變的是最內層：lane 的 $8\times8$ outer pr
 ## 2. WMMA：簡單的入門方式
 
 [`08-wmma.cu`](08-wmma.cu) 保留 block 分塊（$128\times128$、$B_K = 32$）、
-04.4 的 8 個 warp（每個負責 $64\times32$ warp 分塊），以及雙緩衝
+Warp 分塊 kernel 的 8 個 warp（每個負責 $64\times32$ warp 分塊），以及雙緩衝
 `cp.async` pipeline。每個 warp 會保存 $4\times2$ 個 $16\times16$
 累加器 fragment：
 
@@ -183,7 +183,7 @@ ldmatrixX4<true>(r, bs + offsetB(kk + lane % 8 + 8 * (q % 2), warp_col + 16 * p 
   位元組偏移、swizzle 模式）直接從共享記憶體讀取；累加器留在暫存器中。
   它是非同步指令：由 `wgmma.fence`、`wgmma.commit_group` 與
   `wgmma.wait_group` 包圍，概念類似 `cp.async` group。
-- **TMA**（[04.3](03-async-copies.md#4-tma-on-hopper)）負責填滿 stage；
+- **TMA**（[非同步複製](03-async-copies.md#4-tma-on-hopper)）負責填滿 stage；
   tensor map 的共享記憶體 swizzle 必須與 descriptor 相符。
 - **Warp specialization。** Producer warp（通常透過 `setmaxnreg` 使用較少
   暫存器）只發出 TMA 複製；一至兩個 consumer warpgroup 只發出 `wgmma`。

@@ -1,8 +1,8 @@
-# 04.6 – Split-K and Stream-K
+# Matrix Multiplication 7 – Split-K and Stream-K
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Programs: [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) · Builds on: [04.1](01-vectorized-loads.md) ·
-> Next: [04.7 – Tensor Cores](07-tensor-cores.md)
+> **Part III · Matrix Multiplication** ·
+> Programs: [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) · Prerequisite: [Matrix Multiplication 2 – Vectorized Loads](01-vectorized-loads.md) ·
+> Next: [Matrix Multiplication 8 – Tensor Cores](07-tensor-cores.md)
 
 Every kernel so far launches one block per output tile. That is only
 efficient when there are many more tiles than SMs. For "skinny" GEMMs,
@@ -56,7 +56,7 @@ $$
 
 ![Split-K: S partial tiles summed into C](../figures/gemm-split-k.svg)
 
-The main loop of 04.1 simply runs from `k_begin` to `k_end`. The partial
+The main loop from Vectorized Loads simply runs from `k_begin` to `k_end`. The partial
 tiles are combined in one of two ways (`./split_k --atomic` selects the
 first):
 
@@ -183,8 +183,8 @@ sizes are the complement.
 
 ## Exercises
 
-1. For $M = N = 1024$, $K = 8192$ on your GPU, time 04.1, split-K (both
-   modes) and Stream-K. Where does each win?
+1. For $M = N = 1024$, $K = 8192$ on your GPU, time Vectorized Loads,
+   split-K (both modes) and Stream-K. Where does each win?
 2. Implement the hybrid schedule: the first $\lfloor T / G \rfloor\cdot G$
    tiles one block each, Stream-K for the rest.
 3. Make the atomic split-K deterministic without a second kernel: the

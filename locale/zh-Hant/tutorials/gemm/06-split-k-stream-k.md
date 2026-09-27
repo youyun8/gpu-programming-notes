@@ -1,8 +1,8 @@
-# 04.6 – Split-K 與 Stream-K
+# 矩陣乘法 7 – Split-K 與 Stream-K
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`06-split-k.cu`](06-split-k.cu)、[`07-stream-k.cu`](07-stream-k.cu) · 延續：[04.1](01-vectorized-loads.md) ·
-> 下一篇：[04.7 – Tensor Core](07-tensor-cores.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`06-split-k.cu`](06-split-k.cu)、[`07-stream-k.cu`](07-stream-k.cu) · 先備知識：[矩陣乘法 2 – 向量化載入](01-vectorized-loads.md) ·
+> 下一篇：[矩陣乘法 8 – Tensor Core](07-tensor-cores.md)
 
 目前為止，每個 kernel 都為每個輸出分塊啟動一個 block。只有分塊數遠多於
 SM 數時才有效率。對 $M = N = 512$、$K = 16384$ 這類「窄長」GEMM，
@@ -55,7 +55,7 @@ $$
 
 ![Split-K：把 S 個部分分塊加總成 C](../figures/gemm-split-k.svg)
 
-04.1 的主迴圈只需改成從 `k_begin` 執行到 `k_end`。部分分塊可用兩種方式
+向量化載入的主迴圈只需改成從 `k_begin` 執行到 `k_end`。部分分塊可用兩種方式
 合併（`./split_k --atomic` 選擇第一種）：
 
 | 模式 | 做法 | 額外流量 | 確定性 |
@@ -174,7 +174,7 @@ for g in 1 3 7 13; do python3 tools/cuemu/cuemu.py run tutorials/gemm/07-stream-
 
 ## 練習
 
-1. 在自己的 GPU 上，對 $M = N = 1024$、$K = 8192$ 計時 04.1、split-K
+1. 在自己的 GPU 上，對 $M = N = 1024$、$K = 8192$ 計時向量化載入、split-K
    （兩種模式）與 Stream-K。各自在什麼情況勝出？
 2. 實作混合排程：前 $\lfloor T / G \rfloor\cdot G$ 個分塊各用一個 block，
    其餘部分使用 Stream-K。
