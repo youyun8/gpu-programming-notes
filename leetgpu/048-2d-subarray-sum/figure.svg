@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 224" width="720" height="224" class="fig-svg" role="img">
+<title>2-D subarray sum: add every value inside the rectangle</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-048-2d-subarray-sum-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-048-2d-subarray-sum-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="224" class="fig-paper"/>
+<rect x="40" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="55" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="70" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="85" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="100" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="115" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="130" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="145" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="160" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="175" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="190" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="205" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="220" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="235" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="250" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="265" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="280" y="50" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="295" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="40" y="80" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="55" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="70" y="80" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="85" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="100" y="80" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="115" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="130" y="80" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="145" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="160" y="80" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="175" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="190" y="80" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="205" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="220" y="80" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="235" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="250" y="80" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="265" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="280" y="80" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="295" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="40" y="110" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="55" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">6</text>
+<rect x="70" y="110" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="85" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">9</text>
+<rect x="100" y="110" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="115" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">3</text>
+<rect x="130" y="110" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="145" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">6</text>
+<rect x="160" y="110" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="175" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">9</text>
+<rect x="190" y="110" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="205" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">3</text>
+<rect x="220" y="110" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="235" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">6</text>
+<rect x="250" y="110" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="265" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">9</text>
+<rect x="280" y="110" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="295" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">3</text>
+<rect x="40" y="140" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="55" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="70" y="140" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="85" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="100" y="140" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="115" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="130" y="140" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="145" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="160" y="140" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="175" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="190" y="140" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="205" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="220" y="140" width="30" height="30" rx="0" class="f-a2 s-a" stroke-width="1.2"/>
+<text x="235" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<rect x="250" y="140" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="265" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7</text>
+<rect x="280" y="140" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="295" y="155" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1</text>
+<rect x="40" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="55" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="70" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="85" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="100" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="115" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="130" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="145" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="160" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="175" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="190" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="205" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="220" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="235" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2</text>
+<rect x="250" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="265" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5</text>
+<rect x="280" y="170" width="30" height="30" rx="0" class="fig-paper s-line" stroke-width="1.2"/>
+<text x="295" y="185" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8</text>
+<rect x="100" y="80" width="150" height="90" rx="0" class="fig-none s-hl" stroke-width="2"/>
+<rect x="40" y="50" width="270" height="150" rx="0" class="fig-none s-ink" stroke-width="1.4"/>
+<text x="350" y="60" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">sum of the box = 72</text>
+<text x="350" y="94" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">rows r₀ … r₁, columns c₀ … c₁</text>
+<text x="350" y="111" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(red box). A flat index i over</text>
+<text x="350" y="128" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">the h × w box maps to</text>
+<text x="350" y="145" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(r₀ + i / w, c₀ + i mod w):</text>
+<text x="350" y="162" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">consecutive threads read</text>
+<text x="350" y="179" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">consecutive columns.</text>
+</svg>

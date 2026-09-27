@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 355" width="720" height="355" class="fig-svg" role="img">
+<title>Radix-2 FFT: log₂N stages of butterflies X_k = E_k ± ω^k O_k (N = 8 shown)</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-039-fast-fourier-transform-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-039-fast-fourier-transform-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="355" class="fig-paper"/>
+<circle cx="70" cy="40" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="70" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="100" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="130" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="160" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="190" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="220" r="4" class="k-a" stroke-width="1"/>
+<circle cx="70" cy="250" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="40" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="70" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="100" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="130" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="160" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="190" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="220" r="4" class="k-a" stroke-width="1"/>
+<circle cx="220" cy="250" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="40" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="70" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="100" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="130" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="160" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="190" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="220" r="4" class="k-a" stroke-width="1"/>
+<circle cx="370" cy="250" r="4" class="k-a" stroke-width="1"/>
+<circle cx="520" cy="40" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="70" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="100" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="130" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="160" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="190" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="220" r="4" class="k-c" stroke-width="1"/>
+<circle cx="520" cy="250" r="4" class="k-c" stroke-width="1"/>
+<text x="56" y="40" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x0</text>
+<text x="534" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X0</text>
+<text x="56" y="70" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x1</text>
+<text x="534" y="70" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X1</text>
+<text x="56" y="100" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x2</text>
+<text x="534" y="100" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X2</text>
+<text x="56" y="130" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x3</text>
+<text x="534" y="130" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X3</text>
+<text x="56" y="160" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x4</text>
+<text x="534" y="160" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X4</text>
+<text x="56" y="190" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x5</text>
+<text x="534" y="190" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X5</text>
+<text x="56" y="220" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x6</text>
+<text x="534" y="220" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X6</text>
+<text x="56" y="250" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small">x7</text>
+<text x="534" y="250" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">X7</text>
+<line x1="75" y1="40" x2="215" y2="160" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="40" x2="215" y2="40" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="70" x2="215" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="70" x2="215" y2="70" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="100" x2="215" y2="220" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="100" x2="215" y2="100" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="130" x2="215" y2="250" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="130" x2="215" y2="130" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="160" x2="215" y2="40" class="s-b" stroke-width="1"/>
+<line x1="75" y1="160" x2="215" y2="160" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="190" x2="215" y2="70" class="s-b" stroke-width="1"/>
+<line x1="75" y1="190" x2="215" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="220" x2="215" y2="100" class="s-b" stroke-width="1"/>
+<line x1="75" y1="220" x2="215" y2="220" class="s-muted" stroke-width="1"/>
+<line x1="75" y1="250" x2="215" y2="130" class="s-b" stroke-width="1"/>
+<line x1="75" y1="250" x2="215" y2="250" class="s-muted" stroke-width="1"/>
+<text x="145" y="284" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">stage 1</text>
+<line x1="225" y1="40" x2="365" y2="100" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="40" x2="365" y2="40" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="70" x2="365" y2="130" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="70" x2="365" y2="70" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="100" x2="365" y2="40" class="s-b" stroke-width="1"/>
+<line x1="225" y1="100" x2="365" y2="100" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="130" x2="365" y2="70" class="s-b" stroke-width="1"/>
+<line x1="225" y1="130" x2="365" y2="130" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="160" x2="365" y2="220" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="160" x2="365" y2="160" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="190" x2="365" y2="250" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="190" x2="365" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="220" x2="365" y2="160" class="s-b" stroke-width="1"/>
+<line x1="225" y1="220" x2="365" y2="220" class="s-muted" stroke-width="1"/>
+<line x1="225" y1="250" x2="365" y2="190" class="s-b" stroke-width="1"/>
+<line x1="225" y1="250" x2="365" y2="250" class="s-muted" stroke-width="1"/>
+<text x="295" y="284" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">stage 2</text>
+<line x1="375" y1="40" x2="515" y2="70" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="40" x2="515" y2="40" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="70" x2="515" y2="40" class="s-b" stroke-width="1"/>
+<line x1="375" y1="70" x2="515" y2="70" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="100" x2="515" y2="130" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="100" x2="515" y2="100" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="130" x2="515" y2="100" class="s-b" stroke-width="1"/>
+<line x1="375" y1="130" x2="515" y2="130" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="160" x2="515" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="160" x2="515" y2="160" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="190" x2="515" y2="160" class="s-b" stroke-width="1"/>
+<line x1="375" y1="190" x2="515" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="220" x2="515" y2="250" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="220" x2="515" y2="220" class="s-muted" stroke-width="1"/>
+<line x1="375" y1="250" x2="515" y2="220" class="s-b" stroke-width="1"/>
+<line x1="375" y1="250" x2="515" y2="250" class="s-muted" stroke-width="1"/>
+<text x="445" y="284" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">stage 3</text>
+<text x="40" y="316" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Stockham form: every stage reads one buffer and writes the other in natural order, so no bit-reversal</text>
+<text x="40" y="333" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">pass is needed. Arbitrary N: Bluestein's algorithm turns the DFT into a power-of-two convolution.</text>
+</svg>

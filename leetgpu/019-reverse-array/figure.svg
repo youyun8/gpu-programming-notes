@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 257" width="720" height="257" class="fig-svg" role="img">
+<title>In-place reversal: thread i swaps x[i] with its mirror x[N−1−i]</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-019-reverse-array-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-019-reverse-array-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-019-reverse-array-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-019-reverse-array-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-019-reverse-array-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-019-reverse-array-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-019-reverse-array-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="257" class="fig-paper"/>
+<text x="144" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">0</text>
+<text x="200" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<text x="256" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">2</text>
+<text x="312" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">3</text>
+<text x="368" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">4</text>
+<text x="424" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">5</text>
+<text x="480" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">6</text>
+<text x="536" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">7</text>
+<text x="592" y="30" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">8</text>
+<text x="106" y="104" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">before</text>
+<rect x="120" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="144" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">a</text>
+<rect x="176" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="200" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">b</text>
+<rect x="232" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="256" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">c</text>
+<rect x="288" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="312" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">d</text>
+<rect x="344" y="90" width="48" height="28" rx="2" class="f-hl s-a" stroke-width="1.2"/>
+<text x="368" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">e</text>
+<rect x="400" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="424" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">f</text>
+<rect x="456" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="480" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">g</text>
+<rect x="512" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="536" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">h</text>
+<rect x="568" y="90" width="48" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="592" y="104" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">i</text>
+<path d="M144,88 C144,46 592,46 592,88" class="fig-none s-b" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#leetgpu-019-reverse-array-ah-b)" marker-start="url(#leetgpu-019-reverse-array-ah-b)"/>
+<path d="M200,88 C200,55 536,55 536,88" class="fig-none s-b" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#leetgpu-019-reverse-array-ah-b)" marker-start="url(#leetgpu-019-reverse-array-ah-b)"/>
+<path d="M256,88 C256,64 480,64 480,88" class="fig-none s-b" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#leetgpu-019-reverse-array-ah-b)" marker-start="url(#leetgpu-019-reverse-array-ah-b)"/>
+<path d="M312,88 C312,73 424,73 424,88" class="fig-none s-b" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#leetgpu-019-reverse-array-ah-b)" marker-start="url(#leetgpu-019-reverse-array-ah-b)"/>
+<text x="106" y="174" text-anchor="end" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">after</text>
+<rect x="120" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="144" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">i</text>
+<rect x="176" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="200" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">h</text>
+<rect x="232" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="256" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">g</text>
+<rect x="288" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="312" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">f</text>
+<rect x="344" y="160" width="48" height="28" rx="2" class="f-hl s-c" stroke-width="1.2"/>
+<text x="368" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">e</text>
+<rect x="400" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="424" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">d</text>
+<rect x="456" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="480" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">c</text>
+<rect x="512" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="536" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">b</text>
+<rect x="568" y="160" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="592" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">a</text>
+<text x="40" y="218" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Only ⌊N/2⌋ threads run and each owns one pair, so no two threads touch the</text>
+<text x="40" y="235" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">same element: no race and no second buffer. The middle element (odd N) stays.</text>
+</svg>

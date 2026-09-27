@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 274" width="720" height="274" class="fig-svg" role="img">
+<title>GPT-2 block: pre-LayerNorm attention and MLP, each with a residual add</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-074-gpt2-block-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-074-gpt2-block-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-074-gpt2-block-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-074-gpt2-block-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-074-gpt2-block-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-074-gpt2-block-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-074-gpt2-block-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="274" class="fig-paper"/>
+<rect x="24" y="46" width="108" height="38" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="78" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">x</text>
+<rect x="154" y="46" width="108" height="38" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="208" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">LayerNorm 1</text>
+<line x1="134" y1="65" x2="152" y2="65" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="284" y="46" width="108" height="38" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="338" y="56.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">QKV GEMM</text>
+<text x="338" y="73.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+ bias</text>
+<line x1="264" y1="65" x2="282" y2="65" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="414" y="46" width="108" height="38" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="468" y="56.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">causal</text>
+<text x="468" y="73.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">attention</text>
+<line x1="394" y1="65" x2="412" y2="65" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="544" y="46" width="108" height="38" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="598" y="56.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">out proj</text>
+<text x="598" y="73.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+ residual</text>
+<line x1="524" y1="65" x2="542" y2="65" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<path d="M598.0,86.0 L598.0,96.0 L78.0,96.0 L78.0,148.0" class="fig-none s-muted" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="24" y="150" width="108" height="38" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="78" y="169" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">LayerNorm 2</text>
+<rect x="154" y="150" width="108" height="38" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="208" y="160.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">FC GEMM</text>
+<text x="208" y="177.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+ bias, GELU</text>
+<line x1="134" y1="169" x2="152" y2="169" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="284" y="150" width="108" height="38" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="338" y="160.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">proj GEMM</text>
+<text x="338" y="177.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+ residual</text>
+<line x1="264" y1="169" x2="282" y2="169" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<rect x="414" y="150" width="108" height="38" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="468" y="169" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">y</text>
+<line x1="394" y1="169" x2="412" y2="169" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-074-gpt2-block-ah-muted)"/>
+<path d="M78.0,46.0 L78.0,30.0 L598.0,30.0 L598.0,44.0" class="fig-none s-hl" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 3" marker-end="url(#leetgpu-074-gpt2-block-ah-hl)"/>
+<text x="338" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-hl fig-tiny">residual x</text>
+<path d="M78.0,150.0 L78.0,134.0 L338.0,134.0 L338.0,148.0" class="fig-none s-hl" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 3" marker-end="url(#leetgpu-074-gpt2-block-ah-hl)"/>
+<text x="208" y="124" text-anchor="middle" dominant-baseline="central" class="fig-txt t-hl fig-tiny">residual x′</text>
+<text x="40" y="218" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Fusion: biases, GELU and the residual adds run in GEMM epilogues, and LayerNorm reads</text>
+<text x="40" y="235" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">the residual stream once, so the only full-size round trips are the GEMM outputs.</text>
+<text x="40" y="252" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">d = 768, 12 heads of 64, MLP width 3072.</text>
+</svg>

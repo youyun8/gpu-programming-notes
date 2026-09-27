@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 331" width="720" height="331" class="fig-svg" role="img">
+<title>Top-k by radix select: find the k-th largest value τ, keep everything above it</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-029-top-k-selection-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-029-top-k-selection-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-029-top-k-selection-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-029-top-k-selection-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-029-top-k-selection-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-029-top-k-selection-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-029-top-k-selection-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="331" class="fig-paper"/>
+<rect x="60" y="143.5" width="34" height="46.5" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="77" y="134.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">3.1</text>
+<text x="77" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">0</text>
+<rect x="106" y="79" width="34" height="111" rx="0" class="f-b2 s-a" stroke-width="1"/>
+<text x="123" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7.4</text>
+<text x="123" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">1</text>
+<rect x="152" y="172" width="34" height="18" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="169" y="163" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">1.2</text>
+<text x="169" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">2</text>
+<rect x="198" y="55" width="34" height="135" rx="0" class="f-c2 s-a" stroke-width="1"/>
+<text x="215" y="46" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">9</text>
+<text x="215" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">3</text>
+<rect x="244" y="107.5" width="34" height="82.5" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="261" y="98.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">5.5</text>
+<text x="261" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">4</text>
+<rect x="290" y="79" width="34" height="111" rx="0" class="f-b2 s-a" stroke-width="1"/>
+<text x="307" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">7.4</text>
+<text x="307" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">5</text>
+<rect x="336" y="157" width="34" height="33" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="353" y="148" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">2.2</text>
+<text x="353" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">6</text>
+<rect x="382" y="68.5" width="34" height="121.5" rx="0" class="f-c2 s-a" stroke-width="1"/>
+<text x="399" y="59.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">8.1</text>
+<text x="399" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">7</text>
+<rect x="428" y="130" width="34" height="60" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="445" y="121" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">4</text>
+<text x="445" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">8</text>
+<rect x="474" y="95.5" width="34" height="94.5" rx="0" class="f-a s-a" stroke-width="1"/>
+<text x="491" y="86.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">6.3</text>
+<text x="491" y="202" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-tiny">9</text>
+<line x1="56" y1="190" x2="512" y2="190" class="s-ink" stroke-width="1"/>
+<line x1="50" y1="79" x2="520" y2="79" class="s-b" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="528" y="79" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">τ = 7.4</text>
+<text x="528" y="144" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">k = 4</text>
+<text x="528" y="161" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">green: x &gt; τ</text>
+<text x="528" y="178" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">orange: x = τ</text>
+<text x="528" y="195" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(ties fill the rest)</text>
+<text x="150" y="248" text-anchor="end" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">output</text>
+<rect x="164" y="234" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="188" y="248" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">9</text>
+<rect x="220" y="234" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="244" y="248" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">8.1</text>
+<rect x="276" y="234" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="300" y="248" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">7.4</text>
+<rect x="332" y="234" width="48" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="356" y="248" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">7.4</text>
+<text x="40" y="292" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Floats are mapped to order-preserving unsigned keys; four 8-bit histogram passes</text>
+<text x="40" y="309" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">fix τ digit by digit (read-only), then only the k survivors are sorted.</text>
+</svg>

@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 278" width="720" height="278" class="fig-svg" role="img">
+<title>ViT patch embedding: cut the image into P × P patches and project each one (a GEMM)</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-118-vit-patch-embedding-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-118-vit-patch-embedding-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="278" class="fig-paper"/>
+<rect x="40" y="50" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="56" y="50" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="72" y="50" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="88" y="50" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="104" y="50" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="120" y="50" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="136" y="50" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="152" y="50" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="40" y="66" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="56" y="66" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="72" y="66" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="88" y="66" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="104" y="66" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="120" y="66" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="136" y="66" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="152" y="66" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="40" y="82" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="56" y="82" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="72" y="82" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="88" y="82" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="104" y="82" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="120" y="82" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="136" y="82" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="152" y="82" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="40" y="98" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="56" y="98" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="72" y="98" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="88" y="98" width="16" height="16" rx="0" class="f-a s-line" stroke-width="0.5"/>
+<rect x="104" y="98" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="120" y="98" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="136" y="98" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="152" y="98" width="16" height="16" rx="0" class="f-b s-line" stroke-width="0.5"/>
+<rect x="40" y="114" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="56" y="114" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="72" y="114" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="88" y="114" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="104" y="114" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="120" y="114" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="136" y="114" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="152" y="114" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="40" y="130" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="56" y="130" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="72" y="130" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="88" y="130" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="104" y="130" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="120" y="130" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="136" y="130" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="152" y="130" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="40" y="146" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="56" y="146" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="72" y="146" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="88" y="146" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="104" y="146" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="120" y="146" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="136" y="146" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="152" y="146" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="40" y="162" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="56" y="162" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="72" y="162" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="88" y="162" width="16" height="16" rx="0" class="f-c s-line" stroke-width="0.5"/>
+<rect x="104" y="162" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="120" y="162" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="136" y="162" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<rect x="152" y="162" width="16" height="16" rx="0" class="f-d s-line" stroke-width="0.5"/>
+<line x1="104" y1="50" x2="104" y2="178" class="s-ink" stroke-width="1.4"/>
+<line x1="40" y1="114" x2="168" y2="114" class="s-ink" stroke-width="1.4"/>
+<rect x="40" y="50" width="128" height="128" rx="0" class="fig-none s-ink" stroke-width="1.4"/>
+<text x="104" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">image (C × H × W)</text>
+<text x="104" y="192" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">P = 4: 2 × 2 patches</text>
+<line x1="178" y1="114" x2="222" y2="114" class="s-muted" stroke-width="1.2" marker-end="url(#leetgpu-118-vit-patch-embedding-ah-muted)"/>
+<rect x="228" y="50" width="120" height="26" rx="2" class="f-a2 s-a" stroke-width="1"/>
+<text x="288" y="63" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">patch 0: C·P² values</text>
+<rect x="228" y="82" width="120" height="26" rx="2" class="f-b2 s-b" stroke-width="1"/>
+<text x="288" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">patch 1: C·P² values</text>
+<rect x="228" y="114" width="120" height="26" rx="2" class="f-c2 s-c" stroke-width="1"/>
+<text x="288" y="127" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">patch 2: C·P² values</text>
+<rect x="228" y="146" width="120" height="26" rx="2" class="f-d2 s-d" stroke-width="1"/>
+<text x="288" y="159" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">patch 3: C·P² values</text>
+<rect x="378" y="90" width="110" height="40" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="433" y="101.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">× Wᵀ + β</text>
+<text x="433" y="118.5" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">(C·P² → D)</text>
+<line x1="350" y1="110" x2="376" y2="110" class="s-muted" stroke-width="1.2" marker-end="url(#leetgpu-118-vit-patch-embedding-ah-muted)"/>
+<rect x="528" y="50" width="100" height="24" rx="4" class="f-hl s-hl" stroke-width="1.2"/>
+<text x="578" y="62" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">CLS + E<tspan baseline-shift="sub" font-size="75%">0</tspan></text>
+<rect x="528" y="78" width="100" height="24" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="578" y="90" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t<tspan baseline-shift="sub" font-size="75%">0</tspan> + E<tspan baseline-shift="sub" font-size="75%">1</tspan></text>
+<rect x="528" y="106" width="100" height="24" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="578" y="118" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t<tspan baseline-shift="sub" font-size="75%">1</tspan> + E<tspan baseline-shift="sub" font-size="75%">2</tspan></text>
+<rect x="528" y="134" width="100" height="24" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="578" y="146" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t<tspan baseline-shift="sub" font-size="75%">2</tspan> + E<tspan baseline-shift="sub" font-size="75%">3</tspan></text>
+<rect x="528" y="162" width="100" height="24" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="578" y="174" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">t<tspan baseline-shift="sub" font-size="75%">3</tspan> + E<tspan baseline-shift="sub" font-size="75%">4</tspan></text>
+<line x1="490" y1="110" x2="526" y2="110" class="s-muted" stroke-width="1.2" marker-end="url(#leetgpu-118-vit-patch-embedding-ah-muted)"/>
+<text x="40" y="222" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">A convolution with kernel = stride = P is exactly im2col + GEMM: the patch gather is a</text>
+<text x="40" y="239" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">pure index transform, fused into the GEMM's A-tile loads; bias and positional embeddings</text>
+<text x="40" y="256" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">are added in the epilogue, and row 0 of every image is the learned CLS token.</text>
+</svg>

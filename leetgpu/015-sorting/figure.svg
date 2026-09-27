@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 287" width="720" height="287" class="fig-svg" role="img">
+<title>Sorting floats with LSD radix sort: an order-preserving map from float bits to keys</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-015-sorting-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-015-sorting-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-015-sorting-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-015-sorting-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-015-sorting-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-015-sorting-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-015-sorting-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="287" class="fig-paper"/>
+<text x="40" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">float x</text>
+<text x="150" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">bits(x)</text>
+<text x="290" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">key f(bits)</text>
+<text x="430" y="40" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">rank</text>
+<text x="40" y="68" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">−2.5</text>
+<text x="150" y="68" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">0xC0200000</text>
+<text x="290" y="68" text-anchor="start" dominant-baseline="central" class="fig-mono t-c fig-small">0x3FDFFFFF</text>
+<text x="430" y="68" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">0</text>
+<text x="40" y="94" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">3</text>
+<text x="150" y="94" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">0x40400000</text>
+<text x="290" y="94" text-anchor="start" dominant-baseline="central" class="fig-mono t-c fig-small">0xC0400000</text>
+<text x="430" y="94" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">3</text>
+<text x="40" y="120" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">−0.5</text>
+<text x="150" y="120" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">0xBF000000</text>
+<text x="290" y="120" text-anchor="start" dominant-baseline="central" class="fig-mono t-c fig-small">0x40FFFFFF</text>
+<text x="430" y="120" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">1</text>
+<text x="40" y="146" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small">1</text>
+<text x="150" y="146" text-anchor="start" dominant-baseline="central" class="fig-mono t-ink fig-small">0x3F800000</text>
+<text x="290" y="146" text-anchor="start" dominant-baseline="central" class="fig-mono t-c fig-small">0xBF800000</text>
+<text x="430" y="146" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">2</text>
+<text x="510" y="68" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">negative: flip all bits</text>
+<text x="510" y="92" text-anchor="start" dominant-baseline="central" class="fig-txt t-b fig-small">non-negative: set the sign bit</text>
+<rect x="40" y="190" width="140" height="32" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="110" y="206" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">digit 0 (bits 0–7)</text>
+<rect x="206" y="190" width="140" height="32" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="276" y="206" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">digit 1</text>
+<line x1="182" y1="206" x2="204" y2="206" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-015-sorting-ah-muted)"/>
+<rect x="372" y="190" width="140" height="32" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="442" y="206" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">digit 2</text>
+<line x1="348" y1="206" x2="370" y2="206" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-015-sorting-ah-muted)"/>
+<rect x="538" y="190" width="140" height="32" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="608" y="206" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">digit 3 (top)</text>
+<line x1="514" y1="206" x2="536" y2="206" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-015-sorting-ah-muted)"/>
+<text x="40" y="176" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">4 stable counting-sort passes: histogram per tile → scan → scatter</text>
+<text x="40" y="248" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Unsigned key order equals float order, so four 8-bit passes sort the data;</text>
+<text x="40" y="265" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">stability keeps the order set by the lower digits.</text>
+</svg>
