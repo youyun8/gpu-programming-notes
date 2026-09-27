@@ -5,12 +5,11 @@
 > [矩陣乘法 8 – Tensor Core](gemm/07-tensor-cores.md)、
 > [Triton – 從第一個 Kernel 到生產環境](14-triton.md)，以及
 > [CDNA3 與 MFMA](05-amd-cdna3-mfma.md) ·
-> 上一章：[15 – SGLang 中的 Triton：以 Kimi K3 服務為例](15-triton-model-systems.md) ·
+> 上一章：[15 – SGLang 中的 Triton：以 Kimi K3 推論服務為例](15-triton-model-systems.md) ·
 > 下一章：[08 – 部署本站](08-deploying-this-site.md)
 
-本章將沿著一條 production 路徑，從 Kimi K3 checkpoint 一路追蹤到
-AMD GPU 上的 kernel。內容聚焦於透過 AITER 使用的 FlyDSL kernel，
-但會清楚區分各軟體的邊界：
+本章沿著一條實際上線的路徑，從 Kimi K3 的 checkpoint 一路追到 AMD GPU 上執行的
+kernel。重點是經由 AITER 呼叫的 FlyDSL kernel，但每一層軟體的分界都會講清楚：
 
 ```text
 Quark converts checkpoint data
@@ -19,22 +18,22 @@ Quark converts checkpoint data
             → FlyDSL, Triton/Gluon, CK, HIP, assembly, or Opus runs a kernel
 ```
 
-Quark 不是 serving runtime。AITER 不是單一 kernel 語言。FlyDSL
-也沒有實作每一個 AITER operator。特別是本章介紹的公開 K3 配方，
-仍由 Triton/Gluon 路徑處理 Kimi Delta Attention（KDA）。
+Quark 不是推論執行環境；AITER 不是單一種 kernel 語言；FlyDSL 也沒有實作 AITER 的
+每一個運算子。尤其要注意：本章介紹的公開 K3 配方中，Kimi Delta Attention（KDA）
+仍然走 Triton/Gluon 路徑。
 
 **你將學會**
 
-- Kimi K3、Quark、serving runtime、AITER 與 FlyDSL 各自的角色；
-- FlyDSL 的 tensor、layout、copy 與 MMA 模型；
-- AITER 如何結合 dispatch、JIT 與 AOT 封裝，以及調校表；
-- 量化與預先重排的儲存方式如何成為 kernel contract；
-- 從 routing 到 weighted combine 的完整 K3 MoE 路徑；
-- 哪些面向 K3 的公開 AITER family 使用 FlyDSL，哪些不使用；
-- MLA、expert parallelism 與通訊如何搭配 MoE 路徑；
-- 如何先測試單一 operator，再執行八張 GPU 的 MAD 配方。
+- Kimi K3、Quark、推論執行環境、AITER 與 FlyDSL 各自扮演的角色；
+- FlyDSL 的張量、資料配置（layout）、複製與 MMA 模型；
+- AITER 如何結合分派、JIT 與 AOT 打包，以及調校表；
+- 量化格式與預先重排（preshuffle）的儲存方式，如何成為 kernel 的介面約定；
+- K3 MoE 從路由到加權合併的完整路徑；
+- 哪些面向 K3 的公開 AITER 運算子使用 FlyDSL，哪些沒有；
+- MLA、專家平行與通訊如何搭配 MoE 路徑；
+- 如何先測好單一運算子，再跑八張 GPU 的 MAD 配方。
 
-## 1. 固定公開軟體堆疊的版本
+## 1. 固定公開軟體的版本
 
 本章的範例與原始碼連結使用：
 
@@ -42,10 +41,12 @@ Quark 不是 serving runtime。AITER 不是單一 kernel 語言。FlyDSL
 - [FlyDSL v0.3.4.1](https://github.com/ROCm/FlyDSL/tree/v0.3.4.1)；
 - [Quark release/0.12](https://github.com/amd/Quark/tree/release/0.12)。
 
-AITER v0.1.23 固定使用 FlyDSL 0.3.4.1。FlyDSL 變化很快，因此請使用
-固定 tag 的範例，不要從目前的線上文件複製 API。
+AITER v0.1.23 綁定 FlyDSL 0.3.4.1。FlyDSL 改版很快，請以對應 tag 的範例為準，
+不要直接照抄線上最新文件裡的 API。
 
-建置前先檢查機器：
+### 1.1 檢查機器
+
+建置前先確認環境：
 
 ```bash
 rocminfo | rg 'gfx'
@@ -58,36 +59,32 @@ if torch.cuda.is_available():
 PY
 ```
 
-ROCm 刻意使用 PyTorch 的 `torch.cuda` namespace。請勿將它改成
-`torch.rocm`。
+ROCm 版 PyTorch 刻意沿用 `torch.cuda` 命名空間，請不要把它改成 `torch.rocm`。
 
-| 目標 | 本章可安全預期的支援程度 |
+| 目標架構 | 本章可以合理期待的支援程度 |
 |---|---|
-| `gfx942` (MI300X/MI325X) | 許多 AITER operator，以及實用的本機 kernel 測試 |
-| `gfx950` (MI350X/MI355X) | 已發布八張 GPU K3 配方的目標 |
-| RDNA 目標 | 本章討論的許多路徑仍屬實驗性或不受支援 |
+| `gfx942`（MI300X/MI325X） | 許多 AITER 運算子，以及實用的本機 kernel 測試 |
+| `gfx950`（MI350X/MI355X） | 已發布的八張 GPU K3 配方所針對的架構 |
+| RDNA 系列 | 本章多數路徑仍屬實驗性質或不支援 |
 
-支援個別 operator，不代表同一張 GPU 能容納完整的 2.8 兆參數模型，
-也不代表已發布的配方支援該 GPU。
+單一運算子能跑，不代表整個 2.8 兆參數的模型放得進去，也不代表已發布的配方支援那張 GPU。
 
-## 2. 讓每一層只負責一項工作
+## 2. 每一層只做一件事
 
-| 層級 | 工作 | 不保證的事項 |
+| 層級 | 負責的工作 | 它「不」保證什麼 |
 |---|---|---|
-| Kimi K3 model | 定義架構、權重、896 個 routed expert、top-16 routing、KDA 與 gated MLA | 特定的 AMD kernel backend |
-| Quark | 量化並轉換 checkpoint tensor | request scheduling 或 runtime dispatch |
-| SGLang、vLLM 或 ATOM | 管理 batch、cache、graph capture、parallel rank 與 backend 選擇 | 每個選到的 AITER operator 都使用 FlyDSL |
-| AITER | 提供可由 PyTorch 呼叫的 AMD operator，並選擇實作 | 所有 operator 都使用同一種實作語言 |
-| FlyDSL | 使用 Python 描述 layout、copy、MMA 工作並啟動執行 | 完整的 model server |
+| Kimi K3 模型 | 定義架構、權重、896 個路由專家、top-16 路由、KDA 與帶閘控的 MLA | 使用哪一種 AMD kernel 後端 |
+| Quark | 量化並轉換 checkpoint 張量 | 請求排程或執行期分派 |
+| SGLang、vLLM 或 ATOM | 管理批次、快取、圖擷取、平行 rank 與後端選擇 | 選中的每個 AITER 運算子都是 FlyDSL |
+| AITER | 提供可從 PyTorch 呼叫的 AMD 運算子，並挑選實作 | 所有運算子都用同一種語言實作 |
+| FlyDSL | 用 Python 描述資料配置、複製、MMA 運算與啟動方式 | 一套完整的模型服務系統 |
 
-這項區分也能用於除錯。轉換後 checkpoint 中錯誤的 scale，無法靠修改
-MFMA tile 修正。本機 GEMM 結果正確，也不能證明 expert-parallel metadata
-已正確交換。
+這樣分層也是除錯的利器：轉換後 checkpoint 裡的縮放因子錯了，改 MFMA 分塊也修不好；
+本機 GEMM 算對了，也不能證明專家平行的中繼資料有正確交換。
 
 ## 3. FlyDSL：從數值到 MFMA
 
-FlyDSL 是一種 Python DSL，明確區分 device program 與 host 端 launch
-program：
+FlyDSL 是一種 Python DSL，明確區分裝置端程式與主機端的啟動程式：
 
 ```python
 @flyc.kernel
@@ -111,46 +108,43 @@ def vector_add(
     ...
 ```
 
-確切的 API 會持續演進，但思考模型保持不變。
+具體 API 會持續變動，但背後的思考方式很穩定。
 
-### 3.1 Tensor 與 layout
+### 3.1 張量與資料配置
 
-`fx.Tensor` 是 storage 的 view。它的 layout 會將 logical coordinate
-對應到 physical offset。Layout 可以描述 global-memory tile、LDS tile
-或 register fragment，也能拆分及組合維度。
+`fx.Tensor` 是一段儲存空間的檢視（view）。它的資料配置把邏輯座標對應到實體位移。
+資料配置可以描述全域記憶體中的分塊、LDS 分塊或暫存器片段（fragment），也可以拆分、
+組合維度。
 
-在每個階段都要問：
+每個階段都要問自己：
 
-> 這個 thread 或 wave 擁有哪些 logical value？這些值儲存在哪裡？
+> 這個執行緒（或這個 wave）擁有哪些邏輯上的值？它們存放在哪裡？
 
-這個問題取代手寫的 index 算術。Layout 是正確性的一部分，不只是
-效能提示。
+有了這個問題，就不必再手寫索引算式。資料配置是正確性的一部分，而不只是效能提示。
 
-### 3.2 Copy atom 與 tiled copy
+### 3.2 複製原子與分塊複製
 
-Copy atom 描述一種合法的搬移方式，例如向量化的 128-bit copy。
-Tiled copy 會在較大的 logical tile 上重複使用該 atom，並將各部分
-分配給 thread。來源與目的地的 partition 必須對 value ownership
-有一致的定義。
+複製原子（copy atom）描述一種合法的搬移方式，例如一次搬 128 位元的向量複製。
+分塊複製（tiled copy）把這個原子重複套用到更大的邏輯分塊上，並把各部分分給不同執行緒。
+來源與目的地的切分方式，對「哪個值歸誰」必須有一致的定義。
 
-在邊緣 tile，copy 仍需要 predicate。只有 alignment、有效 lane 與
-storage layout 都符合 contract 時，寬向量操作才安全。
+在邊緣分塊上，複製仍需要判斷式（predicate）。只有在對齊、有效 lane 與儲存配置都符合
+約定時，寬向量操作才安全。
 
-### 3.3 MMA atom 與 tiled MMA
+### 3.3 MMA 原子與分塊 MMA
 
-MMA atom 代表一個硬體矩陣 instruction。在 CDNA 上，通常就是 MFMA
-操作。Tiled MMA 會在較大的 output tile 上展開該 atom，並定義：
+MMA 原子代表一條硬體矩陣指令，在 CDNA 上通常就是一次 MFMA。分塊 MMA 把這個原子展開到
+更大的輸出分塊上，並定義：
 
-- 哪些 lane 持有 A 與 B fragment；
-- 每個 lane 擁有哪些 accumulator value；
-- wave 如何在 M、N、K 維度重複執行工作；
-- register fragment 如何連接 global 或 LDS copy。
+- 哪些 lane 持有 A 與 B 的片段；
+- 每個 lane 擁有哪些累加器的值；
+- wave 如何沿 M、N、K 重複工作；
+- 暫存器片段如何銜接全域記憶體或 LDS 的複製。
 
-Kernel 通常會用 pipeline 搭配 copy 與反覆執行的 MMA step，接著套用
-epilogue 並儲存結果。這就是[分塊矩陣乘法](04-tiled-matmul.md)中介紹的
-矩陣路徑，現在改用 layout algebra 表達。
+kernel 通常會把複製與一次次的 MMA 步驟排成管線，最後套用 epilogue 並寫回結果。
+這正是[分塊矩陣乘法](04-tiled-matmul.md)中建立的矩陣路徑，只是改用資料配置代數來表達。
 
-### 3.4 依序學習四個固定版本的步驟
+### 3.4 用四個範例循序學習
 
 ```bash
 git clone --branch v0.3.4.1 https://github.com/ROCm/FlyDSL.git
@@ -159,133 +153,125 @@ pip install flydsl==0.3.4.1 pytest pandas
 python3 examples/01-vectorAdd.py
 ```
 
-| 步驟 | 固定 tag 的範例 | 新概念 |
+| 步驟 | 對應 tag 的範例 | 新概念 |
 |---|---|---|
-| 1 | [`examples/01-vectorAdd.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/01-vectorAdd.py) | tensor、layout、predicate 與 128-bit copy |
-| 2 | [`examples/02-tiledCopy.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/02-tiledCopy.py) | global/LDS tile 與 thread partitioning |
-| 3 | [`examples/03-tiledMma.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/03-tiledMma.py) | register fragment 與 tiled MFMA |
-| 4 | [`examples/04-preshuffle_gemm.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/04-preshuffle_gemm.py) | production weight layout 與 GEMM |
+| 1 | [`examples/01-vectorAdd.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/01-vectorAdd.py) | 張量、資料配置、判斷式與 128 位元複製 |
+| 2 | [`examples/02-tiledCopy.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/02-tiledCopy.py) | 全域記憶體／LDS 分塊與執行緒切分 |
+| 3 | [`examples/03-tiledMma.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/03-tiledMma.py) | 暫存器片段與分塊 MFMA |
+| 4 | [`examples/04-preshuffle_gemm.py`](https://github.com/ROCm/FlyDSL/blob/v0.3.4.1/examples/04-preshuffle_gemm.py) | 實際上線的權重配置與 GEMM |
 
-不要一開始就研究完整的 MoE kernel。請先透過這四個範例追蹤一個 tile：
-global memory → LDS 或 register → MMA fragment → output。
+不要一開始就啃完整的 MoE kernel。先用這四個範例追蹤一個分塊的旅程：
+全域記憶體 → LDS 或暫存器 → MMA 片段 → 輸出。
 
-## 4. AITER 的 Dispatch、編譯與調校
+## 4. AITER 的分派、編譯與調校
 
-AITER 為 runtime 提供穩定的 operator 介面。選到的實作可能是
-FlyDSL、Triton/Gluon、Composable Kernel、HIP、assembly、Opus 或其他
-generator。
+AITER 提供給執行環境一個穩定的運算子介面，背後選中的實作可能是 FlyDSL、Triton/Gluon、
+Composable Kernel、HIP、組合語言、Opus 或其他程式產生器。
 
-Dispatch 可能依據下列資訊：
+分派可能取決於：
 
-- GPU architecture；
-- input、weight、accumulator 與 output type；
-- 量化與 scale format；
-- M、N、K、token 數、page size 與 attention mode；
-- stride、alignment、preshuffle state 與其他 layout 資訊；
-- environment override；
-- 符合條件的調校設定。
+- GPU 架構；
+- 輸入、權重、累加器與輸出的型別；
+- 量化方式與縮放因子格式；
+- M、N、K、token 數、頁面大小與注意力模式；
+- 跨距、對齊、是否已預先重排等資料配置資訊；
+- 環境變數的覆寫設定；
+- 是否有吻合的調校設定。
 
 因此：
 
-> 「runtime 使用 AITER」不代表「runtime 使用 FlyDSL」。
+> 「執行環境用了 AITER」不等於「執行環境用了 FlyDSL」。
 
 ### 4.1 JIT
 
-FlyDSL wrapper 可以在第一次呼叫時針對 kernel 進行 specialize 與編譯，
-之後由 AITER 快取結果。Cold call 包含 Python dispatch、code generation、
-編譯與載入。Warm call 應重複使用已編譯的 specialization。
+FlyDSL 的包裝函式可以在第一次呼叫時針對參數特化並編譯 kernel，之後由 AITER 快取結果。
+冷啟動的第一次呼叫包含 Python 分派、程式碼產生、編譯與載入；暖機後的呼叫則應直接重用
+已編譯的特化版本。
 
-計時前務必先 warm up。比較執行結果時，也要記錄 cache state。
+計時前一定要先暖機；比較不同執行結果時，也要記下快取狀態。
 
 ### 4.2 AOT
 
-AITER 也提供 AOT manifest，包括公開的 MoE family FlyDSL manifest。
-這些 manifest 描述可在執行模型前建置並封裝的 kernel。AOT 能減少啟動
-工作，但只適用於已匯出的 specialization。未涵蓋的 shape 仍可能需要
-JIT 編譯或使用其他 backend。
+AITER 也有 AOT 清單（manifest），其中包含 MoE 系列的公開 FlyDSL 清單。清單描述可在模型
+執行前就建置、打包好的 kernel。AOT 能減少啟動工作，但只涵蓋已匯出的特化版本；沒涵蓋到的
+形狀仍可能需要 JIT 編譯，或改走其他後端。
 
-請參閱固定 tag 的
+請參考對應 tag 的
 [`aiter/aot/flydsl`](https://github.com/ROCm/aiter/tree/v0.1.23/aiter/aot/flydsl)
-目錄。Manifest 並不能證明 runtime 選到了該 kernel。
+目錄。清單裡有某個 kernel，不代表執行時真的選中了它。
 
-### 4.3 已調校與未調校的表格
+### 4.3 已調校與未調校的設定表
 
-下列
 [`aiter/configs/model_configs`](https://github.com/ROCm/aiter/tree/v0.1.23/aiter/configs/model_configs)
-中的 K3 專用檔案涵蓋這些公開 format family：
+中專為 K3 準備的檔案，涵蓋下列公開格式：
 
 - BF16 GEMM；
-- A8W8 B-preshuffled GEMM；
-- A4W4 block-scaled GEMM；
-- A16W4、A8W4、A4W4 與 I4 fused MoE；
-- FP8 FMHA AOT 設定。
+- A8W8、B 矩陣預先重排的 GEMM；
+- A4W4、區塊縮放的 GEMM；
+- A16W4、A8W4、A4W4 與 I4 的融合 MoE；
+- FP8 FMHA 的 AOT 設定。
 
-該目錄包含 tuned 與 untuned variant。Tuned row 是針對特定 shape 與
-architecture 實測後選出的結果，不代表同一個 tile 在所有情況下都是
-最佳選擇。
+這個目錄同時有已調校（tuned）與未調校（untuned）的版本。已調校的一列，是在某個形狀與
+架構上實測後挑出的選擇，並不表示同一個分塊在任何情況下都最好。
 
-`AITER_FLYDSL_FORCE=1` 會移除部分 fallback 選項，但不會為不受支援的
-operator、shape 或 architecture 建立 FlyDSL 實作。
+`AITER_FLYDSL_FORCE=1` 會拿掉部分備援選項，但不會憑空替不支援的運算子、形狀或架構
+生出一個 FlyDSL 實作。
 
-## 5. 面向 K3 的公開 Operator 目錄
+## 5. 面向 K3 的公開運算子目錄
 
-下表整理固定版本的公開原始碼中，面向 K3 的 FlyDSL/AITER 使用情境。
-「可用」表示有公開的 operator 或調校路徑，不代表每個 serving framework
-都會為每個 K3 request 選擇它。
+下表整理固定版本的公開原始碼中，與 K3 相關的 FlyDSL/AITER 用途。「可用」表示存在公開的
+運算子或調校路徑，不代表每個推論框架在每次 K3 請求中都會選它。
 
-| K3 使用情境 | 公開的 AITER/FlyDSL family | 邊界 |
+| K3 用途 | 公開的 AITER/FlyDSL 實作 | 界線 |
 |---|---|---|
-| Dense projection | BF16 GEMM、A8W8 B-preshuffled GEMM 與 A4W4 block-scaled GEMM 調校 | AITER 可能選擇 FlyDSL、assembly 或其他 backend |
-| Top-k 與 expert metadata | top-k、MoE sorting、route map 與 group/local lookup helper | Routing policy 屬於 model/runtime |
-| 量化並 scatter routed row | [`moe_fused_route_quant_scatter.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/moe_fused_route_quant_scatter.py)、scatter-copy、scale-preshuffle helper | Row order、destination、data 與 scale 共同構成一份 contract |
-| Expert GEMM 1 | [`mxfp4_gemm1.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mxfp4_gemm1.py)與 MoE stage-1 wrapper | 產生 gate/up data；支援的 format 與 shape 取決於 dispatch |
-| 混合格式的 two-stage MoE | [`mixed_moe_gemm_2stage.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mixed_moe_gemm_2stage.py) | 涵蓋公開的 mixed-format 路徑，但不是每一種 fused-MoE 路徑 |
-| SiTUv2 加上 requantization | AITER `situv2_and_mul_quant` | 公開的 AITER operator；未檢查選到的 build 前，不要將它標示為 FlyDSL |
-| Expert GEMM 2 | [`mxfp4_gemm2.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mxfp4_gemm2.py)與 MoE stage-2 wrapper | 使用 activation 及其 scale |
-| Expert output combine | FlyDSL gather/reduce、MoE reduce、dispatch/combine 與 MegaMoE helper | Local combine 與 inter-rank combine 是不同情況 |
-| MLA 準備工作 | [`qk_norm_rope_quant.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/qk_norm_rope_quant.py)、KV gather/B projection | 有準備路徑不代表 attention core 使用 FlyDSL |
-| MLA attention 與 merge | [`fmha_kernels.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/fmha_kernels.py)、paged/FP8 MLA 路徑，以及 [`mla_reduce_kernels.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/mla_reduce_kernels.py) | AITER 也有 assembly、Triton 與 Opus MLA 路徑 |
-| Expert-parallel 搬移 | intra-node dispatch/combine、communication-fused MoE、MegaMoE 與 quick all-reduce | 需要相符的 rank metadata、IPC 設定與 topology |
-| KDA | AITER Triton/Gluon KDA family | 本章不宣稱存在公開的 K3 FlyDSL KDA 路徑 |
+| 稠密投影 | BF16 GEMM、A8W8 B 預先重排 GEMM 與 A4W4 區塊縮放 GEMM 的調校 | AITER 可能選 FlyDSL、組合語言或其他後端 |
+| top-k 與專家中繼資料 | top-k、MoE 排序、路由表，以及分組／本地查找輔助函式 | 路由策略屬於模型與執行環境 |
+| 量化並分散路由後的列 | [`moe_fused_route_quant_scatter.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/moe_fused_route_quant_scatter.py)、scatter-copy、縮放因子預先重排的輔助函式 | 列的順序、目的地、資料與縮放因子必須一起符合約定 |
+| 專家 GEMM 1 | [`mxfp4_gemm1.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mxfp4_gemm1.py)與 MoE 第一階段包裝函式 | 產生 gate/up 資料；支援的格式與形狀由分派決定 |
+| 混合格式的兩階段 MoE | [`mixed_moe_gemm_2stage.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mixed_moe_gemm_2stage.py) | 涵蓋公開的混合格式路徑，但不是所有融合 MoE 路徑 |
+| SiTUv2 加上重新量化 | AITER `situv2_and_mul_quant` | 公開的 AITER 運算子；沒確認實際建置版本前，別把它標成 FlyDSL |
+| 專家 GEMM 2 | [`mxfp4_gemm2.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/mxfp4_gemm2.py)與 MoE 第二階段包裝函式 | 讀取激活值及其縮放因子 |
+| 專家輸出合併 | FlyDSL gather/reduce、MoE reduce、dispatch/combine 與 MegaMoE 輔助函式 | 本地合併與跨 rank 合併是兩回事 |
+| MLA 前置處理 | [`qk_norm_rope_quant.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/kernels/qk_norm_rope_quant.py)、KV gather／B 投影 | 前置處理用 FlyDSL，不代表注意力核心也是 |
+| MLA 注意力與合併 | [`fmha_kernels.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/fmha_kernels.py)、分頁／FP8 MLA 路徑，以及 [`mla_reduce_kernels.py`](https://github.com/ROCm/aiter/blob/v0.1.23/aiter/ops/flydsl/mla_reduce_kernels.py) | AITER 另有組合語言、Triton 與 Opus 的 MLA 路徑 |
+| 專家平行的資料搬移 | 節點內 dispatch/combine、融合通訊的 MoE、MegaMoE 與 quick all-reduce | 需要一致的 rank 中繼資料、IPC 設定與拓撲 |
+| KDA | AITER 的 Triton/Gluon KDA 實作 | 本章不主張存在公開的 K3 FlyDSL KDA 路徑 |
 
-AITER 中其他通用的 FlyDSL kernel，例如 convolution、HSTU、無關的 GEMM
-與其他 model-specific operator，不屬於這份 K3 目錄。反過來說，這份
-目錄也不宣稱 K3 全部都在 FlyDSL 中執行。
+AITER 裡其他通用的 FlyDSL kernel，例如卷積、HSTU、與此無關的 GEMM 及其他模型專用運算子，
+都不在這份 K3 目錄內。反過來說，這份目錄也不代表 K3 全部都跑在 FlyDSL 上。
 
-## 6. 量化與 Preshuffling
+## 6. 量化與預先重排
 
-K3 的原生 QAT representation 使用 MXFP4 weight 與 MXFP8 activation。
-另一條 AMD checkpoint 路徑則在 attention 中結合 MXFP4 與
-per-token-per-channel FP8。Format 名稱同時描述 arithmetic 與 storage。
+K3 原生的量化感知訓練（QAT）格式，使用 MXFP4 權重與 MXFP8 激活值。AMD 的另一條 checkpoint
+路徑則在注意力層結合 MXFP4 與逐 token、逐通道的 FP8。格式名稱同時描述了算術方式與儲存方式。
 
-| Format | 儲存的值 | Scale 工作 |
+| 格式 | 儲存的內容 | 縮放因子的處理 |
 |---|---|---|
-| FP8 | 每個 element 一個八位元浮點值 | 找出 amax、推導 scale、轉換 |
-| INT8/INT4 | 有號整數加上一個 scale | reduce、round、clamp，有時還要 pack |
-| MXFP8 | 小型 block 中共用 scale 的 FP8 value | 對每個 block 執行 reduce，並排列 block scale |
-| MXFP4 | 共用 E8M0 block scale 的 packed E2M1 value | reduce、encode、nibble-pack，並 swizzle scale |
+| FP8 | 每個元素一個 8 位元浮點數 | 找出最大絕對值、推出縮放因子、轉換 |
+| INT8/INT4 | 有號整數加上一個縮放因子 | 歸約、捨入、截斷，有時還要打包 |
+| MXFP8 | 一小塊 FP8 值共用一個縮放因子 | 逐區塊歸約，並排好區塊縮放因子 |
+| MXFP4 | 打包的 E2M1 值，共用一個 E8M0 區塊縮放因子 | 歸約、編碼、半位元組打包，並重排縮放因子 |
 
-精確的 block size、scale orientation 與 byte order 由 operator contract
-決定。不要只根據「4-bit」自行推斷。
+確切的區塊大小、縮放因子方向與位元組順序，都由運算子的約定決定；不要只憑「4 位元」
+三個字自行推斷。
 
-### 6.1 為什麼需要 preshuffle
+### 6.1 為什麼需要預先重排
 
-數學上的 weight matrix 以 \(W[k,n]\) 索引，但單一 MFMA wave 不會按照
-簡單的 row-major 順序使用它。Preshuffling 會依照 copy 與 MMA layout
-所需的順序儲存 weight，必要時也會重排 scale。
+數學上的權重矩陣以 \(W[k,n]\) 索引，但一個 MFMA wave 並不是照單純的列優先順序讀取它。
+預先重排就是依照複製與 MMA 資料配置需要的順序來存放權重，必要時連縮放因子一起重排。
 
 這樣可以：
 
-- 讓 wave load 連續；
-- 避免 runtime 反覆重新排列；
-- 減少 LDS bank conflict；
-- 將 packed nibble 與 scale 放在會使用它們的 fragment 旁邊。
+- 讓 wave 的載入變成連續存取；
+- 省去執行期反覆的重新排列；
+- 減少 LDS 的 bank 衝突；
+- 把打包的半位元組與縮放因子放在用得到它們的片段旁邊。
 
-Preshuffling 不是沒有代價的 transpose。Checkpoint converter 或準備
-步驟、選到的 GEMM、scale layout 與 architecture 必須彼此一致。只要其中
-一份 contract 不符，kernel 仍可能執行，但產生看似合理卻錯誤的值。
+預先重排不是免費的轉置。checkpoint 轉換器（或準備步驟）、選中的 GEMM、縮放因子配置
+與硬體架構四者必須一致。只要其中一項約定對不上，kernel 照樣能跑，卻會算出看似合理
+實則錯誤的結果。
 
-### 6.2 在 GEMM 前驗證 format
+### 6.2 先驗證格式，再碰 GEMM
 
 先執行：
 
@@ -295,14 +281,12 @@ python3 op_tests/test_quant_mxfp4.py
 python3 op_tests/test_gemm_a8w8.py
 ```
 
-測試全零 block、最大有限值、rounding midpoint、partial group、奇數
-row count 與空 input。測量 GEMM 速度前，先將反量化的值與 FP32 reference
-比較。
+測試項目要包含全零區塊、最大有限值、捨入中點、不完整的分組、奇數列數與空輸入。
+在量 GEMM 速度之前，先把反量化後的值與 FP32 參考結果比對。
 
 ## 7. 完整的 K3 MoE 路徑
 
-K3 有 896 個 routed expert，每個 token 選擇 16 個 expert，也會使用
-shared expert。Routed 路徑如下：
+K3 有 896 個路由專家，每個 token 選 16 個，另外還有共享專家。路由專家這條路徑如下：
 
 ```text
 router logits
@@ -314,57 +298,53 @@ router logits
   → weighted reduce/combine
 ```
 
-每個箭頭都是可測試的邊界。
+每個箭頭都是一個可以單獨測試的邊界。
 
-### 7.1 Route
+### 7.1 路由
 
-Router 會產生選到的 expert ID 與 weight。Runtime policy 也可能重新
-normalize weight，並將 global expert 對應到 local rank。AITER 的 routing
-與 sorting helper 會將這種 sparse 選擇轉成 grouped GEMM 可使用的
-metadata。
+路由器輸出選中的專家編號與權重。執行環境的策略可能還會重新正規化權重，並把全域專家編號
+對應到本地 rank。AITER 的路由與排序輔助函式，會把這種稀疏的選擇轉成分組 GEMM 能直接
+使用的中繼資料。
 
-請檢查：
+要檢查：
 
-- 穩定的 token/expert 順序；
-- global 與 local expert ID 的意義；
-- caller 可能產生 duplicate selection 時的處理方式；
-- empty expert 與 zero-token batch；
-- capacity、padding 與 alignment；
-- routing-weight dtype 與 normalization。
+- token 與專家的順序是否穩定；
+- 全域與本地專家編號各代表什麼；
+- 若呼叫端可能重複選同一個專家，如何處理；
+- 沒有分到 token 的專家，以及零個 token 的批次；
+- 容量、補齊與對齊；
+- 路由權重的資料型別與正規化方式。
 
-Routing 的 FLOP 很少，但只要一個 index 錯誤，就可能破壞完整 layer。
+路由幾乎不花計算量，但只要一個索引錯了，整層的結果就全毀了。
 
-### 7.2 Quantize 與 scatter
+### 7.2 量化與分散
 
-融合的 route/quant/scatter kernel 會讀取 token row、計算所需的 activation
-scale、轉換數值，並將該 row 寫入依 expert 分組的 storage。使用 expert
-parallelism 時，它也會準備要送到其他 rank 的 data 與 metadata。
+融合後的 route/quant/scatter kernel 會讀入一列 token、算出所需的激活縮放因子、轉換數值，
+再把這一列寫進依專家分組的儲存區。在專家平行模式下，它還要替其他 rank 準備資料與中繼資料。
 
-請同時驗證四項 output：
+以下四項輸出要一起驗證：
 
-1. destination expert 或 rank；
-2. destination row；
-3. quantized data；
-4. 用來還原該 row 的 scale。
+1. 目的地專家或 rank；
+2. 目的地列號；
+3. 量化後的資料；
+4. 用來還原這一列的縮放因子。
 
-只測試 quantized byte 會遺漏 routing 錯誤。只測試 row map，則會遺漏
-scale 綁到錯誤 token 的問題。
+只測量化後的位元組，會漏掉路由錯誤；只測列對照表，會漏掉「縮放因子配錯 token」的問題。
 
-### 7.3 Expert GEMM 1
+### 7.3 專家 GEMM 1
 
-GEMM 1 會套用每個選定 expert 的 gate 與 up projection。即使整體 batch
-很大，單一 expert 的有效 M 仍可能很小且不平均。Kernel 必須在 MFMA
-效率、padding 與 launch overhead 之間取得平衡。
+GEMM 1 對每個被選中的專家套用 gate 與 up 投影。即使整體批次很大，單一專家實際分到的
+M 仍可能很小而且參差不齊，kernel 必須在 MFMA 效率、補齊浪費與啟動開銷之間取捨。
 
-公開的 MXFP4 與混合格式 two-stage kernel，會為受支援的 format 與 shape
-組合提供 FlyDSL 路徑。實際呼叫是否使用這些路徑，仍由 dispatch 決定。
+公開的 MXFP4 與混合格式兩階段 kernel，替支援的格式與形狀組合提供了 FlyDSL 路徑；
+某次呼叫到底有沒有用上，仍由分派決定。
 
-請在 scattered row order 下比較這個邊界的 output。此時不要將 row
-合併回 token order，否則可能掩蓋排序錯誤。
+在這個邊界上，請以分散後的列順序比對輸出。先別把列合併回 token 順序，否則可能掩蓋
+排序錯誤。
 
-### 7.4 SiTUv2 與 activation requantization
+### 7.4 SiTUv2 與激活值重新量化
 
-K3 對 gate input \(g\) 與 up input \(u\) 使用：
+設 gate 輸入為 \(g\)、up 輸入為 \(u\)，K3 使用：
 
 $$
 y =
@@ -375,13 +355,12 @@ $$
 
 | 符號 | 意義 |
 |---|---|
-| \(g,u\) | GEMM 1 產生的 gate 與 up half |
-| \(\sigma\) | Sigmoid |
-| \(\beta_1,\beta_2\) | K3 bound |
-| \(y\) | 融合後的 expert activation |
+| \(g,u\) | GEMM 1 輸出的 gate 與 up 兩半 |
+| \(\sigma\) | Sigmoid 函數 |
+| \(\beta_1,\beta_2\) | K3 的上下界 |
+| \(y\) | 融合後的專家激活輸出 |
 
-AITER 的 `situv2_and_mul_quant` 會將此算式與 row-scale 計算及 FP8
-轉換融合：
+AITER 的 `situv2_and_mul_quant` 把這個算式、逐列縮放因子的計算與 FP8 轉換融合在一起：
 
 ```python
 from aiter.ops.activation import situv2_and_mul_quant
@@ -391,32 +370,27 @@ scale = torch.empty((tokens, 1), device="cuda", dtype=torch.float32)
 situv2_and_mul_quant(out, x, scale, width, 4.0, 25.0)
 ```
 
-將 `out.float() * scale` 與公式的 FP32 實作比較。測試中也要保留
-zero row 與 empty batch：
+把 `out.float() * scale` 與公式的 FP32 實作比對。測試中要保留全零的列與空批次：
 
 ```bash
 python3 op_tests/test_situv2_and_mul_quant.py -d bf16 -m 1 -n 768
 ```
 
-這是一個 AITER operator 邊界。只看公開 API，無法證明其實作為
-FlyDSL。
+這是 AITER 運算子層級的邊界；光看公開 API，無法斷定它的實作是 FlyDSL。
 
-### 7.5 Expert GEMM 2
+### 7.5 專家 GEMM 2
 
-GEMM 2 使用 quantized activation 及其 row scale，再套用每個 expert
-的 down projection。它讀取 row 的順序，必須與 scatter 和 GEMM 1
-產生的順序完全相同。
+GEMM 2 讀入量化後的激活值與逐列縮放因子，再套用每個專家的 down 投影。它讀取列的順序，
+必須與 scatter 和 GEMM 1 產生的順序完全一致。
 
-套用 routing weight 前，先比較它的 output。這裡若有不一致，不應透過
-最後合併的 tensor 進行除錯。
+請在乘上路由權重之前就比對它的輸出。這裡若有差異，不要等到最後合併完的張量才開始除錯。
 
-### 7.6 Weighted combine
+### 7.6 加權合併
 
-Combine stage 會恢復 token order，將每個選定 expert 的 output 乘上
-routing weight，再對 top-16 contribution 執行 reduce。它也可以在
-model 定義的位置加入 shared-expert result。
+合併階段把結果還原成 token 順序，將每個選中專家的輸出乘上對應的路由權重，再把 16 份貢獻
+加總。它也可以在模型規定的位置加上共享專家的結果。
 
-使用 expert parallelism 時，combine 還包含通訊問題：
+在專家平行模式下，合併同時也是一個通訊問題：
 
 ```text
 local expert outputs
@@ -426,85 +400,82 @@ local expert outputs
   → sum in token order
 ```
 
-先檢查一個 token 的單一 expert contribution，再檢查全部 16 個。
-最後，才將完整的 local 或 distributed combine 與 high-precision
-reference 比較。
+先檢查一個 token 的一份專家貢獻，再檢查全部 16 份，最後才把完整的本地或分散式合併結果，
+與高精度參考結果比對。
 
-## 8. MLA 支援與 KDA 邊界
+## 8. MLA 支援與 KDA 的界線
 
-K3 混用 gated Multi-head Latent Attention（MLA）layer 與 KDA layer。
-它們不必使用相同的 backend。
+K3 混用帶閘控的多頭潛在注意力（MLA）層與 KDA 層，兩者不必使用同一個後端。
 
-### 8.1 公開的 FlyDSL/AITER MLA building block
+### 8.1 公開的 FlyDSL/AITER MLA 元件
 
-固定版本的 AITER 原始碼包括下列公開路徑：
+固定版本的 AITER 原始碼包含下列公開路徑：
 
-- Q/K normalization、RoPE 與 quantization；
-- KV gather 與 B projection；
+- Q/K 正規化、RoPE 與量化；
+- KV gather 與 B 投影；
 - FP8 FMHA；
-- 適用於受支援 page layout 的 paged MLA 工作；
-- split attention output 與 log-sum-exp reduction。
+- 支援之頁面配置下的分頁 MLA；
+- 分段注意力輸出，以及 log-sum-exp 歸約。
 
-這些都是實際的 FlyDSL/AITER 使用情境，但支援範圍受到 architecture、
-dtype、head shape、page size，以及 decode 或 prefill mode 限制。AITER
-也提供非 FlyDSL 的 MLA 實作。請檢查 dispatch，不要將所有 MLA 時間都
-算在 FlyDSL 上。
+這些都是實際存在的 FlyDSL/AITER 用途，但支援範圍受架構、資料型別、head 形狀、頁面大小，
+以及 decode 或 prefill 模式限制。AITER 也附帶非 FlyDSL 的 MLA 實作，所以請檢查分派結果，
+別把 MLA 的時間全算在 FlyDSL 頭上。
 
-### 8.2 KDA 仍使用 Triton/Gluon
+### 8.2 KDA 仍然走 Triton/Gluon
 
-KDA 是本章明確的 backend 邊界。AITER 公開的 K3 KDA 工作位於固定 tag 的
+KDA 是本章最明確的後端界線。AITER 公開的 K3 KDA 實作，位於對應 tag 的
 [`kimi_delta_attn`](https://github.com/ROCm/aiter/tree/v0.1.23/aiter/ops/triton/kimi_delta_attn)、
 [`gated_delta_net`](https://github.com/ROCm/aiter/tree/v0.1.23/aiter/ops/triton/gated_delta_net)
 與
 [`chunk_delta_attn`](https://github.com/ROCm/aiter/tree/v0.1.23/aiter/ops/triton/_triton_kernels/chunk_delta_attn)
-Triton/Gluon family。原始碼 tree 中也有通用的 FlyDSL gated-delta helper
-code；該 helper 不能證明存在完整的 K3 FlyDSL KDA backend。本章不做此
-宣稱。
+等 Triton/Gluon 實作中。原始碼裡雖然也有通用的 FlyDSL gated-delta 輔助程式，但那不足以證明
+存在完整的 K3 FlyDSL KDA 後端，本章也不這麼主張。
 
-已發布的 SGLang K3 command 會啟用 AITER，並強制使用受支援的 FlyDSL
-路徑，但仍傳入：
+已發布的 SGLang K3 指令雖然啟用了 AITER，並強制在支援的地方使用 FlyDSL，卻仍然傳入：
 
 ```bash
 --attention-backend triton
 ```
 
-這並不矛盾。同一個 model request 可以讓 FlyDSL 處理 MoE 與支援
-operator，同時由 Triton/Gluon 處理 KDA 及選定的 attention backend。
+這並不矛盾：同一個請求可以讓 FlyDSL 處理 MoE 與周邊運算子，同時由 Triton/Gluon 負責 KDA
+與選定的注意力後端。
 
-## 9. 通訊與 Expert Parallelism
+## 9. 通訊與專家平行
 
-Tensor parallelism 會拆分 dense 工作；expert parallelism 則將 expert
-放在不同 rank。K3 需要在 grouped GEMM 前後保持一致的 routing metadata
-與資料搬移。
+張量平行把稠密運算切開；專家平行則把不同專家放到不同 rank 上。K3 在分組 GEMM 前後，
+都需要一致的路由中繼資料與資料搬移。
 
-與此設計相關的公開 FlyDSL/AITER 通訊 family 包括：
+### 9.1 相關的公開通訊元件
 
-- intra-node dispatch/combine；
-- communication-fused MoE；
-- MegaMoE dispatch、GEMM 與 combine stage；
+與此設計相關的公開 FlyDSL/AITER 通訊實作包括：
+
+- 節點內的 dispatch/combine；
+- 融合通訊的 MoE；
+- MegaMoE 的 dispatch、GEMM 與 combine 階段；
 - 類似 reduce-scatter/all-gather 的支援；
-- 適用於受支援 format 的 quick all-reduce 路徑。
+- 支援格式下的 quick all-reduce 路徑。
 
-原始碼中可用的 family，不代表特定 K3 配方已選擇它。Runtime flag、
-world size、topology、data type 與 shape 仍會影響選擇。
+原始碼裡有，不代表某個 K3 配方實際選用了它；執行期旗標、world size、拓撲、資料型別與
+形狀仍會左右選擇。
 
-為了確保正確性：
+### 9.2 正確性要點
 
-- 所有 rank 必須使用一致的 token 與 expert metadata；
-- send 與 receive count 必須正確納入 empty expert；
-- 不可混用 local 與 global expert ID；
-- stream 與 event 必須保護可重複使用的 buffer；
-- IPC handle 與 peer access 必須有效；
-- graph capture 需要穩定的 address 與 launch topology；
-- reduction 順序與 dtype 可能改變數值誤差。
+為了確保正確：
 
-先從一張 GPU 開始，再用手寫 route map 測試兩個 rank。Empty 與
-imbalanced expert 的情況通過後，才增加到完整 rank 數量。
+- 所有 rank 對 token 與專家的中繼資料必須一致；
+- 傳送與接收的筆數要正確涵蓋沒分到 token 的專家；
+- 本地與全域的專家編號不可混用；
+- 可重複使用的緩衝區必須由 stream 與 event 保護；
+- IPC handle 與 peer 存取必須有效；
+- 圖擷取需要固定的位址與固定的啟動拓撲；
+- 歸約順序與資料型別都可能改變數值誤差。
 
-## 10. Quark 止於 Checkpoint 邊界
+先在一張 GPU 上跑通，再用手寫的路由表測兩個 rank。等「空專家」與「負載極不平均」的
+情況都通過後，才擴大到完整的 rank 數。
 
-AMD K3 conversion 路徑可以直接量化 checkpoint，不必先以傳統方式載入
-完整 model：
+## 10. Quark 的職責止於 checkpoint
+
+AMD 的 K3 轉換路徑可以直接量化 checkpoint，不必先用傳統方式把整個模型載入記憶體：
 
 ```python
 template = LLMTemplate.get("kimi_k3")
@@ -518,27 +489,26 @@ ModelQuantizer(quant_config).direct_quantize_checkpoint(
 )
 ```
 
-Quark 寫入 data 與 metadata，不會選擇 runtime kernel。若 checkpoint
-的 packing 或 scale layout 錯誤，AITER 不會重新解讀它。
+Quark 只寫出資料與中繼資料，不負責挑選執行期的 kernel。如果 checkpoint 的打包方式或縮放
+因子配置錯了，AITER 也不會替你重新解讀。
 
-請將下列項目記錄為同一組可重現資訊：
+下列項目應視為一組、一起記錄，才能重現結果：
 
-- source checkpoint identifier 與 revision；
-- Quark release 與 K3 template；
-- quantization scheme 與 layer override；
-- output checkpoint identifier；
-- serving image 與 AITER/FlyDSL 版本；
-- 目標 GPU architecture。
+- 來源 checkpoint 的名稱與版本；
+- Quark 版本與 K3 範本；
+- 量化方案與各層的覆寫設定；
+- 輸出 checkpoint 的名稱；
+- 推論服務映像檔，以及 AITER/FlyDSL 版本；
+- 目標 GPU 架構。
 
-模擬舊版 layout 的 runtime compatibility flag 可能對某個 release
-有用，但不應將它描述為 MXFP4 的永久特性。
+某個版本可能提供模擬舊資料配置的相容性旗標，這在過渡期很有用，但不該把它說成 MXFP4
+本身的永久特性。
 
-## 11. 本機 Operator 測試階梯
+## 11. 本機運算子的測試階梯
 
-不要從八張 GPU 開始。請依序完成下列階梯，並讓每一項計時結果都有
-對應的正確性結果。
+別一開始就上八張 GPU。請一階一階往上爬，而且每一筆計時結果旁邊，都要有對應的正確性結果。
 
-### 11.1 FlyDSL 語言 smoke test
+### 11.1 FlyDSL 語言的冒煙測試
 
 ```bash
 cd FlyDSL
@@ -550,12 +520,12 @@ python3 -m pytest tests/kernels/test_moe_gemm.py
 python3 -m pytest tests/kernels/test_flash_attn_fwd.py
 ```
 
-只測試編譯或 lowering，不能證明 GPU 數值正確。判讀通過結果前，
-請先查看 test marker 與 target。
+只測編譯或降階（lowering）的測試，無法證明 GPU 上的數值正確。判讀「通過」之前，
+先看清楚測試的標記與目標平台。
 
-### 11.2 AITER operator 測試
+### 11.2 AITER 運算子測試
 
-安裝符合 ROCm 與 Python 的 wheel，或建置固定版本的原始碼：
+安裝與 ROCm、Python 版本相符的 wheel，或從固定版本的原始碼建置：
 
 ```bash
 git clone --recursive --branch v0.1.23 https://github.com/ROCm/aiter.git
@@ -563,7 +533,7 @@ cd aiter
 python3 setup.py develop
 ```
 
-接著一次測試一個邊界：
+接著一次只測一個邊界：
 
 ```bash
 python3 op_tests/test_quant_mxfp4.py
@@ -575,32 +545,34 @@ python3 op_tests/test_mla.py
 python3 op_tests/test_rmsnorm2d.py
 ```
 
-使用該測試支援的參數，加入下列情況：
+利用各測試支援的參數，補上下列情況：
 
-1. zero token；
-2. one token；
-3. 奇數與邊緣 dimension；
-4. empty 與嚴重 imbalanced expert；
-5. 一個確切的 K3 production shape；
-6. cold 與 warm launch 測量。
+1. 零個 token；
+2. 一個 token；
+3. 奇數與邊界上的維度；
+4. 空專家，以及負載嚴重不均的專家；
+5. 一組與 K3 實際上線完全相同的形狀；
+6. 冷啟動與暖機後的啟動時間。
 
-### 11.3 多張 GPU 測試
+### 11.3 多 GPU 測試
 
-只有在本機 MoE 通過後，才執行通訊測試。FlyDSL 的 all-reduce 測試位於
-`tests/kernels/test_allreduce.py`；AITER 則有獨立的 multi-GPU operator
-測試。啟動測試前，請確認其預期的 world size 與 topology 符合機器。
+本機 MoE 全部通過後，才開始跑通訊測試。FlyDSL 的 all-reduce 測試在
+`tests/kernels/test_allreduce.py`；AITER 另有獨立的多 GPU 運算子測試。啟動前，
+請確認測試預期的 world size 與拓撲符合你的機器。
 
 ## 12. 八張 GPU 的 MAD 配方
 
+### 12.1 需求與支援的框架
+
 公開的
 [ROCm MAD K3 配方](https://github.com/ROCm/MAD/blob/develop/benchmark/kimi_k3/README.md)
-是完整 model command 與 image 的依據。它需要：
+是完整模型指令與映像檔的權威來源。它需要：
 
 - 八張 MI350X 或 MI355X GPU（`gfx950`）；
-- 已發布 launch 中的 tensor parallel size 8；
-- 約 1.56 TB 的 checkpoint 儲存空間。
+- 已發布的啟動設定使用 tensor parallel size 8；
+- 約 1.56 TB 的空間存放 checkpoint。
 
-MAD 發布了三種 framework 的 K3 執行方式：
+MAD 針對三種框架發布了 K3 的執行方式：
 
 ```bash
 # vLLM
@@ -613,7 +585,9 @@ madengine run --tags pyt_sglang_kimi-k3 --keep-model-dir --live-output
 madengine run --tags pyt_atom_kimi-k3 --keep-model-dir --live-output
 ```
 
-在聚焦 FlyDSL 的 SGLang 路徑中，已發布的 container 使用：
+### 12.2 SGLang 中的 FlyDSL 路徑
+
+在以 FlyDSL 為主的 SGLang 路徑中，已發布的容器設定了：
 
 ```bash
 SGLANG_USE_AITER=1
@@ -622,7 +596,7 @@ AITER_FLYDSL_FORCE=1
 AITER_SITUV2_A8W4=1
 ```
 
-並以可看出重要 backend 邊界的方式啟動 server：
+並以下列指令啟動伺服器，其中可以清楚看到關鍵的後端界線：
 
 ```bash
 sglang serve --model-path /model_weights \
@@ -634,88 +608,78 @@ sglang serve --model-path /model_weights \
   --reasoning-parser kimi_k3 --tool-call-parser kimi_k3
 ```
 
-請使用 MAD 提供的 image 與完整 command，不要混用不同 release 的
-flag。本機 FlyDSL 測試成功是必要證據，但不能取代載入 checkpoint、
-提供 request 服務及檢查 model output。
+### 12.3 什麼才算證據
 
-## 13. Profiling 與除錯
+請直接使用 MAD 提供的映像檔與完整指令，不要把不同版本的旗標拼湊在一起。本機 FlyDSL
+測試通過是必要的證據，但無法取代「實際載入 checkpoint、提供服務並檢查模型輸出」這一步。
 
-請依照以下順序：
+## 13. 效能分析與除錯
 
-1. **Reference。** 將單一邊界與 FP32 PyTorch 實作比較。
-2. **Format。** 驗證 packed value、scale shape、scale ownership 與
-   preshuffle 版本。
-3. **Metadata。** 檢查 token row、expert ID、rank ID 與 empty expert。
-4. **Dispatch。** 記錄 architecture、operator、選到的 backend 與
-   tuning row。
-5. **Compilation。** 將 cold JIT 時間與 warm execution 分開，並保留
-   失敗 specialization 的 compiler error。
-6. **Kernel profile。** 使用 `rocprofv3` 檢查 launch gap、duration、
-   memory traffic、MFMA 使用率、occupancy 與 LDS 行為。
-7. **Communication profile。** 尋找 rank imbalance、serialization、
-   缺少 overlap 與過多 copy。
-8. **End to end。** 測量 serving latency 與 throughput，再檢查 output
-   quality。
+請依照以下順序進行：
+
+1. **參考結果。** 把單一邊界的輸出與 FP32 PyTorch 實作比對。
+2. **格式。** 確認打包的值、縮放因子形狀、縮放因子的歸屬，以及預先重排的版本。
+3. **中繼資料。** 檢查 token 列、專家編號、rank 編號與空專家。
+4. **分派。** 記錄架構、運算子、選中的後端與調校表中的那一列。
+5. **編譯。** 把冷啟動的 JIT 時間與暖機後的執行時間分開，並保留失敗特化版本的編譯錯誤訊息。
+6. **kernel 分析。** 用 `rocprofv3` 檢查啟動間隙、執行時間、記憶體流量、MFMA 使用率、
+   佔用率與 LDS 行為。
+7. **通訊分析。** 找出 rank 之間的負載不均、被迫序列化、缺少重疊，以及多餘的複製。
+8. **端對端。** 量測服務的延遲與吞吐量，再檢查輸出品質。
 
 常見的失敗模式：
 
 | 症狀 | 優先檢查 |
 |---|---|
-| BF16 正確，但 quantized output 錯誤 | Scale orientation、block size、packing 與 preshuffle |
-| 單一 expert 錯誤 | Route map、local expert ID，以及該 expert 的 scale/weight offset |
-| 只有最終結果錯誤 | Routing weight 與 combine order |
-| 第一次呼叫非常慢 | JIT compilation 與 cache path |
-| 強制使用 FlyDSL 時失敗 | 該 shape 與 architecture 是否有受支援的 FlyDSL 路徑 |
-| 一個 rank 停住 | Send/receive count、empty expert、stream event 與 collective order |
-| 小型測試通過，但 graph capture 失敗 | Stable buffer、warm-up coverage 與 capture-safe communication |
+| BF16 正確，量化後的輸出卻錯 | 縮放因子方向、區塊大小、打包方式與預先重排 |
+| 只有某一個專家錯 | 路由表、本地專家編號，以及該專家的縮放因子／權重位移 |
+| 只有最終結果錯 | 路由權重與合併順序 |
+| 第一次呼叫特別慢 | JIT 編譯與快取路徑 |
+| 強制 FlyDSL 時失敗 | 該形狀與架構是否真的有支援的 FlyDSL 路徑 |
+| 某個 rank 卡住 | 傳送／接收筆數、空專家、stream event 與集體通訊的順序 |
+| 小測試都過，圖擷取卻失敗 | 緩衝區位址是否固定、暖機是否涵蓋所有路徑、通訊是否能安全擷取 |
 
-## 14. Production 檢查清單
+## 14. 上線前檢查清單
 
-將 K3 路徑視為 production-ready 前，請記錄：
+在宣稱某條 K3 路徑可以上線之前，請記錄：
 
-- [ ] 確切的 checkpoint、Quark、runtime image、AITER 與 FlyDSL revision；
-- [ ] GPU architecture、firmware/driver、ROCm、PyTorch 與 world size；
-- [ ] 每個關鍵 operator 選到的 backend 與 tuning row；
-- [ ] quantization、scale、packing 與 preshuffle contract；
-- [ ] route、scatter、兩個 GEMM、activation 與 combine 的本機 reference
-      結果；
-- [ ] empty、奇數、imbalanced 與支援範圍內的最大 shape；
-- [ ] cold-start 與 steady-state 測量；
-- [ ] graph-capture 行為與 fallback 行為；
-- [ ] multi-rank timeout、error propagation 與 health check；
-- [ ] weight、cache、JIT/AOT code 與通訊 buffer 的 memory headroom；
-- [ ] end-to-end accuracy 或 task-quality 檢查，而非只有 kernel tolerance；
-- [ ] 具代表性的 prompt length 與 concurrency profile trace。
+- [ ] 確切的 checkpoint、Quark、執行環境映像檔、AITER 與 FlyDSL 版本；
+- [ ] GPU 架構、韌體／驅動程式、ROCm、PyTorch 版本與 world size；
+- [ ] 每個關鍵運算子選中的後端與調校表中的那一列；
+- [ ] 量化、縮放因子、打包與預先重排的約定；
+- [ ] 路由、分散、兩個 GEMM、激活與合併各自的本機參考比對結果；
+- [ ] 空輸入、奇數、負載不均，以及支援範圍內最大的形狀；
+- [ ] 冷啟動與穩定狀態的量測；
+- [ ] 圖擷取與備援路徑的行為；
+- [ ] 多 rank 的逾時、錯誤傳遞與健康檢查；
+- [ ] 權重、快取、JIT/AOT 程式碼與通訊緩衝區所需的記憶體餘裕；
+- [ ] 端對端的準確度或任務品質檢查，而不只是 kernel 層級的容許誤差；
+- [ ] 在具代表性的提示詞長度與並行數下，收集效能分析紀錄。
 
 ## 重點整理
 
-1. FlyDSL 會明確呈現 value ownership、copy 與 MFMA layout。
-2. AITER 會 dispatch 多種 backend family；呼叫 AITER 不能證明使用了
-   FlyDSL kernel。
-3. 公開的 FlyDSL K3 核心路徑是 quantized MoE：route、quantize/scatter、
-   GEMM 1、SiTUv2/requantize、GEMM 2 與 combine。
-4. AITER 提供實用的 FlyDSL MLA building block，而在本章所述的公開 K3
-   路徑中，KDA 仍以 Triton/Gluon 為邊界。
-5. Quantized layout、scale、preshuffling、tuning 與通訊 metadata
-   都是正確性的一部分。
-6. 本機 operator 測試與八張 GPU 的 MAD 執行回答不同問題；兩者都是
-   production 證據所必需。
+1. FlyDSL 把「值歸誰」、複製方式與 MFMA 資料配置都明確寫出來。
+2. AITER 會分派到多種後端；呼叫了 AITER，不能證明用的是 FlyDSL kernel。
+3. 公開的 FlyDSL K3 主軸是量化 MoE：路由、量化／分散、GEMM 1、SiTUv2／重新量化、
+   GEMM 2 與合併。
+4. AITER 提供實用的 FlyDSL MLA 元件；但在本章描述的公開 K3 路徑中，KDA 仍由
+   Triton/Gluon 負責。
+5. 量化配置、縮放因子、預先重排、調校與通訊中繼資料，全都屬於正確性的一部分。
+6. 本機運算子測試與八張 GPU 的 MAD 執行回答的是不同問題；要證明能上線，兩者缺一不可。
 
 ## 練習
 
-1. 追蹤 FlyDSL vector addition 中的 value ownership。標示 logical
-   coordinate、physical offset、thread、copy atom 與 edge predicate。
-2. 畫出一個從 global weight 到 MFMA B fragment 的 preshuffled GEMM
-   tile，並指出 checkpoint converter 還必須知道哪些資訊。
-3. 使用與不使用 `AITER_FLYDSL_FORCE=1`，分別記錄一個 K3 GEMM shape
-   的 AITER dispatch。解釋結果時，不要假設強制路徑支援所有 shape。
-4. 建立 SiTUv2 的 FP32 reference，並針對 zero、bound 與 rounding
-   midpoint，將它與反量化後的 `situv2_and_mul_quant` output 比較。
-5. 為 route → quant/scatter → GEMM 1 → SiTUv2/requant → GEMM 2 →
-   combine 畫出 buffer diagram，標示 row order、dtype、scale shape
-   與 owner。
-6. 建立 two-rank expert-parallel 測試，其中包含一個 empty expert 與
-   一個 hot expert。執行前，先列出 send 與 receive count。
-7. 根據 AITER trace，將每個 K3 operator 分類為 FlyDSL、
-   Triton/Gluon、assembly/Opus、HIP/CK 或 unknown。在 dispatch 證據
-   識別出 unknown 項目前，請保持其 unknown 狀態。
+1. 追蹤 FlyDSL 向量加法中「值歸誰」的關係，標出邏輯座標、實體位移、執行緒、複製原子
+   與邊界判斷式。
+2. 畫出一個預先重排的 GEMM 分塊，從全域記憶體中的權重一路到 MFMA 的 B 片段，並指出
+   checkpoint 轉換器還必須知道哪些資訊。
+3. 分別在設定與不設定 `AITER_FLYDSL_FORCE=1` 的情況下，記錄某個 K3 GEMM 形狀的 AITER
+   分派結果。解釋時不要假設強制路徑支援所有形狀。
+4. 替 SiTUv2 建立 FP32 參考實作，並在零值、上下界與捨入中點上，與反量化後的
+   `situv2_and_mul_quant` 輸出比對。
+5. 為「路由 → 量化／分散 → GEMM 1 → SiTUv2／重新量化 → GEMM 2 → 合併」畫出緩衝區示意圖，
+   標出列順序、資料型別、縮放因子形狀與擁有者。
+6. 建立一個兩個 rank 的專家平行測試，其中包含一個空專家與一個熱門專家。執行前先寫出
+   預期的傳送與接收筆數。
+7. 根據 AITER 的執行紀錄，把每個 K3 運算子歸類為 FlyDSL、Triton/Gluon、組合語言／Opus、
+   HIP/CK 或未知。在分派證據確認之前，未知的項目就維持未知。
