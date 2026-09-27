@@ -68,9 +68,11 @@ plugins:
             Part I · Foundations: 第一部 · 基礎
             Part II · Parallel Patterns: 第二部 · 平行運算模式
             Part III · Matrix Multiplication: 第三部 · 矩陣乘法
-            Part IV · Portable Model Kernels: 第四部 · 可攜式模型 Kernel
-            Part V · AMD Production Kernels: 第五部 · AMD 生產環境 Kernel
-            Part VI · Publishing: 第六部 · 發布
+            Part IV · Triton: 第四部 · Triton
+            Part V · AMD Architecture & Libraries: 第五部 · AMD 架構與函式庫
+            Part VI · Kimi K3 Case Studies: 第六部 · Kimi K3 案例
+            Part VII · Publishing: 第七部 · 發布
+            Matrix Multiplication · Techniques: 矩陣乘法 · 完整技巧
             LeetGPU: LeetGPU
             Tensara: Tensara
             Topics: 主題
@@ -79,7 +81,7 @@ plugins:
             Chapter 14 · Triton Fundamentals: 第 14 章 · Triton 基礎
             Chapter 15 · Triton Model Kernels: 第 15 章 · Triton 模型 Kernel
             Chapters 09–13 · CUDA Examples: 第 09–13 章 · CUDA 範例
-            Chapter 04.x · GEMM Programs: 第 04.x 章 · GEMM 程式
+            Matrix Multiplication · Programs: 矩陣乘法 · 範例程式
             AMD Examples: AMD 範例
             Other Examples: 其他範例
             Easy: 初階

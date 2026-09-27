@@ -1,10 +1,12 @@
-# 04.1 – Vectorized Loads and a Conflict-Free Fragment Layout
+# Matrix Multiplication 2 – Vectorized Loads
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Program: [`01-vectorized.cu`](01-vectorized.cu) · Builds on: [chapter 04, section 4](../04-tiled-matmul.md#4-register-tiling) ·
-> Next: [04.2 – Double Buffering](02-double-buffering.md)
+> **Part III · Matrix Multiplication** ·
+> Program: [`01-vectorized.cu`](01-vectorized.cu) · Prerequisite: [Matrix Multiplication 1 – Foundations](../04-tiled-matmul.md) ·
+> Next: [Matrix Multiplication 3 – Double Buffering](02-double-buffering.md)
 
-Chapter 04's $4\times4$ register-tiled kernel spends most of its issue slots
+The $4\times4$ register-tiled kernel from
+[Matrix Multiplication 1 – Foundations](../04-tiled-matmul.md#4-register-tiling)
+spends most of its issue slots
 on memory instructions, not FMAs. This page grows the tile to
 $128\times128$ per block and $8\times8$ per thread, and makes every memory
 access 16 bytes wide:
@@ -44,7 +46,7 @@ $$
 
 | Thread tile | $v$ | $n_{\text{FMA}}$ | $n_{\text{LDS}}$ | $\rho$ |
 |---|---|---|---|---|
-| $4\times4$ (chapter 04) | 1 | 16 | 8 | 67 % |
+| $4\times4$ (Foundations) | 1 | 16 | 8 | 67 % |
 | $8\times8$ | 1 | 64 | 16 | 80 % |
 | $8\times8$ | 4 | 64 | 4 | 94 % |
 

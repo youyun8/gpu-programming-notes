@@ -1,8 +1,8 @@
-# 04.3 – 非同步複製：`cp.async` Pipeline 與 TMA
+# 矩陣乘法 4 – 非同步複製
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`03-cp-async.cu`](03-cp-async.cu) · 延續：[04.2](02-double-buffering.md) ·
-> 下一篇：[04.4 – Warp 分塊](04-warp-tiling.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`03-cp-async.cu`](03-cp-async.cu) · 先備知識：[矩陣乘法 3 – 雙緩衝](02-double-buffering.md) ·
+> 下一篇：[矩陣乘法 5 – Warp 分塊](04-warp-tiling.md)
 
 經由暫存器進行雙緩衝有兩項成本：傳輸中的切片會占用暫存器，而且每個元素
 仍需要兩條指令（一次全域載入、一次共享記憶體儲存）。Ampere（sm_80）
@@ -111,7 +111,7 @@ $$
   讓列保持 16 位元組對齊），並以純量載入讀取 $A$ fragment。它們是
   broadcast（半個 warp 共用 $t_y$），所以會占用發射槽，但沒有 bank
   衝突。Tensor-core kernel 可完全避開此問題：`ldmatrix` 能以任一方向
-  讀取 fragment（[04.7](07-tensor-cores.md)）。
+  讀取 fragment（[矩陣乘法 8 – Tensor Core](07-tensor-cores.md)）。
 - **未對齊的形狀。** 當 $K$ 或 $N$ 不是 4 的倍數時，列不會以 16 位元組
   對齊，因此 kernel 會具現化成使用 4 位元組複製（`kVec = 1`）：複製
   指令數是四倍，但使用相同 pipeline。
@@ -122,7 +122,7 @@ TMA 每條指令可搬移一個完整的多維分塊：
 
 1. Host 端使用 `cuTensorMapEncodeTiled` 建立 **tensor map**：矩陣的基底
    位址、大小與 stride、box（分塊）大小，以及選用的共享記憶體 swizzle
-   （[04.7](07-tensor-cores.md#4-swizzled-shared-memory) 的 XOR 模式，由
+   （[Tensor Core](07-tensor-cores.md#4-swizzled-shared-memory) 的 XOR 模式，由
    硬體套用）。
 2. Kernel 中由**一個 thread** 以分塊座標發出
    `cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes`。
@@ -135,7 +135,7 @@ TMA 每條指令可搬移一個完整的多維分塊：
 `wgmma` 指令時尤其重要。Pipeline 接著會為每個 stage 使用兩個 mbarrier
 （「full」與「empty」），而不是 `__syncthreads()`，且通常會採用
 *warp specialization*：producer warp 發出 TMA 複製，consumer warpgroup
-執行 MMA（[04.7 第 6 節](07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)）。
+執行 MMA（[Tensor Core 第 6 節](07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)）。
 此儲存庫沒有 Hopper 範例程式；CUTLASS 的 `sm90` collective mainloop
 是參考實作。
 
@@ -169,7 +169,7 @@ TMA 每條指令可搬移一個完整的多維分塊：
     與四個（72 KB）需要 dynamic shared memory 及 opt-in attribute。
 
     </details>
-2. 比較 04.2 與此 kernel 主迴圈的指令數（`cuobjdump -sass`）。`STS`
+2. 比較雙緩衝 kernel 與此 kernel 主迴圈的指令數（`cuobjdump -sass`）。`STS`
    到哪裡去了？
 3. 改用以 4 位元組 `cp.async` 複製寫入的轉置配置，取代純量 $A$ fragment
    載入（只有 $A$ 使用 `kVec = 1`）。速度有變快嗎？

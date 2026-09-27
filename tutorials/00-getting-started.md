@@ -414,8 +414,8 @@ has a *Cost analysis* section that does this calculation.
 - **It ignores latency.** A kernel with too little parallelism cannot keep
   enough requests in flight to reach $\beta$ (chapter 01, section 5).
 - **There are more roofs.** L2 and shared memory have their own
-  bandwidths; a kernel can be bound by one of them (chapter 04 is largely
-  about the shared-memory roof).
+  bandwidths; a kernel can be bound by one of them (Matrix Multiplication 1
+  is largely about the shared-memory roof).
 - **Peak numbers are peaks.** Practical ceilings are ~90 % of datasheet
   bandwidth and less for FLOP/s with non-FMA instruction mixes.
 

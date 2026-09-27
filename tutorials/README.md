@@ -1,12 +1,13 @@
 # GPU Programming Learning Paths
 
-The tutorials are organised as six short learning paths. Start with Part I.
-Then choose parallel patterns, matrix multiplication, or portable model
-kernels. The AMD production path builds on matrix multiplication and the model
-case studies. Publishing is independent. Chapters 09–15 include tested
-programs in [`examples/`](examples/check.cuh).
+The tutorials are organised as seven focused learning paths. Start with Part I,
+then choose parallel patterns, Matrix Multiplication 1–9, or the standalone
+Triton chapter. The AMD path builds on the matrix path; the Kimi K3 case
+studies combine Triton or FlyDSL with a serving framework. Publishing is
+independent. The practical chapters include tested programs in
+[`examples/`](examples/check.cuh).
 
-![Six learning paths from GPU foundations to portable and AMD production kernels](figures/overview-learning-path.svg)
+![Seven learning paths from GPU foundations to Triton, AMD, and Kimi K3 framework case studies](figures/overview-learning-path.svg)
 
 ## Part I · Foundations
 
@@ -37,47 +38,55 @@ Each chapter has a tested example program.
 
 ## Part III · Matrix Multiplication
 
-The one kernel that can be compute-bound, built from a naive loop up to
-tensor cores. Chapter 04 builds the ladder; the 04.x pages take one
-technique each and come with a complete, tested program.
+This is a self-contained nine-step path from a naive loop to a production
+dispatcher. Read it in order. Steps 2–8 each make one optimization and include
+a complete tested program; step 9 connects the kernels to real workloads.
+
+| Step | Chapter | Main topics | Program |
+|---|---|---|---|
+| 1 | [Foundations](04-tiled-matmul.md) | Cost model, naive GEMM, shared-memory and register tiling, epilogues | Inline kernels |
+| 2 | [Vectorized Loads](gemm/01-vectorized-loads.md) | `LDG/LDS.128`, alignment, conflict-free fragment layout | [`01-vectorized.cu`](gemm/01-vectorized.cu) |
+| 3 | [Double Buffering](gemm/02-double-buffering.md) | Overlap loads and math, one barrier per slice | [`02-double-buffering.cu`](gemm/02-double-buffering.cu) |
+| 4 | [Async Copies](gemm/03-async-copies.md) | `cp.async` pipelines and TMA | [`03-cp-async.cu`](gemm/03-cp-async.cu) |
+| 5 | [Warp Tiling](gemm/04-warp-tiling.md) | Block → warp → lane hierarchy | [`04-warp-tiling.cu`](gemm/04-warp-tiling.cu) |
+| 6 | [Tile Swizzling](gemm/05-tile-swizzling.md) | Grouped launch order and L2 reuse | [`05-tile-swizzle.cu`](gemm/05-tile-swizzle.cu) |
+| 7 | [Split-K and Stream-K](gemm/06-split-k-stream-k.md) | More parallelism, partial tiles and cross-block fix-up | [`06-split-k.cu`](gemm/06-split-k.cu), [`07-stream-k.cu`](gemm/07-stream-k.cu) |
+| 8 | [Tensor Cores](gemm/07-tensor-cores.md) | WMMA, `ldmatrix`, `mma.sync`, shared-memory swizzles, `wgmma` | [`08-wmma.cu`](gemm/08-wmma.cu), [`09-mma-sync.cu`](gemm/09-mma-sync.cu) |
+| 9 | [Production GEMM](gemm/08-production-gemm.md) | Persistent/grouped/batched GEMM, CUTLASS/CuTe, accuracy, tuning and dispatch | Design guide |
+
+[Open the complete Matrix Multiplication 1–9 roadmap.](gemm/README.md)
+
+## Part IV · Triton
+
+One standalone chapter takes Triton from the first masked vector operation to
+production kernels, with six tested examples and progressive exercises.
 
 | # | Chapter | Main topics | Program |
 |---|---|---|---|
-| 04 | [Tiled Matrix Multiplication](04-tiled-matmul.md) | Reuse, shared-memory and register tiling, epilogue fusion | (Tensara, LeetGPU pages) |
-| 04.x | [GEMM Deep Dive](gemm/README.md) | Overview of the seven techniques and how to run the programs | [`harness.cuh`](gemm/harness.cuh) |
-| 04.1 | [Vectorized Loads](gemm/01-vectorized-loads.md) | `LDG/LDS.128`, conflict-free fragment layout | [`01-vectorized.cu`](gemm/01-vectorized.cu) |
-| 04.2 | [Double Buffering](gemm/02-double-buffering.md) | Overlapping loads with math, one barrier per slice | [`02-double-buffering.cu`](gemm/02-double-buffering.cu) |
-| 04.3 | [Asynchronous Copies](gemm/03-async-copies.md) | `cp.async` pipelines, TMA | [`03-cp-async.cu`](gemm/03-cp-async.cu) |
-| 04.4 | [Warp Tiling](gemm/04-warp-tiling.md) | Block → warp → lane | [`04-warp-tiling.cu`](gemm/04-warp-tiling.cu) |
-| 04.5 | [Tile Swizzling](gemm/05-tile-swizzling.md) | Grouped launch order, L2 footprint | [`05-tile-swizzle.cu`](gemm/05-tile-swizzle.cu) |
-| 04.6 | [Split-K and Stream-K](gemm/06-split-k-stream-k.md) | Tile quantization, partial tiles, cross-block fix-up | [`06-split-k.cu`](gemm/06-split-k.cu), [`07-stream-k.cu`](gemm/07-stream-k.cu) |
-| 04.7 | [Tensor Cores](gemm/07-tensor-cores.md) | WMMA, `ldmatrix` + `mma.sync`, swizzled smem, `wgmma` | [`08-wmma.cu`](gemm/08-wmma.cu), [`09-mma-sync.cu`](gemm/09-mma-sync.cu) |
+| 14 | [Triton – From First Kernel to Production](14-triton.md) | Programs, masks, pointers/descriptors, fusion, reductions, LayerNorm, matmul, attention, atomics, scans, persistence, compiler layouts and profiling | [`14-triton/`](examples/14-triton/test_kernels.py) |
 
-## Part IV · Portable Model Kernels
-
-Start with Triton's block-level model, then apply it to quantization, serving
-caches, and Kimi Delta Attention.
-
-| # | Chapter | Main topics | Program |
-|---|---|---|---|
-| 14 | [Triton Fundamentals](14-triton.md) | Blocks, masks, fused softmax, autotuned matmul, FlashAttention, compiler and debugging | [`14-triton/`](examples/14-triton/test_kernels.py) |
-| 15 | [Triton in Quark, Kimi K3, and SGLang](15-triton-model-systems.md) | SiTU-GLU, MXFP4 concepts, indexed state caches, recurrent KDA, prefill and serving dispatch | [`15-triton-k3/`](examples/15-triton-k3/test_model_kernels.py) |
-
-## Part V · AMD Production Kernels
+## Part V · AMD Architecture and Libraries
 
 The same ideas on AMD's CDNA3 (MI300): first the hardware and instruction,
 then a hand-written kernel, then the generator that produces thousands of
-such kernels. The final chapter connects AITER and FlyDSL to Kimi K3. This path
-assumes chapter 04 and ideally 04.7.
+such kernels. This path assumes Matrix Multiplication 1 and ideally step 8.
 
 | # | Chapter | Main topics | Practice |
 |---|---|---|---|
 | 05 | [CDNA3 and MFMA](05-amd-cdna3-mfma.md) | Vocabulary map, wave64, MFMA operand layout, a teaching kernel and its ISA | [`amd/mfma_gemm.hip`](amd/mfma_gemm.hip) |
 | 06 | [Inside a Hand-Written AMD GEMM](06-aiter-asm-gemm.md) | AITER dispatch, one wave per SIMD, direct-to-LDS, interleaving, split-K | Disassemble AITER `.co` files |
 | 07 | [hipBLASLt and TensileLite](07-hipblaslt-tensilelite.md) | Solution parameters, kernel names, selection, offline tuning | `hipblaslt-bench` |
-| 16 | [AITER and FlyDSL for Kimi K3](16-aiter-flydsl-kimi-k3.md) | Layout algebra, quantization, two-stage MoE, MLA/KDA backend boundaries, multi-GPU validation | AITER and FlyDSL tagged test suites |
 
-## Part VI · Publishing
+## Part VI · Kimi K3 Framework Case Studies
+
+These chapters trace real framework paths without blurring backend boundaries.
+
+| # | Chapter | Main topics | Program |
+|---|---|---|---|
+| 15 | [Triton in SGLang – Serving Kimi K3](15-triton-model-systems.md) | SiTU, state caches, KDA decode/prefill/speculation, MLA, MoE, quantization, sampling and backend dispatch | [`15-triton-k3/`](examples/15-triton-k3/test_model_kernels.py) |
+| 16 | [FlyDSL in AITER – Kimi K3 on AMD GPUs](16-aiter-flydsl-kimi-k3.md) | Layout/copy/MMA model, AITER dispatch, quantized two-stage MoE, MLA, communication and full recipe | AITER and FlyDSL tagged tests |
+
+## Part VII · Publishing
 
 | # | Chapter | Main topics | Program |
 |---|---|---|---|

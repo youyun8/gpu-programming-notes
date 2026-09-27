@@ -1,8 +1,8 @@
-# 04.5 – Swizzled Tile Order for L2 Reuse
+# Matrix Multiplication 6 – Tile Swizzling
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Program: [`05-tile-swizzle.cu`](05-tile-swizzle.cu) · Builds on: [04.4](04-warp-tiling.md) ·
-> Next: [04.6 – Split-K and Stream-K](06-split-k-stream-k.md)
+> **Part III · Matrix Multiplication** ·
+> Program: [`05-tile-swizzle.cu`](05-tile-swizzle.cu) · Prerequisite: [Matrix Multiplication 5 – Warp Tiling](04-warp-tiling.md) ·
+> Next: [Matrix Multiplication 7 – Split-K and Stream-K](06-split-k-stream-k.md)
 
 Each block reads a full row panel of $A$ ($128\times K$) and a full column
 panel of $B$ ($K\times128$). Across the grid every panel is read by many
@@ -118,7 +118,7 @@ number from elsewhere.
 - **Dispatch order is not guaranteed** by the programming model. It is
   in-order in practice, which is all a cache optimization needs; correctness
   must never depend on it (compare the Stream-K fix-up in
-  [04.6](06-split-k-stream-k.md)).
+  [Matrix Multiplication 7 – Split-K and Stream-K](06-split-k-stream-k.md)).
 
 ## Key Takeaways
 
@@ -131,4 +131,5 @@ number from elsewhere.
 1. Extend `--footprint` to count, for each wave, how many panels were
    already used by the previous wave (a crude L2 hit estimate).
 2. With `ncu --metrics lts__t_sector_hit_rate.pct`, compare L2 hit rates of
-   04.4 and this program on a $8192\times8192\times8192$ problem.
+   the Warp Tiling program and this program on a
+   $8192\times8192\times8192$ problem.

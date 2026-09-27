@@ -55,6 +55,8 @@ def flash_attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor, causal: b
     assert k.shape == (n, d) and v.shape == (n, d) and d == triton.next_power_of_2(d) and d >= 16
     assert q.stride(1) == k.stride(1) == v.stride(1) == 1
     o = torch.empty_like(q)
+    if n == 0:
+        return o
     grid = (triton.cdiv(n, block_q),)
     flash_attention_kernel[grid](q, k, v, o, n, 1.0 / math.sqrt(d),
                                  q.stride(0), k.stride(0), v.stride(0), o.stride(0),

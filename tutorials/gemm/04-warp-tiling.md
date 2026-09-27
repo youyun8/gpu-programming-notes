@@ -1,10 +1,10 @@
-# 04.4 – Warp Tiling
+# Matrix Multiplication 5 – Warp Tiling
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Program: [`04-warp-tiling.cu`](04-warp-tiling.cu) · Builds on: [04.1](01-vectorized-loads.md), [04.2](02-double-buffering.md) ·
-> Next: [04.5 – Tile Swizzling](05-tile-swizzling.md)
+> **Part III · Matrix Multiplication** ·
+> Program: [`04-warp-tiling.cu`](04-warp-tiling.cu) · Prerequisites: [Matrix Multiplication 2 – Vectorized Loads](01-vectorized-loads.md), [Matrix Multiplication 3 – Double Buffering](02-double-buffering.md) ·
+> Next: [Matrix Multiplication 6 – Tile Swizzling](05-tile-swizzling.md)
 
-Chapter 04 tiled the output twice: into block tiles (shared memory) and
+[Matrix Multiplication 1 – Foundations](../04-tiled-matmul.md) tiled the output twice: into block tiles (shared memory) and
 thread tiles (registers). Between those sits a level the hardware already
 has: the warp. A warp issues one instruction for 32 lanes, and a shared-memory
 instruction is served for the warp as a whole, so what matters for shared
@@ -46,7 +46,8 @@ $$
 | $i_m, i_n$ | Sub-tile of the warp tile, 0–1 each |
 | $i, j$ | Position inside the lane's $4\times4$ patch, 0–3 each |
 
-Each lane still owns $2\cdot2\cdot4\cdot4 = 64$ outputs, as in 04.1; only
+Each lane still owns $2\cdot2\cdot4\cdot4 = 64$ outputs, as in the
+Vectorized Loads kernel; only
 *which* 64 changes.
 
 ## 2. What It Buys
@@ -66,7 +67,7 @@ $$
 
 | Layout | Warp covers | $Q_{\text{warp}}$ | FMAs per float |
 |---|---|---|---|
-| 04.1: $16\times2$ threads, split patches | $16\times128$ | 144 | 14.2 |
+| Vectorized Loads: $16\times2$ threads, split patches | $16\times128$ | 144 | 14.2 |
 | Warp tiling: $8\times4$ lanes, $2\times2$ sub-tiles | $64\times32$ | 96 | 21.3 |
 
 Both warps compute 2048 outputs per $k$, but the warp-tiled one reads a
@@ -81,7 +82,7 @@ Two further benefits:
 - **It maps onto tensor cores.** A tensor-core instruction is issued by a
   warp for a fixed fragment shape. Replacing the lane's $4\times4$ outer
   product by a $16\times8$ MMA leaves the block and warp levels untouched
-  ([04.7](07-tensor-cores.md)).
+  ([Matrix Multiplication 8 – Tensor Cores](07-tensor-cores.md)).
 - **It decouples the levels.** Block tile, warp tile and thread tile are
   independent parameters (subject to the divisibility constraints in the
   `constexpr` block), which is how CUTLASS and TensileLite
@@ -90,7 +91,7 @@ Two further benefits:
 ## 3. The Code
 
 The global loads, the transposed $A$ store and double buffering are
-unchanged from 04.2. The fragment loads become one `float4` per sub-tile:
+unchanged from Double Buffering. The fragment loads become one `float4` per sub-tile:
 
 ```cpp
 const int m_base = warp_m * kWarpTileM + lane_m * kThreadM;   // lane_m = lane / 4

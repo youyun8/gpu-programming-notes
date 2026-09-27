@@ -1,30 +1,27 @@
-# 04.x – GEMM Deep Dive: The Rest of the Ladder
+# Matrix Multiplication: A 1–9 Roadmap
 
-> **Part III · Matrix Multiplication** · Prerequisites: [04 – Tiled Matrix Multiplication](../04-tiled-matmul.md) ·
-> Next: [04.1 – Vectorized Loads](01-vectorized-loads.md)
+> **Part III · Matrix Multiplication** · Start: [Matrix Multiplication 1 – Foundations](../04-tiled-matmul.md)
 
-[Chapter 04](../04-tiled-matmul.md) ends with a table of techniques that take
-a register-tiled SGEMM from about half of cuBLAS to within a few percent of
-it, and then to tensor cores. The pages in this section explain each of those
-techniques and implement it as a complete, tested program:
+This standalone path starts with the arithmetic and memory model, builds a
+fast tiled kernel one technique at a time, and ends with the decisions needed
+to ship GEMM in a real system. Read the chapters in order: each implementation
+chapter starts from an earlier program and makes one main change.
 
-| Page | Technique | Program |
-|---|---|---|
-| [04.1](01-vectorized-loads.md) | 128-bit global and shared accesses, conflict-free fragment layout | [`01-vectorized.cu`](01-vectorized.cu) |
-| [04.2](02-double-buffering.md) | Double buffering: overlap the next slice's loads with the math | [`02-double-buffering.cu`](02-double-buffering.cu) |
-| [04.3](03-async-copies.md) | `cp.async` multi-stage pipelines, and TMA on Hopper | [`03-cp-async.cu`](03-cp-async.cu) |
-| [04.4](04-warp-tiling.md) | Warp tiling: block → warp → lane | [`04-warp-tiling.cu`](04-warp-tiling.cu) |
-| [04.5](05-tile-swizzling.md) | Swizzled ("grouped") tile order for L2 reuse | [`05-tile-swizzle.cu`](05-tile-swizzle.cu) |
-| [04.6](06-split-k-stream-k.md) | Split-K and Stream-K for too few output tiles | [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) |
-| [04.7](07-tensor-cores.md) | Tensor cores: WMMA, then `ldmatrix` + `mma.sync` with swizzled shared memory; Hopper's `wgmma` | [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) |
+| Step | Chapter | Main idea | Program |
+|---|---|---|---|
+| 1 | [Foundations](../04-tiled-matmul.md) | Arithmetic intensity, shared-memory tiling, register tiling and fused epilogues | Inline kernels |
+| 2 | [Vectorized Loads](01-vectorized-loads.md) | 128-bit global and shared accesses with a conflict-free fragment layout | [`01-vectorized.cu`](01-vectorized.cu) |
+| 3 | [Double Buffering](02-double-buffering.md) | Overlap the next slice's loads with current math | [`02-double-buffering.cu`](02-double-buffering.cu) |
+| 4 | [Async Copies](03-async-copies.md) | `cp.async` multi-stage pipelines and Hopper TMA | [`03-cp-async.cu`](03-cp-async.cu) |
+| 5 | [Warp Tiling](04-warp-tiling.md) | Match the block → warp → lane hardware hierarchy | [`04-warp-tiling.cu`](04-warp-tiling.cu) |
+| 6 | [Tile Swizzling](05-tile-swizzling.md) | Group tile launches to improve L2 reuse | [`05-tile-swizzle.cu`](05-tile-swizzle.cu) |
+| 7 | [Split-K and Stream-K](06-split-k-stream-k.md) | Expose parallelism when there are too few output tiles | [`06-split-k.cu`](06-split-k.cu), [`07-stream-k.cu`](07-stream-k.cu) |
+| 8 | [Tensor Cores](07-tensor-cores.md) | WMMA, `ldmatrix`, `mma.sync`, shared-memory swizzles and `wgmma` | [`08-wmma.cu`](08-wmma.cu), [`09-mma-sync.cu`](09-mma-sync.cu) |
+| 9 | [Production GEMM](08-production-gemm.md) | Persistent and grouped kernels, fusion, accuracy, tuning, dispatch and measurement | Design guide |
 
-Read them in order: each program starts from the previous one and changes one
-thing, so a diff between consecutive files shows exactly what the technique
-costs in code.
-
-Every page follows the same structure: what you will learn, the idea with a
-figure, the cost model (formulas with symbol tables), the key code, pitfalls,
-key takeaways and exercises with answers.
+Steps 2–8 include complete tested programs. Diff consecutive programs to see
+the code cost of each optimization. Step 9 ties the techniques together and
+explains when a library is the better production choice.
 
 ## The Hierarchy Every Page Refines
 
@@ -51,11 +48,12 @@ $$
 | Warp | (Warp's view of shared memory) | $64\times32$ | 21.3 FMAs per element read from shared memory |
 | Lane | Registers | $8\times8$ | 4 FMAs per element read into registers |
 
-Chapter 04 built the block and lane levels. The pages here make the loads
-wide (04.1), hide their latency (04.2, 04.3), add the warp level (04.4),
-make blocks cooperate through L2 (04.5), keep all SMs busy when there are few
-tiles (04.6), and finally replace the lane-level FMAs by tensor-core
-instructions (04.7).
+[Matrix Multiplication 1 – Foundations](../04-tiled-matmul.md) builds the
+block and lane levels. Step 2 makes loads wide; steps 3 and 4 hide their
+latency; step 5 adds the warp level; step 6 makes blocks cooperate through
+L2; step 7 keeps all SMs busy when there are few tiles; and step 8 replaces
+lane-level FMAs with tensor-core instructions. Step 9 turns that kernel
+knowledge into a production dispatch and validation strategy.
 
 ## Running the Programs
 

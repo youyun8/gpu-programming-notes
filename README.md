@@ -13,9 +13,9 @@ problem, with the full solution source. How to deploy it is covered in
 ## Layout
 
 ```
-tutorials/            concept chapters, organised in six paths (see tutorials/README.md); amd/ holds HIP
+tutorials/            concept chapters, organised in seven paths (see tutorials/README.md); amd/ holds HIP
                       example code, gemm/ the GEMM deep-dive pages and programs, examples/ the tested
-                      programs of chapters 09-14, figures/ the generated SVG figures
+                      programs of chapters 09-15, figures/ the generated SVG figures
 leetgpu/NNN-slug/     README.md (write-up) + solution.cu (solution.py for PyTorch-only challenges)
 tensara/slug/         README.md (write-up) + solution.cu
 tools/cuemu/          CPU CUDA emulator + test runner: checks solutions without a GPU
@@ -51,7 +51,7 @@ CI (`.github/workflows/ci.yml`) runs these jobs:
 - runs the GEMM deep-dive programs (`tutorials/gemm/`) on cuemu, including
   their `cp.async`, `ldmatrix` and `mma.sync` code paths;
 - runs the example programs of chapters 09–13 on cuemu, and the Triton
-  kernels of chapter 14 in the Triton interpreter;
+  kernels of chapters 14–15 in the Triton interpreter;
 - compiles the AMD example for gfx942;
 - checks that this index, the figures and the site build are current.
 
@@ -64,10 +64,11 @@ to `main`.
 |---|---|---|
 | I · Foundations | 00–03, 09 | Toolchain, execution model, memory hierarchy, reduction, profiling (Nsight Systems/Compute, rocprof) |
 | II · Parallel Patterns | 10–13 | Warp primitives and cooperative groups, scan (decoupled look-back), convolution and stencils, softmax/LayerNorm/FlashAttention; each with a tested program |
-| III · Matrix Multiplication | 04, 04.1–04.7 | Tiled GEMM, then one page and one tested program per technique: `float4`, double buffering, `cp.async`, warp tiling, tile swizzling, split-K/Stream-K, WMMA and `mma.sync` |
-| IV · Portable Model Kernels | 14–15 | Triton fundamentals, then Quark quantization, Kimi K3 KDA, and SGLang serving patterns |
-| V · AMD Production Kernels | 05–07, 16 | CDNA3 and MFMA, AITER assembly, hipBLASLt/TensileLite, AITER/FlyDSL's K3 MoE path |
-| VI · Publishing | 08 | GitHub Pages, static hosts, EPUB/PDF, bilingual content, and figure conventions |
+| III · Matrix Multiplication | Steps 1–9 | Foundations, vectorized loads, pipelines, warp/L2 scheduling, Split-K/Stream-K, tensor cores, persistent/grouped GEMM, CUTLASS/CuTe and production dispatch |
+| IV · Triton | 14 | Standalone beginner-to-production guide with six tested kernels |
+| V · AMD Architecture & Libraries | 05–07 | CDNA3 and MFMA, AITER assembly, hipBLASLt/TensileLite |
+| VI · Kimi K3 Case Studies | 15–16 | Triton in SGLang and FlyDSL in AITER, with exact backend boundaries |
+| VII · Publishing | 08 | GitHub Pages, static hosts, EPUB/PDF, bilingual content, and figure conventions |
 
 See [tutorials/](tutorials/README.md).
 

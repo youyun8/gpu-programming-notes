@@ -1,8 +1,8 @@
-# 04.3 – Asynchronous Copies: `cp.async` Pipelines and TMA
+# Matrix Multiplication 4 – Async Copies
 
-> **Part III · Matrix Multiplication · 04.x GEMM Deep Dive** ·
-> Program: [`03-cp-async.cu`](03-cp-async.cu) · Builds on: [04.2](02-double-buffering.md) ·
-> Next: [04.4 – Warp Tiling](04-warp-tiling.md)
+> **Part III · Matrix Multiplication** ·
+> Program: [`03-cp-async.cu`](03-cp-async.cu) · Prerequisite: [Matrix Multiplication 3 – Double Buffering](02-double-buffering.md) ·
+> Next: [Matrix Multiplication 5 – Warp Tiling](04-warp-tiling.md)
 
 Double buffering through registers has two costs: the staged slice occupies
 registers while it is in flight, and every element still needs two
@@ -116,7 +116,7 @@ they need the opt-in shared-memory limit (`cudaFuncSetAttribute` with
   read with scalar loads. They are broadcasts (a half-warp shares $t_y$), so
   they cost issue slots but no bank conflicts. Tensor-core kernels avoid the
   problem entirely: `ldmatrix` reads fragments in either orientation
-  ([04.7](07-tensor-cores.md)).
+  ([Matrix Multiplication 8 – Tensor Cores](07-tensor-cores.md)).
 - **Unaligned shapes.** With $K$ or $N$ not a multiple of 4, rows are not
   16-byte aligned, so the kernel is instantiated with 4-byte copies
   (`kVec = 1`): four times as many copy instructions, same pipeline.
@@ -128,7 +128,7 @@ TMA moves a whole multi-dimensional tile per instruction:
 1. On the host, `cuTensorMapEncodeTiled` builds a **tensor map**: base
    address, sizes and strides of the matrix, the box (tile) size, and an
    optional shared-memory swizzle (the XOR pattern of
-   [04.7](07-tensor-cores.md#4-swizzled-shared-memory), applied by hardware).
+   [Tensor Cores](07-tensor-cores.md#4-swizzled-shared-memory), applied by hardware).
 2. In the kernel, **one thread** issues
    `cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes`
    with the tile coordinates. Out-of-bounds parts of the box are zero-filled.
@@ -141,7 +141,8 @@ from the main loop entirely, which matters when the math is a few
 `wgmma` instructions per slice. Pipelines then use two mbarriers per stage
 ("full" and "empty") instead of `__syncthreads()`, and are usually
 *warp-specialized*: a producer warp issues TMA copies while consumer
-warpgroups run the MMAs ([04.7, section 6](07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)).
+warpgroups run the MMAs
+([Tensor Cores, section 6](07-tensor-cores.md#6-hopper-wgmma-and-warp-specialization)).
 This repository has no Hopper example program; CUTLASS's `sm90` collective
 mainloops are the reference implementation.
 
@@ -176,7 +177,7 @@ mainloops are the reference implementation.
     four (72 KB) need dynamic shared memory and the opt-in attribute.
 
     </details>
-2. Count instructions in the main loop (`cuobjdump -sass`) for 04.2 and for
-   this kernel. Where did the `STS` go?
+2. Count instructions in the main loop (`cuobjdump -sass`) for the
+   Double Buffering kernel and for this kernel. Where did the `STS` go?
 3. Replace the scalar $A$ fragment loads by a transposed layout written with
    4-byte `cp.async` copies (`kVec = 1` for $A$ only). Is it faster?

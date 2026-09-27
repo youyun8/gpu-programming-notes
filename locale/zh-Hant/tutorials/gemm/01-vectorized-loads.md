@@ -1,10 +1,11 @@
-# 04.1 – 向量化載入與無衝突的 Fragment 配置
+# 矩陣乘法 2 – 向量化載入
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`01-vectorized.cu`](01-vectorized.cu) · 延續：[第 04 章第 4 節](../04-tiled-matmul.md#4-register-tiling) ·
-> 下一篇：[04.2 – 雙緩衝](02-double-buffering.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`01-vectorized.cu`](01-vectorized.cu) · 先備知識：[矩陣乘法 1 – 基礎](../04-tiled-matmul.md) ·
+> 下一篇：[矩陣乘法 3 – 雙緩衝](02-double-buffering.md)
 
-第 04 章使用 $4\times4$ 暫存器分塊的 kernel，大部分發射槽都花在記憶體
+[矩陣乘法 1 – 基礎](../04-tiled-matmul.md#4-register-tiling)使用
+$4\times4$ 暫存器分塊的 kernel，大部分發射槽都花在記憶體
 指令，而不是 FMA。本頁把分塊擴大到每個 block $128\times128$、每個 thread
 $8\times8$，並讓每次記憶體存取的寬度都成為 16 位元組：
 
@@ -41,7 +42,7 @@ $$
 
 | Thread 分塊 | $v$ | $n_{\text{FMA}}$ | $n_{\text{LDS}}$ | $\rho$ |
 |---|---|---|---|---|
-| $4\times4$（第 04 章） | 1 | 16 | 8 | 67 % |
+| $4\times4$（基礎） | 1 | 16 | 8 | 67 % |
 | $8\times8$ | 1 | 64 | 16 | 80 % |
 | $8\times8$ | 4 | 64 | 4 | 94 % |
 

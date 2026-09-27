@@ -3,19 +3,22 @@ from .svg import Svg
 
 
 def fig_learning_path(name):
-    s = Svg(name, 1040, 500, "Six learning paths: foundations lead to patterns, matrix multiplication, model kernels, and AMD production")
+    s = Svg(name, 1214, 500, "Seven learning paths: foundations lead to parallel patterns, matrix multiplication, Triton, AMD, and Kimi K3 cases")
     parts = [
         ("Part I", "Foundations", "a", [("00", "Getting started"), ("01", "Execution model"),
                                         ("02", "Memory hierarchy"), ("03", "Reduction"),
                                         ("09", "Profiling")]),
         ("Part II", "Parallel Patterns", "hl", [("10", "Warp primitives"), ("11", "Scan"),
                                                ("12", "Stencils, conv."), ("13", "Softmax, attention")]),
-        ("Part III", "Matrix Multiply", "c", [("04", "Tiled matmul"), ("04.1–04.3", "Loads, pipelines"),
-                                              ("04.4–04.6", "Warps, split-K"), ("04.7", "Tensor cores")]),
-        ("Part IV", "Model Kernels", "d", [("14", "Triton basics"), ("15", "Quark, K3, SGLang")]),
-        ("Part V", "AMD Production", "b", [("05", "CDNA3, MFMA"), ("06", "AITER GEMM"),
-                                           ("07", "hipBLASLt"), ("16", "AITER, FlyDSL, K3")]),
-        ("Part VI", "Publishing", "ink", [("08", "Deploying the site")]),
+        ("Part III", "Matrix Multiply", "c", [("1", "Foundations"), ("2–4", "Loads, pipelines"),
+                                              ("5–7", "Warps, scheduling"), ("8", "Tensor cores"),
+                                              ("9", "Production GEMM")]),
+        ("Part IV", "Triton", "d", [("14", "First kernel → prod.")]),
+        ("Part V", "AMD", "b", [("05", "CDNA3, MFMA"), ("06", "AITER assembly"),
+                                 ("07", "hipBLASLt")]),
+        ("Part VI", "Kimi K3 Cases", "hl", [("15", "Triton in SGLang"),
+                                             ("16", "FlyDSL in AITER")]),
+        ("Part VII", "Publishing", "ink", [("08", "Deploying the site")]),
     ]
     col_w, gap, x0, bh, step = 160, 12, 10, 52, 70
     for i, (part, title, role, chapters) in enumerate(parts):
@@ -28,8 +31,8 @@ def fig_learning_path(name):
             s.box(x + 10, y, col_w - 20, bh, f"{num}\n{label}", role=role, fill="fig-paper", size="small")
             if j + 1 < len(chapters):
                 s.arrow(x + col_w / 2, y + bh, x + col_w / 2, y + step - 2, role=role, sw=1.2)
-    notes = {1: ["after Part I"], 2: ["after Part I"], 3: ["after Part I"],
-             4: ["after Parts III–IV"], 5: ["independent"]}
+    notes = {1: ["after Part I"], 2: ["after Part I"], 3: ["standalone"],
+             4: ["after Matrix 1, 8"], 5: ["after Parts IV–V"], 6: ["independent"]}
     for i, lines in notes.items():
         x = x0 + i * (col_w + gap) + col_w / 2
         y = 70 + len(parts[i][3]) * step + 4

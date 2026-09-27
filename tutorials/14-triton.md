@@ -1,31 +1,32 @@
-# 14 – Triton: Block-Level GPU Programming in Python
+# 14 – Triton – From First Kernel to Production
 
-> **Part V · Tools & Publishing** · Prerequisites: [03](03-parallel-reduction.md),
-> [04](04-tiled-matmul.md), [13](13-softmax-attention.md) ·
-> Programs: [`examples/14-triton/`](examples/14-triton/test_kernels.py) ·
-> Next: [08 – Deploying This Site](08-deploying-this-site.md)
+> **Part IV · Triton** · A standalone, beginner-to-advanced guide ·
+> Programs and tests: [`examples/14-triton/`](examples/14-triton/test_kernels.py)
 
-CUDA asks you to write the program of *one thread* and to arrange the
-cooperation of thousands of them by hand: which thread loads which bytes,
-what goes into shared memory, where the barriers go. Triton raises the
-level by one step. You write the program of *one block*, in Python, as
-operations on whole tiles (load this 64 × 64 tile, multiply these two
-tiles, take the maximum along this axis) and the compiler decides how the
-tile is spread over threads, how loads are vectorised and coalesced, what
-is staged through shared memory, and which instructions (tensor cores,
-`cp.async`, TMA) implement it. Most of the techniques of Part III happen
-automatically; the ones that remain are exactly the algorithmic choices:
-tile sizes, tile order, fusion.
+Triton is a Python language and compiler for writing GPU kernels. You describe
+the work of one **program instance** over vectors or tiles; the compiler maps
+that work onto GPU threads, vector loads, shared memory and accelerator
+instructions. No CUDA experience is required for this chapter. When CUDA terms
+help, a Triton program instance is roughly a CUDA thread block, a grid is the
+set of blocks, and a block value is a compile-time-shaped tensor distributed
+over the threads.
+
+That higher level does not remove performance engineering. You still choose
+the decomposition, grid, tile sizes, masks, traversal order, fusion boundaries
+and launch parameters. Triton takes responsibility for much of the mechanical
+thread mapping and lowering.
 
 **You will learn**
 
 - the Triton programming model: programs, blocks, masks and pointer
   tiles;
-- four complete kernels (vector addition, fused softmax, matrix
-  multiplication with grouped ordering and autotuning, FlashAttention)
-  and how each maps to the CUDA of earlier chapters;
-- which GEMM optimisations of chapter 04 the compiler performs and which
+- six complete kernels: vector addition, fused softmax, fused LayerNorm,
+  matrix multiplication with grouped ordering and autotuning,
+  FlashAttention, and an atomic histogram;
+- which matrix-multiplication optimisations the compiler performs and which
   remain yours;
+- loops, atomics, scans, persistent scheduling, compiler layouts and
+  portability across NVIDIA and AMD;
 - how a Triton kernel is compiled, specialised, cached, inspected,
   debugged in the interpreter, benchmarked and profiled;
 - when to choose Triton, CUDA or a library.
@@ -37,20 +38,20 @@ tile sizes, tile order, fusion.
 | Concern | CUDA | Triton |
 |---|---|---|
 | Unit of the program | One thread | One program instance (a block of threads) |
-| Data | Scalars in registers | Tensors of static, power-of-two shape |
+| Data | Scalars in registers | Compile-time-shaped block tensors |
 | Thread ↔ element mapping | You | Compiler (a *layout*) |
-| Coalescing, vector width | You (chapter 02, 04.1) | Compiler, from the pointer pattern and alignment |
+| Coalescing, vector width | You | Compiler, from the pointer pattern and alignment |
 | Shared memory, barriers | You | Compiler |
-| Bank-conflict swizzles | You (04.5) | Compiler |
-| Multi-stage load pipeline | You (04.2, 04.3) | Compiler, `num_stages` |
-| Tensor-core instructions | You (04.7) | Compiler, from `tl.dot` |
+| Bank-conflict swizzles | You | Compiler |
+| Multi-stage load pipeline | You | Compiler, influenced by `num_stages` |
+| Tensor-core instructions | You | Compiler, from `tl.dot` |
 | Tile sizes, grid, tile order | You | You |
 | Fusion (what one kernel does) | You | You |
 
-The trade: you give up control over the per-thread code (so a few
-techniques, such as hand-written warp specialisation or register-level
-tricks, are harder or impossible), and get kernels that are
-5–10× shorter and portable across NVIDIA and AMD GPUs.
+The trade: low-level per-thread control is deliberately limited, while kernels
+are often much shorter and can target both NVIDIA and AMD GPUs. Portability is
+not automatic performance parity: each backend still needs representative
+testing and tuning.
 
 ![CUDA describes one thread and you choose the mapping; Triton describes one block and the compiler lays it out over the warps](figures/ch14-model.svg)
 
@@ -59,7 +60,7 @@ tricks, are harder or impossible), and get kernels that are
 ```bash
 pip install torch triton          # Triton ships with PyTorch's CUDA wheels too
 cd tutorials/examples/14-triton
-python3 test_kernels.py           # checks all four kernels against PyTorch
+python3 test_kernels.py           # checks all six kernels against PyTorch
 python3 test_kernels.py --bench   # and times them (GPU only)
 ```
 
@@ -67,8 +68,8 @@ Without a GPU, `test_kernels.py` sets `TRITON_INTERPRET=1` before
 importing Triton. The **interpreter** runs each program instance
 sequentially with NumPy: slow, but it executes the same indexing, masks and
 arithmetic, so it is the Triton counterpart of this repository's CUDA
-emulator and what CI uses. On ROCm, the same code runs on AMD Instinct
-GPUs with the ROCm build of PyTorch.
+emulator. On ROCm, the same source can run with compatible ROCm builds of
+PyTorch and Triton; section 10 covers the backend-specific caveats.
 
 ## 2. The Programming Model
 
@@ -89,17 +90,25 @@ Inside the kernel, `tl.program_id(axis)` is the program's index (CUDA's
 no `threadIdx`: a program is one block, and how many threads execute it is
 a launch option, `num_warps` (default 4).
 
-### 2.2 Blocks: Static, Power-of-Two Tensors
+### 2.2 Blocks and Shape Constraints
 
 Values inside a kernel are scalars or **blocks**: tensors whose shape is
 known at compile time. `tl.arange(0, BLOCK)` creates the vector
-`[0, 1, …, BLOCK−1]`; `BLOCK` must be a `tl.constexpr` and a power of two.
+`[0, 1, …, BLOCK−1]`; for this form, `BLOCK` must be a `tl.constexpr` and
+the interval length must be a power of two.
 Operations are element-wise with NumPy broadcasting (`x[:, None]`,
 `y[None, :]`); reductions take an axis (`tl.sum`, `tl.max`, `tl.argmax`);
 `tl.dot` multiplies two 2-D blocks.
 
 Every distinct value of a `constexpr` compiles a separate kernel, which is
 why sizes are passed as keywords: `BLOCK=1024`.
+
+Run-time sizes such as `n`, `M` and `N` may be arbitrary. Round the tile up
+to a legal compile-time shape and mask lanes that fall outside the run-time
+shape. Operations also impose their own constraints: for example, efficient
+`tl.dot` tiles use dimensions compatible with the backend's matrix
+instructions. Static shape errors are compile-time errors, not conditions a
+kernel can branch around.
 
 ### 2.3 Pointers, Loads, Stores and Masks
 
@@ -148,7 +157,47 @@ access pattern and from specialising on argument values (section 7.1).
 When a stride is always 1, leaving it out of the signature, as the
 softmax kernel does, makes the contiguity explicit.
 
-### 2.5 What Is Not in the Language
+### 2.5 Block Pointers and Tensor Descriptors
+
+Explicit pointer tensors are the most general addressing form. A
+**block pointer** packages the same base, shape, strides, offsets and tile
+shape, and lets `tl.load` generate boundary checks:
+
+```python
+x_block = tl.make_block_ptr(
+    base=x_ptr, shape=(M, N), strides=(stride_m, stride_n),
+    offsets=(pid_m * BLOCK_M, pid_n * BLOCK_N),
+    block_shape=(BLOCK_M, BLOCK_N), order=(1, 0),
+)
+x = tl.load(x_block, boundary_check=(0, 1), padding_option="zero")
+x_block = tl.advance(x_block, (0, BLOCK_N))
+```
+
+Use pointer tensors when each lane needs a different predicate or irregular
+address. Use block pointers for regular strided tiles: the intent is clearer,
+but `boundary_check` replaces only rectangular edge masks, not an arbitrary
+causal or sparse mask.
+
+A **tensor descriptor** goes further by describing a global tensor and moving
+tiles through descriptor operations:
+
+```python
+desc = tl.make_tensor_descriptor(
+    x_ptr, shape=[M, N], strides=[stride_m, stride_n],
+    block_shape=[BLOCK_M, BLOCK_N],
+)
+x = desc.load([pid_m * BLOCK_M, pid_n * BLOCK_N])
+desc.store([pid_m * BLOCK_M, pid_n * BLOCK_N], x)
+```
+
+Descriptors allow backends with descriptor-driven transfers, such as NVIDIA
+TMA, to use them. They carry stricter alignment, tile-shape and target
+requirements than ordinary pointers, and support differs by backend. Keep a
+pointer-based path unless deployment hardware is fixed, and validate the
+actual Triton release and device rather than assuming that a descriptor
+guarantees a particular instruction.
+
+### 2.6 What Is Not in the Language
 
 - **No shared memory or barriers** in normal code: data exchange inside a
   program happens through block operations (`tl.sum`, `tl.dot`,
@@ -159,7 +208,7 @@ softmax kernel does, makes the contiguity explicit.
 - **No dynamic shapes** inside a kernel: a row of run-time length is
   handled with a power-of-two block and a mask, or a loop over blocks.
 
-## 3. Kernel 1: Vector Addition
+## 3. Elementwise Work and Fusion: Vector Addition
 
 [`vector_add.py`](examples/14-triton/vector_add.py) is the whole model in
 ten lines:
@@ -177,11 +226,30 @@ def add_kernel(x_ptr, y_ptr, out_ptr, n, BLOCK: tl.constexpr):
 
 The grid has $\lceil n / B \rceil$ programs. With `BLOCK = 1024` and
 `num_warps = 4`, each of the 128 threads owns 8 elements, which the
-compiler loads as two 16-byte vectors per thread: the float4 loads of
-chapter 04.1, without writing them. The kernel reaches the same bandwidth
-as a good CUDA copy; its whole cost is $12n$ bytes (chapter 00, section 7).
+compiler can lower to wide, coalesced accesses when alignment permits. The
+kernel's minimum memory traffic is $12n$ bytes for FP32: two 4-byte reads
+and one 4-byte write per element.
 
-## 4. Kernel 2: Fused Softmax
+### 3.1 Fusion Is a Memory-Traffic Decision
+
+Elementwise operations compose naturally because every intermediate remains
+in a block value:
+
+```python
+x = tl.load(x_ptr + offsets, mask=mask, other=0.0)
+y = tl.load(y_ptr + offsets, mask=mask, other=0.0)
+out = tl.maximum(x + y, 0.0) * scale
+tl.store(out_ptr + offsets, out, mask=mask)
+```
+
+As separate kernels, add, ReLU and scale would repeatedly write and read the
+same vector. Fused, they use the same two input reads and one output write as
+addition alone. Fusion is not unlimited: too many live block values increase
+register pressure, lower occupancy and may spill to local memory. Fuse a
+producer-consumer chain when it removes meaningful traffic, then inspect
+register use and benchmark it.
+
+## 4. Reductions and Normalization: Fused Softmax and LayerNorm
 
 [`softmax.py`](examples/14-triton/softmax.py) computes a row-wise softmax
 with one program per row:
@@ -208,10 +276,9 @@ neither change the maximum nor (since $e^{-\infty} = 0$) the sum.
 ### 4.2 Why It Is Fast
 
 The row is read once into registers and written once: $2 \cdot 4 \cdot n$
-bytes per row, the minimum. The three-kernel version of chapter 13,
-section 2 reads it three times. The fused kernel's advantage is not
-Triton-specific (chapter 13's online warp-per-row kernel does the same in
-CUDA), but in Triton fusion is the natural way to write it.
+bytes per row, the minimum. A decomposed max/exponentiate/sum design would
+re-read or materialise intermediates. The fused kernel's advantage is not
+Triton-specific, but Triton makes this fusion the natural expression.
 
 ### 4.3 Limits
 
@@ -219,10 +286,39 @@ CUDA), but in Triton fusion is the natural way to write it.
 more warps for longer rows so each thread holds at most ~32 values up to
 16 384 columns;
 beyond a few tens of thousands of columns the kernel spills. The fix is
-the online softmax of chapter 13: loop over the row in blocks, keeping
+online softmax: loop over the row in blocks, keeping
 $(m, z)$ as the state (exercise 2).
 
-## 5. Kernel 3: Matrix Multiplication
+### 4.4 Kernel 3: Fused LayerNorm
+
+[`layer_norm.py`](examples/14-triton/layer_norm.py) demonstrates multiple
+reductions followed by an elementwise affine transform:
+
+$$
+\mu={1\over C}\sum_j x_j,\qquad
+\sigma^2={1\over C}\sum_j(x_j-\mu)^2,\qquad
+y_j={x_j-\mu\over\sqrt{\sigma^2+\epsilon}}\,w_j+b_j.
+$$
+
+```python
+x = tl.load(x_ptr + row * x_stride + cols, mask=mask, other=0.0).to(tl.float32)
+mean = tl.sum(x, axis=0) / n_cols
+centered = tl.where(mask, x - mean, 0.0)
+variance = tl.sum(centered * centered, axis=0) / n_cols
+y = centered * tl.rsqrt(variance + eps)
+y = y * tl.load(weight_ptr + cols, mask=mask, other=0.0)
+y += tl.load(bias_ptr + cols, mask=mask, other=0.0)
+tl.store(out_ptr + row * out_stride + cols, y, mask=mask)
+```
+
+The second `tl.where` is essential: a masked load contributes zero to the
+mean, but `0 - mean` would still contribute to the variance. The kernel reads
+the input, weight and bias once and writes the result once; it never
+materialises mean, variance or normalized activations. Accumulation is FP32.
+For very wide rows, use tiled Welford states `(count, mean, M2)` or a
+multi-kernel reduction instead of retaining the full row.
+
+## 5. Matrix Multiplication and Autotuning
 
 [`matmul.py`](examples/14-triton/matmul.py) computes $C = AB$ with one
 program per $B_M \times B_N$ tile of $C$:
@@ -237,21 +333,20 @@ for k0 in range(0, K, BLOCK_K):
     b_ptrs += BLOCK_K * stride_bk
 ```
 
-This is the structure of chapter 04's tiled kernel. The difference is in
-what the compiler does with it.
+This is the standard tiled matrix-multiplication structure. The difference
+from a low-level implementation is what the compiler does with it.
 
-### 5.1 Chapter 04's Techniques, Revisited
+### 5.1 The Matrix Multiplication Ladder in Triton
 
-| Technique (chapter) | In Triton |
+| Technique | In Triton |
 |---|---|
-| Vectorised loads (04.1) | Automatic, when strides and alignment allow |
-| Double buffering (04.2) | Automatic: `num_stages` buffers in shared memory |
-| `cp.async` / TMA (04.3) | `cp.async`: automatic on Ampere and later for pipelined loads; TMA: through tensor descriptors (`tl.make_tensor_descriptor`) on Hopper and later |
-| Warp tiling (04.4) | Automatic: the `tl.dot` layout distributes the tile over `num_warps` warps |
-| Shared-memory swizzle (04.5) | Automatic |
-| Tile-order swizzle (04.5) | Yours: `GROUP_M` (section 5.2) |
-| Split-K / Stream-K (04.6) | Yours: an extra grid axis over K, then a reduction or atomics |
-| Tensor cores (04.7) | Automatic, from `tl.dot` |
+| [Matrix Multiplication 2 – Vectorized Loads](gemm/01-vectorized-loads.md) | Automatic when strides and alignment allow |
+| [Matrix Multiplication 3 – Double Buffering](gemm/02-double-buffering.md) | Automatic pipelining, influenced by `num_stages` |
+| [Matrix Multiplication 4 – Async Copies](gemm/03-async-copies.md) | Backend/compiler selected; descriptors can expose TMA-capable movement |
+| [Matrix Multiplication 5 – Warp Tiling](gemm/04-warp-tiling.md) | The `tl.dot` layout distributes the tile over `num_warps` warps |
+| [Matrix Multiplication 6 – Tile Swizzling](gemm/05-tile-swizzling.md) | Shared-memory swizzles are automatic; output tile order is yours (`GROUP_M`) |
+| [Matrix Multiplication 7 – Split-K and Stream-K](gemm/06-split-k-stream-k.md) | Yours: add work over K, then reduce or use atomics |
+| [Matrix Multiplication 8 – Tensor Cores](gemm/07-tensor-cores.md) | Automatic when a supported `tl.dot` shape and dtype are used |
 
 ### 5.2 Grouped Tile Ordering
 
@@ -281,7 +376,8 @@ With $T_N = 32$ and 64 programs in flight, row-major order touches 2 row
 strips of $A$ and 32 column strips of $B$ (34 strips); with $G = 8$ it
 touches 8 of $A$ and 8 of $B$ (16 strips), so about half the L2 footprint
 and correspondingly more L2 hits. This is the same idea as the tile-order
-swizzle of chapter 04.5.
+swizzle in
+[Matrix Multiplication 6 – Tile Swizzling](gemm/05-tile-swizzling.md).
 
 ### 5.3 Autotuning
 
@@ -300,7 +396,7 @@ matmul_kernel_tuned = triton.autotune(configs=CONFIGS, key=["M", "N", "K"])(matm
 
 | Parameter | Trade-off |
 |---|---|
-| `BLOCK_M`, `BLOCK_N` | Larger tiles: more reuse per byte loaded (chapter 04, section 3), more registers, fewer programs |
+| `BLOCK_M`, `BLOCK_N` | Larger tiles: more reuse per byte loaded, more registers, fewer programs |
 | `BLOCK_K` | Larger: fewer loop iterations, more shared memory per stage |
 | `num_stages` | More stages hide more latency, and cost `num_stages` × tile bytes of shared memory |
 | `num_warps` | More warps per program: smaller per-warp tiles, more latency hiding, less ILP |
@@ -326,10 +422,10 @@ a bias add, an activation (`tl.where(acc > 0, acc, 0.0)`), a scale, a
 conversion to FP8. This is where a hand-written Triton GEMM most often
 beats a library call followed by separate element-wise kernels.
 
-## 6. Kernel 4: FlashAttention
+## 6. Attention and Online Softmax: FlashAttention
 
 [`flash_attention.py`](examples/14-triton/flash_attention.py) implements
-the forward pass of chapter 13, section 5 for one head. Each program owns
+a one-head forward pass. Each program owns
 `BLOCK_Q` query rows and streams $K$ and $V$ past them:
 
 ```python
@@ -347,9 +443,9 @@ for start in range(0, kv_end, BLOCK_KV):
     m = m_new
 ```
 
-Line by line, this is the online-softmax recurrence of chapter 13:
+Line by line, this is the online-softmax recurrence:
 
-| Line | Chapter 13 |
+| Line | Meaning |
 |---|---|
 | `s = tl.dot(q, tl.trans(k))` | $S = Q K^\top$ for one tile, scale folded into $Q$ |
 | `m_new`, `alpha` | The new running maximum and the rescaling factor $e^{m_{\text{old}} - m_{\text{new}}}$ |
@@ -357,19 +453,103 @@ Line by line, this is the online-softmax recurrence of chapter 13:
 | `l`, `acc` | The running sum and the unnormalised output, rescaled, then updated |
 | `acc / l[:, None]` (after the loop) | The final normalisation |
 
-The CUDA version in [`examples/13-softmax-attention.cu`](examples/13-softmax-attention.cu)
-spends most of its ~100 lines distributing the tiles over lanes and
-staging $K$ and $V$ through shared memory; here both `tl.dot` calls run on
-tensor cores and the staging is pipelined by the compiler. Production
+In a low-level implementation, much of the code distributes tiles over lanes
+and stages $K$ and $V$ through shared memory; here `tl.dot` expresses both
+matrix products and the compiler chooses the lowering. Production
 kernels add a backward pass, multiple heads and batches as extra grid
 axes, and on Hopper warp specialisation, but the core is this loop.
 
 For the causal case, `kv_end` stops the loop at the last key the block's
 queries can see, which halves the work, exactly as in the CUDA kernel.
 
-## 7. Compilation, Debugging and Profiling
+## 7. Loops, Atomics and Scans
 
-### 7.1 From Python to Machine Code
+### 7.1 Loops
+
+The matmul and attention kernels already use loops. A loop with entirely
+compile-time bounds may be unrolled; a loop whose bound depends on `K` or `n`
+remains a loop in generated code. `tl.range` exposes loop attributes such as
+software-pipeline staging:
+
+```python
+for k0 in tl.range(0, K, BLOCK_K, num_stages=3):
+    ...
+```
+
+Unrolling short loops can expose instruction-level parallelism, but unrolling
+a long loop inflates code and live ranges. Use a run-time loop for data-sized
+work and specialize only when a small set of fixed sizes is genuinely common.
+
+### 7.2 Kernel 6: Atomic Histogram
+
+Programs cannot synchronize with each other inside a normal launch. Atomics
+are the safe way to update shared global state. The complete
+[`histogram.py`](examples/14-triton/histogram.py) handles an odd tail and
+ignores values outside the bin range:
+
+```python
+offsets = tl.program_id(0) * BLOCK + tl.arange(0, BLOCK)
+in_bounds = offsets < n
+values = tl.load(values_ptr + offsets, mask=in_bounds, other=-1)
+valid = in_bounds & (values >= 0) & (values < n_bins)
+bins = tl.where(valid, values, 0)  # masked pointer arithmetic stays in range
+tl.atomic_add(histogram_ptr + bins, 1, mask=valid)
+```
+
+The result is deterministic for integer addition, but performance is not:
+many values in one bin serialize at one address. A production histogram often
+builds one private histogram per program and merges those histograms in a
+second kernel. Triton also provides compare-and-swap, exchange, min, max and
+bitwise atomics; supported dtypes and memory semantics depend on the target.
+
+### 7.3 Scans
+
+A reduction maps a block to one value; a **scan** returns every prefix.
+`tl.cumsum(x, axis=0)` is an inclusive sum scan, while
+`tl.associative_scan` supports an associative combine operation. They are
+block-local: a scan longer than one program's tile needs a hierarchical
+algorithm:
+
+1. scan each tile and store its total;
+2. scan the tile totals;
+3. add the preceding tile total to each tile.
+
+There is no grid-wide barrier between those phases, so use separate launches
+unless an explicitly persistent design provides a safe protocol.
+
+## 8. Persistent Kernels and Grouped Scheduling
+
+Grouped scheduling changes **order**: section 5.2 maps adjacent program IDs to
+a cache-friendly patch of output tiles. A persistent kernel changes
+**lifetime**: it launches approximately one resident program per compute unit,
+then each program processes multiple logical tiles:
+
+```python
+pid = tl.program_id(0)
+for tile_id in tl.range(pid, n_tiles, tl.num_programs(0)):
+    # map tile_id to coordinates, load, compute, store
+    ...
+```
+
+The host might launch `grid=(min(NUM_SMS, n_tiles),)`, where `NUM_SMS` comes
+from device properties. This removes waves of launch scheduling and lets one
+program retain reusable state. It is useful for small-tile workloads,
+stream-K designs and fused pipelines, but it is not a universal speedup:
+
+- one persistent program must not consume so many registers or so much shared
+  memory that too few programs can reside;
+- static round-robin assignment can load-balance poorly when tiles differ;
+- an atomic work queue balances irregular work but adds contention;
+- a spin-waiting protocol can deadlock if it waits for a program that cannot
+  be scheduled; never assume all logical programs are simultaneously resident;
+- tune the resident grid separately for each backend and architecture.
+
+Start with ordinary grouped scheduling. Move to persistence only when profiles
+show launch, tail-wave or cache-residency costs that persistence addresses.
+
+## 9. Compiler Stages, Layouts and Warp Specialization
+
+### 9.1 From Python to Machine Code
 
 ![The compiler lowers the decorated Python function through Triton IR (block operations), TritonGPU IR (layouts, shared memory, pipelining) and LLVM IR to PTX or AMDGCN](figures/ch14-compiler.svg)
 
@@ -389,7 +569,64 @@ The TritonGPU IR is where performance questions are answered: it shows
 the layout of every tensor (`#blocked`, `#mma`, `#shared`), where shared
 memory is allocated, and how many pipeline stages were created.
 
-### 7.2 Debugging
+### 9.2 Layouts and Warp Specialization
+
+A **layout** says which lanes and warps own which elements of a block value.
+Blocked layouts serve ordinary elementwise work, dot-operand and MMA layouts
+feed matrix units, and shared layouts describe staged data. Layout conversions
+can require shuffles or shared-memory round trips, so inspect TritonGPU IR
+when a harmless-looking transpose or reshape causes a regression.
+
+`num_warps` controls how many warps cooperate on one program; it does not
+manually assign a tensor slice to each warp. The compiler chooses that mapping
+from layouts. **Warp specialization** instead gives different warp groups
+different roles, such as producer warps moving tiles while consumer warps run
+matrix instructions. On supporting Triton targets, selected pipelined loops
+can request it with the `warp_specialize` option to `tl.range`. This is an
+advanced, target-dependent optimization: availability and legal layouts
+change across Triton versions, and NVIDIA-specific warp-group machinery does
+not translate directly to AMD wavefronts. Keep a non-specialized
+configuration and select only a measured winner.
+
+## 10. CUDA and ROCm Portability
+
+The same pointer arithmetic, masks, reductions and most `tl.dot` code can
+compile for both CUDA and ROCm backends. The performance model is portable;
+the best constants usually are not.
+
+| Concern | Portability rule |
+|---|---|
+| Warp/wave width | Do not encode lane-level assumptions of 32; express work as blocks and reductions |
+| Matrix instructions | Use supported dtypes and benchmark backend-appropriate `BLOCK_K` and tile shapes |
+| Shared memory/LDS | Capacity, bank behavior and occupancy differ; retune `num_stages` and `num_warps` |
+| Descriptors and async copies | Treat TMA and other target-specific paths as optional fast paths |
+| Atomics | Verify dtype and operation support, especially low-precision and 64-bit cases |
+| Math | Approximate `exp`, division and TF32 behavior can require backend-specific tolerances |
+| Profilers | Use Nsight Systems/Compute on CUDA and `rocprof`/Omniperf on ROCm |
+
+Keep algorithmic code shared and choose a small backend-specific configuration
+set in the Python wrapper. Test both backends in their real compiled modes:
+the interpreter verifies indexing semantics, not target code generation,
+matrix-instruction selection or asynchronous pipelines.
+
+## 11. Testing, Interpreter, Debugging and Profiling
+
+[`test_kernels.py`](examples/14-triton/test_kernels.py) compares all six
+kernels with PyTorch. Its cases include empty inputs where the wrappers return
+without launching, singleton shapes, odd tails, dimensions just over tile
+boundaries, causal masks, out-of-range histogram bins and heavy atomic
+collisions. A production suite should also cover every supported dtype,
+non-contiguous layouts promised by the API, extreme values, NaN/Inf policy,
+multiple seeds and each deployed backend.
+
+Set `TRITON_INTERPRET=1` **before importing Triton** to execute program
+instances with NumPy on the CPU. This is excellent for pointer arithmetic and
+masks, and allows ordinary `print` and `pdb`. It does not model parallel races,
+GPU floating-point details, layouts, occupancy, target instructions or
+performance. A passing interpreter test is necessary evidence, not a GPU
+validation.
+
+### 11.1 Debugging
 
 | Tool | Use |
 |---|---|
@@ -402,31 +639,65 @@ The common errors are static: `arange` bounds that are not a power of two,
 shapes that do not broadcast, a non-constexpr value where the compiler
 needs a constant, and `tl.dot` operands smaller than 16 in some dimension.
 
-### 7.3 Benchmarking and Profiling
+For incorrect edge values, reduce the grid to one program and print offsets,
+masks and loaded values. For a crash, first run a tiny odd shape under the
+interpreter, then use the backend's memory checker on GPU. For a numerical
+error, compare intermediate states in FP32 and decide explicitly whether the
+difference comes from algorithm order, approximate math, TF32 or a bad mask.
+
+### 11.2 Benchmarking and Profiling
 
 `triton.testing.do_bench(fn)` times a callable with warm-up, repetitions
 and an L2 flush between runs, and returns milliseconds;
-`triton.testing.perf_report` sweeps sizes and plots the results. The
-roofline arithmetic of chapter 00 and the profilers of chapter 09 apply
-unchanged: a Triton kernel is an ordinary kernel to Nsight Compute
+`triton.testing.perf_report` sweeps sizes and plots the results. A Triton
+kernel is an ordinary GPU kernel to Nsight Compute
 (`ncu -k regex:matmul_kernel python3 test_kernels.py --bench`), and with
 `-lineinfo`-style information enabled by default, source attribution
 points at the Python lines.
 
-## 8. Triton, CUDA or a Library?
+Benchmark warmed kernels so compilation and autotuning are not included.
+Report shape, dtype, strides, backend, GPU, Triton version and selected
+configuration. Compare latency as well as derived bandwidth or FLOP/s, and
+profile before changing tiles: low occupancy, spills, memory stalls, layout
+conversions and launch gaps need different fixes.
+
+## 12. Production Decision Checklist
 
 | Situation | Choose |
 |---|---|
 | A standard GEMM, convolution or attention with standard shapes | A library (cuBLAS, cuDNN, hipBLASLt, FlashAttention) |
 | A fused operation that no library has (GEMM + custom epilogue, a new attention variant, a fused norm) | Triton |
 | Research code that must run on NVIDIA and AMD | Triton |
-| The last 10–20 % on one architecture: warp specialisation, custom pipelines, exotic data movement | CUDA (or CUTLASS/CuTe, chapter 04.7) |
+| The final architecture-specific margin needs custom synchronization or data movement | CUDA, HIP, CUTLASS or CuTe |
 | Algorithms dominated by irregular per-thread control flow (sorting networks, graph traversal) | CUDA |
+
+Before shipping a Triton kernel, answer all of these:
+
+- **Value:** Does fusion, specialization or a new algorithm beat the best
+  suitable library on representative production shapes?
+- **Contract:** Are shape, dtype, stride, alignment, device, aliasing and empty
+  input behavior checked by the wrapper?
+- **Correctness:** Are odd tails, masked rows, extreme values, NaNs, atomics
+  and numerical tolerances tested against a high-precision reference?
+- **Coverage:** Is there a safe fallback for unsupported shapes, dtypes,
+  backends and failed autotune configurations?
+- **Tuning:** Are keys specific enough to avoid reusing a poor configuration,
+  but bounded so first-use autotuning and cache growth stay acceptable?
+- **Resources:** Do compiler output and profiles show acceptable registers,
+  shared memory, occupancy and no accidental spills or layout conversions?
+- **Operations:** Are compilation/autotune warm-up, cache behavior, Triton and
+  driver versioning, observability and rollback handled?
+- **Portability:** Has every advertised CUDA/ROCm architecture run correctness
+  and performance tests in compiled mode?
+
+Prefer a library until measurements show why a custom kernel is needed.
+Prefer the simplest Triton design that meets the target, and keep a framework
+or library fallback.
 
 ## Key Takeaways
 
-1. A Triton kernel describes one block with static, power-of-two tensors;
-   the compiler maps it to threads.
+1. A Triton kernel describes one program over compile-time-shaped blocks;
+   the compiler maps those blocks to threads and target instructions.
 2. Pointer blocks plus masks replace thread indexing and bounds checks;
    `other` supplies the identity for masked lanes.
 3. Coalescing, vectorisation, shared-memory staging, pipelining, swizzles
@@ -434,12 +705,17 @@ points at the Python lines.
    order and fusion remain your decisions.
 4. `triton.autotune` searches tile shapes, `num_warps` and `num_stages` per
    problem size.
-5. The interpreter (`TRITON_INTERPRET=1`) tests kernels on a CPU; the
-   `asm` stages and Nsight Compute explain their performance.
+5. Loops express tiled algorithms; atomics communicate through global
+   memory; scans are block-local and need hierarchy across blocks.
+6. Persistent and warp-specialized kernels are measured, target-specific
+   optimizations, not starting points.
+7. The interpreter checks indexing semantics on a CPU; compiled GPU tests,
+   IR inspection and backend profilers establish correctness and performance.
 
 ## Exercises
 
-1. In `add_kernel`, what happens if `BLOCK` is 1000? And if `mask` is
+1. **Easy — masks and shapes.** In `add_kernel`, what happens if `BLOCK`
+   is 1000? And if `mask` is
    omitted from the load?
 
     <details markdown="1"><summary>Answer</summary>
@@ -452,9 +728,22 @@ points at the Python lines.
 
     </details>
 
-2. Write a softmax kernel for rows too long for registers: loop over the
+2. **Easy — masked reductions.** In `layer_norm_kernel`, remove
+   `tl.where(mask, x - mean, 0.0)` and use `x - mean` directly. Why do odd
+   widths fail even though the input load uses `other=0.0`?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    A padded lane loads zero, but after centering it contains `-mean`, not
+    zero. Each padded lane therefore adds `mean²` to the variance. Reduction
+    identities must be applied at the point of each reduction; the load's
+    identity for the mean is not automatically an identity after subtraction.
+
+    </details>
+
+3. **Intermediate — online reduction.** Write a softmax kernel for rows too long for registers: loop over the
    row in blocks of `BLOCK` columns, keeping a running maximum and sum
-   (chapter 13, section 3), then loop again to write the output.
+   using the recurrence in section 6, then loop again to write the output.
 
     <details markdown="1"><summary>Hint</summary>
 
@@ -467,7 +756,7 @@ points at the Python lines.
 
     </details>
 
-3. For $M = N = K = 4096$ in FP16 with `BLOCK_M = BLOCK_N = 128`,
+4. **Intermediate — resource accounting.** For $M = N = K = 4096$ in FP16 with `BLOCK_M = BLOCK_N = 128`,
    `BLOCK_K = 32` and `num_stages = 3`, how much shared memory does a
    program need? How many programs fit on an A100 SM (164 KB)?
 
@@ -480,7 +769,7 @@ points at the Python lines.
 
     </details>
 
-4. Add a fused ReLU epilogue to `matmul_kernel` behind a
+5. **Intermediate — epilogue fusion.** Add a fused ReLU epilogue to `matmul_kernel` behind a
    `RELU: tl.constexpr` flag, and test it against
    `torch.relu(a @ b)`. Why is a constexpr better than a run-time flag?
 
@@ -493,7 +782,22 @@ points at the Python lines.
 
     </details>
 
-5. `m_safe` matters only when a row has seen nothing but masked keys.
+6. **Advanced — privatized atomics.** Change the histogram into two
+   kernels: the first writes one private histogram per program and the second
+   reduces those histograms. When should it outperform direct atomics?
+
+    <details markdown="1"><summary>Hint and answer</summary>
+
+    Give each program a row in a `(num_programs, n_bins)` temporary, accumulate
+    locally (using atomics within that row if necessary), then sum each bin
+    over program rows. This adds temporary traffic and another launch, so it
+    wins only when collisions on the single global histogram serialize enough
+    work to outweigh those costs. Benchmark skewed and uniform distributions;
+    bin count and dtype materially change the crossover.
+
+    </details>
+
+7. **Advanced — masked attention.** `m_safe` matters only when a row has seen nothing but masked keys.
    Show that this cannot happen in `flash_attention` as written, and name
    a variant of attention in which it does.
 
@@ -507,6 +811,22 @@ points at the Python lines.
     masked for late rows), with key-padding masks, or when tiles are visited
     in a different order (e.g. starting at the diagonal). There `s - m_new`
     would be $-\infty - (-\infty) = \text{NaN}$ without the guard.
+
+    </details>
+
+8. **Advanced — a global scan.** Design a scan for an arbitrary-length
+   vector. Why is replacing the three launches with a spin-waiting grid-wide
+   barrier unsafe in an ordinary kernel?
+
+    <details markdown="1"><summary>Answer</summary>
+
+    Launch a block-local scan and save tile totals; recursively scan the
+    totals; then launch a kernel that adds each preceding tile total. A
+    spin-wait barrier can deadlock: resident programs may wait for logical
+    programs that cannot be scheduled until the resident programs exit.
+    Persistence makes a custom barrier possible only when the launch is
+    deliberately bounded to simultaneously resident workers and the memory
+    protocol is correct; separate launches are the safe default.
 
     </details>
 

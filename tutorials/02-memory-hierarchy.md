@@ -66,9 +66,9 @@ extern __shared__ float dynamic_smem[];           // size given at launch:
 myKernel<<<grid, block, bytes>>>(...);            //   third launch parameter
 ```
 
-It is used to (1) reuse data loaded once from global memory (tiling,
-chapter 04), (2) exchange data between threads of a block (reductions,
-chapter 03), and (3) reorder accesses so that global accesses stay
+It is used to (1) reuse data loaded once from global memory (tiling in
+Matrix Multiplication 1), (2) exchange data between threads of a block
+(reductions, chapter 03), and (3) reorder accesses so that global accesses stay
 coalesced (the transpose of section 5). Blocks that need more than 48 KB
 must use dynamic shared memory and opt in with `cudaFuncSetAttribute`.
 
@@ -197,7 +197,7 @@ const float4 v = reinterpret_cast<const float4*>(in)[i];   // i indexes float4s
 The compiler sometimes vectorizes adjacent scalar accesses itself, but only
 when it can prove alignment; the explicit cast makes it certain. Always
 pair it with a runtime check of the alignment (or of the leading dimension)
-and a scalar fallback, as the programs of [04.1](gemm/01-vectorized-loads.md)
+and a scalar fallback, as the programs of [Matrix Multiplication 2](gemm/01-vectorized-loads.md)
 do: a misaligned vector access is a fault, not a slowdown.
 
 ## 4. Shared Memory and Bank Conflicts
@@ -273,7 +273,7 @@ $$
 For a fixed logical column $c$ and $r = 0 \dots 31$, the values $c \oplus r$
 are all different, so a column read is conflict-free, and a row read is
 still a permutation of 32 banks. Tensor-core kernels apply the same idea to
-16-byte chunks instead of words; [04.7](gemm/07-tensor-cores.md#4-swizzled-shared-memory)
+16-byte chunks instead of words; [Matrix Multiplication 8](gemm/07-tensor-cores.md#4-swizzled-shared-memory)
 works through it, and AMD's generated kernels (chapter 07) search over such
 patterns.
 
@@ -285,7 +285,7 @@ hardware therefore serves them a half-warp (64-bit) or a quarter-warp
 (128-bit) at a time, and the rule becomes: within each group of 16 or 8
 lanes, no two different addresses may share a bank. A conflict-free 128-bit
 access takes 4 passes, the minimum for 512 bytes.
-[04.1](gemm/01-vectorized-loads.md) shows how GEMMs lay out their
+[Matrix Multiplication 2](gemm/01-vectorized-loads.md) shows how GEMMs lay out their
 fragments to satisfy it.
 
 ## 5. Worked Example: A Coalesced Transpose

@@ -128,4 +128,4 @@ All test cases (scaled-down variants of the official sizes) pass on
 
 - [Square Matmul](../square-matmul/), [Matmul 3D](../matmul-3d/), [GEMM + ReLU](../gemm-relu/),
   LeetGPU [Matrix Multiplication](../../leetgpu/002-matrix-multiplication/),
-  tutorial [04 – Tiled matmul](../../tutorials/04-tiled-matmul.md).
+  tutorial [Matrix Multiplication 1 – Foundations](../../tutorials/04-tiled-matmul.md).

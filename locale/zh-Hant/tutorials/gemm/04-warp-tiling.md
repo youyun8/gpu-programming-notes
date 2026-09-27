@@ -1,10 +1,10 @@
-# 04.4 – Warp 分塊
+# 矩陣乘法 5 – Warp 分塊
 
-> **第三部分 · 矩陣乘法 · 04.x GEMM 深入解析** ·
-> 程式：[`04-warp-tiling.cu`](04-warp-tiling.cu) · 延續：[04.1](01-vectorized-loads.md)、[04.2](02-double-buffering.md) ·
-> 下一篇：[04.5 – 分塊 Swizzle](05-tile-swizzling.md)
+> **第三部分 · 矩陣乘法** ·
+> 程式：[`04-warp-tiling.cu`](04-warp-tiling.cu) · 先備知識：[矩陣乘法 2 – 向量化載入](01-vectorized-loads.md)、[矩陣乘法 3 – 雙緩衝](02-double-buffering.md) ·
+> 下一篇：[矩陣乘法 6 – 分塊 Swizzle](05-tile-swizzling.md)
 
-第 04 章把輸出分成兩層：block 分塊（共享記憶體）與 thread 分塊
+[矩陣乘法 1 – 基礎](../04-tiled-matmul.md)把輸出分成兩層：block 分塊（共享記憶體）與 thread 分塊
 （暫存器）。兩者之間還有硬體本來就具備的一層：warp。Warp 以 32 個 lane
 為單位發出一條指令，共享記憶體指令也是整個 warp 一起處理，因此影響共享
 記憶體流量的是 **warp** 存取的整組位址。Warp 分塊讓每個 warp 負責 block
@@ -44,7 +44,7 @@ $$
 | $i_m, i_n$ | Warp 分塊中的子分塊，兩者皆為 0–1 |
 | $i, j$ | Lane 的 $4\times4$ 區塊內位置，兩者皆為 0–3 |
 
-每個 lane 仍負責 $2\cdot2\cdot4\cdot4 = 64$ 個輸出，與 04.1 相同；
+每個 lane 仍負責 $2\cdot2\cdot4\cdot4 = 64$ 個輸出，與向量化載入 kernel 相同；
 改變的只是負責的是*哪* 64 個。
 
 ## 2. 帶來的效益
@@ -64,7 +64,7 @@ $$
 
 | 配置 | Warp 涵蓋範圍 | $Q_{\text{warp}}$ | 每個 float 的 FMA 數 |
 |---|---|---|---|
-| 04.1：$16\times2$ 個 thread，分割區塊 | $16\times128$ | 144 | 14.2 |
+| 向量化載入：$16\times2$ 個 thread，分割區塊 | $16\times128$ | 144 | 14.2 |
 | Warp 分塊：$8\times4$ 個 lane，$2\times2$ 個子分塊 | $64\times32$ | 96 | 21.3 |
 
 兩種 warp 每個 $k$ 都計算 2048 個輸出，但使用 warp 分塊者從共享記憶體
@@ -77,14 +77,14 @@ $$
 
 - **可對應到 tensor core。** Tensor-core 指令由一個 warp 針對固定 fragment
   形狀發出。把 lane 的 $4\times4$ outer product 換成 $16\times8$ MMA，
-  block 與 warp 層級都不需改變（[04.7](07-tensor-cores.md)）。
+  block 與 warp 層級都不需改變（[矩陣乘法 8 – Tensor Core](07-tensor-cores.md)）。
 - **各層級可解耦。** Block 分塊、warp 分塊與 thread 分塊都是獨立參數
   （但須符合 `constexpr` 區塊中的整除限制）；CUTLASS 與 TensileLite
   （[第 07 章](../07-hipblaslt-tensilelite.md)）就是這樣描述 kernel。
 
 ## 3. 程式碼
 
-全域載入、轉置的 $A$ 儲存方式及雙緩衝都與 04.2 相同。Fragment 載入改為
+全域載入、轉置的 $A$ 儲存方式及雙緩衝都與「雙緩衝」相同。Fragment 載入改為
 每個子分塊載入一個 `float4`：
 
 ```cpp

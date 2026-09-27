@@ -1,14 +1,14 @@
 # 07 – hipBLASLt 與 TensileLite：由程式撰寫的 GEMM Kernel
 
-> **第五部 · AMD Production Kernel** · 先備知識：[05](05-amd-cdna3-mfma.md)、[06](06-aiter-asm-gemm.md) ·
-> 下一章：[14 – Triton](14-triton.md)（第四部）
+> **第五部 · AMD 架構與函式庫** · 先備知識：[05](05-amd-cdna3-mfma.md)、[06](06-aiter-asm-gemm.md) ·
+> 下一章：[15 – SGLang 中的 Triton：以 Kimi K3 服務為例](15-triton-model-systems.md)
 
 AITER（第 06 章）手寫數十個 GEMM kernel。[hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) 則發布了**數千個**：ROCm 的 `libhipblaslt` 對每種 GPU architecture 都包含一組 code object，而 PyTorch 預設用它在 MI300 上執行 `torch.matmul`。它們不是人工撰寫，而是由 **TensileLite** 產生。這個 Python 程式接收 parameter list，為每種組合輸出完整 assembly kernel，再 benchmark 各組合以決定發布哪些。
 
 **你將學會**
 
 - TensileLite *solution* 是什麼，以及主要 parameter 的意義：tile hierarchy（`MatrixInstruction`、`DepthU`）、global/local read、LDS layout、instruction scheduling、工作切分與 tile order；
-- 各 parameter 如何對應第 05–06 章（及 NVIDIA 04.1–04.7 頁面）中手工完成的技術；
+- 各 parameter 如何對應第 05–06 章（以及 NVIDIA 的矩陣乘法 2–8 頁面）中手工完成的技術；
 - 如何從 profile 解讀 `Cijk_…` kernel 名稱；
 - hipBLASLt 如何在 runtime 選擇 kernel，以及如何針對自己的 shape 調校；
 - TensileLite 如何產生、benchmark 與發布 kernel。

@@ -267,10 +267,10 @@ $$
 
 暫存器項是簡化公式：暫存器以 warp 為單位分塊配置，因此先將 $r$ 向上取整到 8 的倍數。Runtime 可用 `cudaOccupancyMaxActiveBlocksPerMultiprocessor` 計算精確值。
 
-高佔用率是手段，不是目標。它透過切換其他 warp 來隱藏延遲；具有足夠 ILP 的 kernel（第 04 章的暫存器 tile）即使只有 25 % 佔用率也能全速執行。以下兩種佔用率問題才重要：
+高佔用率是手段，不是目標。它透過切換其他 warp 來隱藏延遲；具有足夠 ILP 的 kernel（矩陣乘法 1 的暫存器 tile）即使只有 25 % 佔用率也能全速執行。以下兩種佔用率問題才重要：
 
 - **實際值遠低於理論值**代表 SM 缺乏工作：區塊太少（網格小於一波），或各區塊完成時間差異很大。
-- **尾端效應。** 1.1 波的網格在最後 0.1 波時，幾乎整個 GPU 都是空的。若 kernel 執行時間長，請讓網格波數接近整數，或使用 persistent grid（第 04.6 章）。
+- **尾端效應。** 1.1 波的網格在最後 0.1 波時，幾乎整個 GPU 都是空的。若 kernel 執行時間長，請讓網格波數接近整數，或使用 persistent grid（見矩陣乘法 7）。
 
 ### 5.7 Source Counters
 
@@ -299,7 +299,7 @@ $$
 | `transposeShared` | 4 | 每條載入指令多 31 個 wavefront | MIO throttle、short scoreboard |
 | `transposePadded` | 4 | 0 | Long scoreboard（複製應有的狀態） |
 
-Padding 版本應達到約等於 `copyCoalesced` 的頻寬；正確評估基準是該複製，而非簡單版本。第 02 章第 4、5 節和第 04.5 章（swizzling）會深入討論 bank。
+Padding 版本應達到約等於 `copyCoalesced` 的頻寬；正確評估基準是該複製，而非簡單版本。第 02 章第 4、5 節和矩陣乘法 6（swizzling）會深入討論 bank。
 
 ### 6.3 分歧
 

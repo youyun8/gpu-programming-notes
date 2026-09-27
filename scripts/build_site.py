@@ -32,7 +32,7 @@ CODE_LANGUAGES = {".cu": "cuda", ".cuh": "cuda", ".hip": "cpp", ".h": "cpp", ".c
                   ".sh": "bash"}
 # Tutorial sub-directories with pages of their own: directory -> (navigation title,
 # file-name prefix of the chapter they are listed after).
-TUTORIAL_SECTIONS = {"gemm": ("04.x GEMM Deep Dive", "04-")}
+TUTORIAL_SECTIONS = {"gemm": ("Matrix Multiplication · Techniques", "04-")}
 # The tutorials are grouped into parts in the navigation: (title, chapter file-name prefixes).
 # A sub-directory section goes into the part of the chapter it follows.
 # Parts, in reading order; chapters appear in the order of their prefixes here, not by number.
@@ -40,9 +40,10 @@ TUTORIAL_PARTS = [
     ("Part I · Foundations", ("00-", "01-", "02-", "03-", "09-")),
     ("Part II · Parallel Patterns", ("10-", "11-", "12-", "13-")),
     ("Part III · Matrix Multiplication", ("04-",)),
-    ("Part IV · Portable Model Kernels", ("14-", "15-")),
-    ("Part V · AMD Production Kernels", ("05-", "06-", "07-", "16-")),
-    ("Part VI · Publishing", ("08-",)),
+    ("Part IV · Triton", ("14-",)),
+    ("Part V · AMD Architecture & Libraries", ("05-", "06-", "07-")),
+    ("Part VI · Kimi K3 Case Studies", ("15-", "16-")),
+    ("Part VII · Publishing", ("08-",)),
 ]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
 # A figure is an image alone on its line. SVG is inlined so its palette follows the theme.
@@ -141,16 +142,16 @@ with a worked, tested solution to every LeetGPU and Tensara problem.
     From a tiled kernel to `cp.async` pipelines, warp tiling, Stream-K and
     tensor cores, one tested program per technique.
 
-    [:octicons-arrow-right-24: Chapter 04 and 04.x](tutorials/04-tiled-matmul.md)
+    [:octicons-arrow-right-24: Matrix Multiplication 1–9](tutorials/gemm/index.md)
 
--   :material-chip:{{ .lg .middle }} **AMD GEMM Deep Dive**
+-   :material-chip:{{ .lg .middle }} **AMD Architecture and Libraries**
 
     ---
 
-    CDNA3 and MFMA, AITER assembly, hipBLASLt/TensileLite, and FlyDSL's
-    quantized Kimi K3 MoE path.
+    CDNA3 and MFMA, AITER assembly, and how hipBLASLt/TensileLite generates
+    and selects kernels.
 
-    [:octicons-arrow-right-24: Chapters 05–07 and 16](tutorials/05-amd-cdna3-mfma.md)
+    [:octicons-arrow-right-24: Chapters 05–07](tutorials/05-amd-cdna3-mfma.md)
 
 -   :material-code-braces:{{ .lg .middle }} **LeetGPU: {leetgpu} Problems**
 
@@ -181,10 +182,19 @@ with a worked, tested solution to every LeetGPU and Tensara problem.
 
     ---
 
-    Block-level Python from fused softmax and FlashAttention to Quark
-    quantization, serving caches, and recurrent Kimi Delta Attention.
+    A standalone path from the first masked vector kernel to LayerNorm,
+    autotuned GEMM, FlashAttention, atomics, persistence and profiling.
 
-    [:octicons-arrow-right-24: Chapters 14–15](tutorials/14-triton.md)
+    [:octicons-arrow-right-24: Chapter 14](tutorials/14-triton.md)
+
+-   :material-server-network:{{ .lg .middle }} **Kimi K3 Framework Cases**
+
+    ---
+
+    Trace Triton through SGLang and FlyDSL through AITER without confusing
+    runtime, compiler and hardware-specific backends.
+
+    [:octicons-arrow-right-24: Chapters 15–16](tutorials/15-triton-model-systems.md)
 
 -   :material-rocket-launch:{{ .lg .middle }} **Deploy Your Own Copy**
 
@@ -260,23 +270,33 @@ hide:
 
     從 tiled GEMM 到 `cp.async`、Stream-K 與 tensor core。
 
-    [:octicons-arrow-right-24: 第 04、04.x 章](tutorials/04-tiled-matmul.md)
+    [:octicons-arrow-right-24: 矩陣乘法 1–9](tutorials/gemm/index.md)
 
--   :material-language-python:{{ .lg .middle }} **Triton 與模型 kernel**
-
-    ---
-
-    從區塊層級程式設計，進入 Quark 量化、SGLang 快取與 Kimi Delta Attention。
-
-    [:octicons-arrow-right-24: 第 14–15 章](tutorials/14-triton.md)
-
--   :material-chip:{{ .lg .middle }} **AMD 生產環境 kernel**
+-   :material-language-python:{{ .lg .middle }} **Triton**
 
     ---
 
-    CDNA3、MFMA、AITER、hipBLASLt，以及 FlyDSL 的 Kimi K3 MoE 路徑。
+    從第一個 masked vector kernel，一路學到 LayerNorm、自動調校 GEMM、
+    FlashAttention、atomic、persistent scheduling 與效能分析。
 
-    [:octicons-arrow-right-24: 第 05–07、16 章](tutorials/05-amd-cdna3-mfma.md)
+    [:octicons-arrow-right-24: 第 14 章](tutorials/14-triton.md)
+
+-   :material-chip:{{ .lg .middle }} **AMD 架構與函式庫**
+
+    ---
+
+    CDNA3、MFMA、AITER 組語，以及 hipBLASLt/TensileLite 如何產生並選擇 kernel。
+
+    [:octicons-arrow-right-24: 第 05–07 章](tutorials/05-amd-cdna3-mfma.md)
+
+-   :material-server-network:{{ .lg .middle }} **Kimi K3 框架案例**
+
+    ---
+
+    分別追蹤 SGLang 中的 Triton 與 AITER 中的 FlyDSL，清楚區分 runtime、
+    compiler 與硬體專用 backend。
+
+    [:octicons-arrow-right-24: 第 15–16 章](tutorials/15-triton-model-systems.md)
 
 -   :material-code-braces:{{ .lg .middle }} **LeetGPU：{leetgpu} 題**
 
@@ -524,7 +544,7 @@ class SiteBuilder:
                 elif rel.parts[:1] == ("examples",):
                     group = "Chapters 09–13 · CUDA Examples"
                 elif rel.parts[:1] == ("gemm",):
-                    group = "Chapter 04.x · GEMM Programs"
+                    group = "Matrix Multiplication · Programs"
                 elif rel.parts[:1] == ("amd",):
                     group = "AMD Examples"
                 else:

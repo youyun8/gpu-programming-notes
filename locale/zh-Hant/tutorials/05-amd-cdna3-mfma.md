@@ -1,9 +1,9 @@
 # 05 – AMD CDNA3 與 MFMA：從 CUDA 到 wave64 Matrix Core
 
-> **第五部 · AMD Production Kernel** · 先備知識：[04](04-tiled-matmul.md)（最好也讀過 [04.7](gemm/07-tensor-cores.md)） ·
+> **第五部 · AMD 架構與函式庫** · 先備知識：[矩陣乘法 1](04-tiled-matmul.md)（最好也讀過 [矩陣乘法 8](gemm/07-tensor-cores.md)） ·
 > 下一章：[06 – 手寫 AMD GEMM 內部](06-aiter-asm-gemm.md)
 
-第 01–04 章使用 CUDA 詞彙。本章將其對應到 AMD 的資料中心 GPU（CDNA3：MI300X / MI300A / MI325X，ISA target `gfx942`），接著用 MFMA matrix-core instruction 建立小型 bf16 GEMM，並閱讀 compiler 產生的 ISA。第 06、07 章會用這些詞彙拆解 **AITER** 的手寫 assembly GEMM，以及 **hipBLASLt** 產生的 GEMM。
+第 01–03 章與矩陣乘法 1 使用 CUDA 詞彙。本章將其對應到 AMD 的資料中心 GPU（CDNA3：MI300X / MI300A / MI325X，ISA target `gfx942`），接著用 MFMA matrix-core instruction 建立小型 bf16 GEMM，並閱讀 compiler 產生的 ISA。第 06、07 章會用這些詞彙拆解 **AITER** 的手寫 assembly GEMM，以及 **hipBLASLt** 產生的 GEMM。
 
 **你將學會**
 
