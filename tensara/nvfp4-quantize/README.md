@@ -45,6 +45,8 @@ $$
 | $g$ | Global encode factor `sf_g` (FP32); $1/g$ is the global decode scale |
 | $\hat{a}_{i\ell}$ | The value the encoding represents |
 
+### Quantizing One Block
+
 Quantization of block $\beta$ of row $i$:
 
 $$
@@ -64,6 +66,8 @@ $$
 Using the *rounded* scale $\operatorname{e4m3}(s)$ in the element encode
 (not $\alpha/6$) is what makes decode(encode(x)) consistent.
 
+### The E2M1 (FP4) Element Format
+
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
 
@@ -78,6 +82,8 @@ $$
 | $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
+### The E4M3 (FP8) Format
+
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
 
@@ -91,7 +97,9 @@ $$
 | $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
 | 448 | Largest finite value ($e = 15$, $f = 6$) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

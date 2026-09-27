@@ -38,6 +38,8 @@ $$
 
 ## 2. Split-K
 
+### 2.1 拆分歸約範圍
+
 把歸約拆成 $S$ 個範圍；block $(x, y, z)$ 只會在範圍 $z$ 上計算分塊
 $(y, x)$：
 
@@ -55,6 +57,8 @@ $$
 
 ![Split-K：把 S 個部分分塊加總成 C](../figures/gemm-split-k.svg)
 
+### 2.2 合併部分分塊
+
 向量化載入的主迴圈只需改成從 `k_begin` 執行到 `k_end`。部分分塊可用兩種方式
 合併（`./split_k --atomic` 選擇第一種）：
 
@@ -62,6 +66,8 @@ $$
 |---|---|---|---|
 | Atomic | `cudaMemset(C, 0)`，接著每個 split 對每個元素執行 `atomicAdd` | $S\cdot MN\cdot 4$ 位元組的 atomic（在 L2 中處理） | 否：FP32 加法順序會變動 |
 | Workspace | Split $z$ 把部分結果寫入 `workspace[z]`；第二個 kernel 加總 $z = 0 \dots S-1$ | $2\,S\cdot MN\cdot 4$ 位元組 | 是 |
+
+### 2.3 選擇切分數
 
 程式選擇 $S$ 時，會讓 $T\cdot S \approx 2P$，同時讓每個 split 至少保留
 4 個 $K$ 切片：
@@ -83,6 +89,8 @@ $K \gg S\cdot$（數百）。它是 LLM 推論 decode 階段 GEMM（$M$ = batch�
 
 ## 3. Stream-K
 
+### 3.1 分配迭代，而非分塊
+
 Split-K 仍有量化問題：$P$ 個 SM 執行 $T\cdot S$ 個相同大小的 block。
 Stream-K 不再分配分塊，而是分配 *MAC 迴圈迭代*，徹底消除量化：
 
@@ -102,12 +110,14 @@ $$
 
 ![Stream-K 範圍：contributor 發布部分分塊，owner 負責加總](../figures/gemm-stream-k-ranges.svg)
 
+### 3.2 貢獻者與擁有者
+
 對其範圍中的每個分塊區段，block $g$ 會採取以下三種動作之一：
 
 1. 範圍包含**完整分塊**：像一般 GEMM 一樣計算並儲存。
-2. **Contributor**（範圍結束於分塊內）：把部分分塊存入 `workspace[g]`，
+2. **貢獻者（contributor）**（範圍結束於分塊內）：把部分分塊存入 `workspace[g]`，
    執行 `__threadfence()`，再設定 `flags[g]`。
-3. **Owner**（範圍結束於分塊末尾，但分塊開頭在較早 block 的範圍內）：
+3. **擁有者（owner）**（範圍結束於分塊末尾，但分塊開頭在較早 block 的範圍內）：
    等待那些較早 block 的 flag，依固定順序加入其部分結果，再儲存。
 
 ```cpp
@@ -132,7 +142,9 @@ if (seg_end < tile_end) {                        // contributor
 }
 ```
 
-以下細節可保證正確性：
+### 3.3 為何這套協定是正確的
+
+以下五個細節保證了正確性：
 
 - **每個範圍只有最後一個區段可能成為 contributor**，所以每個 block
   只需一個 workspace slot（$G\cdot B_MB_N\cdot4$ 位元組：$G = 132$
@@ -147,6 +159,8 @@ if (seg_end < tile_end) {                        // contributor
   可見。
 - **確定性。** 部分結果會依固定順序加入，因此可逐位元重現，不像 atomic。
 - **每次啟動都會重設 flag**（`cudaMemsetAsync`）。
+
+### 3.4 混合排程
 
 論文也說明了*混合*排程：先執行完整 wave 的完整分塊（沒有修正成本），
 只有剩餘部分使用 Stream-K。hipBLASLt 也附帶自己的 Stream-K kernel 函式庫

@@ -46,6 +46,8 @@ $$
 | out | FP32 結果，$M\times K$ |
 | idx | 交錯的縮放值索引（如下） |
 
+### E2M1（FP4）元素格式
+
 **E2M1（FP4）**包含 1 個符號位元、2 個指數位元和 1 個尾數位元（偏差值為 1）。其八種大小與解碼規則為
 
 $$
@@ -59,6 +61,8 @@ $$
 | $c_3$ | 符號位元（第 3 位元） |
 | $m$ | 3 位元大小編碼，0 … 7 |
 
+### E4M3（FP8）格式
+
 **E4M3（FP8）**包含 1 個符號位元、4 個指數位元和 3 個尾數位元，偏差值為 7，沒有無限大，而編碼 `0x7F`/`0xFF` 代表 NaN：
 
 $$
@@ -71,7 +75,9 @@ $$
 | $s, e, f$ | 符號位元、4 位元指數欄位、3 位元尾數欄位 |
 | 448 | 最大有限值（$e = 15$、$f = 6$） |
 
-**交錯的縮放值配置。**區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
+### 交錯的縮放值配置
+
+區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
 
 $$
 \operatorname{idx}(r, c) = \Bigl(\bigl\lfloor \tfrac{r}{128} \bigr\rfloor \Bigl\lceil \tfrac{C}{4} \Bigr\rceil + \bigl\lfloor \tfrac{c}{4} \bigr\rfloor\Bigr)\cdot 512 +

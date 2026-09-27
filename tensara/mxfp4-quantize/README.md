@@ -56,6 +56,8 @@ $$
 | $q_t$ | Element code, rounded to nearest (ties to even) in the element format, saturating |
 | $\hat{a}_t$ | The value the code represents (what the checker compares after dequantizing) |
 
+### The E2M1 (FP4) Element Format
+
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
 

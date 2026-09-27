@@ -502,6 +502,8 @@ prints per-kernel totals like `nsys stats`.
 
 ## Exercises
 
+### Reading the Metrics
+
 1. A kernel reads and writes 1 GiB in total and takes 0.9 ms on an A100
    (1.55 TB/s). What is $\eta$? Is it worth profiling?
 
@@ -539,6 +541,8 @@ prints per-kernel totals like `nsys stats`.
     registers it would be 4 blocks, 50 %.
 
     </details>
+
+### Stalls, Timing and Your Own GPU
 
 4. The dominant stall reason of a reduction kernel is "barrier". What does
    it mean, and what change from chapter 03 addresses it?

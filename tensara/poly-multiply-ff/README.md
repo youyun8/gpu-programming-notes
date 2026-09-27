@@ -41,7 +41,9 @@ $$
 | $c_k$ | Output coefficient $k$ (a linear convolution of $a$ and $b$, reduced mod $p$) |
 | $i, j$ | Indices with $i + j = k$, i.e. $i \in [\max(0, k-n+1), \min(k, n-1)]$ |
 
-**Mersenne reduction.** Because $2^{31} \equiv 1 \pmod p$, a number
+### Mersenne Reduction
+
+Because $2^{31} \equiv 1 \pmod p$, a number
 $x = h\cdot 2^{31} + \ell$ satisfies $x \equiv h + \ell$:
 
 $$
@@ -54,7 +56,9 @@ $$
 | $x \gg 31$ | The high part $h$ |
 | Fold | One reduction step with no division; two folds plus one conditional subtraction reduce any 64-bit value to $[0, p)$ |
 
-**Why not an NTT?** A number-theoretic transform of length $L$ needs an
+### Why Not an NTT?
+
+A number-theoretic transform of length $L$ needs an
 $L$-th root of unity, which exists in $\mathbb{F}_p$ only if $L$ divides
 $p - 1$:
 

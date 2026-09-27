@@ -606,6 +606,8 @@ the machine before launching it.
 
 ## 12. Eight-GPU MAD Recipe
 
+### 12.1 Requirements and Frameworks
+
 The public
 [ROCm MAD K3 recipe](https://github.com/ROCm/MAD/blob/develop/benchmark/kimi_k3/README.md)
 is the source of truth for full-model commands and images. It requires:
@@ -627,6 +629,8 @@ madengine run --tags pyt_sglang_kimi-k3 --keep-model-dir --live-output
 madengine run --tags pyt_atom_kimi-k3 --keep-model-dir --live-output
 ```
 
+### 12.2 The FlyDSL Path in SGLang
+
 For the FlyDSL-focused SGLang path, the published container uses:
 
 ```bash
@@ -647,6 +651,8 @@ sglang serve --model-path /model_weights \
   --disable-radix-cache \
   --reasoning-parser kimi_k3 --tool-call-parser kimi_k3
 ```
+
+### 12.3 What Counts as Evidence
 
 Use the image and complete command from MAD rather than combining flags from
 different releases. A successful local FlyDSL test is necessary evidence, but

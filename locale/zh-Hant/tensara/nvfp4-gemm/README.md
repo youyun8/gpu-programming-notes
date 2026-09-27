@@ -49,6 +49,8 @@ $$
 | $c$ | 輸出，$M\times N$（FP16） |
 | $g_A, g_B$ | 全域編碼因子（`sf_g_a`、`sf_g_b`） |
 
+### 依區塊重組總和
+
 由於每個 16 元素區塊共用一個縮放值，可依區塊重新組合總和；張量核心的區塊縮放 MMA 正是採用這種方式：
 
 $$
@@ -61,7 +63,9 @@ $$
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | 兩個區塊縮放值 |
 | $x^A, x^B$ | 解碼後、套用縮放前的元素值 |
 
-**交錯的縮放值配置。**區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
+### 交錯的縮放值配置
+
+區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
 
 $$
 \operatorname{idx}(r, c) = \Bigl(\bigl\lfloor \tfrac{r}{128} \bigr\rfloor \Bigl\lceil \tfrac{C}{4} \Bigr\rceil + \bigl\lfloor \tfrac{c}{4} \bigr\rfloor\Bigr)\cdot 512 +

@@ -49,6 +49,8 @@ $$
 | $c^A, c^x$ | 元素編碼 |
 | $g_A, g_x$ | 全域編碼因子 |
 
+### 每個權重的儲存成本
+
 矩陣每列需使用 $K/2$ 位元組的編碼和 $K/16$ 個縮放值位元組：
 
 $$
@@ -59,7 +61,9 @@ $$
 |---|---|
 | 0.5625 | 每個 NVFP4 元素的儲存空間；FP32 則為 4 位元組（減少 7.1 倍） |
 
-**交錯的縮放值配置。**區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
+### 交錯的縮放值配置
+
+區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
 
 $$
 \operatorname{idx}(r, c) = \Bigl(\bigl\lfloor \tfrac{r}{128} \bigr\rfloor \Bigl\lceil \tfrac{C}{4} \Bigr\rceil + \bigl\lfloor \tfrac{c}{4} \bigr\rfloor\Bigr)\cdot 512 +

@@ -29,12 +29,16 @@ status: solved
 
 ## 數學表述
 
+### 模型
+
 模型（單層、pre-norm、$d = 2$、詞彙表為 $\{0..9\}$、共用嵌入）：
 
 $$
 e(t) = \begin{bmatrix} w_0 - w_1 t^2 \\ -t \end{bmatrix}, \qquad
 \operatorname{UnitRMS}(\mathbf x) = \frac{\mathbf x}{\sqrt{\tfrac12(x_0^2 + x_1^2) + \varepsilon}}
 $$
+
+### Query、key 與 value
 
 對位置 $p$ 的 token $t_p$，令
 $\mathbf n_p = \operatorname{UnitRMS}(e(t_p))$：
@@ -46,12 +50,16 @@ v_p = v_0\, n_{p,1}, \qquad
 R_\theta = \begin{bmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{bmatrix}
 $$
 
+### 最後一個位置的注意力
+
 最後一個位置 $L$ 對位置 $0..L$ 的注意力（因果），會加到隱藏維度 1：
 
 $$
 a_L = \frac{\sum_{j \le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}\, v_j}{\sum_{j\le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}}, \qquad
 \mathbf h = e(t_L) + \begin{bmatrix}0\\ a_L\end{bmatrix}
 $$
+
+### MLP、最終正規化與 logits
 
 MLP（「進位」閘門）、最終正規化及共用權重的 logits：
 

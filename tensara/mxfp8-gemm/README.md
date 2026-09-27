@@ -42,6 +42,8 @@ $$
 | $c$ | Output, $M\times N$ (FP32) |
 | $u^A, u^B$ | E8M0 scale bytes (swizzled) |
 
+### Regrouping the Sum by Blocks
+
 Because every block of 32 elements shares one scale, the sum can be
 regrouped by blocks, which is what tensor-core block-scaled MMAs do:
 
@@ -54,6 +56,8 @@ $$
 | $\beta$ | Block index along $K$ |
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
 | $x^A, x^B$ | The decoded element values (before scaling) |
+
+### The E4M3 (FP8) Format
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
@@ -68,6 +72,8 @@ $$
 | $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
 | 448 | Largest finite value ($e = 15$, $f = 6$) |
 
+### The E8M0 Block Scale
+
 **E8M0** (the MX block scale) is a bare power of two:
 
 $$
@@ -78,7 +84,9 @@ $$
 |---|---|
 | $u$ | The scale byte (a biased exponent) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

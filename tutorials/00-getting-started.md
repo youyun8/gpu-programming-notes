@@ -131,6 +131,8 @@ memory, section 3.4).
 
 ### 3.2 The Life Cycle
 
+#### A Complete Program
+
 ```cpp
 #include <cstdio>
 #include <vector>
@@ -161,6 +163,8 @@ int main() {
     cudaFree(d_out);
 }
 ```
+
+#### What Each Step Does
 
 Each step, and what actually happens:
 

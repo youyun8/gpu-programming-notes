@@ -58,6 +58,8 @@ $$
 | $c^A, c^x$ | Element codes |
 | $g_A, g_x$ | Global encode factors |
 
+### Bytes per Weight
+
 A matrix row costs $K/2$ bytes of codes plus $K/16$ scale bytes:
 
 $$
@@ -68,7 +70,9 @@ $$
 |---|---|
 | 0.5625 | NVFP4 storage per element, versus 4 for FP32 (7.1× less) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

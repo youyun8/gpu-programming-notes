@@ -86,6 +86,8 @@ All matmul pages on Tensara use the same register-blocked FP32 kernel
 5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
    weight layout) and transposes it while staging.
 
+#### Data Reuse
+
 Data reuse at each level of the hierarchy:
 
 $$
@@ -99,6 +101,8 @@ $$
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
 | $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
 | $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+#### How Far It Gets
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):

@@ -55,6 +55,8 @@ $$
 | $q_t$ | Element code, rounded to nearest (ties to even) in the element format, saturating |
 | $\hat{a}_t$ | The value the code represents (what the checker compares after dequantizing) |
 
+### The E4M3 (FP8) Format
+
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
 

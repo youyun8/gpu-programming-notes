@@ -86,6 +86,7 @@ of across tiles.
      For each key, the $D$ threads read consecutive int8 bytes, which is
      coalesced.
    - It writes $(m_i, \ell_i, \mathbf a_i)$ to scratch.
+
 2. **`combine`**: one block per head merges the chunk partials with the
    formulas above.
 

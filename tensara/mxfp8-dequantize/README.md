@@ -37,6 +37,8 @@ $$
 | $u$ | Scale bytes, $M\times K/32$ |
 | out | FP32 result |
 
+### The E4M3 (FP8) Format
+
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
 
@@ -49,6 +51,8 @@ $$
 | $b$ | The byte |
 | $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
 | 448 | Largest finite value ($e = 15$, $f = 6$) |
+
+### The E8M0 Block Scale
 
 **E8M0** (the MX block scale) is a bare power of two:
 

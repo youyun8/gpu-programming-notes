@@ -148,7 +148,9 @@ const int carry = thread_inclusive - running;            // exclusive prefix of 
 for (int j = 0; j < kItems; ++j) tile[padded(threadIdx.x * kItems + j)] = items[j] + carry;
 ```
 
-Two details:
+#### Coalescing and Bank Conflicts
+
+Two details matter here:
 
 - **Coalescing vs ownership.** Global memory is read with consecutive
   threads on consecutive items (coalesced), but each thread then needs 8
@@ -221,6 +223,8 @@ for a global pass:
 | A (aggregate) | The sum of this tile alone |
 | P (prefix) | The inclusive prefix: the sum of all tiles up to and including this one |
 
+#### The Protocol
+
 A tile (1) scans itself locally, (2) publishes A with its own sum, (3)
 walks backwards over predecessors, adding their A values and stopping at the
 first P, (4) publishes P, and (5) writes its output with the exclusive
@@ -249,7 +253,9 @@ if (threadIdx.x == 0) {
 }
 ```
 
-Why it is correct and cannot hang:
+#### Why It Is Correct and Cannot Hang
+
+Three properties guarantee it:
 
 - **Flag and value travel together.** Both live in one 64-bit word written
   with a single atomic, so a reader never sees a flag without its value (no
@@ -264,6 +270,8 @@ Why it is correct and cannot hang:
   warp look back at 32 predecessors at once (a warp reduction over their
   statuses); the single-thread loop here is the same protocol, written for
   clarity.
+
+#### Cost
 
 Traffic is $8n$ bytes, the same as a copy; in practice a good single-pass
 scan runs at 85–95 % of `cudaMemcpy` bandwidth. The program's `--bench` mode

@@ -283,7 +283,7 @@ for (int kv0 = 0; kv0 < kv_end; kv0 += kBlockKv) {
 }
 ```
 
-Details that matter:
+#### Five Details That Matter
 
 - **The scale** $1/\sqrt{d}$ is folded into $Q$ once, when it is loaded.
 - **Bank conflicts.** Lane $j$ reads row $j$ of `k_s`; with rows of 64
@@ -343,6 +343,8 @@ of shared memory and registers.
 
 ## Exercises
 
+### Reasoning
+
 1. Show that the combine of section 2.2 is associative.
 
     <details markdown="1"><summary>Answer</summary>
@@ -368,6 +370,8 @@ of shared memory and registers.
     it further.
 
     </details>
+
+### Coding
 
 3. Modify `softmaxOnline` for rows of at most 1024 elements so that each lane
    keeps its 32 values in registers, and the row is read from memory once.

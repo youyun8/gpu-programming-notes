@@ -46,6 +46,8 @@ Three properties drive the design:
 
 ## 2. A Multi-Stage Pipeline
 
+### 2.1 The Pipelined Loop
+
 With $P$ stages (buffers), $P - 1$ slices are in flight while one is being
 computed:
 
@@ -68,6 +70,8 @@ for (int s = 0; s < num_slices; ++s) {
 __pipeline_wait_prior(0);
 ```
 
+### 2.2 Counting Commit Groups
+
 The wait count follows from counting groups. Before the wait at step $s$,
 groups $0, \dots, s + P - 2$ have been committed (group $j$ holds slice $j$):
 
@@ -88,7 +92,9 @@ before they arrive. The emulator catches this: change the wait to
 `kStages - 1` and `--test` fails, because cuemu delays every copy until the
 matching wait.
 
-How many stages? Enough that $P - 1$ slices of compute cover the load
+### 2.3 How Many Stages?
+
+Enough stages that $P - 1$ slices of compute cover the load
 latency:
 
 $$

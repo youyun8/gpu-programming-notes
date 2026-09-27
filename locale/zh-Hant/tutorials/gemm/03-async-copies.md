@@ -44,6 +44,8 @@ Accelerator（TMA），能用一條指令複製完整分塊。
 
 ## 2. 多階段 Pipeline
 
+### 2.1 管線化的迴圈
+
 使用 $P$ 個 stage（緩衝區）時，會有 $P - 1$ 個切片正在傳輸，另有一個
 切片正在運算：
 
@@ -66,7 +68,9 @@ for (int s = 0; s < num_slices; ++s) {
 __pipeline_wait_prior(0);
 ```
 
-Wait 數量可由 group 計數推得。步驟 $s$ 的 wait 之前，已 commit 的 group
+### 2.2 計算 commit group
+
+wait 的數量可由 group 的計數推得。步驟 $s$ 的 wait 之前，已 commit 的 group
 為 $0, \dots, s + P - 2$（group $j$ 存放切片 $j$）：
 
 $$
@@ -85,7 +89,9 @@ $$
 抓出這項錯誤：把 wait 改成 `kStages - 1` 後，`--test` 會失敗，因為
 cuemu 會延遲每次複製，直到對應的 wait 才完成。
 
-需要多少 stage？要讓 $P - 1$ 個切片的運算時間足以涵蓋載入延遲：
+### 2.3 需要幾個 stage？
+
+要讓 $P - 1$ 個切片的運算時間足以涵蓋載入延遲：
 
 $$
 (P - 1)\,C \ \ge\ L \quad\Rightarrow\quad P \ \ge\ 1 + \left\lceil \frac{L}{C} \right\rceil, \qquad

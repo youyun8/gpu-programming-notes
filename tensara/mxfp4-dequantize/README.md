@@ -40,6 +40,8 @@ $$
 | $u$ | Scale bytes, $M\times K/32$, row-major |
 | out | FP32 result, $M\times K$ |
 
+### The E2M1 (FP4) Element Format
+
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
 
@@ -53,6 +55,8 @@ $$
 | $c$ | 4-bit code; two codes per byte, element $2i$ in the **low** nibble |
 | $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
+
+### The E8M0 Block Scale
 
 **E8M0** (the MX block scale) is a bare power of two:
 

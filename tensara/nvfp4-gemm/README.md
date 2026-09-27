@@ -58,6 +58,8 @@ $$
 | $c$ | Output, $M\times N$ (FP16) |
 | $g_A, g_B$ | Global encode factors (`sf_g_a`, `sf_g_b`) |
 
+### Regrouping the Sum by Blocks
+
 Because every block of 16 elements shares one scale, the sum can be
 regrouped by blocks, which is what tensor-core block-scaled MMAs do:
 
@@ -71,7 +73,9 @@ $$
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
 | $x^A, x^B$ | The decoded element values (before scaling) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

@@ -105,6 +105,8 @@ CPU（主機）和 GPU（裝置）各自擁有獨立記憶體。`cudaMalloc` 傳
 
 ### 3.2 生命週期
 
+#### 完整的程式
+
 ```cpp
 #include <cstdio>
 #include <vector>
@@ -135,6 +137,8 @@ int main() {
     cudaFree(d_out);
 }
 ```
+
+#### 每個步驟做了什麼
 
 各步驟及實際發生的事情如下：
 

@@ -37,6 +37,8 @@ $$
 | $c^A, c^B$ | 4 位元編碼，每個位元組存兩個（低半位元組對應偶數 $\ell$） |
 | $u^A, u^B$ | E8M0 縮放值位元組（交錯排列） |
 
+### 依區塊重組總和
+
 由於每個 32 元素區塊共用一個縮放值，可依區塊重新組合總和；張量核心的區塊縮放 MMA 正是採用這種方式：
 
 $$
@@ -48,6 +50,8 @@ $$
 | $\beta$ | 沿 $K$ 的區塊索引 |
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | 兩個區塊縮放值 |
 | $x^A, x^B$ | 解碼後、套用縮放前的元素值 |
+
+### E2M1（FP4）元素格式
 
 **E2M1（FP4）**包含 1 個符號位元、2 個指數位元和 1 個尾數位元（偏差值為 1）。其八種大小與解碼規則為
 
@@ -62,6 +66,8 @@ $$
 | $c_3$ | 符號位元（第 3 位元） |
 | $m$ | 3 位元大小編碼，0 … 7 |
 
+### E8M0 區塊縮放值
+
 **E8M0**（MX 區塊縮放值）是純粹的 2 次方：
 
 $$
@@ -72,7 +78,9 @@ $$
 |---|---|
 | $u$ | 縮放值位元組（帶偏差的指數） |
 
-**交錯的縮放值配置。**區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
+### 交錯的縮放值配置
+
+區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
 
 $$
 \operatorname{idx}(r, c) = \Bigl(\bigl\lfloor \tfrac{r}{128} \bigr\rfloor \Bigl\lceil \tfrac{C}{4} \Bigr\rceil + \bigl\lfloor \tfrac{c}{4} \bigr\rfloor\Bigr)\cdot 512 +

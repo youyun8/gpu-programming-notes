@@ -36,7 +36,9 @@ $$
 | $c_k$ | 輸出係數 $k$（$a$ 與 $b$ 的線性卷積，再對 $p$ 取模） |
 | $i, j$ | 滿足 $i + j = k$ 的索引，即 $i \in [\max(0, k-n+1), \min(k, n-1)]$ |
 
-**Mersenne 縮減。**因為 $2^{31} \equiv 1 \pmod p$，所以數值 $x = h\cdot 2^{31} + \ell$ 滿足 $x \equiv h + \ell$：
+### Mersenne 模數化簡
+
+因為 $2^{31} \equiv 1 \pmod p$，所以數值 $x = h\cdot 2^{31} + \ell$ 滿足 $x \equiv h + \ell$：
 
 $$
 \operatorname{fold}(x) = (x \mathbin{\&} p) + (x \gg 31) \equiv x \pmod p
@@ -48,7 +50,9 @@ $$
 | $x \gg 31$ | 高位部分 $h$ |
 | Fold | 不需除法的一次縮減；進行兩次 fold，再做一次條件式減法，即可將任何 64 位元值縮減至 $[0, p)$ |
 
-**為何不使用 NTT？**長度為 $L$ 的數論轉換需要 $L$ 次單位根，而它只有在 $L$ 整除 $p - 1$ 時才存在於 $\mathbb{F}_p$：
+### 為何不使用 NTT？
+
+長度為 $L$ 的數論轉換需要 $L$ 次單位根，而它只有在 $L$ 整除 $p - 1$ 時才存在於 $\mathbb{F}_p$：
 
 $$
 p - 1 = 2^{31} - 2 = 2 \cdot 3^2 \cdot 7 \cdot 11 \cdot 31 \cdot 151 \cdot 331

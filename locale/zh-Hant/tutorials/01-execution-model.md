@@ -409,6 +409,8 @@ __global__ void vectorAddVec4(const float* a, const float* b, float* c, size_t n
 
 ## 練習
 
+### 佔用率與 wave
+
 1. 某 kernel 在 A100 上使用每執行緒 96 個暫存器，以及每個 256 執行緒區塊 20 KB 的共享記憶體。其佔用率是多少？限制來自哪裡？
 
     <details markdown="1"><summary>答案</summary>
@@ -427,6 +429,8 @@ __global__ void vectorAddVec4(const float* a, const float* b, float* c, size_t n
     $250 / 216 = 1.16$，所以有 2 波；$\eta = 250 / 432 \approx 58\%$。若為 216 或 432 個區塊，就沒有尾端。
 
     </details>
+
+### 分歧與延遲
 
 3. 在 `if (threadIdx.x % 4 == 0) x = expensive(x);` 中，執行 `expensive` 時有多少比例的 lane 在做有效工作？請重寫工作分配，使每個 warp 都採取一致路徑。
 
