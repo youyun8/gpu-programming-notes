@@ -3,9 +3,9 @@
 C (M x N) = A (M x K) @ B (K x N). Each program computes one BLOCK_M x BLOCK_N
 tile of C, looping over K in steps of BLOCK_K; `tl.dot` compiles to tensor-core
 instructions, and the compiler stages the loads through shared memory with
-`num_stages` buffers (chapter 04.2-04.3 do the same by hand). Programs are
-ordered in groups of GROUP_M tile rows so that consecutive programs reuse the
-same tiles of B from L2 (chapter 04.5).
+`num_stages` buffers (Matrix Multiplication 3 and 4 do the same by hand).
+Programs are ordered in groups of GROUP_M tile rows so that consecutive
+programs reuse the same tiles of B from L2 (Matrix Multiplication 6).
 """
 import torch
 import triton
@@ -61,10 +61,13 @@ matmul_kernel_tuned = triton.autotune(configs=CONFIGS, key=["M", "N", "K"])(matm
 
 def matmul(a: torch.Tensor, b: torch.Tensor, tuned: bool = None, **config) -> torch.Tensor:
     """tuned=None autotunes on a GPU; otherwise pass BLOCK_M, BLOCK_N, BLOCK_K, GROUP_M."""
-    assert a.shape[1] == b.shape[0]
+    assert a.dim() == 2 and b.dim() == 2 and a.shape[1] == b.shape[0]
+    assert a.device == b.device and a.dtype == b.dtype
     M, K = a.shape
     N = b.shape[1]
     c = torch.empty((M, N), device=a.device, dtype=a.dtype)
+    if M == 0 or N == 0:
+        return c
     args = (a, b, c, M, N, K, a.stride(0), a.stride(1), b.stride(0), b.stride(1), c.stride(0), c.stride(1))
     tuned = a.is_cuda and not config if tuned is None else tuned
     if tuned:

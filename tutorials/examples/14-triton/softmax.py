@@ -25,9 +25,12 @@ def softmax_kernel(in_ptr, out_ptr, n_cols, in_stride, out_stride, BLOCK: tl.con
 def softmax(x: torch.Tensor) -> torch.Tensor:
     assert x.dim() == 2 and x.stride(1) == 1
     rows, cols = x.shape
+    assert cols > 0
+    out = torch.empty_like(x)
+    if rows == 0:
+        return out
     block = triton.next_power_of_2(cols)
     # More warps for longer rows, so each thread holds a bounded number of elements.
     num_warps = 4 if block <= 2048 else (8 if block <= 8192 else 16)
-    out = torch.empty_like(x)
     softmax_kernel[(rows,)](x, out, cols, x.stride(0), out.stride(0), BLOCK=block, num_warps=num_warps)
     return out

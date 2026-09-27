@@ -22,6 +22,8 @@ def add(x: torch.Tensor, y: torch.Tensor, block: int = 1024) -> torch.Tensor:
     assert x.shape == y.shape and x.is_contiguous() and y.is_contiguous()
     out = torch.empty_like(x)
     n = x.numel()
+    if n == 0:
+        return out
     grid = (triton.cdiv(n, block),)              # gridDim.x
     add_kernel[grid](x, y, out, n, BLOCK=block)
     return out
