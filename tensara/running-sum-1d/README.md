@@ -19,6 +19,13 @@ window of $W = 8191$ elements, as a `conv1d` with a kernel of ones and
 zero padding $\lfloor W/2 \rfloor$. The check is `rtol = 5e-4`,
 `atol = 3e-2`.
 
+## Visual Overview
+
+![Sliding-window sum from prefix sums: out[i] = Π[i + h + 1] − Π[i − h]](figure.svg)
+
+The window of output 4 (dark blue) sums to Π[6] − Π[3] = 5: one subtraction of
+two prefix values (purple) instead of adding W numbers.
+
 ## Formulation
 
 $$

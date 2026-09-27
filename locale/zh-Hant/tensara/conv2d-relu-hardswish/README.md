@@ -12,11 +12,17 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/conv2d-relu-hardswish)
 
-## 問題
+## 題意
 
 對 $H\times W$ 影像，以奇數大小的 $K_h\times K_w$ 核心（零填補）執行「same」二維卷積，再依序套用 ReLU 和 HardSwish，全部在一次呼叫中完成。大小最大為使用 $13\times13$ 核心的 $2048^2$ 影像。檢查誤差為 `rtol = 9e-5`、`atol = 2e-4`。
 
-## 公式
+## 圖解
+
+![Conv2d 後接 ReLU 再接 HardSwish：套用在每個卷積輸出上的 epilogue](figure.svg)
+
+曲線是套用在卷積輸出 C 上的合成激活函數：C 為負時為 0，C < 3 時為平緩的拋物線，之後為恆等函數。這一步在暫存器中完成，之後只寫出一次。
+
+## 數學表述
 
 $$
 C[i, j] = \sum_{u=0}^{K_h-1}\sum_{v=0}^{K_w-1} \tilde{I}\bigl[i + u - p_h,\ j + v - p_w\bigr]\,\kappa[u, v]
@@ -47,7 +53,7 @@ $$
 |---|---|
 | $C$ | 單一像素的卷積值 |
 
-## 方法
+## 解題思路
 
 以 `ReluHardSwish` 尾聲函式物件具現化[二維卷積](../conv-2d/)中使用分帶共享記憶體的卷積（32 × 32 輸出圖塊、每個執行緒處理 4 列、每次暫存 8 個核心列）。啟用函數會直接套用在暫存器中的 fp32 累加器，並緊接在唯一一次儲存前執行。中間影像 $C$ 和 $R$ 從不進入記憶體；這正是融合的目的。
 
@@ -75,6 +81,6 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [二維卷積](../conv-2d/)、[ReLU](../relu/)、[GEMM + ReLU](../gemm-relu/)。

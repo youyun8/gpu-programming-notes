@@ -19,6 +19,14 @@ $B$ ($N\times K$) are MXFP4 tensors: packed E2M1 elements with E8M0 scales
 per 32 elements in the swizzled 128×4 layout. The reference is
 `torch._scaled_mm`. The check is `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![MXFP4 GEMM: block-scaled dot products, C = Â B̂ᵀ in FP32](figure.svg)
+
+Along K both rows are split into blocks of 32 elements, each with its own
+scale σ. Inside a block the codes are multiplied directly; the two scales are
+applied once per block.
+
 ## Formulation
 
 $$
@@ -34,6 +42,8 @@ $$
 | $c^A, c^B$ | 4-bit codes, two per byte (low nibble = even $\ell$) |
 | $u^A, u^B$ | E8M0 scale bytes (swizzled) |
 
+### Regrouping the Sum by Blocks
+
 Because every block of 32 elements shares one scale, the sum can be
 regrouped by blocks, which is what tensor-core block-scaled MMAs do:
 
@@ -46,6 +56,8 @@ $$
 | $\beta$ | Block index along $K$ |
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
 | $x^A, x^B$ | The decoded element values (before scaling) |
+
+### The E2M1 (FP4) Element Format
 
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
@@ -61,6 +73,8 @@ $$
 | $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
+### The E8M0 Block Scale
+
 **E8M0** (the MX block scale) is a bare power of two:
 
 $$
@@ -71,7 +85,9 @@ $$
 |---|---|
 | $u$ | The scale byte (a biased exponent) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

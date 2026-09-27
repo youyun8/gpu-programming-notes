@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/int4-weight-only-quantized-matmul)
 
-## 問題
+## 題意
 
 實作僅權重 INT4 GEMM（「**W4A16**」），這是 GPTQ／AWQ 類 LLM 推論的核心。
 $x$ 是 fp16 活化矩陣（$M\times K$）。$W$（$N\times K$）以封裝的 4 位元
@@ -21,7 +21,13 @@ fp16 縮放比例。以 fp16 計算 $y = xW^{\mathsf T}$
 （$M, N, K \le 8192$、$g \in \{2..128\}$；基準測試為 $4096^3$、
 $g = 128$；容許誤差 `1e-2`）。
 
-## 公式
+## 圖解
+
+![W4A16：每個位元組存兩個 4 位元權重，每 g 個權重共用一個 fp16 縮放係數](figure.svg)
+
+左圖：一個位元組存放兩個權重；每個 nibble 減 8 再乘上所屬群組的縮放係數，就是實際權重。右圖：沿 K 方向，每 g 個權重共用一個縮放係數。
+
+## 數學表述
 
 $$
 W_{nk} = \bigl(q_{nk} - 8\bigr)\cdot s_{n,\lfloor k/g\rfloor}, \qquad
@@ -51,7 +57,7 @@ INT4 權重比 fp16 小 4 倍，因此記憶體受限的解碼最多可加速 4 
 與數學運算仍保持 fp16。群組縮放比例將量化誤差限制在局部：每 128 個權重
 都有自己的動態範圍。
 
-## 方法
+## 解題思路
 
 採用 [GEMM（fp16）](../022-gemm/)的 tensor core GEMM，並將**反量化融合進
 共享記憶體的暫存階段**：
@@ -100,7 +106,7 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-2`
 通過，涵蓋每種群組大小，且 $M, N$ 不必為 64 的倍數。
 
-## 相關內容
+## 延伸閱讀
 
 - [INT8 量化矩陣乘法](../032-int8-quantized-matmul/)、[權重反量化](../064-weight-dequantization/)、
   [GEMM（fp16）](../022-gemm/)。Tensara [NVFP4 GEMM](../../tensara/nvfp4-gemm/)、

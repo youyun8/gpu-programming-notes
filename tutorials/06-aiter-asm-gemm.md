@@ -456,6 +456,7 @@ its scripts are in `docs/examples/isa_optimization/`:
      wait states.
    - Every `s_waitcnt` count must be recomputed when you move loads.
    - Violations do not fault; they silently read stale data.
+
 3. **Resize.** Changing register or LDS usage means editing
    `.amdhsa_next_free_vgpr`, `.amdhsa_accum_offset`,
    `.amdhsa_group_segment_fixed_size` *and* the metadata.

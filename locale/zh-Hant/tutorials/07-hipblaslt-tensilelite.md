@@ -1,44 +1,46 @@
-# 07 – hipBLASLt 與 TensileLite：由程式撰寫的 GEMM Kernel
+# 07 – hipBLASLt 與 TensileLite：由程式產生的 GEMM kernel
 
 > **第五部 · AMD 架構與函式庫** · 先備知識：[05](05-amd-cdna3-mfma.md)、[06](06-aiter-asm-gemm.md) ·
-> 下一章：[15 – SGLang 中的 Triton：以 Kimi K3 服務為例](15-triton-model-systems.md)
+> 下一章：[15 – SGLang 中的 Triton：服務 Kimi K3](15-triton-model-systems.md)
 
-AITER（第 06 章）手寫數十個 GEMM kernel。[hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) 則發布了**數千個**：ROCm 的 `libhipblaslt` 對每種 GPU architecture 都包含一組 code object，而 PyTorch 預設用它在 MI300 上執行 `torch.matmul`。它們不是人工撰寫，而是由 **TensileLite** 產生。這個 Python 程式接收 parameter list，為每種組合輸出完整 assembly kernel，再 benchmark 各組合以決定發布哪些。
+AITER（第 06 章）手寫了幾十個 GEMM kernel，而 [hipBLASLt](https://rocm.docs.amd.com/projects/hipBLASLt/) 發布的卻是**數以千計**：ROCm 的 `libhipblaslt` 為每種 GPU 架構各附一組程式碼物件，PyTorch 在 MI300 上預設就用它來執行 `torch.matmul`。這些 kernel 沒有一個是手寫的，它們都來自 **TensileLite**——一個 Python 程式：它接收一份參數清單，為每一種參數組合產生完整的組合語言 kernel，再逐一做基準測試，決定哪些要隨函式庫發布。
 
-**你將學會**
+**你將學到**
 
-- TensileLite *solution* 是什麼，以及主要 parameter 的意義：tile hierarchy（`MatrixInstruction`、`DepthU`）、global/local read、LDS layout、instruction scheduling、工作切分與 tile order；
-- 各 parameter 如何對應第 05–06 章（以及 NVIDIA 的矩陣乘法 2–8 頁面）中手工完成的技術；
-- 如何從 profile 解讀 `Cijk_…` kernel 名稱；
-- hipBLASLt 如何在 runtime 選擇 kernel，以及如何針對自己的 shape 調校；
-- TensileLite 如何產生、benchmark 與發布 kernel。
+- 什麼是 TensileLite 的 *solution*，以及主要參數的意義：分塊階層（`MatrixInstruction`、`DepthU`）、全域與區域讀取、LDS 配置、指令排程、工作切分與分塊順序；
+- 每個參數對應到第 05–06 章中手工做過的哪一項技巧（NVIDIA 方面則對應矩陣乘法 2–8 各頁）；
+- 如何從效能分析結果中解讀 `Cijk_…` 這類 kernel 名稱；
+- hipBLASLt 在執行期如何選擇 kernel，以及如何針對自己的矩陣形狀調校這個選擇；
+- TensileLite 如何產生、測試並發布 kernel。
 
-> **程式碼位置。** hipBLASLt 原為獨立的 `ROCm/hipBLASLt` 儲存庫，現已退役到 `develop_deprecated` branch。開發移至 [ROCm/rocm-libraries](https://github.com/ROCm/rocm-libraries) monorepo 的 `projects/hipblaslt`。Generator 位於 `tensilelite/Tensile/`：
-> - `KernelWriterAssembly.py`、`KernelWriter.py`：generator。
-> - `Components/`：可插拔組件，如 `SIA.py`、`StreamK.py`、`GSU.py`、`LocalRead.py`、`MAC_*.py`。
-> - `Common/ValidParameters.py`：每個 parameter 與註解。
-> - `SolutionStructs/`：validation 與 naming。
+> **程式碼在哪裡。** hipBLASLt 原本是獨立的儲存庫 `ROCm/hipBLASLt`，現已封存到 `develop_deprecated` 分支；後續開發在 [ROCm/rocm-libraries](https://github.com/ROCm/rocm-libraries) 單一儲存庫的 `projects/hipblaslt` 下進行。產生器位於 `tensilelite/Tensile/`：
+> - `KernelWriterAssembly.py`、`KernelWriter.py`：產生器本體。
+> - `Components/`：可抽換的元件，例如 `SIA.py`、`StreamK.py`、`GSU.py`、`LocalRead.py` 與 `MAC_*.py`。
+> - `Common/ValidParameters.py`：所有參數及其註解。
+> - `SolutionStructs/`：合法性檢查與命名。
 >
-> 以下檔案參照皆以這些路徑為準。
+> 以下提到的檔案都以這些路徑為準。
 
-## 1. 從「一個 GEMM」到「一個 Solution」
+## 1. 從「一個 GEMM」到「一個 solution」
 
-TensileLite **solution** 是大型 design space 中的一點：
+一個 TensileLite **solution** 是龐大設計空間中的一個點：
 
-| 群組 | Parameter | 第 05/06 章中的對應概念 |
+| 類別 | 參數 | 在第 05/06 章中的對應 |
 |-------|------------|--------------------------|
-| Tile shape | `MatrixInstruction`、`DepthU` | MFMA shape、wave tile、每 workgroup wave 數、K step |
-| Global → LDS | `PrefetchGlobalRead`（PGR）、`DirectToLds`（DTL）、`GlobalReadVectorWidth`、`BufferLoad` | Prefetch depth、direct-to-LDS load |
-| LDS | `1LDSBuffer`、`LdsPadA/B`、`LdsBlockSizePerPad`、`TransposeLDS` | Double buffering、bank-conflict padding |
-| LDS → register | `PrefetchLocalRead`（PLR）、`ClusterLocalRead` | Register double buffering（`a[0:63]` / `a[64:127]`） |
-| Scheduling | `ScheduleIterAlg`（SIA）、`GlobalReadPerMfma`、`LocalWritePerMfma` | 在 MFMA 間 interleave load |
+| 分塊形狀 | `MatrixInstruction`、`DepthU` | MFMA 形狀、wave 分塊、每個 workgroup 的 wave 數、每步 K |
+| 全域記憶體 → LDS | `PrefetchGlobalRead`（PGR）、`DirectToLds`（DTL）、`GlobalReadVectorWidth`、`BufferLoad` | 預先載入深度、直接載入 LDS |
+| LDS | `1LDSBuffer`、`LdsPadA/B`、`LdsBlockSizePerPad`、`TransposeLDS` | 雙緩衝、避免 bank 衝突的填補 |
+| LDS → 暫存器 | `PrefetchLocalRead`（PLR）、`ClusterLocalRead` | 暫存器雙緩衝（`a[0:63]` / `a[64:127]`） |
+| 排程 | `ScheduleIterAlg`（SIA）、`GlobalReadPerMfma`、`LocalWritePerMfma` | 在 MFMA 之間穿插載入 |
 | 工作切分 | `GlobalSplitU`（GSU）、`GlobalSplitUAlgorithm`、`StreamK` | Split-K、Stream-K |
-| Cache 行為 | `WorkGroupMapping`（WGM）、`WorkGroupMappingXCC`（WGMXCC）、`StaggerU*` | Tile order、XCD placement、DRAM channel 分散 |
-| Epilogue | `StoreRemapVectorWidth`、`StoreVectorWidth`、activation / bias / scaling fusion | Coalesced store |
+| 快取行為 | `WorkGroupMapping`（WGM）、`WorkGroupMappingXCC`（WGMXCC）、`StaggerU*` | 分塊順序、XCD 分派、分散 DRAM 通道 |
+| Epilogue | `StoreRemapVectorWidth`、`StoreVectorWidth`、激活 / 偏差 / 縮放的融合 | 合併存取的寫出 |
 
-### 1.1 `MatrixInstruction`：以 9 個數字表達 Tile Hierarchy
+### 1.1 `MatrixInstruction`：用 9 個數字描述分塊階層
 
-`ValidParameters.py` 中的註解解釋 9-number 格式：
+#### 解讀這 9 個數字
+
+`ValidParameters.py` 中的註解說明了這 9 個數字的格式：
 
 ```
 [32, 32, 1, 2,   1,   4, 1,   2, 2]
@@ -46,11 +48,11 @@ TensileLite **solution** 是大型 design space 中的一點：
  MFMA MxNxKxB  BlkM  WaveTile  Waves
 ```
 
-- **MFMA** `32x32x1x2` 是 2-block MFMA variant。`MIBlockM = 1` 時，每個 instruction 涵蓋 32×64。
-- **WaveTile** `4×1`：每個 wave 發出 4×1 個上述 instruction，涵蓋 128×64。
-- **Waves** `2×2`：每 workgroup 四個 wave，所以 **macro tile** 是 (32·4·2) × (64·1·2) = **256×128**。
+- **MFMA** `32x32x1x2` 是一次計算 2 個區塊的 MFMA 變體。`MIBlockM = 1` 時，每道指令涵蓋 32×64。
+- **WaveTile** `4×1`：每個 wave 發出 4×1 道這樣的指令，涵蓋 128×64。
+- **Waves** `2×2`：每個 workgroup 有四個 wave，因此**巨分塊**（macro tile）為 (32·4·2) × (64·1·2) = **256×128**。
 
-一般而言，將 9 個數寫成 $[m, n, k, b,\ \beta_M,\ w_M, w_N,\ W_M, W_N]$：
+一般而言，把 9 個數字寫成 $[m, n, k, b,\ \beta_M,\ w_M, w_N,\ W_M, W_N]$：
 
 $$
 \text{MT}_0 = m\,\beta_M\,w_M\,W_M, \qquad
@@ -60,24 +62,26 @@ $$
 
 | 符號 | 意義 |
 |---|---|
-| $m, n, k$ | MFMA shape（如 32、32、1） |
-| $b$ | MFMA 一次計算的 block 數（multi-block variant）；大多數為 1 |
-| $\beta_M$ | `MIBlockM`：沿 M 疊放的 $b$ block 數（其餘沿 N） |
-| $w_M, w_N$ | WaveTile：每 wave 沿 M、N 的 MFMA tile 數 |
-| $W_M, W_N$ | 每 workgroup 沿 M、N 的 wave 數 |
-| $\text{MT}_0, \text{MT}_1$ | 沿 M、N 的 macro tile（workgroup tile） |
+| $m, n, k$ | MFMA 形狀（例如 32、32、1） |
+| $b$ | MFMA 一次計算的區塊數（多區塊變體），大多數為 1 |
+| $\beta_M$ | `MIBlockM`：這 $b$ 個區塊中沿 M 方向堆疊的數量（其餘沿 N 方向） |
+| $w_M, w_N$ | WaveTile：每個 wave 沿 M 與 N 方向的 MFMA 分塊數 |
+| $W_M, W_N$ | 每個 workgroup 沿 M 與 N 方向的 wave 數 |
+| $\text{MT}_0, \text{MT}_1$ | 沿 M 與 N 方向的巨分塊（workgroup 分塊）大小 |
 
-此例中 $\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$、$\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$，共 256 threads。
+以上例而言：$\text{MT}_0 = 32\cdot1\cdot4\cdot2 = 256$，$\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$，共 256 個執行緒。
 
-![MatrixInstruction [32, 32, 1, 2, 1, 4, 1, 2, 2]：MFMA tile、wave tile 與 macro tile](figures/ch07-macro-tile.svg)
+![MatrixInstruction [32, 32, 1, 2, 1, 4, 1, 2, 2]：MFMA 分塊、wave 分塊與巨分塊](figures/ch07-macro-tile.svg)
 
-gfx942 bf16 kernel 多半使用 `16x16x16` 或 `32x32x8` MFMA，寫成 `[16,16,16,1, 1, …]`。
+gfx942 的 bf16 kernel 大多使用 `16x16x16` 或 `32x32x8` 的 MFMA，寫成 `[16,16,16,1, 1, …]`。
 
-較大的 WaveTile 能提高第 05 章教學 kernel 所欠缺的 MFMA-per-byte ratio，但需要更多 accumulator register：
-- 128×64 fp32 wave tile 有 8192 個 value 分到 64 lane，即每 lane 128 個 AGPR。
-- 因此快速 kernel 每 SIMD 只跑一或兩個 wave。
+#### 為什麼較大的 WaveTile 有幫助
 
-Accumulator 成本與 reuse 都可由 wave tile $T_M\times T_N$（MFMA tile 乘以 WaveTile）推出：
+選擇較大的 WaveTile，是 TensileLite 提高「每位元組 MFMA 數」的方法——這正是第 05 章教學 kernel 所缺乏的。代價是累加器暫存器：
+- fp32 的 128×64 wave 分塊有 8192 個值，分給 64 個 lane，就是每個 lane 128 個 AGPR。
+- 這就是快速 kernel 每個 SIMD 只跑一到兩個 wave 的原因。
+
+累加器的成本與重用率，都可以由 wave 分塊 $T_M\times T_N$（MFMA 分塊乘上 WaveTile）推得：
 
 $$
 r_{\text{acc}} = \frac{T_M T_N}{64}, \qquad
@@ -86,79 +90,85 @@ $$
 
 | 符號 | 意義 |
 |---|---|
-| $T_M, T_N$ | 每 wave 沿 M、N 的 output element 數 |
-| $r_{\text{acc}}$ | 每 lane 的 fp32 accumulator register 數 |
-| $w_M, w_N$ | 每 wave 的 MFMA tile；每個 A fragment reuse $w_N$ 次，每個 B fragment reuse $w_M$ 次 |
+| $T_M, T_N$ | 每個 wave 沿 M 與 N 方向的輸出元素數 |
+| $r_{\text{acc}}$ | 每個 lane 的 fp32 累加器暫存器數 |
+| $w_M, w_N$ | 每個 wave 的 MFMA 分塊數；每個 A 片段重用 $w_N$ 次，每個 B 片段重用 $w_M$ 次 |
 
-16x16 MFMA 的 $4\times4$ WaveTile（$T_M = T_N = 64$）需要每 lane 64 個 accumulator register，並 reuse 每個 operand fragment 4 次；$128\times64$ 需要 128 個。
+由 16x16 MFMA 組成的 $4\times4$ WaveTile（$T_M = T_N = 64$）需要每個 lane 64 個累加器暫存器，且每個運算元片段重用 4 次；$128\times64$ 則需要 128 個。
 
-**`DepthU`** 是一次 main-loop iteration 的 K extent：AITER kernel 中為 64；16-bit type 通常為 32–128。
+#### DepthU
 
-### 1.2 Global Read：PGR、DirectToLds
+**`DepthU`** 是主迴圈一次迭代的 K 長度：在 AITER 的 kernel 中為 64，16 位元型別通常為 32–128。
 
-`ValidParameters.py` 對 `PrefetchGlobalRead` 的說明：
+### 1.2 全域讀取：PGR、DirectToLds
 
-- **PGR=0：** 不 prefetch。Load、wait、寫入 LDS，再 compute。
-- **PGR=1：** double-buffer *global → VGPR → LDS* 路徑。需要兩倍 LDS 與 staging VGPR。
-- **PGR=2：** 在 staged data 寫入 LDS 時再發出一次 global prefetch，因此同時有兩個 tile in flight。
+`ValidParameters.py` 對 `PrefetchGlobalRead` 的描述：
 
-這正是 AITER `pf3` kernel 寫死的行為，也是第 06 章 `vmcnt(N)` 所表達的工作。
+- **PGR=0：** 不預先載入。載入、等待、寫入 LDS、計算。
+- **PGR=1：** 對 *全域記憶體 → VGPR → LDS* 這條路徑做雙緩衝。需要兩倍的 LDS，以及中轉用的 VGPR。
+- **PGR=2：** 在中轉資料寫入 LDS 的同時，*再*發出一次全域預先載入，讓兩個分塊同時在傳輸中。
+
+這正是 AITER 的 `pf3` kernel 寫死的做法，也就是第 06 章中 `vmcnt(N)` 所表達的內容。
 
 `DirectToLds=1` 使用 `buffer_load … lds`（第 06 章第 4 節）：
-- 移除 staging VGPR 與 `ds_write`。註解指出某設定可「省下 33 個 VGPR」。
-- 限制：
-  - 每 lane 搬 4 byte（`GlobalReadVectorWidth · bpe = 4`）；
-  - `M0` 必須保存 LDS address；
-  - 某些 layout 需要 `TransposeLDS=1`。
+- 它省去中轉用的 VGPR 與 `ds_write`；註解指出在某個設定下「可省下 33 個 VGPR」。
+- 限制條件：
+  - 每個 lane 只搬 4 位元組（`GlobalReadVectorWidth · bpe = 4`）；
+  - `M0` 必須存放 LDS 位址；
+  - 某些資料配置需要 `TransposeLDS=1`。
 
-### 1.3 LDS 與 Local Read
+### 1.3 LDS 與區域讀取
 
-- **`1LDSBuffer`** 只用一個而非兩個 LDS buffer，以 overlap 換 capacity：可用較大 tile 或較高 occupancy。搭配 SIA3 時只能與 PGR 一起使用。
-- **`LdsPadA/B`** 與 **`LdsBlockSizePerPad`** 插入 padding 以打散 bank conflict。與 `mfma_gemm.hip` 的 `+8` row padding 相同，只是改用搜尋而非猜測。
-- **`PrefetchLocalRead=n`** 讓 register 預存 MFMA 前 *n* 個 iteration 的 `ds_read` 結果，是第 06 章 `a[0:63]` / `a[64:127]` 交換的一般化。
+- **`1LDSBuffer`** 選擇只用一個 LDS 緩衝區而不是兩個，以犧牲重疊換取容量：可用更大的分塊，或更高的佔用率。搭配 SIA3 時只能與 PGR 一起使用。
+- **`LdsPadA/B`** 與 **`LdsBlockSizePerPad`** 插入填補以避免 bank 衝突。概念與 `mfma_gemm.hip` 中每列 `+8` 的填補相同，只是改用搜尋而不是猜測。
+- **`PrefetchLocalRead=n`** 讓暫存器中保有提前 *n* 次迭代的 `ds_read` 結果。這就是第 06 章 `a[0:63]` / `a[64:127]` 交替使用的一般化。
 
-### 1.4 Scheduling：`ScheduleIterAlg`
+### 1.4 排程：`ScheduleIterAlg`
 
-Generator 先分別產生一個 loop iteration 的四條 instruction stream：
-1. global read 與 pointer increment；
-2. local write；
-3. local read；
+產生器會先把一次迴圈迭代的四條指令流分別產生出來：
+1. 全域讀取及其指標遞增；
+2. 區域寫入；
+3. 區域讀取；
 4. MFMA。
 
-`KernelWriter.makeSchedule` 再請 `SIA` component 合併：
+接著 `KernelWriter.makeSchedule` 詢問 `SIA` 元件要如何合併它們：
 
 | SIA | 策略 |
 |-----|----------|
-| 0 | 不 interleave：global read、local read、local write，最後全部 MAC |
-| 1 / 2 | 依 local-read iteration interleave 的舊 heuristic |
-| **3** | **以 MFMA 為中心：** 依可控制密度將 memory instruction 放在 MFMA 間 |
+| 0 | 不穿插：先全域讀取、區域讀取、區域寫入，最後才是所有 MAC |
+| 1 / 2 | 較舊的啟發式規則，以每次區域讀取迭代為單位穿插 |
+| **3** | **以 MFMA 為中心：** 以受控的密度，把記憶體指令放在 MFMA *之間* |
 
-SIA=3 時，`GlobalReadPerMfma` 與 `LocalWritePerMfma`（0.01–32）控制密度。`0.1` 表示每 10 個 MFMA 一次 global read。
+在 SIA=3 下，`GlobalReadPerMfma` 與 `LocalWritePerMfma`（0.01–32）控制這個密度，`0.1` 表示每 10 道 MFMA 穿插一次全域讀取。
 
-將 global read 聚在一起能提高 memory efficiency，但全滿的 vector-memory FIFO 會阻擋**所有** issue，包括 MFMA，因此密度需要調校。結果與手寫 AITER loop 相同：MFMA、一兩個 load、MFMA，依此類推。
+把全域讀取接連發出能提高記憶體效率，但向量記憶體的 FIFO 一旦滿了，就會擋住*所有*指令的發出（包括 MFMA），所以密度必須調校。最後產生的程式碼，形狀與手寫的 AITER 迴圈相同：一道 MFMA、一兩道載入、一道 MFMA，依此類推。
 
-Generator 也會自行計算每個 `s_waitcnt`。它知道每個 producer 與 consumer 間放了多少 load，並以硬體 `MaxVmcnt` 為上限，因此能發出最緊但安全的 count。
+產生器也會自行計算每一個 `s_waitcnt`。它知道在每個生產者與消費者之間放了多少道載入（並以硬體的 `MaxVmcnt` 為上限），因此能產生最緊但仍安全的計數。
 
 ### 1.5 工作切分：GSU 與 Stream-K { #15-work-decomposition-gsu-and-stream-k }
 
-假設 `M·N / (MT0·MT1)` 個 output tile 遠少於 304 個 CU，例如 decode 時 M=128。可用兩種方法使用 idle CU。
+假設輸出分塊數 `M·N / (MT0·MT1)` 遠少於 304 個 CU，例如解碼時 M = 128。要利用閒置的 CU，有兩種方法。
 
-**GlobalSplitU（GSU）。** 將 K 切成 GSU slice。Partial result 有三種合併方式：
+#### GlobalSplitU（GSU）
 
-| `GlobalSplitUAlgorithm` | 合併方式 |
+把 K 切成 GSU 份，部分結果以下列三種方式之一合併：
+
+| `GlobalSplitUAlgorithm` | 部分結果如何合併 |
 |-------------------------|---------------------------|
-| `SingleBuffer` | Atomic accumulate 到單一 buffer，如 AITER `global_atomic_add_f32` |
-| `MultipleBuffer` | 每個 slice 寫自己的 buffer；第二個 kernel 做 reduction |
-| `MultipleBufferSingleKernel` | 分開 buffer，但最後抵達的 workgroup 在同一 kernel 中用 synchronizer/semaphore 做 reduction，如 AITER |
+| `SingleBuffer` | 以原子操作累加到同一個緩衝區，類似 AITER 的 `global_atomic_add_f32` |
+| `MultipleBuffer` | 每份各自寫入自己的緩衝區，再由第二個 kernel 歸約 |
+| `MultipleBufferSingleKernel` | 使用各自的緩衝區，但由最後抵達的 workgroup 在同一個 kernel 中歸約，用的是類似 AITER 的同步器 / 號誌 |
 
-`GSU=-1` 讓 runtime 選擇。
+`GSU=-1` 讓執行期自行決定。
 
-**Stream-K**（[Osama et al., 2023](https://arxiv.org/abs/2301.03598)）：
-- 約每 CU launch 一個 workgroup。
-- 將所有 tile 的 **MAC-loop iteration 總數平均分配**給每個 workgroup；workgroup 可能完成一個 tile，再從下一個 tile 中間開始。
-- 共享 tile 的 partial 可透過 workspace（deterministic）或 atomic fix up。
+#### Stream-K
 
-其平衡效果為：
+Stream-K（[Osama et al., 2023](https://arxiv.org/abs/2301.03598)）的做法如下：
+- 大約每個 CU 啟動一個 workgroup。
+- 把所有分塊的 MAC 迴圈迭代*平均分給*每個 workgroup，因此一個 workgroup 可能做完一個分塊之後，從下一個分塊的中間開始。
+- 部分分塊的修正可以透過工作區（結果具決定性），或使用原子操作。
+
+Stream-K 達到的負載平衡，可以寫成：
 
 $$
 L = T\left\lceil \frac{K}{\text{DepthU}} \right\rceil, \qquad
@@ -170,16 +180,18 @@ $$
 
 | 符號 | 意義 |
 |---|---|
-| $T$ | Output（macro）tile 數 |
-| DepthU | 每 main-loop iteration 的 K |
-| $L$ | 整個 GEMM 的 MAC-loop iteration 總數 |
-| $G$ | Stream-K workgroup 數（約為 CU 數） |
-| $L_g$ | 分配給 workgroup $g$ 的 iteration |
-| $\eta_{\text{SK}}, \eta_{\text{tile}}$ | Stream-K 與 one-workgroup-per-tile 的 fill efficiency |
+| $T$ | 輸出（巨）分塊數 |
+| DepthU | 主迴圈每次迭代的 K 長度 |
+| $L$ | 整個 GEMM 的 MAC 迴圈迭代總數 |
+| $G$ | Stream-K 的 workgroup 數（約等於 CU 數） |
+| $L_g$ | 分配給 workgroup $g$ 的迭代數 |
+| $\eta_{\text{SK}}, \eta_{\text{tile}}$ | Stream-K 與「一個分塊一個 workgroup」的填滿效率 |
 
-因為 $L \gg G$，$\eta_{\text{SK}}$ 幾乎是 1；$T$ 略高於 $G$ 的倍數時，$\eta_{\text{tile}}$ 可低至約 50%。代價是修復兩個 workgroup 共享的 tile。
+由於 $L \gg G$，$\eta_{\text{SK}}$ 幾乎等於 1；而當 $T$ 稍大於 $G$ 的倍數時，$\eta_{\text{tile}}$ 可能低至約 50%。代價是必須修正由兩個 workgroup 共同負責的分塊。
 
-這消除了「最後一 wave 只有 10% 滿」的量化問題，也讓一個 kernel 能良好涵蓋多種 shape，縮小 library。hipBLASLt 透過環境變數提供：
+#### 在 hipBLASLt 中使用 Stream-K
+
+這消除了「最後一輪只填滿 10%」的量化問題；而且一個 kernel 就能良好涵蓋許多形狀，也讓函式庫變小。hipBLASLt 透過環境變數提供這項功能：
 
 ```bash
 export TENSILE_SOLUTION_SELECTION_METHOD=2   # 0 = standard tuned library (default), 2 = Stream-K library
@@ -190,17 +202,21 @@ export TENSILE_STREAMK_MAX_CUS=128           # cap CUs used
 
 優先順序為 `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`。
 
-### 1.6 Cache-Aware Tile Order：WGM、WGMXCC、StaggerU { #16-cache-aware-tile-order-wgm-wgmxcc-staggeru }
+### 1.6 考慮快取的分塊順序：WGM、WGMXCC、StaggerU { #16-cache-aware-tile-order-wgm-wgmxcc-staggeru }
 
-- **`WorkGroupMapping`（WGM）** 重新排列 workgroup ID，使同時 in flight 的 tile 在 C 中形成高度 WGM 的 box。Box 中 tile 會在 L2 共用 A-row 與 B-column panel。公式是 `wgSerial = wg0 + (wg1 % WGM) · nwg0`。
-- **`WorkGroupMappingXCC`（WGMXCC）** 抵銷 MI300 將 workgroup *i* round-robin 放到 XCD *i % 8* 的行為。它 remap ID，讓**連續 logical tile 在同一 XCD 執行**，共享其 4 MiB L2。`WorkGroupMappingXCCGroup` 設定 group size，`-1` 代表「CU count」。
-- **`StaggerU`** / `StaggerUStride` / `StaggerUMapping` 讓每個 workgroup 從不同 K offset 開始，循環走過 K。
-  - K 是很大的二次方時很重要：否則每個 tile 都從同一 DRAM channel 開始。
-  - `StaggerUMapping` 選擇由 wg0、wg1、wg2 或 serial ID 驅動 offset。
+#### 三個調整參數
 
-![預設 round-robin XCD placement，與將相鄰 tile 保持在同一 XCD 的 remapping](figures/ch07-xcd-remap.svg)
+- **`WorkGroupMapping`（WGM）** 重新排列 workgroup 編號，讓同時執行的分塊在 C 中形成高度為 WGM 的矩形區域。同一區域內的分塊在 L2 中共用 A 的列面板與 B 的欄面板。公式為 `wgSerial = wg0 + (wg1 % WGM) · nwg0`。
+- **`WorkGroupMappingXCC`（WGMXCC）** 抵銷 MI300 把第 *i* 個 workgroup 輪流分派到第 *i % 8* 個 XCD 的效應。它重新對應編號，讓*邏輯上連續的分塊在同一個 XCD 上執行*，共用該 XCD 的 4 MiB L2。`WorkGroupMappingXCCGroup` 設定分組大小，`-1` 表示「等於 CU 數」。
+- **`StaggerU`** / `StaggerUStride` / `StaggerUMapping` 讓每個 workgroup 的 K 迴圈從不同的位移開始，沿 K 輪轉。
+  - 當 K 是很大的 2 的冪次時，這一點很重要：否則每個分塊都會從同一個 DRAM 通道開始讀取。
+  - `StaggerUMapping` 選擇由哪個 workgroup 索引決定位移：wg0、wg1、wg2 或序號。
 
-WGM 概念與 Triton、CUTLASS 的 grouped launch order 相同。以常見形式表示，serial launch index $s$ 對應到 workgroup 計算的 tile $(w_0', w_1')$：
+![預設的輪流 XCD 分派，與讓相鄰分塊留在同一個 XCD 的重新對應](figures/ch07-xcd-remap.svg)
+
+#### 分組的啟動順序
+
+WGM 背後的概念，與 Triton 和 CUTLASS 使用的「分組」（grouped）啟動順序相同。以那種常見寫法表示，啟動序號 $s$ 會對應到 workgroup 實際計算的分塊 $(w_0', w_1')$：
 
 $$
 s = w_0 + w_1\,n_0, \qquad
@@ -210,15 +226,17 @@ $$
 
 | 符號 | 意義 |
 |---|---|
-| $w_0, w_1$ | Launch-order workgroup index |
-| $n_0$ | Dimension 0 的 tile 數 |
-| $g$ | Box 高度（WGM） |
-| $s$ | Serial launch order |
-| $w_0', w_1'$ | 實際計算的 tile |
+| $w_0, w_1$ | 依啟動順序的 workgroup 索引 |
+| $n_0$ | 沿維度 0 的分塊數 |
+| $g$ | 矩形區域的高度（WGM） |
+| $s$ | 啟動序號 |
+| $w_0', w_1'$ | 實際計算的分塊 |
 
-連續 workgroup 先沿 $g$ 個 tile row 向下，再向右移一個 tile column，因此 in-flight workgroup 涵蓋高度 $g$ 的 box，並在 L2 共用 $g$ 個 A row panel 與少數 B column panel。TensileLite 自己的公式細節不同（WGMXCC 還會疊加 XCD remap），但 reuse 理由相同。
+連續的 workgroup 會先沿著 $g$ 個分塊列往下走，再往右移一個分塊欄，因此同時執行的 workgroup 涵蓋一塊高度為 $g$ 的區域，在 L2 中共用 A 的 $g$ 個列面板與 B 的少數幾個欄面板。TensileLite 自己的公式在細節上不同（WGMXCC 還會在其上加一層 XCD 重新對應），但重用的道理相同。
 
-WGM、WGMXCC、StaggerU、GSU 都能低成本在 runtime 改變，因為它們打包進 kernel argument，而非編譯寫死：
+#### 執行期的 kernel 參數
+
+WGM、WGMXCC、StaggerU 與 GSU 都能在執行期低成本地改變：它們被打包進 kernel 參數，而不是編譯進程式碼：
 
 ```
 internalArgs  (32 bit): input type | StaggerU (3-bit mapping, 5-bit shift, 8-bit value)
@@ -226,50 +244,50 @@ internalArgs  (32 bit): input type | StaggerU (3-bit mapping, 5-bit shift, 8-bit
 internalArgs1 (32 bit): WGMXCCG (10) | WGMXCC (6) | WGM (16, signed)
 ```
 
-`Components/README.md` 將此 layout 記為 kernel-argument「Version 2」。因此一個 code object 可服務許多 tuned variant。
+這個配置在 `Components/README.md` 中記載為 kernel 參數的「Version 2」。因此，一個程式碼物件就能服務許多調校過的變體。
 
-## 2. 解讀 Kernel 名稱
+## 2. 解讀 kernel 名稱
 
-Kernel 名稱由 `SolutionStructs/Naming.py` 產生：
+kernel 名稱由 `SolutionStructs/Naming.py` 產生：
 
-1. 從 problem type 開始。
+1. 以問題型別開頭。
 2. 加上 `MT<MT0>x<MT1>x<DepthU>` 與 `MI<M>x<N>x<B>`。
-3. 對每個必要 parameter，附加其*大寫字母*與 value。
+3. 對每個必要參數，附加其名稱中的*大寫字母*，再接上它的值。
 
-例如：
+所以像這樣的名稱片段
 
 ```
 …_MT256x256x64_MI16x16x1_SN_…_DTL1_…_PGR2_PLR1_…_SIA3_…
 ```
 
-可解讀為：
+可以解讀為：
 
-| Fragment | 意義 |
+| 片段 | 意義 |
 |----------|---------|
-| `MT256x256x64` | Macro tile 256×256，DepthU 64 |
-| `MI16x16x1` | 16×16 MFMA，1 block |
+| `MT256x256x64` | 巨分塊 256×256，DepthU 64 |
+| `MI16x16x1` | 16×16 的 MFMA，1 個區塊 |
 | `DTL1` | DirectToLds |
 | `PGR2` | PrefetchGlobalRead=2 |
 | `PLR1` | PrefetchLocalRead=1 |
 | `SIA3` | ScheduleIterAlg=3 |
 
-其他 parameter 也同樣縮寫：
+其他參數也以同樣的方式縮寫：
 - `1LDSBuffer` → `LDSB`
 - `WorkGroupMapping` → `WGM`
 - `StaggerU` → `SU`
 - `GlobalSplitU` → `GSU`
 
-在 MI300 上 profile PyTorch、看到 `Cijk_…` kernel 時，可依此了解其行為。
+在 MI300 上分析 PyTorch 的效能時，若看到 `Cijk_…` 這樣的 kernel，就可以用這個方法讀出它做了什麼。
 
-## 3. hipBLASLt 如何在 Runtime 選擇
+## 3. hipBLASLt 如何在執行期做選擇
 
-1. **Library logic file。** Benchmark 會產生每 architecture、data type 一份 YAML，列出 solution 及其勝出的 problem size。
-2. **Heuristic。** `hipblasLtMatmulAlgoGetHeuristic` 從「standard grid」（確切 tuned size）、「free-size」library 或 Stream-K library（見 `TENSILE_SOLUTION_SELECTION_METHOD`）回傳 problem 的 ranked list。
-3. **Solution index。** 每個 solution 在單一 library build 中有穩定 index。可在 `hipblaslt-bench` 用 `--algo_method index` 明確指定，或透過 extension API。
+1. **函式庫邏輯檔。** 依架構與資料型別各有一份 YAML 檔，由基準測試產生，列出各 solution 以及它們勝出的問題大小。
+2. **啟發式規則。** `hipblasLtMatmulAlgoGetHeuristic` 針對問題回傳一份排序過的清單，來源可能是「標準網格」（精確調校過的大小）、「任意大小」函式庫，或 Stream-K 函式庫（見 `TENSILE_SOLUTION_SELECTION_METHOD`）。
+3. **Solution 索引。** 每個 solution 在*同一次函式庫建置中*都有固定的索引。可以在 `hipblaslt-bench` 中以 `--algo_method index` 明確指定，或透過擴充 API 指定。
 
-## 4. 為自己的 Shape 調校 hipBLASLt
+## 4. 針對自己的矩陣形狀調校 hipBLASLt
 
-以下是 `docs/how-to/how-to-use-hipblaslt-offline-tuning.rst` 的 offline tuning 流程：
+以下是 `docs/how-to/how-to-use-hipblaslt-offline-tuning.rst` 中的離線調校流程：
 
 ```bash
 # 1. Log the GEMMs your application issues, as ready-to-run bench commands
@@ -286,68 +304,66 @@ export HIPBLASLT_TUNING_OVERRIDE_FILE=tuning.txt
 python my_model.py
 ```
 
-![Offline tuning 的三個步驟](figures/ch07-tuning-flow.svg)
+![離線調校的三個步驟](figures/ch07-tuning-flow.svg)
 
-兩項警告：
-- Solution index 只對**相同 library build 與相同 architecture**有效。升級 ROCm 後要重新調校。
-- `HIPBLASLT_TUNING_USER_MAX_WORKSPACE` 將候選 solution 限制在 application 實際提供的 workspace 內，對 GSU、Stream-K 很重要。
+有兩點需要注意：
+- Solution 索引只在**同一次函式庫建置、同一種架構**下有效。升級 ROCm 後要重新調校。
+- `HIPBLASLT_TUNING_USER_MAX_WORKSPACE` 會把可選的 solution 限制在應用程式實際提供的工作區大小之內，這對 GSU 與 Stream-K 很重要。
 
-Framework-level 替代方式：
-- **PyTorch TunableOp：** `PYTORCH_TUNABLEOP_ENABLED=1` 在 runtime 對每個 shape 嘗試 hipBLASLt 與 rocBLAS candidate，並將結果快取於 CSV。
-- **AITER `gemm_a16w16_tune.py --with-hipblaslt`：** 讓 hipBLASLt solution 與 asm、triton 等 backend 競爭（第 06 章）。勝出的 `solidx` 以 `libtype=hipblaslt` 寫入 `bf16_tuned_gemm.csv`。
+框架層級的替代方案：
+- **PyTorch TunableOp：** `PYTORCH_TUNABLEOP_ENABLED=1` 會在執行期針對每種形狀嘗試 hipBLASLt 與 rocBLAS 的候選 kernel，並把結果快取在 CSV 中。
+- **AITER 的 `gemm_a16w16_tune.py --with-hipblaslt`** 讓 hipBLASLt 的 solution 與它的組合語言、Triton 等後端一起競賽（第 06 章）。勝出者的 `solidx` 會以 `libtype=hipblaslt` 寫入 `bf16_tuned_gemm.csv`。
 
-## 5. 用 TensileLite 產生自己的 Kernel
+## 5. 用 TensileLite 產生自己的 kernel
 
-TensileLite 也可直接執行列出 fork parameter 與 problem size 的 YAML config。範例位於 `tensilelite/HostLibraryTests/configs/`（例如 `mixed_configs/aquavanjaram_*.yaml`；「aquavanjaram」即 gfx942）。格式會隨 release 改變，請從自己的 checkout 中現有 config 開始。TensileLite 接著：
+TensileLite 也可以直接以一份 YAML 設定檔執行，檔中列出要展開的參數與問題大小。範例設定位於 `tensilelite/HostLibraryTests/configs/`（例如 `mixed_configs/aquavanjaram_*.yaml`；「aquavanjaram」就是 gfx942）。格式會隨版本變動，所以請以自己 checkout 中的設定檔為起點。TensileLite 接著會：
 
-1. 列舉所有有效組合：`SolutionStructs/Validators` 做 validity check，`TensileLogic` program 檢查 `MatrixInstruction`。
+1. 列舉每一種合法組合：合法性由 `SolutionStructs/Validators` 檢查，`MatrixInstruction` 則由 `TensileLogic` 程式檢查。
 2. 產生並組譯每個 kernel。
-3. 在 GPU 上 benchmark。
-4. 寫出 hipBLASLt 能載入的 library logic。
+3. 在你的 GPU 上逐一做基準測試。
+4. 寫出 hipBLASLt 能載入的函式庫邏輯。
 
-這是 AMD 方法中「以搜尋手工打造」的一半；AITER `.co` kernel 則是「親手打造」的一半。兩者最終都有第 06 章所追蹤的 loop structure。
+這是 AMD 做法中「以搜尋代替手工」的那一半；AITER 的 `.co` kernel 則是「純手工」的那一半。兩者最後得到的，都是第 06 章中追蹤過的同一種迴圈結構。
 
-## 6. 摘要：AMD GEMM Playbook
+## 6. 總結：AMD GEMM 的招式表
 
-| 技術 | AITER asm（第 06 章） | TensileLite parameter |
+| 技巧 | AITER 組合語言（第 06 章） | TensileLite 參數 |
 |-----------|-------------------|-----------------------|
-| 大型 per-wave tile、每 SIMD 1 wave | 每 wave 16×128，512 register | `MatrixInstruction` WaveTile、`MaxOccupancy` |
-| Direct-to-LDS | `buffer_load_dword … lds` | `DirectToLds` |
-| 預先排列 weight | B preshuffle 到 AGPR | gfx94x 上供 A 使用的 `HIPBLASLT_ORDER_COL16_4R8`（bf16/fp16）/ `COL16_4R16`（fp8）matrix order |
-| Multi-stage prefetch | `vmcnt(18)`、LDS ping-pong | `PrefetchGlobalRead`、`1LDSBuffer` |
-| Register double buffering | `a[0:63]` ↔ `a[64:127]` | `PrefetchLocalRead` |
-| MFMA/memory interleaving | 手工 | `ScheduleIterAlg=3`、`GlobalReadPerMfma` |
-| Split-K / Stream-K | z-grid + atomic + semaphore | `GlobalSplitU*`、`StreamK` |
-| L2/XCD-aware tile order | – | `WorkGroupMapping`、`WorkGroupMappingXCC`、`StaggerU` |
-| Per-shape selection | Tuned CSV + heuristic | Library logic + heuristic + offline tuning |
+| 每個 wave 負責大分塊，每個 SIMD 一個 wave | 每個 wave 16×128，512 個暫存器 | `MatrixInstruction` 的 WaveTile、`MaxOccupancy` |
+| 直接載入 LDS | `buffer_load_dword … lds` | `DirectToLds` |
+| 預先排好的權重 | B 預先重排後直接載入 AGPR | gfx94x 上 A 的矩陣順序 `HIPBLASLT_ORDER_COL16_4R8`（bf16/fp16）/ `COL16_4R16`（fp8） |
+| 多階段預先載入 | `vmcnt(18)`、LDS 乒乓緩衝 | `PrefetchGlobalRead`、`1LDSBuffer` |
+| 暫存器雙緩衝 | `a[0:63]` ↔ `a[64:127]` | `PrefetchLocalRead` |
+| MFMA 與記憶體指令穿插 | 手工 | `ScheduleIterAlg=3`、`GlobalReadPerMfma` |
+| Split-K / Stream-K | z 網格 + 原子操作 + 號誌 | `GlobalSplitU*`、`StreamK` |
+| 考慮 L2/XCD 的分塊順序 | – | `WorkGroupMapping`、`WorkGroupMappingXCC`、`StaggerU` |
+| 依形狀選擇 kernel | 調校表 CSV + 啟發式規則 | 函式庫邏輯 + 啟發式規則 + 離線調校 |
 
 ## 重點整理
 
-1. hipBLASLt kernel 是 parameter space 中的一點；generator 將 parameter 轉成 assembly，benchmark 決定發布哪些點。
-2. `MatrixInstruction` 編碼整個 tile hierarchy（MFMA → wave tile → macro tile）；`DepthU` 是 K step。Wave tile 越大，reuse 與 accumulator register 越多。
-3. PGR、DirectToLds、PLR、LDS padding 與 `ScheduleIterAlg=3`，分別是 prefetch、direct-to-LDS load、register double buffering、避免 bank conflict 與 MFMA interleaving 的 generated 版本。
-4. GSU（split-K）與 Stream-K 修正 tile quantization；WGM、WGMXCC、StaggerU 讓 tile order 對 cache 與 channel 友善，且都是低成本 runtime argument。
-5. Selection 是 lookup 加 heuristic；offline tuning 可針對確切 shape override，但只適用一個 library build 與 architecture。
+1. hipBLASLt 的每個 kernel 都是參數空間中的一個點；產生器把參數轉成組合語言，再由基準測試決定哪些點要發布。
+2. `MatrixInstruction` 描述整個分塊階層（MFMA → wave 分塊 → 巨分塊），`DepthU` 則是每步 K。wave 分塊越大，重用越多，累加器暫存器也越多。
+3. PGR、DirectToLds、PLR、LDS 填補與 `ScheduleIterAlg=3`，分別是預先載入、直接載入 LDS、暫存器雙緩衝、避免 bank 衝突與 MFMA 穿插的自動產生版本。
+4. GSU（split-K）與 Stream-K 解決分塊量化問題；WGM、WGMXCC 與 StaggerU 讓分塊順序對快取與記憶體通道友善，而且都是低成本的執行期參數。
+5. 選擇 kernel 是查表加上啟發式規則；離線調校可以針對你的確切形狀覆寫這個選擇，但只在同一次函式庫建置與同一種架構上有效。
 
 ## 練習
 
-1. 取 4096×4096×4096 bf16 GEMM 的 `hipblaslt-bench` command：
-   - 以 `--algo_method heuristic --requested_solution 10 --print_kernel_info` 執行。
-   - 用第 2 節解讀前三個 kernel 名稱。
-   - 哪些 parameter 不同？
+1. 取一個 4096×4096×4096 bf16 GEMM 的 `hipblaslt-bench` 指令：
+   - 加上 `--algo_method heuristic --requested_solution 10 --print_kernel_info` 執行。
+   - 用第 2 節的方法解讀排名前三的 kernel 名稱。
+   - 它們的哪些參數不同？
 
     <details markdown="1"><summary>提示</summary>
 
-    將名稱依 fragment 對齊（`MT…`、`MI…`，再來是大寫字母縮寫）。大型 square GEMM 的 candidate 通常使用相同 MFMA，而在 macro tile、`DepthU`、`PGR`/`PLR`、`WGM` 或 GSU 上不同。
+    把名稱逐段對齊（先是 `MT…`、`MI…`，再是各個大寫字母縮寫）。對大型方陣 GEMM，候選 kernel 通常使用相同的 MFMA，差別在巨分塊、`DepthU`、`PGR`/`PLR`、`WGM` 或 GSU。
 
     </details>
-
-2. 在 M ∈ {1, 16, 128, 1000}、N = K = 8192 時比較 `TENSILE_SOLUTION_SELECTION_METHOD=0` 與 `=2`。用第 1.5 節的 wave-quantization 理由解釋差異。
+2. 在 N = K = 8192、M ∈ {1, 16, 128, 1000} 的情況下，比較 `TENSILE_SOLUTION_SELECTION_METHOD=0` 與 `=2`，並用第 1.5 節的 wave 量化論點解釋差異。
 
     <details markdown="1"><summary>提示</summary>
 
-    $M = 1$ 或 16 時，$T = \lceil N/\text{MT}_1 \rceil$ 遠少於 304 個 CU，因此 standard library 必須依賴 GSU，而 Stream-K 會將少數 tile 的 $K$ loop 分散到所有 CU。$M = 1000$ 時 tile 數較多，差異縮小。
+    當 $M = 1$ 或 16 時，$T = \lceil N/\text{MT}_1 \rceil$ 相對於 304 個 CU 非常小，標準函式庫只能依賴 GSU，而 Stream-K 會把這少數幾個分塊的 $K$ 迴圈分散到所有 CU。$M = 1000$ 時分塊數很多，兩者的差距就會縮小。
 
     </details>
-
-3. 在 MI300X 上，以只在 `WorkGroupMappingXCC` 為 1 或 8 方面不同的 solution（若能找到），執行相同 GEMM。用 `rocprofv3 --pmc TCC_HIT_sum TCC_MISS_sum` 測量 L2 hit rate。
+3. 在 MI300X 上，若能找到只有 `WorkGroupMappingXCC` 不同的兩個 solution，分別以 1 和 8 執行同一個 GEMM，並用 `rocprofv3 --pmc TCC_HIT_sum TCC_MISS_sum` 量測 L2 命中率。

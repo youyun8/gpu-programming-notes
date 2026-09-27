@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/2d-fft)
 
-## 問題
+## 題意
 
 計算 $M\times N$ 複數 float32 訊號的二維 DFT。資料以交錯的 (re, im) 配對
 依列優先順序儲存（$M, N \le 4096$；基準測試 $M = N = 2048$；容許誤差
 `1e-2`），結果應與 `torch.fft.fft2` 相符。二維 DFT 可分離為先沿列、再沿欄
 執行的一維 DFT。工程上的問題在於如何讓兩個階段都能連續讀取記憶體。
 
-## 公式
+## 圖解
+
+![以列–行法計算二維 FFT：列 FFT、轉置、再做列 FFT](figure.svg)
+
+每個階段都完整掃過矩陣一次。轉置把行方向的 FFT 變成列方向，因此每一輪 FFT 都讀取連續的記憶體。
+
+## 數學表述
 
 $$
 X_{uv} = \sum_{m=0}^{M-1}\sum_{n=0}^{N-1} x_{mn}\,\omega_M^{um}\,\omega_N^{vn}
@@ -57,7 +63,7 @@ $$
 | $g,\ p$ | 蝶形群組及其群組內位置（$0 \le p < h$） |
 | $\omega_L^{p L/(2h)}$ | 旋轉因子 $= e^{-2\pi i p/(2h)}$ |
 
-## 方法
+## 解題思路
 
 1. 對 $M$ 列執行 **`fftRows`**（每列一個區塊，512 個執行緒）：
    - *2 的冪次*：以位元反轉順序載入共享記憶體
@@ -105,7 +111,7 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-2`
 通過，包括 $1 \times N$、$M \times 1$ 與非 2 冪次形狀。
 
-## 相關內容
+## 延伸閱讀
 
 - [快速傅立葉轉換（一維、任意長度）](../039-fast-fourier-transform/)、
   [矩陣轉置](../003-matrix-transpose/)。

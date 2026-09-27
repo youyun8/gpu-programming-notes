@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/fp16-batched-matrix-multiplication)
 
-## 問題
+## 題意
 
 批次半精度 GEMM：計算 $C_b = A_b B_b$，其中 $b = 0..B-1$，且
 $A_b \in \mathrm{fp16}^{M\times K}$、$B_b \in \mathrm{fp16}^{K\times N}$，
@@ -21,7 +21,13 @@ $A_b \in \mathrm{fp16}^{M\times K}$、$B_b \in \mathrm{fp16}^{K\times N}$，
 [GEMM（fp16）](../022-gemm/)的 Tensor Core 核心與
 [批次矩陣乘法](../030-batched-matrix-multiplication/)的批次處理。
 
-## 公式
+## 圖解
+
+![FP16 批次 GEMM：Tensor Core fragment、fp32 累加、只捨入一次到 fp16](figure.svg)
+
+每個批次（疊影）都是一個獨立的 fp16 Tensor Core GEMM。累加器為 fp32，只在寫出 C 時捨入一次到 fp16。
+
+## 數學表述
 
 $$
 C_{b,r,c} = \operatorname{fp16}\!\Bigl(\sum_{k=0}^{K-1} \operatorname{fp32}(A_{b,r,k})\,\operatorname{fp32}(B_{b,k,c})\Bigr)
@@ -36,7 +42,7 @@ $$
 | $C_{b,r,c}$ | 位移 $bMN + rN + c$ 的 fp16 結果 |
 | fp32(·), fp16(·) | 擴寬轉換與四捨五入至最近值的縮窄轉換 |
 
-## 方法
+## 解題思路
 
 - **網格**為 $\lceil N/64\rceil \times \lceil M/64\rceil \times B$。
   每個區塊依批次索引移動三個指標（使用 `size_t`）。
@@ -65,7 +71,7 @@ $$
 fp16 稠密效能 312 TFLOP/s 下約需 14 µs。每個矩陣只有 16 個區塊，
 因此要靠大型批次才能讓 SM 飽和。
 
-## 注意事項
+## 常見陷阱
 
 - **未對齊的 fragment 指標**（請參閱 [GEMM](../022-gemm/)）。
 - **結果轉換。** 最後才從 fp32 四捨五入一次，才能與參考實作一致。
@@ -76,6 +82,6 @@ fp16 稠密效能 312 TFLOP/s 下約需 14 µs。每個矩陣只有 16 個區塊
 在 [cuemu](../../tools/cuemu/README.md)（WMMA 模擬）上，所有 LeetGPU
 測試案例皆以 `0.05` 通過，包括不是 16 倍數的維度。
 
-## 相關內容
+## 延伸閱讀
 
 - [GEMM（fp16）](../022-gemm/)、[批次矩陣乘法（fp32）](../030-batched-matrix-multiplication/)。

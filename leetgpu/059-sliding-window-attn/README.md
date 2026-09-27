@@ -21,6 +21,14 @@ attention pattern of Longformer and Mistral (Mistral uses a causal variant).
 Cost drops from $O(M^2 d)$ to $O(M w d)$ **if the kernel never touches keys
 outside the band**.
 
+## Visual Overview
+
+![Sliding-window attention: query i sees only keys within distance w](figure.svg)
+
+The visible scores form a band of width 2w + 1 around the diagonal. Row 5
+(green) sees keys 3 … 7; the kernel only visits key tiles that intersect the
+band.
+
 ## Formulation
 
 $$

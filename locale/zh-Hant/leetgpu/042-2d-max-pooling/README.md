@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/2d-max-pooling)
 
-## 問題
+## 題意
 
 對 $N \times C \times H \times W$ float32 張量（NCHW）執行 2D 最大池化，
 使用大小為 $k$ 的正方形視窗、步幅 $s$ 與寬度為 $p$ 的零填補
@@ -20,7 +20,13 @@ status: solved
 效能評測使用 $N = 4$、$k = 3$、$s = 2$；容許誤差為 `1e-5`）。
 結果應與 `F.max_pool2d(…, kernel_size=k, stride=s, padding=p)` 相符。
 
-## 公式
+## 圖解
+
+![二維最大池化：k × k 視窗依步幅移動，填補值永遠不會勝出](figure.svg)
+
+紅框是輸出 (1, 2) 的 3 × 3 視窗，每個輸出移動兩格。灰色格是填補，視為 −∞，因此不可能成為最大值。
+
+## 數學表述
 
 $$
 H_o = \left\lfloor\frac{H + 2p - k}{s}\right\rfloor + 1, \qquad W_o = \left\lfloor\frac{W + 2p - k}{s}\right\rfloor + 1
@@ -44,7 +50,7 @@ $$
 PyTorch 要求 $p \le k/2$，因此每個視窗都至少包含一個真正的輸入儲存格，
 最大值一定是有限值。
 
-## 方法
+## 解題思路
 
 - 將 $N \cdot C \cdot H_o \cdot W_o$ 攤平後，每個輸出元素使用一個
   執行緒，並採用網格跨步迴圈（網格上限為 65 535 個區塊）。
@@ -85,7 +91,7 @@ $$
 所有 LeetGPU 測試案例均在 [cuemu](../../tools/cuemu/README.md) 通過，
 包括 $k = 1$、$s > k$（視窗之間有空隙）與 $p = k/2$。
 
-## 相關內容
+## 延伸閱讀
 
 - Tensara [1D 最大池化](../../tensara/max-pool-1d/)、
   [2D](../../tensara/max-pool-2d/)、[3D](../../tensara/max-pool-3d/)、

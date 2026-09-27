@@ -18,6 +18,14 @@ Return the single scalar $\sum_{i,j}\sigma\bigl((AB)_{ij}\bigr)$ for $A$ of
 size $M\times K$ and $B$ of size $K\times N$ (sizes 512 … 1024). The check
 is loose: `rtol = 5e-2`, `atol = 1e-2`.
 
+## Visual Overview
+
+![Σ σ(AB): each block reduces σ over its own output tile, then adds it with one atomic](figure.svg)
+
+The product is never stored. Each block applies σ to its output tile in
+registers, reduces the tile to one number, and adds it to the result with a
+single atomicAdd.
+
 ## Formulation
 
 $$
@@ -80,6 +88,8 @@ All matmul pages on Tensara use the same register-blocked FP32 kernel
 5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
    weight layout) and transposes it while staging.
 
+#### Data Reuse
+
 Data reuse at each level of the hierarchy:
 
 $$
@@ -93,6 +103,8 @@ $$
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
 | $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
 | $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+#### How Far It Gets
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):

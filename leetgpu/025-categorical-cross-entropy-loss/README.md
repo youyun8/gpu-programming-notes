@@ -21,6 +21,14 @@ float32 matrix and `true_labels` holds $N$ class indices
 loss. The numerically important piece is the **log-sum-exp**, which must
 never be computed as `log(sum(exp(z)))` naively.
 
+## Visual Overview
+
+![Cross-entropy: per row, the log-sum-exp of the logits minus the logit of the true class](figure.svg)
+
+Each row is one sample and the red cell is its true class. The loss of the row
+is its log-sum-exp minus that red logit; the batch loss is the mean of the
+three values on the right.
+
 ## Formulation
 
 $$

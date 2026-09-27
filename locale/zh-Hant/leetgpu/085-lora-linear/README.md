@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/lora-linear)
 
-## 問題
+## 題意
 
 實作 **LoRA** 線性層的前向傳播：凍結的基礎權重 $W$，加上以 $s$ 縮放、
 可訓練的低秩更新 $BA$
@@ -22,7 +22,13 @@ $r \le 256$；基準測試 $b = 256$、$d_{\text{in}} = d_{\text{out}} = 4096$�
 $r = 64$；容許誤差 `1e-4`）。LoRA 只訓練 $A$ 與 $B$ 來微調大型模型；
 此處只有 $2\cdot64\cdot4096 = 0.5$M 個參數，而非 16.8M。
 
-## 公式
+## 圖解
+
+![LoRA：凍結的全秩路徑，加上經縮放的秩 r 更新](figure.svg)
+
+上方路徑是凍結的 x Wᵀ；下方路徑先把 x 投影到秩 r，再投影回來並乘上 s。兩條路徑相加，也可以合併成一次 GEMM。
+
+## 數學表述
 
 $$
 Y = xW^{\mathsf T} + s\,(xA^{\mathsf T})B^{\mathsf T} = \begin{bmatrix} x & s\,xA^{\mathsf T}\end{bmatrix}\begin{bmatrix} W & B\end{bmatrix}^{\mathsf T}
@@ -50,7 +56,7 @@ $$
 但使用多個 adapter（多租戶服務）或進行訓練時，adapter 必須保持獨立，
 因此前向傳播需分別計算兩條路徑。
 
-## 方法
+## 解題思路
 
 1. **核心 1**：$h = s\,xA^{\mathsf T}$（$b\times r$），這是「NT」GEMM
    （右側運算元以列優先格式儲存為 $r\times d_{\text{in}}$），並在結尾運算
@@ -91,7 +97,7 @@ $b\times d_{\text{out}}$ 的部分結果（8 MB）。
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-4`
 通過，包括 $r = 1$ 與小批次。
 
-## 相關內容
+## 延伸閱讀
 
 - [簡易推論](../041-simple-inference/)、[SwiGLU MLP](../084-swiglu-mlp-block/)、
   [矩陣乘法](../002-matrix-multiplication/)。

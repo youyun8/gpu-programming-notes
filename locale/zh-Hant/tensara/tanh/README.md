@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目敘述](https://tensara.org/problems/tanh)
 
-## 問題
+## 題意
 
 對 $M\times N$ 的 float32 矩陣逐元素套用雙曲正切，結果須符合
 `torch.tanh`。測試矩陣從 $4096\times4096$ 到 $8192\times8192$
 （最多 6,700 萬個元素）。檢查條件為 `rtol = 1e-4`、`atol = 6e-5`。
 
-## 公式
+## 圖解
+
+![tanh 把輸入壓縮到 (−1, 1)，等於 2σ(2x) − 1](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。
+
+## 數學表述
 
 $$
 C_{ij} = \tanh(A_{ij}), \qquad \tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}} = 2\sigma(2x) - 1
@@ -32,7 +38,7 @@ $$
 | $\tanh$ | 雙曲正切，值域為 $(-1, 1)$ |
 | $\sigma$ | Logistic sigmoid |
 
-## 方法
+## 解題思路
 
 所有 Tensara 逐元素問題都使用同一種核心結構：
 
@@ -66,7 +72,7 @@ $$
 
 對 $8192\times8192$ 而言，$Q = 537$ MB；在 2 TB/s 時約為 0.27 ms。
 
-## 注意事項
+## 常見陷阱
 
 - **直觀公式**：$(e^x - e^{-x})/(e^x + e^{-x})$ 會成為
   $\infty/\infty =$ NaN（當 $|x| > 88$）；接近 0 時也不準確。
@@ -77,6 +83,6 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [Sigmoid](../sigmoid/)、[GELU](../gelu/)、[Hard Sigmoid](../hard-sigmoid/)。

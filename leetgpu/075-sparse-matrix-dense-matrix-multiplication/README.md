@@ -20,6 +20,14 @@ benchmark $M = 4096$, $N = 2048$, $K = 512$; tolerance `1e-3`). Is exploiting
 the sparsity worth it? At this density, **no**. The page explains why, with
 numbers.
 
+## Visual Overview
+
+![Sparse × dense at 35% density: a dense tiled GEMM still wins](figure.svg)
+
+Grey cells of A are zeros. At this density skipping them would save only about
+two thirds of the FLOPs while adding irregular gathers, so an ordinary tiled
+GEMM is faster.
+
 ## Formulation
 
 $$

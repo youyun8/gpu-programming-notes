@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/fused-residual-add-and-rms-norm)
 
-## 問題
+## 題意
 
 將 LLaMA 類 transformer 的「加法與正規化」步驟融合成一個核心：先將
 子層輸出 $x$ 加入殘差流 $r$，接著對每一列執行 RMS 正規化，並乘上逐特徵
 權重（$N, C \le 65\,536$、$\varepsilon = 10^{-5}$；基準測試
 $N = C = 4096$）。中間值 $z = x + r$ 不可寫入全域記憶體，這正是融合的目的。
 
-## 公式
+## 圖解
+
+![融合殘差加法與 RMSNorm：z = x + r 留在晶片上，只寫出 y](figure.svg)
+
+紅色虛線框內的所有資料都在暫存器或共享記憶體中。若不融合，z 必須先寫回全域記憶體再讀回，多出兩次完整的記憶體存取。
+
+## 數學表述
 
 $$
 z_{ij} = x_{ij} + r_{ij}, \qquad
@@ -39,7 +45,7 @@ $$
 | $w_j$ | 逐特徵權重（$\gamma$） |
 | $y_{ij}$ | 正規化後的輸出 |
 
-## 方法
+## 解題思路
 
 **每列使用一個含 256 個執行緒的區塊：**
 
@@ -88,7 +94,7 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上通過，
 包括 $C = 1$，以及 $C$ 不能被 4 整除的情況（純量路徑）。
 
-## 相關內容
+## 延伸閱讀
 
 - [RMS 正規化](../050-rms-normalization/)、[LLaMA Transformer 區塊](../093-llama-transformer-block/)、
   [Layer 正規化](../113-layer-normalization/)。Tensara [RMS Norm](../../tensara/rms-norm/)。

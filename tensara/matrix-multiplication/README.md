@@ -19,6 +19,13 @@ of size $K\times N$, row-major, for sizes from $4096^3$ to $8192^3$. The
 check is `rtol = 2e-4`, `atol = 5e-3`, tight enough that TF32 tensor cores
 (10-bit mantissa) are not an option: this is a true SGEMM.
 
+## Visual Overview
+
+![SGEMM: 64 × 64 block tiles, register-blocked per thread, without tensor cores](figure.svg)
+
+One block computes the dark green tile of C from slices of A and B staged in
+shared memory; each thread then keeps an 8 × 8 piece of the tile in registers.
+
 ## Formulation
 
 $$
@@ -71,6 +78,8 @@ All matmul pages on Tensara use the same register-blocked FP32 kernel
 5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
    weight layout) and transposes it while staging.
 
+#### Data Reuse
+
 Data reuse at each level of the hierarchy:
 
 $$
@@ -84,6 +93,8 @@ $$
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
 | $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
 | $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+#### How Far It Gets
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):

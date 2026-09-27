@@ -19,6 +19,13 @@ $4096^2$ up to $8192^2$ and $512^3$ (134 M elements), returning one
 scalar. The shape arrives as an array `shape` of `ndim` 64-bit sizes. The
 check is `rtol = 5e-5`, `atol = 1e-4`.
 
+## Visual Overview
+
+![MSE over a tensor of any shape: squared differences reduced to one scalar](figure.svg)
+
+The shape only determines the element count n. Each pair is squared, the tree
+sums the squares, and the last step divides by n.
+
 ## Formulation
 
 $$

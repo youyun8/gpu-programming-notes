@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/count-2d-array-element)
 
-## 問題
+## 題意
 
 計算一個 $N \times M$ int32 矩陣中 $K$ 的出現次數
 （$1 \le N, M \le 10^4$，值域為 $[1, 100]$；
 效能評測使用 $N = M = 10^4$、$K = 1$）。矩陣在記憶體中連續儲存，
 因此 2D 形狀只會決定元素總數。
 
-## 公式
+## 圖解
+
+![二維陣列計數：矩陣是連續存放的，所以直接在攤平的陣列上計數](figure.svg)
+
+綠色格等於 K = 1。逐列讀取時，矩陣就是右側攤平的陣列，因此一維計數的 kernel 可以原封不動沿用。
+
+## 數學表述
 
 $$
 \text{count} = \sum_{r=0}^{N-1}\sum_{c=0}^{M-1} \bigl[\,x_{rc} = K\,\bigr] = \sum_{i=0}^{NM-1} \bigl[\,x_i = K\,\bigr], \qquad i = rM + c
@@ -33,7 +39,7 @@ $$
 | $K$ | 要計數的值 |
 | 計數 | `output[0]` 中的精確結果 |
 
-## 方法
+## 解題思路
 
 本題使用[計算陣列元素數量](../043-count-array-element/)的平坦計數核心函式
 （載入 `int4`、使用 `__reduce_add_sync`，每個 warp 執行一次原子操作），
@@ -67,7 +73,7 @@ $[1, 100]$ 時，約有 1% 的元素符合條件。每個 warp 的原子操作�
 
 所有 LeetGPU 測試案例均在 [cuemu](../../tools/cuemu/README.md) 中完全相等。
 
-## 相關內容
+## 延伸閱讀
 
 - [計算陣列元素數量](../043-count-array-element/)、
   [計算 3D 陣列元素數量](../045-count-3d-array-element/)。

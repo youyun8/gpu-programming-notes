@@ -39,6 +39,8 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 
 ![How the repository becomes a static site](figures/ch08-pipeline.svg)
 
+### 1.1 What `build_site.py` Does
+
 `scripts/build_site.py` does seven things:
 
 1. **Tutorial pages.** Every Markdown file under `tutorials/` becomes a page.
@@ -64,11 +66,14 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 6. **Static assets.** It copies `site_assets/` to `assets/` in the site:
    the stylesheet, the favicon, the KaTeX loader and the vendored KaTeX and
    font files (section 9).
-7. **Figures.** A tutorial line that contains only a Markdown image becomes a
-   `<figure>`. Its caption is numbered `Fig. 1.`, `Fig. 2.`, and so on, in
-   IEEE style. SVGs are inlined, so their colours come from the `--fig-*` CSS
-   properties and follow the light/dark theme. Raster images remain image
+7. **Figures.** A line that contains only a Markdown image, in a tutorial or
+   in a problem write-up, becomes a `<figure>`. Its caption is numbered
+   `Fig. 1.`, `Fig. 2.`, and so on, in IEEE style (`圖 1`, `圖 2` on the
+   Chinese pages). SVGs are inlined, so their colours come from the `--fig-*`
+   CSS properties and follow the light/dark theme. Raster images remain image
    elements. On GitHub, the same line renders as an ordinary image.
+
+### 1.2 Theme and Languages
 
 The theme is [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/).
 It is pinned in `requirements-docs.txt` below MkDocs 2.0, which removes the
@@ -79,7 +84,7 @@ under `/zh-Hant/`. The floating `Aa` control stores theme, text size, content
 width, and line spacing in `localStorage`; it also links to the same page in
 the other language.
 
-### 1.1 What Is *Not* Published
+### 1.3 What Is *Not* Published
 
 - **Problem statements.** LeetGPU's challenge texts are CC BY-NC-ND, and
   Tensara's problem repository has no license, so this repository never
@@ -212,25 +217,47 @@ python3 scripts/build_index.py                                  # refresh README
 git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pages redeploys
 ```
 
+### 8.1 New Problems and Chapters
+
 A new tutorial chapter needs a Markdown file in `tutorials/`, a row in
 `tutorials/README.md`, and its number prefix in `TUTORIAL_PARTS` in
 `scripts/build_site.py`, which assigns chapters to parts and orders them
 within a part. The navigation is generated from that.
 
-Figures are not drawn by hand: each one is a Python function in
-`scripts/figures/<chapter>.py` that uses the small SVG helper in
-`scripts/figures/svg.py`. Run `python3 scripts/build_figures.py` (or
-`make figures`) after editing one and commit the regenerated SVGs; CI fails
-if they are stale. `scripts/check_figures.py` renders every figure in
-headless Chromium and fails when a label overlaps another label, sticks out
-of the figure, is crossed by a line or a box border, or is smaller than
-11 px. It also fails on misaligned labels: text that is off-centre in the
-box that holds it or under the box it labels, and labels in the same box
-(or both outside any box) that are almost, but not exactly, on one column
-or one baseline. `make figures` runs it too. A label that has to sit on a grid or a
-line can be given an opaque background with `plate=True`. Pages in a sub-directory of `tutorials/` (such as
-`gemm/`) appear in the navigation after the chapter named in
-`TUTORIAL_SECTIONS` in `scripts/build_site.py`.
+Pages in a sub-directory of `tutorials/` (such as `gemm/`) appear in the
+navigation after the chapter named in `TUTORIAL_SECTIONS` in
+`scripts/build_site.py`.
+
+### 8.2 Figures
+
+Figures are not drawn by hand: each one is a Python function that uses the
+small SVG helper in `scripts/figures/svg.py`.
+
+- **Tutorial figures** live in `scripts/figures/<chapter>.py` and are written
+  to `tutorials/figures/<chapter>-<name>.svg`.
+- **Problem figures** live in `scripts/figures/leetgpu.py` and
+  `scripts/figures/tensara.py`, one function per problem folder
+  (`fig_001_vector_add` → `leetgpu/001-vector-add/figure.svg`). They are built
+  from the shared templates in `scripts/figures/kit.py` (elementwise maps,
+  function plots, reduction trees, scans, tiled GEMMs, sliding windows,
+  attention masks, graphs) and compute their example numbers in Python, so the
+  values shown always agree with the formulas. Each README shows its figure
+  in a *Visual Overview* section (*圖解* in Chinese) right after the problem
+  statement.
+
+Run `python3 scripts/build_figures.py` (or `make figures`) after editing a
+figure and commit the regenerated SVGs; CI fails if they are stale.
+
+`scripts/check_figures.py` renders every figure in headless Chromium and
+fails when a label overlaps another label, sticks out of the figure, is
+crossed by a line or a box border, or is smaller than 11 px. It also fails on
+misaligned labels: text that is off-centre in the box that holds it or under
+the box it labels, and labels in the same box (or both outside any box) that
+are almost, but not exactly, on one column or one baseline. `make figures`
+runs it too. A label that has to sit on a grid or a line can be given an
+opaque background with `plate=True`.
+
+### 8.3 Translations
 
 Every English article has a mirrored Traditional Chinese source under
 `locale/zh-Hant/`. Keep file names, relative links, image paths, code, and
@@ -240,7 +267,9 @@ any missing translation.
 ## 9. How Math and Code Are Rendered
 
 Every problem page and tutorial writes formulas in TeX and follows each
-display formula with a table that explains every symbol. The pieces:
+display formula with a table that explains every symbol.
+
+### 9.1 The Rendering Pieces
 
 | Piece | Where | What it does |
 |---|---|---|
@@ -252,6 +281,8 @@ display formula with a table that explains every symbol. The pieces:
 
 Nothing is fetched from a CDN, so the site (and the zipped HTML) works
 offline and behind firewalls. The vendored files add about 0.8 MB.
+
+### 9.2 The House Style
 
 A page that follows the house style looks like this:
 
@@ -281,7 +312,9 @@ $$
 | $N$ | Row length |
 | $\epsilon$ | Small constant for numerical stability |
 
-Rules that keep KaTeX and Markdown from tripping over each other:
+### 9.3 Keeping KaTeX and Markdown Apart
+
+These rules keep KaTeX and Markdown from tripping over each other:
 
 - Leave a blank line before and after a `$$` block.
 - Never start a line inside a display formula with `+ `, `- ` or `1. `:
@@ -290,6 +323,10 @@ Rules that keep KaTeX and Markdown from tripping over each other:
 - Inside a table cell, never write a bare `|` in math (it ends the cell).
   Use `\lvert x \rvert`, `\mid` or `\Vert`.
 - Do not put display math inside indented list items; close the list first.
+- Ordered lists keep their first number (the `sane_lists` extension), so a
+  numbered list may be split by sub-headings (items 3–5 under a new heading
+  still render as 3–5). Leave a blank line before an item that follows a
+  nested bullet list.
 - Check with a browser: `python3 -m http.server -d build/site` and look for
   red KaTeX error text, or count `.katex-error` elements with Playwright.
 

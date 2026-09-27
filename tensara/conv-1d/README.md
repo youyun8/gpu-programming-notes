@@ -21,6 +21,14 @@ flipped. The tests use huge kernels ($K = 8191$) on $N$ = 32 K … 512 K, so
 the work is $N K$ multiply-adds, not a memory stream. The check is
 `rtol = 2e-4`, `atol = 5e-3`.
 
+## Visual Overview
+
+!["Same" 1-D convolution: zero padding (K−1)/2 on both sides and no kernel flip](figure.svg)
+
+Output 0 already reaches the padded zero on the left. The output has the same
+length as the input, and the weights are applied in order, as in PyTorch's
+conv1d.
+
 ## Formulation
 
 $$

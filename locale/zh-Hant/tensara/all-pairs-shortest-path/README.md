@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/all-pairs-shortest-path)
 
-## 問題
+## 題意
 
 給定一個以 $n\times n$ 鄰接矩陣表示的稠密加權有向圖，求所有點對之間的最短路徑。權重為正整數；**0 表示「沒有邊」**（對角線除外）；無法抵達的點對必須輸出為 $-1$。測試大小為
 $n = 512 \dots 4096$，檢查誤差為 `rtol = 1e-4`、`atol = 1e-3`。演算法和參考實作一樣採用 Floyd–Warshall。與
 [LeetGPU 版本](../../leetgpu/073-all-pairs-shortest-paths/)不同之處，在於「沒有邊」和「無法抵達」的編碼方式。
 
-## 公式
+## 圖解
+
+![全點對最短路徑：以 0 表示「沒有邊」、以 −1 表示無法到達的 Floyd–Warshall](figure.svg)
+
+左側的圖得到右側的距離表。頂點 0 經由 1、2 到達 3 的距離（6）比直接走（7）更短；灰色格無法到達，輸出為 −1。
+
+## 數學表述
 
 $$
 d^{(0)}_{ij} = \begin{cases} 0, & i = j \\ +\infty, & a_{ij} = 0 \\ a_{ij}, & \text{otherwise}\end{cases}, \qquad
@@ -33,7 +39,7 @@ $$
 | $d^{(k)}_{ij}$ | 只使用編號 $< k$ 的頂點作為中繼點時，$i\to j$ 的最短距離 |
 | $\text{out}_{ij}$ | 輸出；無法抵達的點對為 $-1$ |
 
-## 方法
+## 解題思路
 
 1. **`prepare`**：以網格跨步方式映射。對角線設為 0、零值設為
    $+\infty$，其餘值複製到 `output`。
@@ -65,7 +71,7 @@ $$
 
 所有測試案例（官方大小的縮小版本）皆已在 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - LeetGPU [全點對最短路徑](../../leetgpu/073-all-pairs-shortest-paths/)、
   [最短路徑](../shortest-path/)、[最小生成樹](../min-spanning-tree/)。

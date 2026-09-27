@@ -19,6 +19,14 @@ $N = 10^8$). The result is an exact int32. It is a reduction whose map step
 is a comparison, and a showcase for the **single-instruction warp
 reduction** `__reduce_add_sync` (sm_80+).
 
+## Visual Overview
+
+![Counting equal elements: compare, then an exact integer reduction](figure.svg)
+
+The first row is the input with K = 4; the second row turns each element into
+1 or 0. Adding the flags with a reduction tree gives the count exactly, in any
+order.
+
 ## Formulation
 
 $$

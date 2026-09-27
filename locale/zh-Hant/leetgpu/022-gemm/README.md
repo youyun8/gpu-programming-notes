@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目敘述](https://leetgpu.com/challenges/general-matrix-multiplication-gemm)
 
-## 問題
+## 題意
 
 帶縮放的半精度 GEMM：$C \leftarrow \alpha AB + \beta C$，其中 $A$ 為
 $M \times K$、$B$ 為 $K \times N$、$C$ 為 $M \times N$，全都採 fp16
@@ -22,7 +22,13 @@ $M = N = K = 1024$）。累加必須使用 float32，容許誤差為 `0.05`。
 這道題引入了**張量核心**：每條 warp 指令可執行一次小型矩陣乘加的
 專用矩陣單元，吞吐量是 fp32 FMA 的數倍。
 
-## 公式
+## 圖解
+
+![在 Tensor Core 上執行 FP16 GEMM：每個 warp 負責 C 中 16 × 16 的 fragment](figure.svg)
+
+圖中每個 2 × 2 的小方塊代表一個 16 × 16 fragment。warp 在 Tensor Core 上相乘 A、B 的 fp16 fragment，以 fp32 累加，最後計算 αD + βC 並只捨入一次到 fp16。
+
+## 數學表述
 
 $$
 C_{rc} \leftarrow \operatorname{fp16}\!\left(\alpha \sum_{k=0}^{K-1} \operatorname{fp32}(A_{rk})\operatorname{fp32}(B_{kc}) \;+\; \beta\,\operatorname{fp32}(C^{\text{old}}_{rc})\right)
@@ -54,7 +60,7 @@ $$
 （[第 05 章](../../tutorials/05-amd-cdna3-mfma.md)會與配置已有文件說明的
 AMD MFMA 比較。）
 
-## 方法
+## 解題思路
 
 ### 分塊階層
 
@@ -112,7 +118,7 @@ $$
 `cp.async`/TMA 多階段管線，以及以 `ldmatrix` 載入片段
 （CUTLASS、cuBLAS）。
 
-## 常見問題
+## 常見陷阱
 
 - **WMMA 指標未對齊**會在真實硬體上造成錯誤或讀到無效資料。
   [cuemu](../../tools/cuemu/README.md) 模擬器會檢查兩項對齊規則，
@@ -128,7 +134,7 @@ $$
 的 WMMA 模擬，包括 $M, N, K$ 不是 16 倍數的情況。核心函式也能使用
 `nvcc -arch=sm_80` 編譯。
 
-## 相關內容
+## 延伸閱讀
 
 - [矩陣乘法（fp32）](../002-matrix-multiplication/)、
   [FP16 批次矩陣乘法](../057-fp16-batched-matmul/)、

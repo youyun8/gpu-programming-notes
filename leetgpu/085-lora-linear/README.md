@@ -22,6 +22,14 @@ $r \le 256$; benchmark $b = 256$, $d_{\text{in}} = d_{\text{out}} = 4096$,
 $r = 64$; tolerance `1e-4`). LoRA fine-tunes large models by training only
 $A$ and $B$, which here is $2\cdot64\cdot4096 = 0.5$M parameters instead of 16.8M.
 
+## Visual Overview
+
+![LoRA: a frozen full-rank path plus a scaled rank-r update](figure.svg)
+
+The top path is the frozen layer x Wᵀ; the bottom path projects x down to rank
+r and back up, scaled by s. Both paths are added, and they can be merged into
+a single GEMM.
+
 ## Formulation
 
 $$

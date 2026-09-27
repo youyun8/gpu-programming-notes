@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/top-p-sampling)
 
-## 問題
+## 題意
 
 進行 nucleus（top-$p$）取樣：從含 $V$ 個 logit 的詞彙表選出一個 token
 （$3 \le V \le 5\times10^4$，logit 值域為 $[-100, 100]$，
@@ -21,7 +21,13 @@ $0 < p \le 1$；基準測試為 $V = 5\times10^4$）。先轉成機率，保留�
 這是多數 LLM API 的預設解碼策略。教科書實作會排序整個詞彙表，
 此解法則**不排序就找出 nucleus**。
 
-## 公式
+## 圖解
+
+![Top-p（nucleus）取樣：依機率由高到低保留 token，直到累積機率達到 p](figure.svg)
+
+token 依機率由高至低排列。p = 0.7 時，前四個 token（綠色）的累積機率 0.77 首次達到 p，因此被保留；重新正規化後再從中取樣。
+
+## 數學表述
 
 $$
 \pi_t = \frac{e^{z_t - m}}{\sum_{u} e^{z_u - m}}, \qquad
@@ -70,7 +76,7 @@ $$
 $u \cdot \sum_{\mathcal N}\pi$ 的 token。Nucleus 採用任何固定順序，
 都能得到正確分布。
 
-## 方法
+## 解題思路
 
 所有工作都在**含 1024 個執行緒的單一區塊**中執行；$V \le 50\,000$
 代表每個執行緒約處理 50 個元素：
@@ -102,7 +108,7 @@ $$
 總計約 $1.8$M 次指數運算，在單一 SM 上需數十微秒。完整排序 50k 個鍵會更久，
 也需要數個核心。
 
-## 注意事項
+## 常見陷阱
 
 - **與參考實作完全相同的 token。** 參考實作在設定 PyTorch 產生器種子後，
   使用 `torch.multinomial` 取樣（GPU 上是 Philox，CPU 上是 mt19937）。
@@ -121,7 +127,7 @@ $$
 nucleus 成員資格與恰好 $\lvert\mathcal N\rvert = 1$ 的案例。Nucleus
 本身（集合）也針對數千個隨機詞彙表，與以排序為基礎的 Python 實作比較過。
 
-## 相關內容
+## 延伸閱讀
 
 - [Top-K 選擇](../029-top-k-selection/)（對位元模式進行 radix select）、
   [Softmax](../005-softmax/)、[推測式解碼驗證](../087-speculative-decoding-verification/)。

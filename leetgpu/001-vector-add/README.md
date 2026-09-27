@@ -21,6 +21,14 @@ at $N = 2.5\times10^7$). The result must be written to `C`. This is the
 purest example of a **bandwidth-bound** kernel, and the thread-indexing
 pattern here is reused by every elementwise problem on this site.
 
+## Visual Overview
+
+![Vector addition: thread i reads A[i] and B[i] and writes C[i]](figure.svg)
+
+Each column is one thread. The eight threads read eight neighbouring floats
+from each input, so a warp's loads merge into a few wide memory transactions;
+the addition itself is almost free.
+
 ## Formulation
 
 $$

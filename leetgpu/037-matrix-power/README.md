@@ -21,6 +21,13 @@ $1 \le P \le 20$, $\lvert A_{ij}\rvert \le 10$; benchmark $N = 512$; tolerance
 products also affects float32 rounding, and it is chosen to match
 `torch.linalg.matrix_power`.
 
+## Visual Overview
+
+![Matrix power by repeated squaring: A²⁰ with 5 GEMMs instead of 19](figure.svg)
+
+Squaring produces A, A², A⁴, A⁸ and A¹⁶. The binary digits of 20 = 10100₂
+select A⁴ and A¹⁶ (green), whose product is A²⁰.
+
 ## Formulation
 
 Write $P$ in binary, $P = \sum_{j} b_j 2^j$ with $b_j \in \{0, 1\}$. Then

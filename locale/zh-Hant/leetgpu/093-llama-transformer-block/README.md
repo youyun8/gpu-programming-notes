@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/llama-transformer-block)
 
-## 問題
+## 題意
 
 以 float32 實作一個 **LLaMA 風格的解碼器區塊**：$d = 512$，有 8 個查詢頭與 2 個寬度為 64 的 KV 頭（GQA），並使用 RoPE、因果注意力，以及隱藏寬度為 1408 的 SwiGLU MLP。所有投影都沒有偏置。輸入為 $x$（$S\times512$）、一個封裝的權重緩衝區，以及預先計算的 RoPE $\cos$/$\sin$ 表（$S \times 32$）；容許誤差 `1e-3`。相較於 [GPT-2 區塊](../074-gpt2-block/)，這裡的每個元件都是「現代」版本。
 
-## 公式
+## 圖解
+
+![LLaMA 區塊：RMSNorm、RoPE、分組查詢因果注意力與 SwiGLU MLP](figure.svg)
+
+先讀第一列再讀第二列。與 GPT-2 相比，每個元件都換成了現代版本；紅色弧線是 MLP 的殘差連接（注意力的殘差已融合進 O 投影）。
+
+## 數學表述
 
 $$
 \begin{aligned}
@@ -50,7 +56,7 @@ $$
 | $W_{\text{down}}$ | $512\times1408$ 的向下投影 |
 | $Y$ | 區塊輸出 |
 
-## 方法
+## 解題思路
 
 | # | 核心 | 輸出 | 備註 |
 |---|---|---|---|
@@ -80,7 +86,7 @@ $$
 
 當 $S = 2048$ 時：投影約需 9.8 GFLOP，注意力約需 4.3 GFLOP。GEMM 效率仍是主要影響因素。
 
-## 常見問題
+## 常見陷阱
 
 - **權重配置。** 所有投影都採用 `nn.Linear` 風格的 $(\text{out}, \text{in})$，亦即 $XW^{\mathsf T}$，因此使用 NT GEMM（與 GPT-2 問題相反）。
 - **RoPE 表**有 32 欄，由每個寬度為 64 的頭之前後兩半共用。
@@ -91,6 +97,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-3` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [GPT-2 區塊](../074-gpt2-block/)、[GQA](../080-grouped-query-attention/)、[RoPE](../061-rope-embedding/)、[SwiGLU MLP](../084-swiglu-mlp-block/)、[融合殘差 + RMSNorm](../083-fused-residual-add-rms-norm/)。

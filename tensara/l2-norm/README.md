@@ -18,6 +18,13 @@ Row-wise L2 normalization of a $B\times D$ float32 matrix
 ($B = 128, 256$; $D = 4096 \dots 16384$): divide each row by its Euclidean
 norm plus $\epsilon = 10^{-10}$. The check is `rtol = 1e-4`, `atol = 1e-6`.
 
+## Visual Overview
+
+![L2 normalisation per row: divide by the Euclidean norm](figure.svg)
+
+The highlighted row is reduced to its Euclidean norm, then divided by it (plus
+ε), so every output row is a unit vector.
+
 ## Formulation
 
 $$

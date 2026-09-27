@@ -19,6 +19,13 @@ $S$, padding $P$ and **dilation** $\delta$, matching
 `F.max_pool2d(x, k, S, P, dilation=δ)`. Padded positions act as
 $-\infty$ (they never win). The input is an $H\times W$ matrix. The check is `rtol = 1e-4`, `atol = 8e-5`.
 
+## Visual Overview
+
+![2-D max pooling with dilation δ = 2: a spread-out k × k window](figure.svg)
+
+The window (red frame) spans three cells per axis but reads only the four blue
+cells; padding is treated as −∞.
+
 ## Formulation
 
 The dilated window spans $\delta(k-1) + 1$ input positions per axis, so

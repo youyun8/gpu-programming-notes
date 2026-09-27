@@ -18,6 +18,13 @@ Expand an NVFP4 matrix (packed E2M1, swizzled E4M3 block scales, global
 factor $g$) to FP32, with FlashInfer's `e2m1_and_ufp8sf_scale_to_float`
 semantics. Sizes up to $8192\times4096$; `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![NVFP4 dequantisation: â = e2m1(code) · e4m3(s) / g](figure.svg)
+
+Every block of 16 codes shares one E4M3 scale, and the whole tensor shares the
+global factor g. Here each code is multiplied by 3.25 / 2 = 1.625.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an
@@ -45,6 +52,8 @@ $$
 | out | FP32 result, $M\times K$ |
 | idx | Swizzled scale index (below) |
 
+### The E2M1 (FP4) Element Format
+
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
 
@@ -59,6 +68,8 @@ $$
 | $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
 
+### The E4M3 (FP8) Format
+
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
 
@@ -72,7 +83,9 @@ $$
 | $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
 | 448 | Largest finite value ($e = 15$, $f = 6$) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

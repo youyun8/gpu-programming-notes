@@ -21,6 +21,14 @@ building block of a rainbow-table chain, and the first **compute-bound**
 problem in the list: each 8 bytes of traffic buys up to 800 integer
 operations.
 
+## Visual Overview
+
+![Rainbow-table chain: R rounds of 32-bit FNV-1a, one thread per input word](figure.svg)
+
+The top row is one thread's chain of R hash rounds. The bottom row opens a
+single round: the four bytes of the word are consumed one by one with an XOR
+and a multiplication by the FNV prime.
+
 ## Formulation
 
 FNV-1a over the 4 little-endian bytes of a 32-bit word $x$:

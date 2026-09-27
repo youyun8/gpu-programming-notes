@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** easy · [題目說明](https://leetgpu.com/challenges/matrix-multiplication)
 
-## 問題
+## 題意
 
 將兩個以列優先儲存的 float32 矩陣相乘：$A$ 是 $M \times N$，
 $B$ 是 $N \times K$，而 $M \times K$ 的乘積寫入 `C`
@@ -24,7 +24,13 @@ $B$ 是 $N \times K$，而 $M \times K$ 的乘積寫入 `C`
 GEMM 是深度學習中最重要的核心，而本題是學習**資料重用**的經典範例：
 在相同硬體上，樸素核心比平鋪版本慢約 30 倍。
 
-## 公式
+## 圖解
+
+![分塊矩陣乘法：一個區塊負責 C 的一個分塊，並沿內部維度逐段前進](figure.svg)
+
+深綠色是某個執行緒區塊負責的輸出分塊。區塊每一步把 A 的一段（深藍）與 B 的一段（深橘）載入共享記憶體後累加；淺色帶則是它最終會走過的整列與整行。
+
+## 數學表述
 
 $$
 C_{rc} = \sum_{k=0}^{N-1} A_{rk}\, B_{kc}, \qquad 0 \le r < M,\ \ 0 \le c < K
@@ -58,7 +64,7 @@ $$
 | $r_0,\ c_0$ | 區塊分塊的左上角：$r_0 = 64\,\texttt{blockIdx.y}$，$c_0 = 64\,\texttt{blockIdx.x}$ |
 | $X[a{:}b,\ c{:}d]$ | 列為 $a \dots b-1$、欄為 $c \dots d-1$ 的子矩陣 |
 
-## 方法
+## 解題思路
 
 ### 平行分解
 
@@ -81,6 +87,7 @@ $$
    - $A$ 的切片以**轉置**方式儲存（`a_tile[k][r]`）。如此一來，
      兩個運算元在內部迴圈中都沿共享記憶體的連續列讀取。
    - 每列補齊至 64 + 4 個浮點數，避免轉置儲存時的 bank 衝突。
+
 2. `__syncthreads()`：確認切片完整。
 3. **計算。** 對 16 個 $k$ 值逐一處理：將 4 個 $A$ 值與 4 個
    $B$ 值載入暫存器，執行外積的 $4 \times 4 = 16$ 次 FMA。
@@ -119,7 +126,7 @@ $W = 2 \cdot 8192 \cdot 6144 \cdot 4096 \approx 4.1 \times 10^{11}$ FLOP。
 [教學 04](../../tutorials/04-tiled-matmul.md) 中的進一步技巧
 （向量化載入、雙緩衝、warp 平鋪）。
 
-## 常見問題
+## 常見陷阱
 
 - **維度命名。** 依照 BLAS 習慣把 $K$ 當成內部維度，會在
   $N \ne K$ 時產生錯誤結果。
@@ -137,7 +144,7 @@ $W = 2 \cdot 8192 \cdot 6144 \cdot 4096 \approx 4.1 \times 10^{11}$ FLOP。
 都在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-4` 通過。
 核心也以 `nvcc -arch=sm_80` 檢查編譯。
 
-## 相關內容
+## 延伸閱讀
 
 - [GEMM（fp16、張量核心）](../022-gemm/)、[批次矩陣乘法](../030-batched-matrix-multiplication/)、
   [INT8 矩陣乘法](../032-int8-quantized-matmul/)。

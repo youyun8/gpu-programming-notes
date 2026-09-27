@@ -18,6 +18,13 @@ RMS normalization of each row of a $B\times N$ float32 matrix (no weight),
 $\epsilon = 10^{-5}$: shapes $(1024, 1024)$ to $(512, 16384)$. The check is
 `rtol = 2e-4`, `atol = 1e-4`.
 
+## Visual Overview
+
+![RMSNorm per row: rescale by the root mean square, with no centring and no weight](figure.svg)
+
+The highlighted row is reduced to its RMS, and every element of the row is
+divided by it. Unlike LayerNorm there is no mean to subtract.
+
 ## Formulation
 
 $$

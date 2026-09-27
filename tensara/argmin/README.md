@@ -18,6 +18,13 @@ Index of the minimum along dimension `dim` of an $n$-D float32 tensor
 (first occurrence on ties), with the reduced dimension removed. It is the
 mirror image of [Argmax](../argmax/), with the same test shapes.
 
+## Visual Overview
+
+![Argmin over one dimension: the index j of the smallest value, first occurrence on ties](figure.svg)
+
+Column i = 4 holds 5, 5, 2, 6, so its output is index 2. The merge keeps the
+smaller value, or the smaller index on equal values.
+
 ## Formulation
 
 With the $(O, R, I)$ view of [Argmax](../argmax/):

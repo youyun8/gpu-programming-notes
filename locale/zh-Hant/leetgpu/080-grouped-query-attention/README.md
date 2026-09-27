@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/grouped-query-attention)
 
-## 問題
+## 題意
 
 實作 LLaMA-2/3 70B、Mistral 與 Gemma 所使用的分組查詢注意力
 （Grouped-Query Attention，GQA）。$H_q$ 個 query 頭共用 $H_{kv}$ 個
@@ -22,7 +22,13 @@ $Q$ 的形狀為 $(H_q, S, D)$，$K$ 與 $V$ 的形狀為 $(H_{kv}, S, D)$
 $H_q = 32$、$H_{kv} = 8$、$S = 1024$、$D = 128$；容許誤差 `1e-4`）。
 GQA 能以很小的品質損失，將 KV 快取縮小 $G\times$。
 
-## 公式
+## 圖解
+
+![分組查詢注意力（GQA）：G 個連續的查詢 head 共用一個 K/V head](figure.svg)
+
+藍色查詢 head 0–3 讀取 K/V head 0，橘色 head 4–7 讀取 K/V head 1。因此 KV 快取比「每個查詢 head 各有一組 K/V」小 G = 4 倍。
+
+## 數學表述
 
 $$
 O_h = \operatorname{softmax}_{\text{row}}\!\Bigl(\frac{Q_h K_{g(h)}^{\mathsf T}}{\sqrt D}\Bigr)\,V_{g(h)}, \qquad g(h) = \Bigl\lfloor \frac{h}{G} \Bigr\rfloor, \qquad G = \frac{H_q}{H_{kv}}
@@ -45,7 +51,7 @@ $$
 參考實作以 `repeat_interleave` 具體展開群組，也就是複製 $G$ 份 $K$ 與
 $V$。核心只在計算指標時進行 $h \mapsto g(h)$ 對應。
 
-## 方法
+## 解題思路
 
 使用 FlashAttention 風格的單階段核心，不建立 $S\times S$ 矩陣：
 
@@ -96,7 +102,7 @@ $H_{kv} = H_q$，則為 67 MB。此核心受計算限制，因此 GQA 的好處�
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-4`
 通過，包括 $G = 1$（MHA）、$H_{kv} = 1$（MQA）及 $D = 256$。
 
-## 相關內容
+## 延伸閱讀
 
 - [多頭注意力](../012-multi-head-attention/)、[多頭潛在注意力](../114-multi-head-latent-attention/)、
   [LLaMA 區塊](../093-llama-transformer-block/)、[INT8 KV 快取注意力](../096-int8-kv-cache-attention/)。

@@ -20,6 +20,14 @@ scales per 16 elements (swizzled) and one global encode factor per operand
 ($g_A$, $g_B$). The reference is `torch._scaled_mm`. The check is
 `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![NVFP4 GEMM: E2M1 blocks of 16 with E4M3 scales and one global factor per operand](figure.svg)
+
+Blocks are only 16 elements long, so the scales follow local magnitudes
+closely. The two global factors are applied once, at the end of the
+accumulation.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an
@@ -50,6 +58,8 @@ $$
 | $c$ | Output, $M\times N$ (FP16) |
 | $g_A, g_B$ | Global encode factors (`sf_g_a`, `sf_g_b`) |
 
+### Regrouping the Sum by Blocks
+
 Because every block of 16 elements shares one scale, the sum can be
 regrouped by blocks, which is what tensor-core block-scaled MMAs do:
 
@@ -63,7 +73,9 @@ $$
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | The two block scales |
 | $x^A, x^B$ | The decoded element values (before scaling) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

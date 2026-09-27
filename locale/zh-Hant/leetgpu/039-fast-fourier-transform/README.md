@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目敘述](https://leetgpu.com/challenges/fast-fourier-transform)
 
-## 問題
+## 題意
 
 計算 $N$ 個複數 float32 樣本的離散傅立葉轉換。樣本以
 `[re0, im0, re1, im1, …]` 交錯儲存（$1 \le N \le 262\,144$；
@@ -21,7 +21,13 @@ status: solved
 **Stockham** 形式的 radix-2 FFT，以及將任意長度化為 2 的冪次 FFT 的
 **Bluestein 演算法**。
 
-## 公式
+## 圖解
+
+![基數 2 的 FFT：log₂N 個蝶形運算階段（圖示 N = 8）](figure.svg)
+
+每個階段把成對的數值（灰線與橘線）以旋轉因子組合。三個階段即可把 8 個輸入 x0 … x7 轉換成 8 個輸出 X0 … X7。
+
+## 數學表述
 
 $$
 X_k = \sum_{n=0}^{N-1} x_n\, \omega_N^{kn}, \qquad \omega_N = e^{-2\pi i/N}, \qquad 0 \le k < N
@@ -102,7 +108,7 @@ $$
 | $L$ | 填補後的 2 的冪次長度，$L \ge 2N-1$ |
 | $\odot$ | 逐元素（逐點）乘積 |
 
-## 方法
+## 解題思路
 
 - **$N$ 為 2 的冪次**：將輸入複製到 `spectrum`，接著執行
   $\log_2 N$ 個 `stockhamPass` 核心函式，並與暫存緩衝區交替使用。
@@ -156,7 +162,7 @@ $$
 $N = 2^{18} - 1$ 與 $2^{18}$。所有 LeetGPU 測試案例均以 `1e-3`
 的容許誤差在 [cuemu](../../tools/cuemu/README.md) 通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [2D FFT](../078-2d-fft/)、Tensara [多項式乘法（有限體）](../../tensara/poly-multiply-ff/)
   （FFT 摺積在數論中的近親）。

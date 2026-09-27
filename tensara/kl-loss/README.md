@@ -20,6 +20,13 @@ length $N$. The reference clamps both inputs at $\epsilon = 10^{-10}$ before
 taking logs and zeroes the entries where the target is not positive. The
 check is tight: `rtol = atol = 1e-5`.
 
+## Visual Overview
+
+![One KL term p·(log p − log q) for p = 0.3, as the prediction q varies](figure.svg)
+
+A single term is 0 when q = p (red dot), positive for q < p and negative for q
+> p; only the sum over all terms is guaranteed to be non-negative.
+
 ## Formulation
 
 $$

@@ -18,6 +18,14 @@ status: solved
 the reduced dimension (`keepdim=True`). The tests reduce shapes from $(16, 128, 256)$ to $(64, 128, 128, 128)$
 along different axes (0, 1, 2 or 3). The check is `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![Max over one dimension (keepdim): the largest value down each column](figure.svg)
+
+One outer slice x[o, :, :] is shown: j runs down the reduced axis and i along
+the contiguous inner axis. Every column (fixed o and i) is reduced to one
+output value.
+
 ## Formulation
 
 View the tensor as three axes (everything before `dim`, the reduced axis,

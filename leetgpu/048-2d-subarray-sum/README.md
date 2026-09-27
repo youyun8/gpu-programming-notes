@@ -18,6 +18,14 @@ Sum the rectangle `input[S_ROW..E_ROW][S_COL..E_COL]` (inclusive) of an
 $N \times M$ int32 matrix ($N, M \le 10^4$, values in $[1, 10]$; benchmark
 $N = M = 10^4$). The result is an exact int32.
 
+## Visual Overview
+
+![2-D subarray sum: add every value inside the rectangle](figure.svg)
+
+The red box is the requested rectangle. A flat index over the box maps back to
+(row, column), so consecutive threads read consecutive columns and the
+reduction stays coalesced.
+
 ## Formulation
 
 $$

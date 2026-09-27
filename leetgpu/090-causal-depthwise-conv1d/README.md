@@ -21,6 +21,13 @@ $K$-tap filter, and output position $l$ only sees inputs $l-K+1 \dots l$
 short convolution that Mamba applies before its selective scan to mix local
 context within each channel.
 
+## Visual Overview
+
+![Causal depthwise conv1d: position l of channel d only sees positions l−K+1 … l](figure.svg)
+
+Two zeros are padded on the left only. Output 4 combines inputs 2, 3 and 4
+with the channel's own weights, so no output ever looks into the future.
+
 ## Formulation
 
 $$

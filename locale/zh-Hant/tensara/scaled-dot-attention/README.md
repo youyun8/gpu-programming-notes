@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** 困難 · [題目敘述](https://tensara.org/problems/scaled-dot-attention)
 
-## 問題
+## 題意
 
 對張量 $Q, K, V$ 計算非因果縮放點積注意力，其形狀為 $(B, H, S, E)$，
 結果須符合不使用遮罩或 dropout 的 `F.scaled_dot_product_attention`。
 測試形狀從 $(16, 32, 256, 64)$ 到 $(8, 16, 2048, 64)$ 與
 $(8, 16, 512, 256)$。檢查條件為 `rtol = 2e-2`、`atol = 5e-3`。
 
-## 公式
+## 圖解
+
+![對每個（批次, head）計算縮放點積注意力：完整 softmax，不使用遮罩](figure.svg)
+
+每個 (b, h) 都是獨立的注意力問題。一組查詢（綠色）以線上 softmax 依序掃過各鍵分塊（深淺藍色）。
+
+## 數學表述
 
 每個批次 $b$ 與注意力頭 $h$ 都各自獨立計算：
 
@@ -56,7 +62,7 @@ $$
 | $m', \ell', \mathbf{u}'$ | 處理區塊 $t$ 後的對應值 |
 | $e^{m - m'}$ | 最大值增加時套用的重新縮放係數 |
 
-## 方法
+## 解題思路
 
 使用 FlashAttention 風格的融合核心（`flashForward`），並把
 $B\cdot H$ 組配對合併至網格中（注意力頭步幅為 $S\cdot E$）：
@@ -92,7 +98,7 @@ $$
 （每區塊 64–128 列，如 FlashAttention-2）與張量核心 MMA，可同時降低
 L2 流量與指令數。
 
-## 注意事項
+## 常見陷阱
 
 - **縮放係數** $1/\sqrt{E}$ 要套用至分數，而非 $V$ 或輸出。
 - **穩定性**：減去目前最大值；將 $m$ 初始化為很大的有限負值，以免出現
@@ -104,7 +110,7 @@ L2 流量與指令數。
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考結果比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax](../softmax/)、LeetGPU [Softmax 注意力](../../leetgpu/006-softmax-attention/)、
   LeetGPU [多頭注意力](../../leetgpu/012-multi-head-attention/)、

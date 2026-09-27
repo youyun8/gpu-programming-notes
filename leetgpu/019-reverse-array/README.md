@@ -18,6 +18,14 @@ Reverse a float32 array of length $N$ **in place** ($1 \le N \le 10^8$;
 benchmark $N = 2.5\times10^7$). The interesting part is doing it without a
 second buffer and without a data race.
 
+## Visual Overview
+
+![In-place reversal: thread i swaps x[i] with its mirror x[N−1−i]](figure.svg)
+
+Each arc is one thread swapping a pair. The pairs never overlap, so no
+synchronisation is needed; for odd N the middle element (red) stays where it
+is.
+
 ## Formulation
 
 $$

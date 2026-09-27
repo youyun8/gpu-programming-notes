@@ -22,6 +22,14 @@ $d = 4096$, $d_f = 14\,336$, which is LLaMA-3 8B's MLP; tolerance `1e-4`).
 Three GEMMs account for about two-thirds of an LLM's FLOPs. The fusion
 opportunity is the elementwise gate between them.
 
+## Visual Overview
+
+![SwiGLU MLP: two input projections, a fused gate, one output projection](figure.svg)
+
+The gate and up projections read the same X; the SiLU gate is applied in the
+epilogue of that GEMM, so G and U never reach memory before the down
+projection.
+
 ## Formulation
 
 $$

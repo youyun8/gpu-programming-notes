@@ -19,6 +19,13 @@ Sum the int32 values `input[S..E]` (inclusive) of an array of length $N$
 exact int32. Integer addition is exact and associative, which allows a
 simpler reduction design than for floats.
 
+## Visual Overview
+
+![Subarray sum: add the values x[S] … x[E] with an exact integer reduction](figure.svg)
+
+Only the highlighted range is read. Integer addition is exact, so the threads
+may combine their partial sums in any order, including with atomics.
+
 ## Formulation
 
 $$

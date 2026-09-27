@@ -33,35 +33,39 @@ mkdocs.yml (theme, etc.)   ──►   build/mkdocs.yml (INHERIT + generated nav
 
 ![儲存庫如何變成靜態網站](figures/ch08-pipeline.svg)
 
+### 1.1 `build_site.py` 做了什麼
+
 `scripts/build_site.py` 會做七件事：
 
-1. **教學頁面。** `tutorials/` 下每個 Markdown 檔都會變成頁面。當中的每個程式碼檔（`.hip`、`.h` 等）也會有可渲染的頁面與下載連結。
-2. **問題頁面。** 每個問題資料夾會成為一個頁面：
-   - 移除 README 的 front matter；
-   - 接著放解說；
-   - 然後是 `## Solution: solution.cu` 與完整原始碼（含行號與複製按鈕）、下載連結，以及「在 GitHub 檢視」連結。
-3. **索引頁面。** 建立 `leetgpu/index.md` 與 `tensara/index.md`，並依難度分組問題表格。
-4. **連結。** 改寫相對連結，讓它們能在網站運作：
-   - 指向問題資料夾的連結改到該問題頁；
-   - 指向 `README.md` 的連結改到它轉成的 `index.md`；
-   - 指向原始碼檔的連結會原樣發布該檔案。
+1. **教學頁面。** `tutorials/` 下的每個 Markdown 檔都會成為一個頁面；其中的程式碼檔（`.hip`、`.h` 等）也會各自產生一個附下載連結的頁面。
+2. **題目頁面。** 每個題目資料夾會成為一個頁面：
+   - 移除 README 開頭的 front matter；
+   - 接著放入題解；
+   - 最後是 `## Solution: solution.cu` 與完整原始碼（含行號與複製按鈕）、下載連結，以及「在 GitHub 檢視」連結。
+3. **索引頁面。** 產生 `leetgpu/index.md` 與 `tensara/index.md`，並依難度分組列出題目。
+4. **連結。** 改寫相對連結，讓它們在網站上也能使用：
+   - 指向題目資料夾的連結，會改為指向該題的頁面；
+   - 指向 `README.md` 的連結，會改為指向它所產生的 `index.md`；
+   - 指向原始碼檔的連結，會把該檔案原樣發布。
 
-   使用 `--strict` 時，任何失效連結都會讓建置失敗。
-5. **導覽。** 產生 `build/mkdocs.yml`。該檔會繼承根目錄 `mkdocs.yml` 的 theme 與 Markdown extension，再加入完整 navigation tree。
-6. **靜態 asset。** 將 `site_assets/` 複製到網站中的 `assets/`：stylesheet、favicon、KaTeX loader，以及 vendored KaTeX 與字型檔（第 9 節）。
-7. **圖片。** 只有一張 Markdown 圖片的教學行會轉成 `<figure>`。圖說依 IEEE 風格編為 `Fig. 1.`、`Fig. 2.`。SVG 會 inline，顏色取自 `--fig-*` CSS property，因此會跟隨明暗主題；點陣圖片則保留一般 image element。在 GitHub 上，同一行仍顯示為一般圖片。
+   加上 `--strict` 時，任何失效的連結都會讓建置失敗。
+5. **導覽。** 產生 `build/mkdocs.yml`。這個檔案繼承根目錄 `mkdocs.yml` 的主題與 Markdown 擴充套件，再加上完整的導覽樹。
+6. **靜態資源。** 把 `site_assets/` 複製到網站的 `assets/`：樣式表、網站圖示、KaTeX 載入程式，以及內附的 KaTeX 與字型檔（第 9 節）。
+7. **圖表。** 教學或題解中「只有一張 Markdown 圖片」的一行，會轉成 `<figure>`。圖說依 IEEE 風格編號：英文頁為 `Fig. 1.`、`Fig. 2.`，中文頁為 `圖 1`、`圖 2`。SVG 會直接內嵌，顏色取自 `--fig-*` CSS 變數，因此會跟著明暗主題切換；點陣圖則維持一般的圖片元素。在 GitHub 上，同一行仍顯示為一般圖片。
 
-Theme 使用 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)。它在 `requirements-docs.txt` 中固定低於 MkDocs 2.0，因為 MkDocs 2.0 移除了 Material 所依賴的 plugin system。
+### 1.2 主題與語言
 
-`mkdocs-static-i18n` 會將英文版建在網站根目錄，繁體中文版則建在 `/zh-Hant/`。右下角的 `Aa` 控制項會將主題、字體大小、內容寬度與行距儲存在 `localStorage`，也能切換到另一語言的相同頁面。
+主題使用 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)。`requirements-docs.txt` 將 MkDocs 固定在 2.0 以前的版本，因為 MkDocs 2.0 移除了 Material 所依賴的外掛系統。
 
-### 1.1 不會發布的內容
+`mkdocs-static-i18n` 把英文版建在網站根目錄，繁體中文版建在 `/zh-Hant/`。右下角的 `Aa` 控制項會把主題、字級、內容寬度與行距存在 `localStorage`，也能切換到另一種語言的同一頁。
 
-- **問題敘述。** LeetGPU 挑戰文字採 CC BY-NC-ND，Tensara 問題儲存庫則沒有授權，所以此儲存庫不會複製它們。
-  - 每個頁面都連到官方敘述。
-  - 頁面只包含我自己的摘要與程式碼。
-  - 部署時也請維持如此：`scripts/fetch_upstream.sh` 會將上游定義 clone 到 git-ignored 的 `.upstream/`，網站 builder 絕不讀取它。
-- **AITER / hipBLASLt 原始碼。** 它們採 MIT 授權，但第 06–07 章只引用短摘錄，並連到上游儲存庫。
+### 1.3 不會發布的內容
+
+- **題目敘述。** LeetGPU 的題目文字採用 CC BY-NC-ND 授權，Tensara 的題目儲存庫則沒有授權，因此本儲存庫從不複製它們。
+  - 每個頁面都連到官方題目。
+  - 頁面只包含我自己撰寫的摘要與程式碼。
+  - 部署時也請維持這個原則：`scripts/fetch_upstream.sh` 會把上游定義 clone 到被 git 忽略的 `.upstream/`，網站建置程式從不讀取它。
+- **AITER / hipBLASLt 原始碼。** 它們採用 MIT 授權，但第 06–07 章只引用簡短片段，並連結到上游儲存庫。
 
 ## 2. 在本機建置與預覽
 
@@ -167,15 +171,30 @@ python3 scripts/build_index.py                                  # refresh README
 git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pages redeploys
 ```
 
-新的教學章節需要 `tutorials/` 中的 Markdown 檔、`tutorials/README.md` 中的一列，以及 `scripts/build_site.py` 的 `TUTORIAL_PARTS` 內的編號 prefix；後者會將章節分部並排序。導覽會據此產生。
+### 8.1 新增題目與章節
 
-圖片不是手繪：每張圖都是 `scripts/figures/<chapter>.py` 中的一個 Python function，使用 `scripts/figures/svg.py` 的小型 SVG helper。編輯後執行 `python3 scripts/build_figures.py`（或 `make figures`），並 commit 重新產生的 SVG；若圖片過期，CI 會失敗。`scripts/check_figures.py` 會在 headless Chromium 中渲染每張圖，若 label 互相重疊、超出圖片、被線或 box border 穿過，或小於 11 px，就會失敗。Label 未對齊也會失敗：文字沒有在容器 box 或所標示 box 的下方置中，以及同一 box 內（或都在 box 外）的 label 幾乎、卻非完全位於同一欄或 baseline。`make figures` 也會執行此檢查。必須放在線或 grid 上的 label 可用 `plate=True` 加上不透明背景。`tutorials/` 子目錄中的頁面（如 `gemm/`）會在導覽中排在 `scripts/build_site.py` 的 `TUTORIAL_SECTIONS` 所指定章節後。
+新增一個教學章節，需要在 `tutorials/` 放入 Markdown 檔、在 `tutorials/README.md` 加上一列，並把章節編號前綴加進 `scripts/build_site.py` 的 `TUTORIAL_PARTS`；後者決定章節屬於哪一部分以及排列順序，導覽會據此自動產生。`tutorials/` 子目錄中的頁面（例如 `gemm/`）會排在 `scripts/build_site.py` 的 `TUTORIAL_SECTIONS` 所指定的章節之後。
 
-每篇英文文章都在 `locale/zh-Hant/` 下有相同路徑的繁體中文來源。檔名、相對連結、圖片路徑、程式碼與公式應保持不變，只翻譯文章與可見標籤。Strict build 會回報缺少的翻譯。
+### 8.2 圖表
+
+所有圖表都不是手繪的：每張圖都是一個 Python 函式，使用 `scripts/figures/svg.py` 中的小型 SVG 輔助程式。
+
+- **教學圖表**放在 `scripts/figures/<chapter>.py`，輸出到 `tutorials/figures/<chapter>-<name>.svg`。
+- **題目圖解**放在 `scripts/figures/leetgpu.py` 與 `scripts/figures/tensara.py`，每個題目資料夾對應一個函式（`fig_001_vector_add` → `leetgpu/001-vector-add/figure.svg`）。它們以 `scripts/figures/kit.py` 中的共用範本（逐元素映射、函數圖、歸約樹、掃描、分塊 GEMM、滑動視窗、注意力遮罩、圖論）組成，範例數值也在 Python 中實際算出，因此圖中的數字永遠與公式一致。每份 README 在題目說明之後的「圖解」一節（英文為 *Visual Overview*）顯示這張圖。
+
+修改圖表後執行 `python3 scripts/build_figures.py`（或 `make figures`），並提交重新產生的 SVG；若 SVG 過期，CI 會失敗。
+
+`scripts/check_figures.py` 會在無頭 Chromium 中渲染每張圖。只要有文字互相重疊、超出圖框、被線條或方框邊線穿過，或字級小於 11 px，檢查就會失敗。文字未對齊也會失敗：例如沒有在所屬方框內置中、沒有在所標示的方框下方置中，或者同一方框內（或同在方框外）的文字幾乎、卻又不完全落在同一欄或同一基線上。`make figures` 也會執行這項檢查。必須疊在網格或線條上的文字，可以用 `plate=True` 加上不透明底色。
+
+### 8.3 翻譯
+
+每篇英文文章都在 `locale/zh-Hant/` 下有路徑相同的繁體中文版本。檔名、相對連結、圖片路徑、程式碼與公式都保持不變，只翻譯正文與可見的標籤。嚴格模式的建置會回報缺少的翻譯。
 
 ## 9. 數學式與程式碼如何渲染
 
-每個問題頁面與教學都以 TeX 撰寫公式，並在每個 display formula 後用表格解釋所有符號。組件如下：
+每個題目頁面與教學都以 TeX 撰寫公式，並在每個獨立公式之後，用表格解釋所有符號。
+
+### 9.1 渲染所需的元件
 
 | 組件 | 位置 | 功能 |
 |---|---|---|
@@ -185,9 +204,11 @@ git commit -am "LeetGPU NNN: …" && git push                     # CI tests, Pa
 | Ubuntu Mono、Inter | `site_assets/vendor/fonts/`、`stylesheets/fonts.css` | 自行託管的字型；`theme.font: false` 會阻止 Material 載入 Google Fonts |
 | `stylesheets/extra.css` | Theme | 顏色、問題 header、formula block、table，以及使用 Ubuntu Mono 的 code |
 
-不會從 CDN 取得任何內容，因此網站（和壓縮 HTML）能離線及在防火牆後運作。Vendored 檔案約增加 0.8 MB。
+網站不會從 CDN 取得任何內容，因此網站（以及壓縮後的 HTML）可以離線使用，也能在防火牆後運作。內附的檔案約增加 0.8 MB。
 
-符合本站風格的頁面如下：
+### 9.2 本站的寫作格式
+
+符合本站格式的頁面寫法如下：
 
 ````markdown
 ## Formulation
@@ -215,13 +236,16 @@ $$
 | $N$ | row 長度 |
 | $\epsilon$ | 維持數值穩定性的小常數 |
 
-避免 KaTeX 與 Markdown 互相干擾的規則：
+### 9.3 避免 KaTeX 與 Markdown 互相干擾
 
-- `$$` block 前後保留空白行。
-- Display formula 內的行絕不以 `+ `、`- ` 或 `1. ` 開頭：Markdown 會將它解讀為 list item，破壞 block。請把 operator 放在上一行末尾。
-- Table cell 內的 math 絕不寫裸露的 `|`（會結束 cell）。使用 `\lvert x \rvert`、`\mid` 或 `\Vert`。
-- 不要把 display math 放入有縮排的 list item；先結束 list。
-- 用瀏覽器檢查：執行 `python3 -m http.server -d build/site`，尋找紅色 KaTeX error 文字，或以 Playwright 計算 `.katex-error` element。
+以下規則可避免 KaTeX 與 Markdown 互相干擾：
+
+- `$$` 區塊的前後都要留一個空行。
+- 獨立公式內的任何一行都不要以 `+ `、`- ` 或 `1. ` 開頭：Markdown 會把它當成清單項目而破壞公式區塊。請把運算子放在上一行的行尾。
+- 表格儲存格內的數學式不要直接寫 `|`（它會結束儲存格），改用 `\lvert x \rvert`、`\mid` 或 `\Vert`。
+- 不要把獨立公式放進有縮排的清單項目裡；先結束清單。
+- 編號清單會保留起始編號（`sane_lists` 擴充套件），因此可以用小標題把一個編號清單拆開（新小標題下的第 3–5 項仍會顯示為 3–5）。巢狀項目清單之後若緊接著編號項目，中間要空一行。
+- 用瀏覽器檢查：執行 `python3 -m http.server -d build/site`，尋找紅色的 KaTeX 錯誤文字，或用 Playwright 計算 `.katex-error` 元素的數量。
 
 ## 重點整理
 

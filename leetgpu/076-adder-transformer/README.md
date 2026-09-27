@@ -22,7 +22,17 @@ $[\text{batch}, 11, 10]$ (tolerance `1e-2`). The model is trivial. The
 lesson is how inference is organised: **KV caching** and only computing the
 last position.
 
+## Visual Overview
+
+![Autoregressive decoding with a KV cache: prefill once, then one position per step](figure.svg)
+
+The prompt (blue) is processed once and its keys and values are cached. Each
+decode step (row of boxes) only computes the newest position, attends to the
+cache, and appends its own K and V.
+
 ## Formulation
+
+### The Model
 
 Model (one layer, pre-norm, $d = 2$, vocabulary $\{0..9\}$, tied embeddings):
 
@@ -30,6 +40,8 @@ $$
 e(t) = \begin{bmatrix} w_0 - w_1 t^2 \\ -t \end{bmatrix}, \qquad
 \operatorname{UnitRMS}(\mathbf x) = \frac{\mathbf x}{\sqrt{\tfrac12(x_0^2 + x_1^2) + \varepsilon}}
 $$
+
+### Queries, Keys and Values
 
 For position $p$ with token $t_p$ and $\mathbf n_p = \operatorname{UnitRMS}(e(t_p))$:
 
@@ -40,6 +52,8 @@ v_p = v_0\, n_{p,1}, \qquad
 R_\theta = \begin{bmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{bmatrix}
 $$
 
+### Attention of the Last Position
+
 Attention of the last position $L$ over positions $0..L$ (causal), added to
 hidden dimension 1:
 
@@ -47,6 +61,8 @@ $$
 a_L = \frac{\sum_{j \le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}\, v_j}{\sum_{j\le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}}, \qquad
 \mathbf h = e(t_L) + \begin{bmatrix}0\\ a_L\end{bmatrix}
 $$
+
+### MLP, Final Norm and Logits
 
 MLP ("carry" gate), final norm and tied logits:
 

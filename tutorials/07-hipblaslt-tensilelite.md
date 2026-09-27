@@ -53,6 +53,8 @@ A TensileLite **solution** is one point in a large design space:
 
 ### 1.1 `MatrixInstruction`: The Tile Hierarchy in 9 Numbers
 
+#### Reading the Nine Numbers
+
 The comment in `ValidParameters.py` explains the 9-number format:
 
 ```
@@ -93,6 +95,8 @@ $\text{MT}_1 = 32\cdot2\cdot1\cdot2 = 128$, 256 threads.
 For the gfx942 bf16 kernels you mostly see `16x16x16` or `32x32x8` MFMAs,
 written as `[16,16,16,1, 1, …]`.
 
+#### Why a Larger WaveTile Helps
+
 Choosing a larger WaveTile is how TensileLite raises the MFMA-per-byte ratio
 that chapter 05's teaching kernel lacked. It costs accumulator registers:
 - A 128×64 wave tile in fp32 is 8192 values over 64 lanes, which is 128 AGPRs
@@ -116,6 +120,8 @@ $$
 A $4\times4$ WaveTile of 16x16 MFMAs ($T_M = T_N = 64$) needs 64
 accumulator registers per lane and reuses every operand fragment 4 times;
 $128\times64$ needs 128.
+
+#### DepthU
 
 **`DepthU`** is the K extent of one main-loop iteration: 64 in the AITER
 kernel, and typically 32–128 for 16-bit types.
@@ -187,7 +193,9 @@ hardware's `MaxVmcnt`, so it can emit the tightest safe count.
 Suppose `M·N / (MT0·MT1)` output tiles is much smaller than 304 CUs, for
 example M = 128 during decode. There are two ways to use the idle CUs.
 
-**GlobalSplitU (GSU).** Split K into GSU slices. The partial results are
+#### GlobalSplitU (GSU)
+
+Split K into GSU slices. The partial results are
 combined in one of three ways:
 
 | `GlobalSplitUAlgorithm` | How partials are combined |
@@ -198,7 +206,9 @@ combined in one of three ways:
 
 `GSU=-1` lets the runtime choose.
 
-**Stream-K** ([Osama et al., 2023](https://arxiv.org/abs/2301.03598)):
+#### Stream-K
+
+Stream-K ([Osama et al., 2023](https://arxiv.org/abs/2301.03598)) works as follows:
 - Launch about one workgroup per CU.
 - Give each workgroup an *equal share of the total MAC-loop iterations*
   across all tiles, so a workgroup may finish one tile and start the middle
@@ -230,6 +240,8 @@ $\eta_{\text{tile}}$ can be as low as $\sim 50\%$ when $T$ is slightly above
 a multiple of $G$. The price is the fix-up of tiles shared by two
 workgroups.
 
+#### Using Stream-K in hipBLASLt
+
 This removes the "last wave is 10% full" quantisation problem. Because one
 kernel covers many shapes well, it also shrinks the library. hipBLASLt
 exposes it through environment variables:
@@ -244,6 +256,8 @@ export TENSILE_STREAMK_MAX_CUS=128           # cap CUs used
 Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
 
 ### 1.6 Cache-Aware Tile Order: WGM, WGMXCC, StaggerU
+
+#### The Three Knobs
 
 - **`WorkGroupMapping` (WGM)** reorders workgroup IDs so that the tiles in
   flight at once form a box of height WGM in C. Tiles in a box share A-row
@@ -261,6 +275,8 @@ Precedence is `FIXED_GRID > DYNAMIC_GRID > MAX_CUS > GRID_MULTIPLIER`.
     wg0, wg1, wg2 or the serial ID.
 
 ![Default round-robin XCD placement vs a remapping that keeps neighbouring tiles on one XCD](figures/ch07-xcd-remap.svg)
+
+#### The Grouped Launch Order
 
 The idea behind WGM is the same as the "grouped" launch order used by
 Triton and CUTLASS. Written in that common form, the serial launch index
@@ -285,6 +301,8 @@ column over, so the workgroups in flight cover a $g$-tall box and share
 $g$ row panels of A plus a few column panels of B in L2. TensileLite's own
 formula differs in detail (and WGMXCC adds the XCD remap on top), but the
 reuse argument is the same.
+
+#### Run-Time Kernel Arguments
 
 WGM, WGMXCC, StaggerU and GSU are cheap to change at run time. They are
 packed into the kernel arguments rather than compiled in:

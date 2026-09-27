@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目敘述](https://tensara.org/problems/avg-pool-2d)
 
-## 問題
+## 題意
 
 對 $H\times W$ 的 float32 矩陣，以 $k\times k$ 視窗、步幅 $S$ 和零填補 $P$ 執行二維平均池化。參考實作為使用預設值的
 `torch.nn.functional.avg_pool2d`，也就是
 `count_include_pad=True`：填補位置視為零，並且**會計入**除數。檢查誤差為 `rtol = 2e-4`、`atol = 2e-5`。
 
-## 公式
+## 圖解
+
+![二維平均池化：以步幅 S 移動的 k × k 視窗，填補視為 0](figure.svg)
+
+紅框是標示輸出的視窗。它覆蓋到填補區（紅色格）時，這些 0 仍會計入，除數依然是 k²。
+
+## 數學表述
 
 $$
 H_{\text{out}} = \left\lfloor \frac{H + 2P - k}{S} \right\rfloor + 1, \qquad
@@ -42,7 +48,7 @@ $$
 | $m, n$ | 視窗內的偏移量 |
 | $k^2$ | 除數；即使在邊界也一律使用完整視窗大小 |
 
-## 方法
+## 解題思路
 
 1. **每個輸出使用一個執行緒**，以網格跨步迴圈處理
    $H_{\text{out}}W_{\text{out}}$ 個輸出。相鄰執行緒取得連續的
@@ -83,7 +89,7 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [一維平均池化](../avg-pool-1d/)、[三維平均池化](../avg-pool-3d/)、
   [二維最大池化](../max-pool-2d/)、[方框模糊](../box-blur/)。

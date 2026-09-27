@@ -266,7 +266,7 @@ __global__ void reduceSinglePass(const float* in, float* partials, float* out, i
 }
 ```
 
-Why it is correct:
+#### Why It Is Correct
 
 - The fence orders "write my partial" before "increment the counter", so
   the block that observes a count of $G - 1$ is guaranteed to see all $G$
@@ -405,6 +405,8 @@ $$
 | $M_{2,a}, M_{2,b}$ | Their sums of squared deviations from their own means |
 | $\delta$ | Difference of the means |
 | $\mu, M_2$ | Merged mean and sum of squared deviations; the variance is $M_2 / n$ |
+
+#### The Moments Struct in Code
 
 As code, the state is a small struct and the combine a function; the warp
 reduction shuffles each field:

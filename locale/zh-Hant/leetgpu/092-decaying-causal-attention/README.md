@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/decaying-causal-attention)
 
-## 問題
+## 題意
 
 **保留機制**（Retention，RetNet）的平行形式：不使用 softmax 的因果注意力，其權重會隨距離呈幾何衰減（$Q, K, V \in \mathbb R^{S\times d}$、$S \le 8192$、$d \le 256$、$0 < \gamma \le 1$；效能測試為 $S = 4096$、$d = 64$；容許誤差 `1e-3`）。Retention 也有等價的*遞迴*形式，每一步只需 $O(1)$ 狀態；這正是它用於推論時的主要優點。
 
-## 公式
+## 圖解
+
+![Retention：以 γ^(n−m) 縮放的因果分數，不使用 softmax](figure.svg)
+
+顏色越深權重越大：係數 γ^(n−m) 隨與查詢的距離衰減；未來的鍵（上三角）權重為 0。
+
+## 數學表述
 
 $$
 O_n = \sum_{m=0}^{n} \gamma^{\,n-m}\; \frac{Q_n\cdot K_m}{\sqrt d}\; V_m, \qquad
@@ -44,7 +50,7 @@ $$
 
 由於沒有 softmax，因此不需要計算每列最大值或正規化因子，每一項都只是單純的加權總和。
 
-## 方法
+## 解題思路
 
 採用 FlashAttention 的骨架，但不包含線上 softmax 的簿記：
 
@@ -67,7 +73,7 @@ $$
 
 效能測試：約 $2.1$ GFLOP，加上 $8.4$M 次 `powf`。較省成本的替代方式是從兩個小型查找表計算 $\gamma^{n-j} = \gamma^{n-j_0}\cdot\gamma^{-\ell}$，但在 $\gamma$ 很小且距離很長時會溢位；`powf` 較穩健。
 
-## 常見問題
+## 常見陷阱
 
 - **縮放只套用於分數。** $\gamma^{n-m}$ 會在縮放後的內積上相乘，兩者共同構成同一個權重。
 - **下溢。** 當 $\gamma < 1$ 且距離很大時，$\gamma^{n-m}$ 會下溢為 0，這是正確結果。
@@ -77,6 +83,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-3` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，包括 $\gamma = 1$（因果線性注意力）與 $d = 256$。
 
-## 相關內容
+## 延伸閱讀
 
 - [因果注意力](../053-casual-attention/)、[線性注意力](../056-linear-attention/)、[線性遞迴](../082-linear-recurrence/)（遞迴觀點）。

@@ -21,6 +21,14 @@ Reduction is the canonical "many inputs → one output" pattern. Softmax, norms,
 losses, dot products and every `*-dim` problem on this site reuse its
 building blocks.
 
+## Visual Overview
+
+![Parallel reduction: partial sums combined as a balanced tree](figure.svg)
+
+The top row holds per-thread partial sums. Each level halves the number of
+values, first inside a warp with shuffles, then across warps through shared
+memory, and finally across blocks.
+
 ## Formulation
 
 $$
@@ -32,6 +40,8 @@ $$
 | $N$ | Number of input elements |
 | $x_i$ | $i$-th input value (float32) |
 | $S$ | The sum, written to `output[0]` as float32 |
+
+### Any Tree Gives the Same Sum
 
 Addition is associative in real arithmetic, so the sum may be evaluated as any
 **tree**. A parallel reduction regroups it into a hierarchy of partial sums:
@@ -46,6 +56,8 @@ $$
 | $W$ | Warps per block ($256/32 = 8$) |
 | $\ell$ | Lane index within a warp, $0..31$ |
 | $\mathcal{I}(b,w,\ell)$ | Indices visited by that thread's grid-stride loop: $i \equiv g \pmod{P}$ with $g$ the global thread id and $P = 256B$ the total thread count |
+
+### But Not the Same Rounding
 
 In floating point, addition is **not** associative, so different trees give
 slightly different answers. The error of a sum of $N$ terms in precision $u$

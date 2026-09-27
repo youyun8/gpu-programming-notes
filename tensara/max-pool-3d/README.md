@@ -19,6 +19,13 @@ $S$, padding $P$ and **dilation** $\delta$, matching
 `F.max_pool3d(x, k, S, P, dilation=δ)`. Padded positions act as
 $-\infty$ (they never win). The input is an $H\times W\times D$ volume ($D$ contiguous). The check is `rtol = atol = 9e-5`.
 
+## Visual Overview
+
+![3-D max pooling with dilation: k³ taps spread δ apart in every direction](figure.svg)
+
+With k = 2 and δ = 2 the eight taps sit on depths 1 and 3 (depth 2 is skipped)
+and on every other row and column.
+
 ## Formulation
 
 The dilated window spans $\delta(k-1) + 1$ input positions per axis, so

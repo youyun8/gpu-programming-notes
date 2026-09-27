@@ -21,6 +21,14 @@ stored interleaved as `[re0, im0, re1, im1, …]` ($1 \le N \le 262\,144$,
 self-sorting **Stockham** form, and **Bluestein's algorithm**, which reduces
 arbitrary lengths to power-of-two FFTs.
 
+## Visual Overview
+
+![Radix-2 FFT: log₂N stages of butterflies (N = 8 shown)](figure.svg)
+
+Each stage combines pairs of values (grey and orange lines) with a twiddle
+factor. Three stages turn the eight inputs x0 … x7 into the eight outputs X0 …
+X7.
+
 ## Formulation
 
 $$

@@ -21,6 +21,14 @@ $(64, 128, 128, 128)$, reducing over different axes. The same
 "reduce along an arbitrary axis" machinery powers every `*-dim` problem on
 Tensara.
 
+## Visual Overview
+
+![Argmax over one dimension: the index j of the largest value, first occurrence on ties](figure.svg)
+
+Column i = 2 holds 4, 5, 9, 6, so its output is index 2. Merging (value,
+index) pairs with a tie-break on the smaller index returns the first
+occurrence in any reduction order.
+
 ## Formulation
 
 View the tensor as three axes: everything before `dim`, the reduced axis,

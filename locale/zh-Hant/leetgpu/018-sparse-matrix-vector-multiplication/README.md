@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目敘述](https://leetgpu.com/challenges/sparse-matrix-vector-multiplication)
 
-## 問題
+## 題意
 
 計算 $\mathbf y = A\mathbf x$，其中 $A$ 是約有 60–70% 零值的
 $M \times N$ 矩陣，但仍以列優先方式**密集儲存**
@@ -21,7 +21,13 @@ $M \times N$ 矩陣，但仍以列優先方式**密集儲存**
 這裡的重點是先找出真正限制核心函式的因素再最佳化：瓶頸是位元組數，
 不是 FLOP 數。
 
-## 公式
+## 圖解
+
+![以稠密格式儲存的稀疏矩陣乘向量：每列由一個 warp 串流讀取並以 shuffle 歸約](figure.svg)
+
+灰色的零和其他值一樣存放在記憶體裡，因此 kernel 仍必須讀取它們。warp 2（藍色列）將整列與 x 相乘得到 y₂；圖中數字是實際算出的結果。
+
+## 數學表述
 
 $$
 y_r = \sum_{c=0}^{N-1} A_{rc}\, x_c, \qquad 0 \le r < M
@@ -35,7 +41,7 @@ $$
 | $y_r$ | 長度為 $M$ 的輸出向量 |
 | nnz | $A$ 的非零元素數（核心函式未使用） |
 
-## 方法
+## 解題思路
 
 ### 為何「稀疏」在此沒有幫助
 
@@ -75,7 +81,7 @@ $T_{\min} \approx 20\ \mu s$。只有 1000 列，也就是 1000 個 warp，
 占用率不高。在大型 GPU 上，將長列分給多個 warp
 （再透過共享記憶體歸約）可能有所幫助。
 
-## 常見問題
+## 常見陷阱
 
 - **在 warp 內提早返回。** `if (row >= m) return;` 是安全的，因為整個
   warp 共用相同的 `row`，所以使用完整遮罩的 shuffle 絕不會在缺少
@@ -88,7 +94,7 @@ $T_{\min} \approx 20\ \mu s$。只有 1000 列，也就是 1000 個 warp，
 所有 LeetGPU 測試案例都已在 [cuemu](../../tools/cuemu/README.md) 通過，
 包括 $M = 1$ 與 $N < 32$、大多數 lane 閒置的情況。
 
-## 相關內容
+## 延伸閱讀
 
 - [點積](../017-dot-product/)、[稀疏 × 密集矩陣乘法](../075-sparse-matrix-dense-matrix-multiplication/)。
 - Tensara [矩陣向量乘法](../../tensara/matrix-vector/)、[NVFP4 GEMV](../../tensara/nvfp4-gemv/)。

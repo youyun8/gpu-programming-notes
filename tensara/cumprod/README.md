@@ -19,6 +19,13 @@ matching `torch.cumprod(x, dim=0)`. Products of many random numbers
 quickly underflow to 0 or overflow to $\infty$, which is why the check is
 loose (`rtol = 1e-2`, `atol = 2e-2`); the interesting part is the scan.
 
+## Visual Overview
+
+![Cumulative product: the same scan with multiplication and identity 1](figure.svg)
+
+Output 4 multiplies inputs 0 … 4. Each chunk is scanned locally and multiplied
+by the product of all earlier chunks (its carry).
+
 ## Formulation
 
 $$

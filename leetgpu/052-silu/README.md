@@ -19,6 +19,13 @@ Apply SiLU (also called *Swish-1*) elementwise to $N$ float32 values
 $[-100, 100]$; tolerance `1e-5`). SiLU is the activation in the SwiGLU MLPs
 of LLaMA and most modern LLMs.
 
+## Visual Overview
+
+![SiLU (Swish-1): x · σ(x), smooth and slightly negative below 0](figure.svg)
+
+Compared with ReLU (dashed), SiLU is smooth and dips slightly below zero; the
+red dot marks its minimum of about −0.278 at x ≈ −1.278.
+
 ## Formulation
 
 $$

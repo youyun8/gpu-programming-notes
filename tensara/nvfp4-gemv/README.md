@@ -20,6 +20,14 @@ NVFP4 (packed E2M1, swizzled E4M3 block scales per 16 elements, global
 factors $g_A$, $g_x$). The reference dequantizes with FlashInfer and runs an
 FP32 matmul. The check is `rtol = 2e-2`, `atol = 5e-2`.
 
+## Visual Overview
+
+![NVFP4 GEMV: a warp streams one quantised row and the quantised vector, block by block](figure.svg)
+
+Both the row of A and the vector x are NVFP4. Matching blocks (dark) are
+decoded and multiplied, scaled by their two block scales, and the partial sums
+are combined across the warp.
+
 ## Formulation
 
 **NVFP4** uses 16-element blocks along $K$ with a two-level scale: an
@@ -50,6 +58,8 @@ $$
 | $c^A, c^x$ | Element codes |
 | $g_A, g_x$ | Global encode factors |
 
+### Bytes per Weight
+
 A matrix row costs $K/2$ bytes of codes plus $K/16$ scale bytes:
 
 $$
@@ -60,7 +70,9 @@ $$
 |---|---|
 | 0.5625 | NVFP4 storage per element, versus 4 for FP32 (7.1× less) |
 
-**Swizzled scale layout.** Block-scaled tensor-core MMAs (cuBLAS /
+### The Swizzled Scale Layout
+
+Block-scaled tensor-core MMAs (cuBLAS /
 CUTLASS, TorchAO `is_swizzled_scales=True`, FlashInfer) store the scale
 matrix of $R$ rows and $C$ scale columns in $128\times4$ atoms of 512 bytes:
 

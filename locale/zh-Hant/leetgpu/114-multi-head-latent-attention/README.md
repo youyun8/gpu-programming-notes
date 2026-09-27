@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/multi-head-latent-attention-decode)
 
-## 問題
+## 題意
 
 DeepSeek-V2/V3 **多頭潛在注意力**的一個**解碼步驟**。KV 快取不儲存每個頭各自的鍵與值，而是為每個位置儲存一個低秩潛在向量 $\mathbf c_t$（寬度 $R$，`kv_lora_rank`），以及一個較小、共用的旋轉鍵 $\mathbf k^{\text{pe}}_t$（寬度 $r$）。每個頭的向上投影 $W_{UK}$ 與 $W_{UV}$ 會隱式重建鍵和值。利用權重吸收後，注意力可完全在潛在空間中運算（容許誤差 `1e-3`）。與 MHA 相比，MLA 可將 KV 快取記憶體減少超過一個數量級。
 
-## 公式
+## 圖解
+
+![MLA 解碼：注意力直接在 KV 快取的壓縮潛在空間中計算](figure.svg)
+
+每個快取列存放一個潛在向量 cₜ 與一個小的旋轉位置鍵。查詢被轉換到潛在空間（權重吸收），因此每個 head 的 key 與 value 都不必實際生成。
+
+## 數學表述
 
 對頭 $h$，其查詢為 $\mathbf q_h = [\mathbf q^{\text{nope}}_h\,|\,\mathbf q^{\text{pe}}_h]$，而快取資料列 $t$ = $[\mathbf c_t\,|\,\mathbf k^{\text{pe}}_t]$：
 
@@ -46,7 +52,7 @@ $$
 
 頭 $h$ 重建後的鍵原本是 $\mathbf k_{h,t} = \mathbf c_tW_{UK,h}^{\mathsf T}$，因此 $\mathbf q^{\text{nope}}_h\cdot\mathbf k_{h,t} = (\mathbf q^{\text{nope}}_hW_{UK,h})\cdot\mathbf c_t$。將 $W_{UK}$ 移到（唯一的）查詢上，只需一次小型 GEMV，無須重建 $T$ 個鍵。同理，$\sum_t a_t(\mathbf c_tW_{UV,h}) = (\sum_t a_t\mathbf c_t)W_{UV,h}$ 可在加權總和後只套用 $W_{UV}$ **一次**。
 
-## 方法
+## 解題思路
 
 吸收後，問題就是使用一個共用 KV 頭的**一般注意力（MQA）**：鍵向量為 $[\mathbf c_t\,|\,\mathbf k^{\text{pe}}_t]$（寬度 $R + r \le 576$），值向量為 $\mathbf c_t$（寬度 $R \le 512$）。
 
@@ -68,7 +74,7 @@ $$
 
 使用 DeepSeek-V3 的數值（$H = 128$、$d_h = 128$、$R = 512$、$r = 64$）時，每個權杖只需 576 個值，而非 32 768 個，亦即縮小 57 倍。解碼只需為所有頭讀取一次快取，因此核心受 $4T(R + r)$ 位元組的記憶體頻寬限制。
 
-## 常見問題
+## 常見陷阱
 
 - **縮放。** 使用 $1/\sqrt{d_h + r}$，也就是*重建後*的頭寬度加上 rope 寬度，而非 $R$。
 - **共用旋轉鍵。** 所有頭使用相同的 $\mathbf k^{\text{pe}}$，只有查詢的 rope 部分是每個頭獨有。
@@ -78,6 +84,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-3` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，並以類似 DeepSeek 的大小（$R = 512$、$r = 64$）進行壓力測試。
 
-## 相關內容
+## 延伸閱讀
 
 - [GQA](../080-grouped-query-attention/)、[INT8 KV 快取注意力](../096-int8-kv-cache-attention/)、[RoPE](../061-rope-embedding/)。

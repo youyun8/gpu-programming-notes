@@ -167,6 +167,8 @@ K3 serving often starts from converted low-precision weights. Quark is useful
 context because it defines the checkpoint representation; it is not the
 SGLang scheduler or the KDA implementation.
 
+### 4.1 MXFP4 quantization steps
+
 Quark's public Triton code covers OCP microscaling and FP8 conversion. Its
 [MX implementation](https://github.com/amd/Quark/blob/f7d8cefc7a6c973ff90cb87a6b154cbe3cc9aef2/quark/torch/kernel/mx/triton.py)
 uses 32-value blocks for formats such as MXFP4:
@@ -182,6 +184,8 @@ uses 32-value blocks for formats such as MXFP4:
 returns dequantized values. It uses the finite E2M1 magnitudes
 \(\{0, 0.5, 1, 1.5, 2, 3, 4, 6\}\).
 
+### 4.2 Teaching example versus the real format
+
 !!! warning "Teaching QDQ is not a checkpoint converter"
 
     A compatible checkpoint must match Quark's exact scale rounding, NaN and
@@ -195,6 +199,8 @@ fake-quantization. Quark does not own KDA, MoE routing, or the production
 expert GEMMs.
 
 ## 5. Stage 2: Move Cache and Recurrent State
+
+### 5.1 Index the cache by slot
 
 Offline examples keep state in batch order. A serving runtime cannot. Requests
 arrive and finish at different times, so a scheduler maps each active request
@@ -217,6 +223,8 @@ head strides, quantized storage, and bounds from request metadata.
 Two writes to the same slot race. The wrapper therefore rejects duplicate
 slots. A production scheduler either guarantees uniqueness or defines an
 atomic/ordered update.
+
+### 5.2 KV cache differs from recurrent state
 
 KV cache and recurrent state are not interchangeable. MLA stores token-indexed
 keys and values, usually in pages. KDA carries a fixed-shape matrix state from
@@ -368,11 +376,15 @@ consumer decides the required physical layout.
 
 ## 11. Stage 6: Sampling and Communication
 
+### 11.1 Sampling
+
 After the final model layer, SGLang still has GPU work. Sampling can apply
 temperature and penalties, renormalize top-p or min-p distributions, draw or
 reject candidates, and reconstruct a speculative tree. These operations use
 short reductions, masks, scans, and gathers, so Triton can replace a chain of
 small framework launches.
+
+### 11.2 Communication
 
 Tensor, data, expert, and sequence parallelism add communication. Triton can
 prepare symmetric-memory buffers, fuse residual or scaling work with local
@@ -387,6 +399,9 @@ and fusion.
 ## 12. Backend Dispatch: Why a Path May Not Be Triton
 
 SGLang selects an operator implementation at runtime or during model setup.
+
+### 12.1 What drives the choice
+
 The decision can depend on:
 
 - CUDA or ROCm, GPU architecture, and installed extensions;
@@ -395,6 +410,8 @@ The decision can depend on:
 - graph-capture and distributed-execution requirements;
 - whether a tuned backend supports the exact model feature.
 
+### 12.2 What each backend is good at
+
 CUDA/CUTLASS is often chosen for NVIDIA-specific tensor-core layouts and
 hand-tuned pipelines. CuTe DSL exposes explicit layout and MMA control for
 similar specialization. AITER packages AMD-tuned CK, HIP, assembly, Triton,
@@ -402,6 +419,8 @@ and other implementations. FlashInfer and vendor libraries provide maintained
 specialized operators. Triton is strongest when portability, fast iteration,
 fusion, and custom data movement matter more than the last device-specific
 optimization.
+
+### 12.3 Common misreadings
 
 Therefore:
 

@@ -20,6 +20,14 @@ added to the scores: $Q \in \mathbb R^{M \times d}$,
 $K, V \in \mathbb R^{N\times d}$, slope $\alpha \in [-1, 1]$
 ($M, N \le 2048$, $d \le 1024$; benchmark $M = N = 2048$; tolerance `1e-4`).
 
+## Visual Overview
+
+![ALiBi: add α · (i − j) to every score before the softmax (α = −0.5 shown)](figure.svg)
+
+Each cell shows the bias added to score (i, j). It is 0 on the diagonal and
+grows linearly with the distance between query and key, which replaces
+position embeddings.
+
 ## Formulation
 
 $$

@@ -20,6 +20,13 @@ contiguous reductions ($(4, 256, 256, 256)$ along dim 3) with strided ones
 ($(8, 1024, 1024)$ along dim 1, $(256, 50, 50)$ along dim 0). The check
 is `rtol = 2e-3`, `atol = 1e-4`.
 
+## Visual Overview
+
+![Softmax along any dimension: max and sum down j, then normalise every element](figure.svg)
+
+Column i = 1 is reduced to its maximum and its sum of exponentials; the output
+keeps the full shape, with each column divided by its own sum.
+
 ## Formulation
 
 View the tensor as three axes, as in [Argmax](../argmax/):

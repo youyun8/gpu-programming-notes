@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/batch-normalization)
 
-## 問題
+## 題意
 
 對 $N \times C$ 輸入執行 BatchNorm 正向傳播（訓練模式）：以批次平均值
 與有偏變異數正規化每一**欄**（通道），再以可學習的 $\gamma, \beta$
@@ -20,7 +20,13 @@ status: solved
 效能評測使用 $N = 5000$；容許誤差為 `1e-5`）。統計值是對列優先矩陣
 執行*欄*歸約，因此會決定執行緒配置。
 
-## 公式
+## 圖解
+
+![BatchNorm：沿批次方向，為每一欄（通道）計算統計量](figure.svg)
+
+標示的欄位代表一個通道。先對所有 N 列計算它的平均與變異數，再用來正規化這一欄；各通道彼此獨立。
+
+## 數學表述
 
 $$
 \mu_j = \frac1N\sum_{i=0}^{N-1} x_{ij}, \qquad
@@ -63,7 +69,7 @@ $$
 | $M_2$ | 相對平均值的離均差平方和；$\sigma^2 = M_2 / n$ |
 | $\delta$ | 新樣本（或部分平均值）與目前平均值之差 |
 
-## 方法
+## 解題思路
 
 1. **`channelStats`**：使用 $32 \times 8$ 個執行緒的區塊，每個區塊
    負責連續 32 個通道。
@@ -106,7 +112,7 @@ $$
 [cuemu](../../tools/cuemu/README.md) 通過，包括 $N = 1$（變異數為 0）
 與 $C$ 不是 32 倍數的情況。
 
-## 相關內容
+## 延伸閱讀
 
 - [RMS 正規化](../050-rms-normalization/)、[層正規化](../113-layer-normalization/)、
   [群組正規化](../105-group-normalization/)。Tensara [批次正規化](../../tensara/batch-norm/)。

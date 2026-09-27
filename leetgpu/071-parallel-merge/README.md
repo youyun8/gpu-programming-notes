@@ -20,6 +20,15 @@ $M = N = 2.5\times10^7$). The result must be exact. Sequential merge is
 inherently serial. The **merge path** technique splits it into fully
 independent pieces with a binary search.
 
+## Visual Overview
+
+![Merge path: each thread finds where its output range starts with a binary search](figure.svg)
+
+The red staircase is the merge path through the grid of A (rows) against B
+(columns). A dashed diagonal is an output position k; where it crosses the
+path tells how many elements come from A, found by a binary search along that
+diagonal.
+
 ## Formulation
 
 The first $k$ outputs of a stable merge consist of the first $i$ elements of

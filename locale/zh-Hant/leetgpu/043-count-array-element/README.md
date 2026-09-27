@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目敘述](https://leetgpu.com/challenges/count-array-element)
 
-## 問題
+## 題意
 
 計算 $N$ 個 int32 值中有多少個等於 $K$
 （$1 \le N \le 10^8$；效能評測使用 $N = 10^8$）。結果是精確的 int32。
 這是一項映射步驟為比較的歸約，也展示了**單指令 warp 歸約**
 `__reduce_add_sync`（sm_80+）。
 
-## 公式
+## 圖解
+
+![計算相等元素的個數：先比較，再做精確的整數歸約](figure.svg)
+
+第一排是輸入（K = 4），第二排把每個元素轉成 1 或 0。以歸約樹把旗標加總即得精確的個數，與相加順序無關。
+
+## 數學表述
 
 $$
 \text{count} = \sum_{i=0}^{N-1} \bigl[\,x_i = K\,\bigr]
@@ -36,7 +42,7 @@ $$
 整數加法具有結合律，而且**完全精確**，因此任何歸約順序都會得到相同答案。
 所以此處可以安全使用原子操作，不像浮點總和。
 
-## 方法
+## 解題思路
 
 1. 執行 `cudaMemset(output, 0)`。
 2. 執行 `countEqual`（最多 2048 個區塊 × 256 個執行緒）：
@@ -75,7 +81,7 @@ $$
 
 所有 LeetGPU 測試案例均在 [cuemu](../../tools/cuemu/README.md) 中完全相等。
 
-## 相關內容
+## 延伸閱讀
 
 - [計算 2D 陣列元素數量](../044-count-2d-array-element/)、
   [計算 3D 陣列元素數量](../045-count-3d-array-element/)、

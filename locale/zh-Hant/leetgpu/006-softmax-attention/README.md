@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** medium · [題目說明](https://leetgpu.com/challenges/softmax-attention)
 
-## 問題
+## 題意
 
 以 float32 計算單頭縮放點積注意力：
 $Q \in \mathbb{R}^{M\times d}$，$K, V \in \mathbb{R}^{N \times d}$，
@@ -21,7 +21,13 @@ $1 \le d \le 128$；基準 $M = 512$、$N = 256$）。容許誤差為 `1e-4`。
 當 $M = N = 10^5$ 時，僅分數矩陣就占 40 GB，因此**絕不能將它具體化**。
 這正是 FlashAttention 的核心概念。
 
-## 公式
+## 圖解
+
+![FlashAttention：一組查詢依序掃過各個鍵分塊，從不儲存分數矩陣](figure.svg)
+
+綠色的列是同一區塊處理的查詢；深淺不同的藍色代表不同的鍵分塊。每處理一個分塊，就算出 S 的一小塊、更新 (m, ℓ, a)，然後丟棄這一小塊。
+
+## 數學表述
 
 $$
 \text{Attention}(Q, K, V) = \operatorname{softmax}_{\text{row}}\!\left(\frac{QK^{\mathsf T}}{\sqrt d}\right) V
@@ -73,7 +79,7 @@ $$
 這是 [Softmax](../005-softmax/) 的配對合併，加入同樣由 $\alpha$
 重新縮放的向量承載值 $\mathbf a$。
 
-## 方法
+## 解題思路
 
 ### 工作對應
 
@@ -125,7 +131,7 @@ $W \approx 67$ MFLOP，而 $K$/$V$（256 KB）會留在 L2。
 更大的列區塊（例如 FlashAttention-2 以張量核心處理 64 個查詢）
 能進一步提高重用；請見[多頭注意力](../012-multi-head-attention/)。
 
-## 常見問題
+## 常見陷阱
 
 - **非作用中 warp 的屏障。** 列索引 $\ge M$ 的 warp 仍須執行分塊迴圈中
   每個 `__syncthreads()`。它們只跳過最後儲存；提早返回會讓區塊死鎖。
@@ -141,7 +147,7 @@ $W \approx 67$ MFLOP，而 $K$/$V$（256 KB）會留在 L2。
 包括 $d = 1$、$d = 128$、$N < 32$ 及 $M$ 非 4 倍數。
 執行時使用 `--reverse` 排程，確認暫存屏障足夠。
 
-## 相關內容
+## 延伸閱讀
 
 - [多頭注意力](../012-multi-head-attention/)、[因果注意力](../053-casual-attention/)、
   [滑動視窗注意力](../059-sliding-window-attn/)、[GQA](../080-grouped-query-attention/)。

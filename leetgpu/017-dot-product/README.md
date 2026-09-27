@@ -19,6 +19,13 @@ written to `result[0]` with tolerance `1e-5`. It is a reduction whose
 per-element operation is a multiply-add instead of an add. The whole design
 of [Reduction](../004-reduction/) carries over, with one extra input stream.
 
+## Visual Overview
+
+![Dot product: multiply pairwise with fused multiply-adds, then reduce as a tree](figure.svg)
+
+The top row shows the pairs aᵢ · bᵢ; the second row their products. From there
+on it is exactly the reduction tree of the Reduction problem.
+
 ## Formulation
 
 $$

@@ -18,6 +18,14 @@ Apply the piecewise-linear "hard" sigmoid elementwise to an $M\times N$
 float32 matrix, matching `F.hardsigmoid`. Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The check is
 `rtol = 1e-4`, `atol = 6e-5`.
 
+## Visual Overview
+
+![Hard sigmoid: a straight ramp from (−3, 0) to (3, 1), clamped outside](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores. The red dots mark the two corners; the
+dashed curve is the smooth sigmoid.
+
 ## Formulation
 
 $$

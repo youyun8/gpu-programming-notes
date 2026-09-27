@@ -20,6 +20,13 @@ and $2048\times2048$ images). At the borders only the pixels that exist are
 averaged, so the divisor shrinks near the edges. The check is
 `rtol = atol = 1e-4`.
 
+## Visual Overview
+
+![Box blur: the average of the pixels that exist inside the K × K window](figure.svg)
+
+At the corner the 3 × 3 window covers only four real pixels (red box), so it
+divides by 4 instead of 9. Nothing is padded.
+
 ## Formulation
 
 $$

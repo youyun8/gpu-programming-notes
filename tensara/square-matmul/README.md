@@ -19,6 +19,13 @@ check is `rtol = 2e-4`, `atol = 5e-3`. It is [Matrix Multiplication](../matrix-m
 with $M = N = K$; $N = 6144, 7168, 9216$ are multiples of 64, so no
 partial tiles occur.
 
+## Visual Overview
+
+![Square SGEMM: the tiled kernel with M = N = K, and test sizes that divide by 64](figure.svg)
+
+The same tiled kernel as for the general case. Because the sizes are multiples
+of 64, no tile is partial and the inner loop needs no bounds checks.
+
 ## Formulation
 
 $$
@@ -72,6 +79,8 @@ All matmul pages on Tensara use the same register-blocked FP32 kernel
 5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
    weight layout) and transposes it while staging.
 
+#### Data Reuse
+
 Data reuse at each level of the hierarchy:
 
 $$
@@ -85,6 +94,8 @@ $$
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
 | $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
 | $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+#### How Far It Gets
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):

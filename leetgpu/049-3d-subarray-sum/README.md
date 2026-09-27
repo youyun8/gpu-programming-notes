@@ -18,6 +18,13 @@ Sum the box `input[S_DEP..E_DEP][S_ROW..E_ROW][S_COL..E_COL]` of an
 $N \times M \times K$ int32 volume ($N, M, K \le 500$, values in $[1, 10]$;
 benchmark $500^3$). The result is an exact int32.
 
+## Visual Overview
+
+![3-D subarray sum: add every value inside a box of depth slices](figure.svg)
+
+The box covers depths 1 and 2 (blue cells); depth 0 lies outside it. The same
+flat-index trick as in 2-D walks the box with coalesced reads.
+
 ## Formulation
 
 $$

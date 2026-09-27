@@ -19,6 +19,13 @@ $S$, padding $P$ and **dilation** $\delta$, matching
 `F.max_pool1d(x, k, S, P, dilation=δ)`. Padded positions act as
 $-\infty$ (they never win). Inputs are long 1-D signals, $H$ = 2 M … 33 M, with parameters such as $(k, S, P, \delta) = (7, 4, 3, 1)$ and $(4, 2, 1, 2)$. The check is `rtol = 1e-4`, `atol = 7e-5`.
 
+## Visual Overview
+
+![1-D max pooling with dilation: the taps are δ apart and padding never wins](figure.svg)
+
+With dilation 2 the window reads every other input: output 1 is the maximum of
+x₁, x₃ and x₅. The padded ends act as −∞.
+
 ## Formulation
 
 The dilated window spans $\delta(k-1) + 1$ input positions per axis, so

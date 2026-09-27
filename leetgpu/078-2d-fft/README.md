@@ -20,6 +20,13 @@ $M = N = 2048$; tolerance `1e-2`). It matches `torch.fft.fft2`. The 2-D DFT
 is separable: 1-D DFTs along rows, then along columns. The engineering
 question is how to make both passes read memory contiguously.
 
+## Visual Overview
+
+![2-D FFT by the row–column method: row FFTs, transpose, row FFTs again](figure.svg)
+
+Each stage is a full pass over the matrix. The transposes turn the column FFTs
+into row FFTs, so every FFT pass reads contiguous memory.
+
 ## Formulation
 
 $$

@@ -20,6 +20,14 @@ each row and scale by a per-feature weight ($N, C \le 65\,536$,
 $\varepsilon = 10^{-5}$; benchmark $N = C = 4096$). The intermediate $z = x + r$
 must not be written to global memory. That is the point of the fusion.
 
+## Visual Overview
+
+![Fused add & RMSNorm: z = x + r stays on chip and only y is written](figure.svg)
+
+Everything inside the red dashed box lives in registers or shared memory.
+Without fusion, z would be written to global memory and read back, costing two
+extra passes.
+
 ## Formulation
 
 $$

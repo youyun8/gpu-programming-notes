@@ -22,6 +22,13 @@ channel $f$**, over the batch **and** both spatial axes. (The statement's
 note about "each spatial location" does not match the reference; the
 reference wins.) The check is `rtol = atol = 1e-4`.
 
+## Visual Overview
+
+![BatchNorm2d: one mean and variance per channel, over the batch and both spatial axes](figure.svg)
+
+Rows are the (sample, channel) planes. Channel 1 appears in three separate
+planes (highlighted); its statistics are taken over all of them together.
+
 ## Formulation
 
 $$

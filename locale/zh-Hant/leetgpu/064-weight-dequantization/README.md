@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/weight-dequantization)
 
-## 問題
+## 題意
 
 對一個 $M \times N$ 權重矩陣進行反量化，其縮放係數依每個
 $T \times T$ **圖塊**儲存（$M, N \le 8192$、$T \in \{16, 32, 64, 128\}$；
@@ -21,7 +21,13 @@ $T \times T$ **圖塊**儲存（$M, N \le 8192$、$T \in \{16, 32, 64, 128\}$；
 將量化誤差限制在局部範圍的方法。此核心是在 GEMM 前執行，
 或融合至 GEMM 的「解包」步驟。
 
-## 公式
+## 圖解
+
+![逐分塊反量化：X 中每個 T × T 分塊共用 S 中的一個縮放係數](figure.svg)
+
+顏色把左側 X 的每個分塊對應到右側縮放矩陣 S 中的一格。每個元素乘上其所在分塊的縮放係數；邊緣分塊可能不完整。
+
+## 數學表述
 
 $$
 Y_{ij} = X_{ij}\cdot S_{\lfloor i/T\rfloor,\ \lfloor j/T\rfloor}, \qquad S \in \mathbb R^{\lceil M/T\rceil \times \lceil N/T\rceil}
@@ -36,7 +42,7 @@ $$
 | $Y_{ij}$ | 反量化值 |
 | $\lfloor i/T\rfloor$ | 元素列 $i$ 所屬的圖塊列（邊緣圖塊可能不完整） |
 
-## 方法
+## 解題思路
 
 - 使用 $64 \times 4$ 執行緒區塊的二維網格。`threadIdx.x` 沿欄方向移動，
   因此 $X$ 的載入與 $Y$ 的寫入都是合併存取的 256 位元組列。
@@ -61,7 +67,7 @@ $$
 量化後的 $X$ 每個元素只有 1 位元組，而且乘法會在 GEMM 的暫存器檔案中完成，
 完全不需寫出 $Y$。
 
-## 注意事項
+## 常見陷阱
 
 - **不完整的邊緣圖塊。** 必須使用 $\lceil N/T\rceil$ 個縮放係數欄，
   而不是 $N/T$，作為 $S$ 的列步幅。
@@ -72,7 +78,7 @@ $$
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆通過，
 包括全部四種圖塊大小與非整倍數維度。
 
-## 相關內容
+## 延伸閱讀
 
 - [INT8 量化矩陣乘法](../032-int8-quantized-matmul/)、[INT4 矩陣乘法](../081-int4-matmul/)。
 - Tensara [MXFP8 反量化](../../tensara/mxfp8-dequantize/)、[NVFP4 反量化](../../tensara/nvfp4-dequantize/)。

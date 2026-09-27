@@ -18,6 +18,13 @@ Convert an $H\times W$ RGB image (float32, interleaved R, G, B per pixel,
 values in $[0, 255]$) to grayscale with the ITU-R BT.601 luma weights
 ($WH \le 4.2$M; benchmark $2048 \times 2048$; tolerance `1e-5`).
 
+## Visual Overview
+
+![RGB to grayscale: three interleaved channels per pixel, one weighted sum](figure.svg)
+
+Each pixel is three consecutive floats (R, G, B). One thread reads them and
+writes a single luma value with the BT.601 weights.
+
 ## Formulation
 
 $$

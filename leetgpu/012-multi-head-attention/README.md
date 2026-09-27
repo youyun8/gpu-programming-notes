@@ -23,6 +23,14 @@ the range of $d_k$, from 1 (with $h = d_{\text{model}}$) to 1024 (with
 $h = 1$), which rules out a design with a fixed register or shared-memory
 budget per row.
 
+## Visual Overview
+
+![Multi-head attention: heads are column blocks of Q, K and V, addressed by stride](figure.svg)
+
+Each colour is one head: a band of dₖ columns in Q, K and V. Every head runs
+its own attention and writes back into the same columns of the output, so
+splitting and concatenating heads moves no data.
+
 ## Formulation
 
 $$

@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/adder-transformer-inference)
 
-## 問題
+## 題意
 
 使用 *AdderBoard* 競賽中一個微型、手工設計的 transformer 執行貪婪
 自迴歸推論。它有 **10 個參數**、隱藏大小 2 及一個注意力頭，可將兩個
@@ -21,7 +21,15 @@ status: solved
 模型本身很簡單，重點在於推論的組織方式：使用 **KV 快取**，且只計算
 最後一個位置。
 
-## 公式
+## 圖解
+
+![使用 KV 快取的自回歸解碼：先預填一次，之後每步只算一個位置](figure.svg)
+
+提示詞（藍色）只處理一次，並把它的 key 與 value 存入快取。每個解碼步驟（下排方框）只計算最新的位置、對快取做注意力，再把自己的 K、V 附加進去。
+
+## 數學表述
+
+### 模型
 
 模型（單層、pre-norm、$d = 2$、詞彙表為 $\{0..9\}$、共用嵌入）：
 
@@ -29,6 +37,8 @@ $$
 e(t) = \begin{bmatrix} w_0 - w_1 t^2 \\ -t \end{bmatrix}, \qquad
 \operatorname{UnitRMS}(\mathbf x) = \frac{\mathbf x}{\sqrt{\tfrac12(x_0^2 + x_1^2) + \varepsilon}}
 $$
+
+### Query、key 與 value
 
 對位置 $p$ 的 token $t_p$，令
 $\mathbf n_p = \operatorname{UnitRMS}(e(t_p))$：
@@ -40,12 +50,16 @@ v_p = v_0\, n_{p,1}, \qquad
 R_\theta = \begin{bmatrix}\cos\theta & -\sin\theta\\ \sin\theta & \cos\theta\end{bmatrix}
 $$
 
+### 最後一個位置的注意力
+
 最後一個位置 $L$ 對位置 $0..L$ 的注意力（因果），會加到隱藏維度 1：
 
 $$
 a_L = \frac{\sum_{j \le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}\, v_j}{\sum_{j\le L} e^{\lambda\,\mathbf q_L\cdot\mathbf k_j - m}}, \qquad
 \mathbf h = e(t_L) + \begin{bmatrix}0\\ a_L\end{bmatrix}
 $$
+
+### MLP、最終正規化與 logits
 
 MLP（「進位」閘門）、最終正規化及共用權重的 logits：
 
@@ -76,7 +90,7 @@ $$
 | $\nu_0, \nu_1$ | 最終 RMSNorm 權重（`w[8]`、`w[9]`） |
 | $\text{logit}_t$ | 數字 $t$ 的輸出分數，每個解碼步驟都會寫入 |
 
-## 方法
+## 解題思路
 
 ### 只需最後一個位置
 
@@ -133,7 +147,7 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-2`
 通過（比對全部 11 個步驟的 logits，也就間接檢查了每個產生的數字）。
 
-## 相關內容
+## 延伸閱讀
 
 - [RoPE 嵌入](../061-rope-embedding/)、[推測式解碼](../087-speculative-decoding-verification/)、
   [INT8 KV 快取注意力](../096-int8-kv-cache-attention/)。

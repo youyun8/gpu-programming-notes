@@ -24,6 +24,14 @@ has **no learned affine**. Its scale, shift and a residual **gate** are
 predicted per sample from $c$ (adaLN-Zero), so each sample in the batch is
 normalised differently.
 
+## Visual Overview
+
+![DiT block with adaLN-Zero: the condition predicts scales, shifts and residual gates](figure.svg)
+
+The top row runs once per sample and produces six modulation vectors. They
+drive the two LayerNorms (γ, β) and the two residual gates (g) in the rows
+below.
+
 ## Formulation
 
 Modulation (once per sample):

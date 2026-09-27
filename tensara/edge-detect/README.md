@@ -19,6 +19,14 @@ Gradient-magnitude edge detection on an $h\times w$ float32 image
 magnitude, border pixels set to 0, then the whole image is rescaled so its
 maximum becomes 255. The check is `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![Edge detection: central differences, gradient magnitude, then rescaling so the maximum is 255](figure.svg)
+
+The four blue neighbours give the horizontal and vertical differences of the
+highlighted pixel. A global maximum is found first, then every magnitude is
+rescaled to 0 … 255.
+
 ## Formulation
 
 $$

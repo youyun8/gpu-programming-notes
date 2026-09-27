@@ -19,6 +19,14 @@ field $\mathbb{F}_p$, $p = 2^{31} - 1$, returning the $2n - 1$ coefficients
 of the product. Coefficients are `uint32` in $[0, p)$, $n$ is a power of
 two (up to 1024 in the tests), and the output must match exactly.
 
+## Visual Overview
+
+![Polynomial product = linear convolution: cₖ adds every aᵢ bⱼ with i + j = k (mod p)](figure.svg)
+
+Every cell is one product aᵢbⱼ. Coefficient c₄ is the sum of the green
+anti-diagonal; each output thread sums one anti-diagonal and reduces it modulo
+p.
+
 ## Formulation
 
 $$
@@ -33,7 +41,9 @@ $$
 | $c_k$ | Output coefficient $k$ (a linear convolution of $a$ and $b$, reduced mod $p$) |
 | $i, j$ | Indices with $i + j = k$, i.e. $i \in [\max(0, k-n+1), \min(k, n-1)]$ |
 
-**Mersenne reduction.** Because $2^{31} \equiv 1 \pmod p$, a number
+### Mersenne Reduction
+
+Because $2^{31} \equiv 1 \pmod p$, a number
 $x = h\cdot 2^{31} + \ell$ satisfies $x \equiv h + \ell$:
 
 $$
@@ -46,7 +56,9 @@ $$
 | $x \gg 31$ | The high part $h$ |
 | Fold | One reduction step with no division; two folds plus one conditional subtraction reduce any 64-bit value to $[0, p)$ |
 
-**Why not an NTT?** A number-theoretic transform of length $L$ needs an
+### Why Not an NTT?
+
+A number-theoretic transform of length $L$ needs an
 $L$-th root of unity, which exists in $\mathbb{F}_p$ only if $L$ divides
 $p - 1$:
 

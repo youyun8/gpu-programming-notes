@@ -21,6 +21,13 @@ TorchAO's `MXTensor` reference path. The scale output is row-major
 checker dequantizes both outputs and compares with `rtol = atol = 1e-3`,
 so the codes must match exactly in practice.
 
+## Visual Overview
+
+![MXFP4 quantisation: one power-of-two scale per 32 values, with E2M1 elements](figure.svg)
+
+The block maximum 10.2 sets the exponent E = 1, so the scale is 2. Dividing by
+2 and rounding to the nearest E2M1 value gives the codes in the bottom row.
+
 ## Formulation
 
 An **MX** (OCP Microscaling) tensor splits every row into blocks of 32
@@ -48,6 +55,8 @@ $$
 | $u_b$ | Stored E8M0 scale byte |
 | $q_t$ | Element code, rounded to nearest (ties to even) in the element format, saturating |
 | $\hat{a}_t$ | The value the code represents (what the checker compares after dequantizing) |
+
+### The E2M1 (FP4) Element Format
 
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are

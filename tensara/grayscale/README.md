@@ -19,6 +19,13 @@ $[0, 255]$) of height $h$ and width $w$ ($512^2$ … $3840\times2160$) to
 grayscale with the ITU-R BT.601 luma weights. The check is
 `rtol = atol = 1e-5`.
 
+## Visual Overview
+
+![Grayscale conversion of an HWC image: Y = 0.299 R + 0.587 G + 0.114 B](figure.svg)
+
+Pure red, green and blue pixels show how unequal the weights are: green
+contributes the most to perceived brightness.
+
 ## Formulation
 
 $$

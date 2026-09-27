@@ -20,6 +20,13 @@ $N = 2.5\times10^7$). This is a pure data-layout transformation: converting
 structure-of-arrays (SoA) to array-of-structures (AoS), as needed for
 complex numbers, (x, y) points, or the `float2` layout expected by many APIs.
 
+## Visual Overview
+
+![Interleave (SoA → AoS): o[2i] = a[i], o[2i + 1] = b[i]](figure.svg)
+
+Blue values come from A and orange values from B. Thread i writes the pair
+(aᵢ, bᵢ) as one float2, so both the reads and the write stay contiguous.
+
 ## Formulation
 
 $$

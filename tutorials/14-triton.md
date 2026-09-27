@@ -287,7 +287,7 @@ more warps for longer rows so each thread holds at most ~32 values up to
 16 384 columns;
 beyond a few tens of thousands of columns the kernel spills. The fix is
 online softmax: loop over the row in blocks, keeping
-$(m, z)$ as the state (exercise 2).
+$(m, z)$ as the state (exercise 3).
 
 ### 4.4 Kernel 3: Fused LayerNorm
 
@@ -714,7 +714,9 @@ or library fallback.
 
 ## Exercises
 
-1. **Easy — masks and shapes.** In `add_kernel`, what happens if `BLOCK`
+### Easy
+
+1. **Masks and shapes.** In `add_kernel`, what happens if `BLOCK`
    is 1000? And if `mask` is
    omitted from the load?
 
@@ -728,7 +730,7 @@ or library fallback.
 
     </details>
 
-2. **Easy — masked reductions.** In `layer_norm_kernel`, remove
+2. **Masked reductions.** In `layer_norm_kernel`, remove
    `tl.where(mask, x - mean, 0.0)` and use `x - mean` directly. Why do odd
    widths fail even though the input load uses `other=0.0`?
 
@@ -741,7 +743,9 @@ or library fallback.
 
     </details>
 
-3. **Intermediate — online reduction.** Write a softmax kernel for rows too long for registers: loop over the
+### Intermediate
+
+3. **Online reduction.** Write a softmax kernel for rows too long for registers: loop over the
    row in blocks of `BLOCK` columns, keeping a running maximum and sum
    using the recurrence in section 6, then loop again to write the output.
 
@@ -756,7 +760,7 @@ or library fallback.
 
     </details>
 
-4. **Intermediate — resource accounting.** For $M = N = K = 4096$ in FP16 with `BLOCK_M = BLOCK_N = 128`,
+4. **Resource accounting.** For $M = N = K = 4096$ in FP16 with `BLOCK_M = BLOCK_N = 128`,
    `BLOCK_K = 32` and `num_stages = 3`, how much shared memory does a
    program need? How many programs fit on an A100 SM (164 KB)?
 
@@ -769,7 +773,7 @@ or library fallback.
 
     </details>
 
-5. **Intermediate — epilogue fusion.** Add a fused ReLU epilogue to `matmul_kernel` behind a
+5. **Epilogue fusion.** Add a fused ReLU epilogue to `matmul_kernel` behind a
    `RELU: tl.constexpr` flag, and test it against
    `torch.relu(a @ b)`. Why is a constexpr better than a run-time flag?
 
@@ -782,7 +786,9 @@ or library fallback.
 
     </details>
 
-6. **Advanced — privatized atomics.** Change the histogram into two
+### Advanced
+
+6. **Privatized atomics.** Change the histogram into two
    kernels: the first writes one private histogram per program and the second
    reduces those histograms. When should it outperform direct atomics?
 
@@ -797,7 +803,7 @@ or library fallback.
 
     </details>
 
-7. **Advanced — masked attention.** `m_safe` matters only when a row has seen nothing but masked keys.
+7. **Masked attention.** `m_safe` matters only when a row has seen nothing but masked keys.
    Show that this cannot happen in `flash_attention` as written, and name
    a variant of attention in which it does.
 
@@ -814,7 +820,7 @@ or library fallback.
 
     </details>
 
-8. **Advanced — a global scan.** Design a scan for an arbitrary-length
+8. **A global scan.** Design a scan for an arbitrary-length
    vector. Why is replacing the three launches with a spin-waiting grid-wide
    barrier unsafe in an ordinary kernel?
 

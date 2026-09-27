@@ -21,6 +21,13 @@ benchmark $512 \times 512$ with $7\times7$; tolerance `1e-5`). This is a
 the image count as 0 (zero padding). The reference is `F.conv2d` with
 padding $(K_r/2, K_c/2)$.
 
+## Visual Overview
+
+!["Same" blur with zero padding: windows near the edge read padded zeros](figure.svg)
+
+The output has the size of the input. For output pixel (0, 0) the 3 × 3 window
+hangs over the border; its red taps fall on the padding and contribute 0.
+
 ## Formulation
 
 $$

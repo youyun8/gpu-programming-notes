@@ -21,6 +21,14 @@ pairs through each intermediate vertex $k = 0, \dots, N-1$ in order.
 Floyd–Warshall is $O(N^3)$ like GEMM, but in the $(\min, +)$ semiring. The
 blocked version that makes it cache-friendly is the classic GPU formulation.
 
+## Visual Overview
+
+![Blocked Floyd–Warshall: three dependent phases for each diagonal block](figure.svg)
+
+For pivot block k: phase 1 updates the pivot block itself (red), phase 2 its
+row and column of blocks (orange), and phase 3 every remaining block (blue)
+from those two.
+
 ## Formulation
 
 $$

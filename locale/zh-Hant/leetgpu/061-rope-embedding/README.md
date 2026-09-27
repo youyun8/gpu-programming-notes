@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/rotary-positional-embedding)
 
-## 問題
+## 題意
 
 對 $M$ 個維度為 $D$ 的查詢向量套用旋轉位置嵌入（RoPE），並提供形狀相同的
 預先計算 $\cos$ 與 $\sin$ 表（$M, D \le 10^4$，$D$ 為偶數；
@@ -20,7 +20,13 @@ status: solved
 這些表使用 LLaMA/GPT-NeoX 的**對半分割**配置。RoPE 將絕對位置編碼為旋轉，
 因此點積 $\mathbf q_m \cdot \mathbf k_n$ 只取決於相對位移 $m - n$。
 
-## 公式
+## 圖解
+
+![RoPE（前後半分割配置）：元素 j 與元素 j + D/2 一起旋轉](figure.svg)
+
+弧線把元素 j 與 j + D/2 配成一對。每一對視為一個二維向量，依位置旋轉一個角度（右圖），這正是左下兩條公式所計算的內容。
+
+## 數學表述
 
 $$
 \operatorname{RoPE}(\mathbf x) = \mathbf x \odot \mathbf c + \operatorname{rotate\_half}(\mathbf x)\odot\mathbf s, \qquad
@@ -57,7 +63,7 @@ $$
 | $m$ | Token 位置 |
 | $\theta_j$ | 第 $j$ 對的頻率（通常為 $10000^{-2j/D}$） |
 
-## 方法
+## 解題思路
 
 一列中的每一**對** $(j, j+h)$ 使用一個執行緒：共 $M \cdot D/2$ 個執行緒，
 以 64 位元索引進行網格步幅迴圈。
@@ -85,7 +91,7 @@ $$
 完全受記憶體頻寬限制。正式環境的核心會即時計算 $\cos/\sin$，其輸入為 $m\theta_j$
 （使流量減半），並將 RoPE 融合至 QKV 投影的結尾階段或注意力核心中。
 
-## 注意事項
+## 常見陷阱
 
 - **交錯與對半分割不同。** GPT-J 風格的 RoPE 旋轉相鄰配對
   $(2j, 2j+1)$。此題使用兩半中的配對 $(j, j+h)$。
@@ -98,7 +104,7 @@ $$
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆以
 `1e-4` 通過，包括 $D = 2$。
 
-## 相關內容
+## 延伸閱讀
 
 - [多頭潛在注意力](../114-multi-head-latent-attention/)（解耦的 RoPE）、
   [LLaMA Transformer 區塊](../093-llama-transformer-block/)。

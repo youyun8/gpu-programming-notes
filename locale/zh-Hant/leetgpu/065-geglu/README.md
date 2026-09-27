@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 簡單 · [題目說明](https://leetgpu.com/challenges/gaussian-error-gated-linear-unit)
 
-## 問題
+## 題意
 
 對一維向量套用 GEGLU：將長度為 $N$ 的輸入分成 $\mathbf x_1$ 與
 $\mathbf x_2$ 兩半，並輸出
@@ -21,7 +21,13 @@ $\mathbf x_1 \odot \operatorname{GELU}(\mathbf x_2)$
 GEGLU 是 T5 v1.1 與數種擴散 Transformer 的閘控 MLP 活化函數。
 請注意，此處活化的是**後半部**，與 [SwiGLU](../054-swiglu/) 不同。
 
-## 公式
+## 圖解
+
+![GEGLU：前半段乘上後半段的 GELU](figure.svg)
+
+這裡後半段（橘）是通過 GELU 的閘門，前半段（藍）是被閘控的值。輸出 i 結合兩半各自的第 i 個元素。
+
+## 數學表述
 
 $$
 y_i = x_i \cdot \operatorname{GELU}(x_{i + N/2}), \qquad
@@ -41,7 +47,7 @@ $$
 $\tfrac u2\bigl(1 + \tanh(\sqrt{2/\pi}(u + 0.044715u^3))\bigr)$
 差異最高約為 $10^{-3}$，超過容許誤差。
 
-## 方法
+## 解題思路
 
 每個輸出使用一個執行緒：載入兩半（兩道合併存取資料流），再計算
 `x1 * (0.5f * x2 * (1.0f + erff(x2 * 0.70710678f)))`。CUDA 的 `erff`
@@ -61,7 +67,7 @@ $$
 
 當 $N = 10^6$（6 MB）時，核心只需數微秒，且在多數 GPU 上受記憶體頻寬限制。
 
-## 注意事項
+## 常見陷阱
 
 - **活化哪一半。** 此處的 GEGLU 對*後半部*套用 GELU。交換兩半會得到錯誤答案，
   而且在隨機資料中不易察覺。
@@ -72,6 +78,6 @@ $$
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆以
 `1e-4` 通過，包括 $\pm100$。
 
-## 相關內容
+## 延伸閱讀
 
 - [SwiGLU](../054-swiglu/)、Tensara [GELU](../../tensara/gelu/)。

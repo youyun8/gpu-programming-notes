@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 簡單 · [題目說明](https://leetgpu.com/challenges/sigmoid-linear-unit)
 
-## 問題
+## 題意
 
 對 $N$ 個 float32 值逐元素套用 SiLU（也稱為 *Swish-1*）
 （測試中 $N \le 10^4$，基準測試中為 $5\times10^4$；輸入值域為
 $[-100, 100]$；容許誤差 `1e-5`）。SiLU 是 LLaMA 與多數現代 LLM
 的 SwiGLU MLP 所使用的活化函數。
 
-## 公式
+## 圖解
+
+![SiLU（Swish-1）：x · σ(x)，平滑且在 0 以下略為負值](figure.svg)
+
+與 ReLU（虛線）相比，SiLU 平滑且在零以下略微下探；紅點標示其最小值約 −0.278，位於 x ≈ −1.278。
+
+## 數學表述
 
 $$
 \operatorname{SiLU}(x) = x\,\sigma(x) = \frac{x}{1 + e^{-x}}, \qquad \sigma(x) = \frac{1}{1 + e^{-x}}
@@ -35,7 +41,7 @@ $$
 $\to 0^-$ 當 $x \to -\infty$。其最小值約為 $-0.278$，出現在
 $x \approx -1.278$。
 
-## 方法
+## 解題思路
 
 每個元素使用一個執行緒計算 `x / (1.0f + expf(-x))`，包含一次指數運算與
 一次除法，且沒有分支。
@@ -60,7 +66,7 @@ $$
 當 $N$ 很大時，在多數 GPU 上會受記憶體限制；但由於包含超越函數，
 會比 ReLU 更接近運算與記憶體的平衡點。
 
-## 注意事項
+## 常見陷阱
 
 - **`__expf` / `__fdividef`** 是誤差較大的高速內建函式。
   對極大分母，`__fdividef` 也會回傳 0 而不是 $-0$，但沒有影響。
@@ -73,7 +79,7 @@ $$
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆以
 `1e-5` 通過，包括 $\pm100$。
 
-## 相關內容
+## 延伸閱讀
 
 - [SwiGLU](../054-swiglu/)、[SwiGLU MLP 區塊](../084-swiglu-mlp-block/)、[Sigmoid](../068-sigmoid/)。
 - Tensara [Swish](../../tensara/swish/)。

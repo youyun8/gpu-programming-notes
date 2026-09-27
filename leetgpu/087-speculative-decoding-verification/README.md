@@ -22,6 +22,14 @@ residual distribution and stop. If all $T$ are accepted, draw a bonus token
 from the target distribution. Output $(B, T+1)$ token ids, zero-padded.
 Given the same uniform samples, the result must match exactly.
 
+## Visual Overview
+
+![Speculative decoding: accept draft tokens left to right and stop at the first rejection](figure.svg)
+
+Draft tokens t0 and t1 pass (u < α); t2 fails, so a replacement is sampled
+from the residual distribution and t3 is never examined. The output row is t0,
+t1, r and padding.
+
 ## Formulation
 
 At draft position $i$ with draft token $t_i$:

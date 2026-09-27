@@ -21,6 +21,14 @@ group of $g$ consecutive weights along $K$. Compute $y = xW^{\mathsf T}$ in
 fp16 ($M, N, K \le 8192$, $g \in \{2..128\}$; benchmark $4096^3$, $g = 128$;
 tolerance `1e-2`).
 
+## Visual Overview
+
+![W4A16: two 4-bit weights per byte, one fp16 scale per group of g weights](figure.svg)
+
+Left: one byte holds two weights; each nibble minus 8, times the group scale,
+gives the real weight. Right: along K every group of g weights shares one
+scale.
+
 ## Formulation
 
 $$

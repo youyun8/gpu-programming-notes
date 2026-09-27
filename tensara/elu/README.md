@@ -18,6 +18,14 @@ Apply the Exponential Linear Unit elementwise to an $M\times N$ float32
 matrix, with a runtime parameter $\alpha$ (1.0 in the tests), matching
 `F.elu(x, alpha)`. Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The check is `rtol = 1e-4`, `atol = 5e-5`.
 
+## Visual Overview
+
+![ELU: the identity for x > 0 and a smooth exponential that saturates at −α below](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores. The dashed line is the saturation
+level −α.
+
 ## Formulation
 
 $$

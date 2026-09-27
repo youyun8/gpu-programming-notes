@@ -12,14 +12,20 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目說明](https://leetgpu.com/challenges/causal-self-attention)
 
-## 問題
+## 題意
 
 因果（遮罩）單頭自注意力：$Q, K, V \in \mathbb R^{M\times d}$
 （float32，$M \le 10^4$、$d \le 128$；容許誤差 `1e-4`）。查詢 $i$
 只能注意到 $j \le i$ 的鍵，就像所有純解碼器語言模型在訓練或預填充時一樣。
 遮罩會移除約一半工作，而良好的核心會直接略過，不會先計算再丟棄。
 
-## 公式
+## 圖解
+
+![因果注意力：查詢 i 只能看到 j ≤ i 的鍵](figure.svg)
+
+分數矩陣只有下三角有效。第 6 列（綠）混合鍵 0 … 6；完全位於對角線上方的分塊直接略過，工作量因此減半。
+
+## 數學表述
 
 $$
 s_{ij} = \frac{\mathbf q_i\cdot\mathbf k_j}{\sqrt d}, \qquad
@@ -43,7 +49,7 @@ $$
 \sum_{i=0}^{M-1} (i + 1) = \frac{M(M+1)}{2} \approx \frac{M^2}{2}
 $$
 
-## 方法
+## 解題思路
 
 採用 FlashAttention 風格的核心（同[柔性最大值注意力](../006-softmax-attention/)），
 並做兩項因果調整：
@@ -76,7 +82,7 @@ $$
 這是稠密注意力成本的一半。當 $M = 10^4$、$d = 128$ 時：
 $W \approx 2.6\times10^{10}$ FLOP，受限於 fp32 FMA 與共享記憶體載入的運算能力。
 
-## 注意事項
+## 常見陷阱
 
 - **在每個 warp 中略過遮罩迴圈**（而不是以區塊為單位）會使 warp
   在 `__syncthreads()` 發生分歧。圖塊迴圈上限必須對整個區塊一致
@@ -90,7 +96,7 @@ $W \approx 2.6\times10^{10}$ FLOP，受限於 fp32 FMA 與共享記憶體載入�
 在 [cuemu](../../tools/cuemu/README.md) 上，所有 LeetGPU 測試案例皆以
 `1e-4` 通過，包括 $M = 1$，以及 $M$ 不是 8 或 32 的倍數。
 
-## 相關內容
+## 延伸閱讀
 
 - [柔性最大值注意力](../006-softmax-attention/)、[滑動視窗注意力](../059-sliding-window-attn/)、
   [衰減因果注意力](../092-decaying-causal-attention/)、[含匯聚點的注意力](../112-attention-with-sinks/)。

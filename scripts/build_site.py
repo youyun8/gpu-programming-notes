@@ -46,8 +46,9 @@ TUTORIAL_PARTS = [
     ("Part VII · Publishing", ("08-",)),
 ]
 LINK_RE = re.compile(r"(!?\[[^\]]*\])\(([^)\s]+)\)")
-# A figure is an image alone on its line. SVG is inlined so its palette follows the theme.
-FIGURE_RE = re.compile(r"^!\[([^\]]*)\]\(([^)\s]+\.(?:svg|png|jpe?g|webp))\)[ \t]*$", re.M | re.I)
+# A figure is an image alone on its line (its caption may contain balanced brackets, e.g. A[i]).
+# SVG is inlined so its palette follows the theme.
+FIGURE_RE = re.compile(r"^!\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\(([^)\s]+\.(?:svg|png|jpe?g|webp))\)[ \t]*$", re.M | re.I)
 
 
 def parse_front_matter(text: str):
@@ -432,12 +433,14 @@ class SiteBuilder:
         parts = re.split(r"(```.*?```)", text, flags=re.S)
         return "".join(p if p.startswith("```") else LINK_RE.sub(repl, p) for p in parts)
 
-    def inline_figures(self, text: str, source: Path) -> str:
+    def inline_figures(self, text: str, source: Path, zh: bool = False) -> str:
         """Replace standalone images with accessible, IEEE-style numbered figures.
 
         SVG classes pick up the site's --fig-* colour properties after inlining. Raster
         images remain ordinary image elements. Numbering restarts on each page, like a
         self-contained technical article. `code` spans are kept; $math$ is left to KaTeX.
+        Paths resolve against `source`, the English file, also for a translation (zh=True),
+        whose captions are labelled "圖 N" instead of "Fig. N.".
         """
         figure_number = 0
 
@@ -456,7 +459,7 @@ class SiteBuilder:
                 self.static_files.add(path)
                 visual = f'<img src="{html.escape(m.group(2), quote=True)}" alt="">'
             caption = re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(m.group(1), quote=False))
-            label = f"Fig. {figure_number}."
+            label = f"圖 {figure_number}" if zh else f"Fig. {figure_number}."
             return (f'<figure class="diagram" id="figure-{figure_number}">{visual}'
                     f'<figcaption id="figure-{figure_number}-caption">'
                     f'<span class="fig-label">{label}</span> {caption}</figcaption></figure>')
@@ -520,7 +523,7 @@ class SiteBuilder:
                 zh_src = translated_source(src)
                 if zh_src.exists():
                     zh_page = translated_page(page)
-                    zh_text = self.inline_figures(zh_src.read_text(), src)
+                    zh_text = self.inline_figures(zh_src.read_text(), src, zh=True)
                     self.write(zh_page, self.rewrite_links(zh_text, src, zh_page))
                 else:
                     self.warnings.append(
@@ -613,7 +616,7 @@ class SiteBuilder:
                 header.append(f"[:material-download: {src.name}]({src.name}){{ .md-button }}")
             header.append("</div>")
             parts = ["---", f"title: {json.dumps(title)}", "hide:", "  - tags", f"description: {json.dumps(PLATFORMS[platform] + ' ' + difficulty + ' problem: ' + title)}", "tags:", *[f"  - {t}" for t in tags], "---", "", f"# {title}", "", *header, "",
-                     self.rewrite_links(body, readme, page), ""]
+                     self.rewrite_links(self.inline_figures(body, readme), readme, page), ""]
             for src in sources:
                 self.static_files.add(src)
                 lang = CODE_LANGUAGES[src.suffix]
@@ -652,7 +655,7 @@ class SiteBuilder:
                     "---", f"title: {json.dumps(zh_title)}", "hide:", "  - tags",
                     f"description: {json.dumps(PLATFORMS[platform] + ' ' + zh_title)}",
                     "tags:", *[f"  - {tag}" for tag in tags], "---", "", f"# {zh_title}", "",
-                    *zh_header, "", self.rewrite_links(zh_body, readme, zh_page), "",
+                    *zh_header, "", self.rewrite_links(self.inline_figures(zh_body, readme, zh=True), readme, zh_page), "",
                 ]
                 for source_file in sources:
                     language = CODE_LANGUAGES[source_file.suffix]

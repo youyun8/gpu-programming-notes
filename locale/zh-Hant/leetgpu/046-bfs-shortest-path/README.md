@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 困難 · [題目敘述](https://leetgpu.com/challenges/bfs-shortest-path)
 
-## 問題
+## 題意
 
 在帶有障礙物的 `rows × cols` 網格中，求兩個可通行儲存格之間的最短路徑
 長度（上下左右移動的步數）；若無法到達則回傳 $-1$
@@ -21,7 +21,13 @@ status: solved
 處理，而且迷宮可能有 $O(\text{rows}\cdot\text{cols})$ 層。
 這三項特性都不利於 GPU。
 
-## 公式
+## 圖解
+
+![網格上的 BFS：第 ℓ 層前沿包含所有與起點距離為 ℓ 的格子](figure.svg)
+
+格內數字是與紅色起點的 BFS 距離，深色格是障礙物。交替的顏色代表相鄰的前沿層，終點（右下）的距離標在網格右側。
+
+## 數學表述
 
 將網格建模為圖 $G = (V, E)$，以可通行儲存格作為頂點，並以四鄰接關係作為
 邊。BFS 逐層計算距離：
@@ -43,7 +49,7 @@ $$
 每個儲存格只會進入一個前緣，因此總工作量為
 $O(\lvert V\rvert + \lvert E\rvert) = O(\text{rows}\cdot\text{cols})$。
 
-## 方法
+## 解題思路
 
 ### 在單一常駐區塊中執行逐層同步 BFS
 
@@ -99,7 +105,7 @@ $$
 所有 LeetGPU 測試案例均在 [cuemu](../../tools/cuemu/README.md) 中完全相符，
 包括無法抵達的目標、$s = t$、$1 \times 1$ 網格與狹長的蛇形迷宮。
 
-## 相關內容
+## 延伸閱讀
 
 - [全點對最短路徑](../073-all-pairs-shortest-paths/)、
   Tensara [最短路徑](../../tensara/shortest-path/)、

@@ -22,6 +22,13 @@ scans process many variable-length sequences in one launch, for example
 per-row operations on sparse matrices, ragged batches of sequences, or
 grouped aggregations.
 
+## Visual Overview
+
+![Segmented exclusive scan: the running sum restarts at every flagged head](figure.svg)
+
+Purple flags start new segments at indices 0, 3 and 5. Output 4 only sums the
+earlier values of its own segment, which here is just x₃ = 1.
+
 ## Formulation
 
 $$

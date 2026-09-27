@@ -21,6 +21,14 @@ $D$, given precomputed $\cos$ and $\sin$ tables of the same shape
 encodes absolute position as a rotation, so the dot product
 $\mathbf q_m \cdot \mathbf k_n$ depends only on the relative offset $m - n$.
 
+## Visual Overview
+
+![RoPE (half-split layout): element j is rotated together with element j + D/2](figure.svg)
+
+The arcs pair element j with element j + D/2. Each pair is treated as a 2-D
+vector and rotated by an angle that depends on the position (right), which is
+exactly what the two formulas compute.
+
 ## Formulation
 
 $$

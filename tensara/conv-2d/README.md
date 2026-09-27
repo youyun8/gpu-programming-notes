@@ -20,6 +20,14 @@ $16384^2$ images with $13\times13$ kernels to $4096^2$ images with
 $127\times127$ kernels, so shared-memory use must be bounded for any
 kernel size. The check is `rtol = 2e-4`, `atol = 1e-3`.
 
+## Visual Overview
+
+!["Same" 2-D convolution: zero padding keeps the output the size of the input](figure.svg)
+
+The window of the highlighted output reaches into the padded border (red
+cells). Because kernels can be as large as 127 × 127, the kernel itself is
+streamed through shared memory in chunks.
+
 ## Formulation
 
 $$

@@ -19,6 +19,14 @@ $\ell \le h$; tolerance `1e-5`). Clipping (clamping) appears in
 gradient/activation stabilisation, PPO's ratio clipping and before
 quantisation.
 
+## Visual Overview
+
+![Value clipping: values below ℓ become ℓ, values above h become h](figure.svg)
+
+The curve is flat outside [ℓ, h] = [−1, 2] and the identity inside. Orange
+dots are clipped to a bound; the red dot lies inside the range and passes
+through.
+
 ## Formulation
 
 $$

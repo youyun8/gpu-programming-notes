@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** medium · [題目說明](https://tensara.org/problems/kl-loss)
 
-## 問題
+## 題意
 
 計算目標分布 $P$ 與預測分布 $Q$ 之間的逐元素 Kullback–Leibler 散度
 貢獻值，兩者都是長度為 $N$ 的 float32 向量。參考實作會在取對數前將
 兩個輸入限制為至少 $\epsilon = 10^{-10}$，並將目標值不是正數的項目
 設為零。檢查條件非常嚴格：`rtol = atol = 1e-5`。
 
-## 公式
+## 圖解
+
+![單一 KL 項 p·(log p − log q)，p = 0.3，隨預測值 q 變化](figure.svg)
+
+單一項在 q = p 時為 0（紅點），q < p 時為正，q > p 時為負；只有所有項的總和才保證非負。
+
+## 數學表述
 
 $$
 D_{\mathrm{KL}}(P\,\Vert\,Q) = \sum_i p_i \log\frac{p_i}{q_i}
@@ -47,7 +53,7 @@ $$
 
 零值的處理方式來自極限 $\lim_{p\to0^+} p\ln p = 0$。
 
-## 方法
+## 解題思路
 
 使用網格跨步的逐元素映射：兩次載入、兩次 `logf`、一次減法、一次乘法、
 一次選擇及一次儲存。使用兩個對數計算
@@ -68,7 +74,7 @@ $$
 每個元素執行兩次 `logf` 約需 40 條指令，但仍會隱藏在 12 位元組的
 記憶體流量之後。
 
-## 注意事項
+## 常見陷阱
 
 - **重現下限限制**：$\ln(0) = -\infty$，而
   $0\cdot(-\infty) =$ NaN。
@@ -82,7 +88,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [Huber 損失](../huber-loss/)、[Log Softmax](../log-softmax/)、
   LeetGPU [類別交叉熵](../../leetgpu/025-categorical-cross-entropy-loss/)。

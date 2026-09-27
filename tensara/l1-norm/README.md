@@ -19,6 +19,13 @@ Row-wise L1 normalization of a $B\times D$ float32 matrix
 its absolute values plus $\epsilon = 10^{-10}$. The check is
 `rtol = 7e-4`, `atol = 5e-5`.
 
+## Visual Overview
+
+![L1 normalisation per row: divide by the sum of absolute values](figure.svg)
+
+The highlighted row is reduced to $s_{b}$ = Σ|x|, then every element of the
+row is divided by $s_{b}$ + ε.
+
 ## Formulation
 
 $$

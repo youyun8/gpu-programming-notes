@@ -19,6 +19,13 @@ predictions and targets of length $N$ (1 M … 67 M), matching
 `F.smooth_l1_loss(p, t, reduction='none', beta=1.0)`. The check is
 `rtol = 2e-4`, `atol = 1e-4`.
 
+## Visual Overview
+
+![Smooth L1 (Huber, β = 1): quadratic near 0 and linear beyond |d| = β](figure.svg)
+
+The solid curve follows d²/2 (dashed) near zero and becomes linear outside ±1;
+the red dots are where the two pieces meet with equal value and slope.
+
 ## Formulation
 
 $$

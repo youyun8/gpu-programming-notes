@@ -23,6 +23,14 @@ introduces **tensor cores**: dedicated matrix units that execute a small
 matrix multiply-accumulate per warp instruction, at many times the fp32 FMA
 throughput.
 
+## Visual Overview
+
+![FP16 GEMM on tensor cores: each warp owns 16 × 16 fragments of C](figure.svg)
+
+Each 2 × 2 cell block in the picture stands for one 16 × 16 fragment. The warp
+multiplies fp16 fragments of A and B on the tensor cores, accumulates in fp32
+and applies αD + βC before rounding once to fp16.
+
 ## Formulation
 
 $$

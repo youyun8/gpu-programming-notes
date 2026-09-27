@@ -12,13 +12,19 @@ status: solved
 
 **平台：** Tensara · **難度：** easy · [題目敘述](https://tensara.org/problems/cosine-similarity)
 
-## 問題
+## 題意
 
 對 $N$ 組長度為 $D$ 的 float32 向量配對（`predictions` 的第 $i$ 列與 `targets` 的第 $i$ 列），輸出餘弦*距離*
 $1 - \cos(\mathbf{p}_i, \mathbf{t}_i)$。參考實作為
 `1 - F.cosine_similarity(p, t, dim=1)`，其中 $\epsilon = 10^{-8}$。檢查誤差為 `rtol = atol = 1e-4`。
 
-## 公式
+## 圖解
+
+![逐列的餘弦距離：1 − (p · t) / (‖p‖ ‖t‖)](figure.svg)
+
+每一列是一對向量，只有兩者之間的夾角 θ 有影響。區塊一次掃過資料，同時歸約內積與兩個平方範數，輸出 1 − cos θ。
+
+## 數學表述
 
 $$
 \text{out}_i = 1 - \frac{\mathbf{p}_i\cdot\mathbf{t}_i}{\sqrt{\max\bigl(\lVert\mathbf{p}_i\rVert^2\,\lVert\mathbf{t}_i\rVert^2,\ \epsilon^2\bigr)}}, \qquad
@@ -40,7 +46,7 @@ $$
 $\max(\epsilon, \lVert\mathbf{p}\rVert)\cdot\max(\epsilon, \lVert\mathbf{t}\rVert)$；
 目前的 PyTorch 則如上式，限制平方範數乘積的下限。兩者只會在某個範數小於 $10^{-8}$ 時出現差異，而隨機測試資料不會發生這種情況。
 
-## 方法
+## 解題思路
 
 1. **每列使用一個執行緒區塊**（256 個執行緒）。每個執行緒跨步走訪該列，並在一趟處理中累加三個總和
    $\sum pt$、$\sum p^2$、$\sum t^2$，因此每個輸入元素只載入一次。
@@ -73,7 +79,7 @@ $$
 所有測試案例（官方大小的縮小版本）皆已在
 [cuemu](../../tools/cuemu/README.md) 上通過，並與 PyTorch 參考實作比對。
 
-## 相關內容
+## 延伸閱讀
 
 - [L2 範數](../l2-norm/)、[三元組邊界損失](../triplet-margin/)、
   LeetGPU [內積](../../leetgpu/017-dot-product/)。

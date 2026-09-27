@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 282" width="720" height="282" class="fig-svg" role="img">
+<title>Parallel reduction: partial sums combined as a balanced tree</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-004-reduction-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-004-reduction-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-004-reduction-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-004-reduction-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-004-reduction-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-004-reduction-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-004-reduction-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="282" class="fig-paper"/>
+<text x="136" y="38" text-anchor="end" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">thread sums</text>
+<rect x="150" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="176" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="212" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="238" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="274" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="300" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="336" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="362" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="398" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="424" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">5</text>
+<rect x="460" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="486" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">9</text>
+<rect x="522" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="548" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="584" y="24" width="52" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="610" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">6</text>
+<line x1="176" y1="52" x2="207" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="238" y1="52" x2="207" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="300" y1="52" x2="331" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="362" y1="52" x2="331" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="424" y1="52" x2="455" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="486" y1="52" x2="455" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="548" y1="52" x2="579" y2="74" class="s-muted" stroke-width="1"/>
+<line x1="610" y1="52" x2="579" y2="74" class="s-muted" stroke-width="1"/>
+<rect x="181" y="74" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="207" y="88" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="305" y="74" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="331" y="88" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">5</text>
+<rect x="429" y="74" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="455" y="88" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">14</text>
+<rect x="553" y="74" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="579" y="88" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">8</text>
+<text x="136" y="88" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">warp shuffle</text>
+<line x1="207" y1="102" x2="269" y2="124" class="s-muted" stroke-width="1"/>
+<line x1="331" y1="102" x2="269" y2="124" class="s-muted" stroke-width="1"/>
+<line x1="455" y1="102" x2="517" y2="124" class="s-muted" stroke-width="1"/>
+<line x1="579" y1="102" x2="517" y2="124" class="s-muted" stroke-width="1"/>
+<rect x="243" y="124" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="269" y="138" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">9</text>
+<rect x="491" y="124" width="52" height="28" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="517" y="138" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">22</text>
+<text x="136" y="138" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">shared memory</text>
+<line x1="269" y1="152" x2="393" y2="174" class="s-muted" stroke-width="1"/>
+<line x1="517" y1="152" x2="393" y2="174" class="s-muted" stroke-width="1"/>
+<rect x="367" y="174" width="52" height="28" rx="4" class="f-c2 s-c" stroke-width="1.2"/>
+<text x="393" y="188" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">31</text>
+<text x="136" y="188" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">across blocks</text>
+<text x="453" y="188" text-anchor="start" dominant-baseline="central" class="fig-txt t-c fig-small">S = Σ x<tspan baseline-shift="sub" font-size="75%">i</tspan></text>
+<text x="20" y="226" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Each thread first sums many elements in a grid-stride loop (top row);</text>
+<text x="20" y="243" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">lanes, warps and blocks then combine their partial sums. The tree has</text>
+<text x="20" y="260" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">height ≈ log₂ N, so rounding error grows much more slowly than in a loop.</text>
+</svg>

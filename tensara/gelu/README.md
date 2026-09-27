@@ -18,6 +18,14 @@ Apply GELU with the **tanh approximation** elementwise to an
 $M\times N$ float32 matrix (`F.gelu(x, approximate="tanh")`). Test matrices go from $4096\times4096$ to $8192\times8192$ (up to 67 M elements). The
 check is `rtol = 1e-4`, `atol = 2e-5`.
 
+## Visual Overview
+
+![GELU with the tanh approximation, practically on top of the exact erf curve](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores. The dashed exact curve differs from
+the approximation by less than 0.001 on this range.
+
 ## Formulation
 
 The exact GELU weights $x$ by the probability that a standard normal

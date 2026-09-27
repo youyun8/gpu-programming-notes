@@ -18,6 +18,13 @@ Expand an MXFP8 matrix (E4M3 bytes plus row-major E8M0 scales per 32
 elements) to FP32 with TorchAO semantics. Sizes up to $8192\times4096$;
 `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![MXFP8 dequantisation: each E4M3 byte times its block's power-of-two scale](figure.svg)
+
+Each byte decodes to an E4M3 value, which is multiplied by the block scale
+2^(u − 127); both steps are exact.
+
 ## Formulation
 
 $$
@@ -29,6 +36,8 @@ $$
 | $q_{ij}$ | E4M3 byte of element $(i, j)$ |
 | $u$ | Scale bytes, $M\times K/32$ |
 | out | FP32 result |
+
+### The E4M3 (FP8) Format
 
 **E4M3 (FP8)** has 1 sign, 4 exponent and 3 mantissa bits, bias 7,
 no infinities, and codes `0x7F`/`0xFF` are NaN:
@@ -42,6 +51,8 @@ $$
 | $b$ | The byte |
 | $s, e, f$ | Sign bit, 4-bit exponent field, 3-bit mantissa field |
 | 448 | Largest finite value ($e = 15$, $f = 6$) |
+
+### The E8M0 Block Scale
 
 **E8M0** (the MX block scale) is a bare power of two:
 

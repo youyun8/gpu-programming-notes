@@ -19,6 +19,14 @@ Leaky ReLU with slope $\alpha = 0.01$ on $N$ float32 values
 tolerance `1e-6`). Unlike ReLU it keeps a small gradient for negative
 inputs, which avoids "dead" units during training.
 
+## Visual Overview
+
+![Leaky ReLU keeps a small slope α = 0.01 for negative inputs](figure.svg)
+
+The x-axis extends to −40 so the gentle negative slope becomes visible: at x =
+−40 the output is −0.4 (red dot). The dashed line is plain ReLU for
+comparison.
+
 ## Formulation
 
 $$

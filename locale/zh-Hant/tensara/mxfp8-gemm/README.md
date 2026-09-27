@@ -12,11 +12,17 @@ status: solved
 
 **平台：** Tensara · **難度：** 困難 · [題目說明](https://tensara.org/problems/mxfp8-gemm)
 
-## 問題
+## 題意
 
 以 FP32 計算 $C = \hat{A}\hat{B}^{\mathsf T}$，其中 $A$（$M\times K$）和 $B$（$N\times K$）皆為 MXFP8 張量：每個元素是 E4M3，每 32 個元素共用一個 E8M0 縮放值，縮放值採用 `to_mx(..., is_swizzled_scales=True)` 產生的**交錯 128×4 配置**。參考實作為 `torch._scaled_mm`。檢查條件為 `rtol = 2e-2`、`atol = 5e-2`。
 
-## 公式
+## 圖解
+
+![MXFP8 GEMM：32 個一組的 E4M3 區塊，搭配 2 的冪縮放，C = Â B̂ᵀ](figure.svg)
+
+結構與 MXFP4 相同，只是元素改為 E4M3：區塊乘積在低精度 Tensor Core 上計算，每個區塊貢獻 σᴬ σᴮ 乘上其部分和。
+
+## 數學表述
 
 $$
 c_{ij} = \sum_{\ell=0}^{K-1} \hat{A}_{i\ell}\,\hat{B}_{j\ell}, \qquad
@@ -30,6 +36,8 @@ $$
 | $c$ | 輸出，$M\times N$（FP32） |
 | $u^A, u^B$ | E8M0 縮放值位元組（交錯排列） |
 
+### 依區塊重組總和
+
 由於每個 32 元素區塊共用一個縮放值，可依區塊重新組合總和；張量核心的區塊縮放 MMA 正是採用這種方式：
 
 $$
@@ -41,6 +49,8 @@ $$
 | $\beta$ | 沿 $K$ 的區塊索引 |
 | $\sigma^A_{i\beta}, \sigma^B_{j\beta}$ | 兩個區塊縮放值 |
 | $x^A, x^B$ | 解碼後、套用縮放前的元素值 |
+
+### E4M3（FP8）格式
 
 **E4M3（FP8）**包含 1 個符號位元、4 個指數位元和 3 個尾數位元，偏差值為 7，沒有無限大，而編碼 `0x7F`/`0xFF` 代表 NaN：
 
@@ -54,6 +64,8 @@ $$
 | $s, e, f$ | 符號位元、4 位元指數欄位、3 位元尾數欄位 |
 | 448 | 最大有限值（$e = 15$、$f = 6$） |
 
+### E8M0 區塊縮放值
+
 **E8M0**（MX 區塊縮放值）是純粹的 2 次方：
 
 $$
@@ -64,7 +76,9 @@ $$
 |---|---|
 | $u$ | 縮放值位元組（帶偏差的指數） |
 
-**交錯的縮放值配置。**區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
+### 交錯的縮放值配置
+
+區塊縮放張量核心 MMA（cuBLAS / CUTLASS、TorchAO `is_swizzled_scales=True`、FlashInfer）會把含 $R$ 列、$C$ 個縮放值欄的矩陣，儲存在 512 位元組的 $128\times4$ 單元中：
 
 $$
 \operatorname{idx}(r, c) = \Bigl(\bigl\lfloor \tfrac{r}{128} \bigr\rfloor \Bigl\lceil \tfrac{C}{4} \Bigr\rceil + \bigl\lfloor \tfrac{c}{4} \bigr\rfloor\Bigr)\cdot 512 +
@@ -80,7 +94,7 @@ $$
 
 在一個單元內，$r, r+32, r+64, r+96$ 各列會交錯排列，因此一次 16 位元組載入就能提供某個執行緒所需的 4 列、共 4 個縮放值。
 
-## 方法
+## 解題思路
 
 採用 Tensara 各矩陣乘法頁面所使用、以暫存器分塊的 SGEMM 之區塊縮放版本（`blockScaledGemm`）：
 
@@ -103,7 +117,7 @@ $$
 
 FP8 運算元比 FP32 小 4 倍，因此對中等尺寸而言，此核心甚至比 SGEMM 更受運算量限制；每個暫存元素只需幾個整數解碼運算，且其成本可分攤到 64 次 FMA。
 
-## 注意事項
+## 常見陷阱
 
 - **交錯縮放值**：若以按列優先方式建立索引，所有 $r \bmod 128 \ge 32$ 的區塊都會讀到錯誤縮放值。
 - **$B$ 是 $N\times K$**：這是「NT」乘積。
@@ -113,6 +127,6 @@ FP8 運算元比 FP32 小 4 倍，因此對中等尺寸而言，此核心甚至�
 
 所有測試案例（官方尺寸的縮小版本）都已在 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [MXFP4 GEMM](../mxfp4-gemm/)、[NVFP4 GEMM](../nvfp4-gemm/)、[MXFP8 量化](../mxfp8-quantize/)、[矩陣乘法](../matrix-multiplication/)。

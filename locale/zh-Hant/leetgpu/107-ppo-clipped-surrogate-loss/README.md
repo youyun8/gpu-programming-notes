@@ -12,11 +12,17 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/ppo-clipped-surrogate-loss)
 
-## 問題
+## 題意
 
 **PPO**（近端策略最佳化）的截斷代理損失，用於 LLM 的 RLHF。給定每個權杖的優勢值，以及目前策略與舊策略下已取樣權杖的對數機率（皆為 $B\times S$ float32），傳回純量損失（容許誤差 `1e-4`）。
 
-## 公式
+## 圖解
+
+![PPO 的截斷目標：比值超出 1 ± ε 之後不再得到額外獎勵](figure.svg)
+
+優勢為正（綠）時，r > 1 + ε 後目標值不再增加；優勢為負（紅）時，r < 1 − ε 後不再改善。損失是所有 token 目標值平均的相反數。
+
+## 數學表述
 
 $$
 r_{b,s} = \exp\bigl(\log\pi_{b,s} - \log\pi^{\text{old}}_{b,s}\bigr), \qquad
@@ -40,7 +46,7 @@ $$
 
 **為何取最小值。** 當 $A > 0$ 時，目標在 $r$ 超過 $1+\varepsilon$ 後就不再獎勵其增加。當 $A < 0$ 時，目標在比率低於 $1-\varepsilon$ 後就不再獎勵其降低。因此一次更新無法讓策略偏離舊策略太遠。
 
-## 方法
+## 解題思路
 
 每個權杖的對應運算都是逐元素的，因此可融合到[歸約](../004-reduction/)的兩階段歸約中：
 
@@ -62,7 +68,7 @@ $$
 
 在任何實際大小下，核心都受記憶體頻寬限制。在訓練時，它會與產生 $\log\pi$ 的 log-softmax gather 融合。
 
-## 常見問題
+## 常見陷阱
 
 - **正負號。** 損失是**負的**平均值。
 - **範圍限制順序。** 對有效的 $\varepsilon$ 而言，`fminf(fmaxf(r, 1-ε), 1+ε)` 與 `torch.clamp` 相同。
@@ -72,6 +78,6 @@ $$
 
 所有 LeetGPU 測試案例都以 `1e-4` 容許誤差在 [cuemu](../../tools/cuemu/README.md) 上通過，涵蓋正負優勢，以及截斷範圍兩側的比率。
 
-## 相關內容
+## 延伸閱讀
 
 - [GRPO 代理損失](../109-grpo-surrogate-loss/)、[DPO 損失](../108-dpo-sequence-loss/)、[GAE 反向掃描](../110-gae-reverse-scan/)、[數值截斷](../062-value-clipping/)。

@@ -94,6 +94,8 @@ same address: a broadcast, which never conflicts.
 
 ## 4. The Loads, Stores and the Transposed $A$ Tile
 
+### 4.1 Loading One Slice
+
 Each $k$ slice of the block is a $128\times8$ tile of $A$ and an
 $8\times128$ tile of $B$: 256 `float4`s each, one per thread.
 
@@ -109,6 +111,8 @@ a_s[a_col + 2][a_row] = av.z;
 a_s[a_col + 3][a_row] = av.w;
 *reinterpret_cast<float4*>(&b_s[b_row][b_col]) = bv;
 ```
+
+### 4.2 Four Details of the Stores
 
 - **$B$** arrives as `float4` along a row and stays row-major, so its store
   is one `STS.128`.
@@ -128,6 +132,8 @@ a_s[a_col + 3][a_row] = av.w;
   `float4` is either entirely inside or entirely outside the matrix.
   Otherwise the loads fall back to 4 scalar loads. The host picks the
   instantiation.
+
+### 4.3 The Inner Loop
 
 The inner loop is then four `LDS.128` and 64 FMAs:
 

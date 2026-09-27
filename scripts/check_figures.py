@@ -4,6 +4,7 @@
     pip install playwright && python3 -m playwright install chromium   # once
     python3 scripts/check_figures.py [tutorials/figures/x.svg ...]
 
+Without arguments it checks tutorials/figures/*.svg and every problem's figure.svg.
 Each SVG is rendered in headless Chromium at its natural size and every
 <text> element is measured. A figure fails when a label
 
@@ -272,7 +273,9 @@ def alignment(m):
 def main(argv):
     from playwright.sync_api import sync_playwright
 
-    files = [Path(a) for a in argv] or sorted(FIGURES.glob("*.svg"))
+    files = [Path(a) for a in argv] or (sorted(FIGURES.glob("*.svg"))
+                                        + sorted(ROOT.glob("leetgpu/*/figure.svg"))
+                                        + sorted(ROOT.glob("tensara/*/figure.svg")))
     failed = 0
     with sync_playwright() as p:
         kwargs = {"args": ["--no-sandbox"]}
@@ -284,7 +287,7 @@ def main(argv):
             problems = check(page, f)
             if problems:
                 failed += 1
-                print(f"{f.name}:")
+                print(f"{f.resolve().relative_to(ROOT) if f.resolve().is_relative_to(ROOT) else f}:")
                 for pr in problems:
                     print(f"  {pr}")
         browser.close()

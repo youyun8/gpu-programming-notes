@@ -127,10 +127,12 @@ class Svg:
     def arrow(self, x1, y1, x2, y2, role="ink", sw=1.4, dash=None, both=False):
         self.line(x1, y1, x2, y2, stroke=f"s-{role}", sw=sw, dash=dash, arrow=role, arrow_start=both)
 
-    def path(self, d, stroke="s-ink", fill="fig-none", sw=1.2, dash=None, arrow=None):
+    def path(self, d, stroke="s-ink", fill="fig-none", sw=1.2, dash=None, arrow=None, both=False):
         extra = f' stroke-dasharray="{dash}"' if dash else ""
         if arrow:
             extra += f' marker-end="url(#{self.name}-ah-{arrow})"'
+            if both:
+                extra += f' marker-start="url(#{self.name}-ah-{arrow})"'
         self.add(f'<path d="{d}" class="{fill} {stroke}" stroke-width="{_f(sw)}" '
                  f'stroke-linejoin="round" stroke-linecap="round"{extra}/>')
 

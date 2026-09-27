@@ -19,6 +19,14 @@ elements (4 GB per vector at the top end). The check is `rtol = 2e-4`,
 `atol = 1e-4`. It is the "hello world" of CUDA, but at $2^{30}$ elements
 64-bit indexing and a sane grid size matter.
 
+## Visual Overview
+
+![Vector addition at up to 2³⁰ elements: 64-bit indices and a grid-stride loop](figure.svg)
+
+The access pattern is the same as in any elementwise kernel, but at 2³⁰
+elements the index needs 64 bits and a fixed-size grid walks the array with a
+grid-stride loop.
+
 ## Formulation
 
 $$

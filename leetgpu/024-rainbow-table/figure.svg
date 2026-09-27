@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 247" width="720" height="247" class="fig-svg" role="img">
+<title>Rainbow-table chain: R rounds of 32-bit FNV-1a, one thread per input word</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-024-rainbow-table-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-024-rainbow-table-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-024-rainbow-table-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-024-rainbow-table-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-024-rainbow-table-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-024-rainbow-table-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-024-rainbow-table-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="247" class="fig-paper"/>
+<rect x="30" y="40" width="80" height="34" rx="4" class="f-a s-a" stroke-width="1.2"/>
+<text x="70" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">x<tspan baseline-shift="sub" font-size="75%">i</tspan></text>
+<rect x="145" y="40" width="80" height="34" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="185" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">H</text>
+<line x1="112" y1="57" x2="143" y2="57" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="260" y="40" width="80" height="34" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="300" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">H</text>
+<line x1="227" y1="57" x2="258" y2="57" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="375" y="40" width="80" height="34" rx="4" class="fig-paper s-muted" stroke-width="1.2"/>
+<text x="415" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">…</text>
+<line x1="342" y1="57" x2="373" y2="57" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="490" y="40" width="80" height="34" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="530" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">H</text>
+<line x1="457" y1="57" x2="488" y2="57" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="605" y="40" width="80" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="645" y="57" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">y<tspan baseline-shift="sub" font-size="75%">i</tspan></text>
+<line x1="572" y1="57" x2="603" y2="57" class="s-muted" stroke-width="1.1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<line x1="145" y1="88" x2="570" y2="88" class="s-d" stroke-width="1"/>
+<line x1="145" y1="84" x2="145" y2="92" class="s-d" stroke-width="1"/>
+<line x1="570" y1="84" x2="570" y2="92" class="s-d" stroke-width="1"/>
+<text x="357.5" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-d fig-small">R rounds (R ≤ 100)</text>
+<text x="30" y="126" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">one round H(x): consume the 4 bytes of x, least significant first</text>
+<rect x="30" y="140" width="120" height="40" rx="4" class="fig-paper s-ink" stroke-width="1.2"/>
+<text x="90" y="160" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h = 0x811C9DC5</text>
+<rect x="164" y="140" width="120" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="224" y="153" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h ^= byte 0</text>
+<text x="224" y="167" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h *= P</text>
+<line x1="152" y1="157" x2="162" y2="157" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="298" y="140" width="120" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="358" y="153" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h ^= byte 1</text>
+<text x="358" y="167" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h *= P</text>
+<line x1="286" y1="157" x2="296" y2="157" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="432" y="140" width="120" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="492" y="153" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h ^= byte 2</text>
+<text x="492" y="167" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h *= P</text>
+<line x1="420" y1="157" x2="430" y2="157" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<rect x="566" y="140" width="120" height="40" rx="4" class="f-b s-b" stroke-width="1.2"/>
+<text x="626" y="153" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h ^= byte 3</text>
+<text x="626" y="167" text-anchor="middle" dominant-baseline="central" class="fig-mono t-ink fig-tiny">h *= P</text>
+<line x1="554" y1="157" x2="564" y2="157" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-024-rainbow-table-ah-muted)"/>
+<text x="30" y="208" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">P = 16777619 (0x01000193), all arithmetic mod 2³². 8 bytes of memory traffic</text>
+<text x="30" y="225" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">buy up to 800 integer operations per thread: compute-bound, not memory-bound.</text>
+</svg>

@@ -19,6 +19,14 @@ $K_h\times K_w$ kernel (zero padding), followed by ReLU and then
 HardSwish, all in one call. Sizes go up to $2048^2$ with $13\times13$
 kernels. The check is `rtol = 9e-5`, `atol = 2e-4`.
 
+## Visual Overview
+
+![Conv2d, then ReLU, then HardSwish: the epilogue applied to each convolution output](figure.svg)
+
+The curve is the combined activation applied to a convolution output C. It is
+0 for negative C, a gentle parabola up to C = 3 and the identity beyond; it
+runs in registers before the single store.
+
 ## Formulation
 
 $$

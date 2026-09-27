@@ -21,6 +21,14 @@ the computational core of **state-space models** (S4, Mamba, H3) and of
 linear RNNs. It looks inherently sequential, but it is a **scan** over affine
 maps.
 
+## Visual Overview
+
+![Linear recurrence hₜ = aₜ hₜ₋₁ + xₜ as a scan over affine maps](figure.svg)
+
+Each state is the previous state times aₜ plus the new input xₜ. Writing a
+step as the pair (aₜ, xₜ) makes composition associative, so the sequential
+chain can be computed as a parallel scan.
+
 ## Formulation
 
 $$

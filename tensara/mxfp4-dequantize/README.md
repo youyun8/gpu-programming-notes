@@ -19,6 +19,13 @@ per 32 elements) back to an $M\times K$ FP32 matrix, with TorchAO
 `MXTensor.to_dtype` semantics. Sizes up to $8192\times4096$; the check is
 `rtol = atol = 1e-3`.
 
+## Visual Overview
+
+![MXFP4 dequantisation: decode two E2M1 codes per byte and multiply by the block's power of two](figure.svg)
+
+Each byte holds two 4-bit codes (low nibble first). The codes decode to small
+values, and the whole block is multiplied by its shared scale 2^(u − 127).
+
 ## Formulation
 
 $$
@@ -33,6 +40,8 @@ $$
 | $u$ | Scale bytes, $M\times K/32$, row-major |
 | out | FP32 result, $M\times K$ |
 
+### The E2M1 (FP4) Element Format
+
 **E2M1 (FP4)** has 1 sign, 2 exponent and 1 mantissa bit (bias 1). Its
 eight magnitudes and the decode rule are
 
@@ -46,6 +55,8 @@ $$
 | $c$ | 4-bit code; two codes per byte, element $2i$ in the **low** nibble |
 | $c_3$ | Sign bit (bit 3) |
 | $m$ | 3-bit magnitude code, 0 … 7 |
+
+### The E8M0 Block Scale
 
 **E8M0** (the MX block scale) is a bare power of two:
 

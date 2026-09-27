@@ -22,6 +22,14 @@ normalisation of Stable Diffusion's U-Net and many ResNets. Unlike BatchNorm,
 it does not depend on the batch size. $G = 1$ gives LayerNorm, and $G = C$
 gives InstanceNorm.
 
+## Visual Overview
+
+![GroupNorm: statistics per (sample, group of channels) over all H·W positions](figure.svg)
+
+Rows are channels and columns are spatial positions of one sample. The
+highlighted rows form one group of two channels; its mean and variance
+normalise exactly those rows.
+
 ## Formulation
 
 $$

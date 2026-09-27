@@ -19,6 +19,14 @@ tests) elementwise to an $M\times N$ float32 matrix ($4096\times4096$ and
 $6144\times4096$), matching `F.leaky_relu(x, alpha)`. The check is
 `rtol = 1e-4`, `atol = 1e-6`.
 
+## Visual Overview
+
+![Leaky ReLU with a runtime slope α (α = 0.2 drawn, the largest test value)](figure.svg)
+
+Each element of the M × N matrix is mapped independently, so the kernel is a
+pure stream of float4 loads and stores. With α = 0.2, x = −4 maps to −0.8 (red
+dot).
+
 ## Formulation
 
 $$

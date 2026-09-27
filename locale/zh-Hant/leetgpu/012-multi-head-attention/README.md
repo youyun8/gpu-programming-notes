@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** hard · [題目說明](https://leetgpu.com/challenges/multi-head-attention)
 
-## 問題
+## 題意
 
 計算不含投影的多頭自注意力。$Q, K, V$ 是
 $N \times d_{\text{model}}$ float32 矩陣，沿欄方向分成 $h$ 個寬度
@@ -23,7 +23,13 @@ $2 \le d_{\text{model}} \le 1024$，$1 \le h \le d_{\text{model}}$；
 可能從 1（$h = d_{\text{model}}$）到 1024（$h = 1$），
 無法為每列採用固定的暫存器或共享記憶體預算。
 
-## 公式
+## 圖解
+
+![多頭注意力：每個 head 是 Q、K、V 中的一段欄位，以步幅定址](figure.svg)
+
+每種顏色代表一個 head，也就是 Q、K、V 中寬度為 dₖ 的一段欄位。各 head 各自計算注意力，再寫回輸出的相同欄位，所以切分與串接 head 都不必搬移資料。
+
+## 數學表述
 
 $$
 \operatorname{MultiHead}(Q, K, V) = \operatorname{Concat}(H_0, \dots, H_{h-1}), \qquad
@@ -56,7 +62,7 @@ $r \cdot d_{\text{model}} + i\,d_k + c$。因此一個頭只是一個基底指�
 **不需搬移資料**。核心接收小型 `AttnGeom` 結構（列數、頭維度、列跨距、
 每頭偏移量、縮放值），並由因果注意力、GQA 及其他注意力變體重用。
 
-## 方法
+## 解題思路
 
 ### 網格
 
@@ -106,7 +112,7 @@ $K$ 與 $V$（8 MB）可放入 L2，因此 $\lceil N/4\rceil$ 次重讀多由 L2
 限制因素是透過共享記憶體執行的 FP32 FMA 吞吐量。自然的下一步是張量核心版本
 （bf16/tf32 `mma.sync` 搭配 64 查詢分塊）。
 
-## 常見問題
+## 常見陷阱
 
 - **頭索引。** 列跨距是 $d_{\text{model}}$，不是 $d_k$。
   使用 $d_k$ 會讓第一頭以外的所有頭讀錯元素。
@@ -121,7 +127,7 @@ $K$ 與 $V$（8 MB）可放入 L2，因此 $\lceil N/4\rceil$ 次重讀多由 L2
 包括 $h = d_{\text{model}}$（$d_k = 1$）與 $h = 1$（$d_k = 1024$）。
 另以壓力測試將 $d_k = 1024$ 與 PyTorch 比較。
 
-## 相關內容
+## 延伸閱讀
 
 - [Softmax 注意力](../006-softmax-attention/)、[多頭交叉注意力](../026-multi-head-cross-attention/)、
   [GQA](../080-grouped-query-attention/)、[MLA](../114-multi-head-latent-attention/)。

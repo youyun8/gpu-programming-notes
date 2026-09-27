@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 269" width="720" height="269" class="fig-svg" role="img">
+<title>Vector addition: thread i reads A[i] and B[i] and writes C[i]</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-001-vector-add-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-001-vector-add-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-001-vector-add-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-001-vector-add-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-001-vector-add-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-001-vector-add-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-001-vector-add-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="269" class="fig-paper"/>
+<text x="170" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">0</text>
+<text x="216" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<text x="262" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">2</text>
+<text x="308" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">3</text>
+<text x="354" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">4</text>
+<text x="400" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">5</text>
+<text x="446" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">6</text>
+<text x="492" y="22" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">7</text>
+<text x="136" y="22" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">thread i</text>
+<text x="136" y="52" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">A</text>
+<rect x="150" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="170" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1.5</text>
+<rect x="196" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="216" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="242" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="262" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="288" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="308" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0.5</text>
+<rect x="334" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="354" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="380" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="400" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="426" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="446" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−2</text>
+<rect x="472" y="38" width="40" height="28" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="492" y="52" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<text x="170" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="216" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="262" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="308" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="354" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="400" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="446" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="492" y="77" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">+</text>
+<text x="136" y="102" text-anchor="end" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">B</text>
+<rect x="150" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="170" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0.5</text>
+<rect x="196" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="216" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="242" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="262" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="288" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="308" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2.5</text>
+<rect x="334" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="354" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="380" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="400" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="426" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="446" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="472" y="88" width="40" height="28" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="492" y="102" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<line x1="170" y1="118" x2="170" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="216" y1="118" x2="216" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="262" y1="118" x2="262" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="308" y1="118" x2="308" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="354" y1="118" x2="354" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="400" y1="118" x2="400" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="446" y1="118" x2="446" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<line x1="492" y1="118" x2="492" y2="144" class="s-muted" stroke-width="1" marker-end="url(#leetgpu-001-vector-add-ah-muted)"/>
+<text x="136" y="160" text-anchor="end" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">C</text>
+<rect x="150" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="170" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="196" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="216" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="242" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="262" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="288" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="308" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="334" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="354" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="380" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="400" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="426" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="446" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="472" y="146" width="40" height="28" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="492" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<line x1="150" y1="186" x2="512" y2="186" class="s-muted" stroke-width="1"/>
+<line x1="150" y1="182" x2="150" y2="190" class="s-muted" stroke-width="1"/>
+<line x1="512" y1="182" x2="512" y2="190" class="s-muted" stroke-width="1"/>
+<text x="331" y="204" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">consecutive threads touch consecutive addresses → coalesced</text>
+<text x="20" y="230" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">i = blockIdx.x · blockDim.x + threadIdx.x; threads with i ≥ N return.</text>
+<text x="20" y="247" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">12 bytes of traffic per FLOP: the kernel is memory-bound.</text>
+</svg>

@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/2d-jacobi-stencil)
 
-## 問題
+## 題意
 
 在 `rows × cols` 的 float32 網格上執行一次五點 Laplace 樣板的 Jacobi
 掃描（$\le 16\,384^2$；基準測試 $8192^2$；容許誤差 `1e-5`）。內部儲存格
@@ -20,7 +20,13 @@ status: solved
 Laplace／Poisson 方程式（熱擴散、靜電學）。此樣板是典型的
 **記憶體受限、高重用率**存取模式。
 
-## 公式
+## 圖解
+
+![Jacobi 五點模板：每個內部格點變成四個鄰居的平均](figure.svg)
+
+四個藍色格是標示輸出格的鄰居，中心點本身不參與計算。輸出寫到另一個網格，因此不會讀到已經更新過的值。
+
+## 數學表述
 
 $$
 u'_{ij} = \begin{cases}
@@ -39,7 +45,7 @@ $$
 $u^{(t+1)} = D^{-1}(b - (L + U)u^{(t)})$ 的一步。輸入絕不會原地更新，
 這正是 Jacobi 與 Gauss–Seidel 的差異。
 
-## 方法
+## 解題思路
 
 - 使用由 $32 \times 8$ 區塊組成的二維網格，每個儲存格一個執行緒，
   `threadIdx.x` 沿著欄方向。
@@ -86,6 +92,6 @@ $$
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上通過，
 包括 1 × 1、1 × N 和 2 × 2 網格。
 
-## 相關內容
+## 延伸閱讀
 
 - [二維卷積](../010-2d-convolution/)、[高斯模糊](../028-gaussian-blur/)。

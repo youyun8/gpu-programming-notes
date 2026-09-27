@@ -19,6 +19,13 @@ token) is normalised over its $C$ features, then scaled and shifted by
 per-feature weight and bias ($N \le 65\,536$, $C \le 4096$,
 $\varepsilon = 10^{-5}$; benchmark $N = 65\,536$, $C = 512$; tolerance `1e-4`).
 
+## Visual Overview
+
+![LayerNorm: statistics per row over its C features, then a per-feature affine](figure.svg)
+
+The highlighted row is one token. Its mean and variance come from its own C
+values, and the per-feature w and b are shared by all rows.
+
 ## Formulation
 
 $$

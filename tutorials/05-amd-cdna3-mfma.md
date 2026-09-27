@@ -354,6 +354,8 @@ $T\cdot\lceil K/B_K\rceil$ loop iterations (chapter 07).
 
 ## Exercises
 
+### Modifying the Kernel
+
 1. Change the teaching kernel to 32×32×8 MFMAs
    (`__builtin_amdgcn_mfma_f32_32x32x8bf16_1k`). Work out the new operand
    and accumulator layout with the Matrix Instruction Calculator.
@@ -382,6 +384,8 @@ $T\cdot\lceil K/B_K\rceil$ loop iterations (chapter 07).
 3. Replace the register-staged loads with direct-to-LDS loads: use
    `__builtin_amdgcn_global_load_lds` (clang 19 or newer), or inline asm.
    Compare the instruction counts in the loop.
+
+### Estimating
 
 4. Compute $\eta_{\text{fill}}$ for $M = 4096$, $N = 1024$ with
    $256\times256$ tiles on MI300X. How would split-K with $S = 4$ change it?

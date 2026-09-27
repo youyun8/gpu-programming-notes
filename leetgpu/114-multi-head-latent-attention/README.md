@@ -23,6 +23,14 @@ With weight absorption, attention runs entirely in the latent space
 (tolerance `1e-3`). MLA cuts KV-cache memory by more than an order of
 magnitude compared with MHA.
 
+## Visual Overview
+
+![MLA decode: attention runs in the compressed latent space of the KV cache](figure.svg)
+
+Each cache row stores a latent vector cₜ and a small rotary key. The query is
+folded into the latent space (weight absorption), so per-head keys and values
+are never materialised.
+
 ## Formulation
 
 For head $h$, with query $\mathbf q_h = [\mathbf q^{\text{nope}}_h\,|\,\mathbf q^{\text{pe}}_h]$ and cache row $t$ = $[\mathbf c_t\,|\,\mathbf k^{\text{pe}}_t]$:

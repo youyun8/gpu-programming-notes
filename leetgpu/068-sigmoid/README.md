@@ -17,6 +17,13 @@ status: solved
 Apply the logistic sigmoid to $N$ float32 values ($N \le 10^8$, finite
 inputs; benchmark $N = 5\times10^7$; tolerance `1e-5`).
 
+## Visual Overview
+
+![The logistic sigmoid squashes any input into (0, 1)](figure.svg)
+
+The curve passes through (0, 0.5) (red dot) and approaches 0 and 1 at the
+ends. The plain formula already handles both extremes correctly in float32.
+
 ## Formulation
 
 $$

@@ -12,11 +12,17 @@ status: solved
 
 **平台：** Tensara · **難度：** 簡單 · [題目說明](https://tensara.org/problems/relu)
 
-## 問題
+## 題意
 
 對 $M\times N$ float32 矩陣逐元素套用 ReLU，結果需符合 `torch.relu`。測試矩陣從 $4096\times4096$ 到 $8192\times8192$（最多 6,700 萬個元素）。檢查條件為 `rtol = 6e-5`、`atol = 3e-5`。這是最簡單的頻寬效能測試：運算只需一次 `max`。
 
-## 公式
+## 圖解
+
+![矩陣上的 ReLU：最簡單的頻寬基準測試](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。
+
+## 數學表述
 
 $$
 C_{ij} = \operatorname{ReLU}(A_{ij}) = \max(A_{ij}, 0)
@@ -28,7 +34,7 @@ $$
 | $C$ | 輸出矩陣，形狀相同 |
 | $\operatorname{ReLU}$ | 修正線性單元 |
 
-## 方法
+## 解題思路
 
 所有 Tensara 逐元素問題都共用同一種核心形態：
 
@@ -54,7 +60,7 @@ $$
 
 當尺寸為 $8192\times8192$ 時：$Q = 537$ MB，在 2 TB/s 下約需 0.27 ms。一般能達到的最佳效能約為標稱頻寬的 85–92 %。
 
-## 注意事項
+## 常見陷阱
 
 - **NaN 處理**：`fmaxf(NaN, 0) = 0`，但 `torch.relu(NaN) = NaN`。測試資料不含 NaN；若這點很重要，可寫成 `x > 0 ? x : 0`（遇到 NaN 也會回傳 0）或 `x < 0 ? 0 : x`（會傳播 NaN）。
 - 啟動參數 `n, m` 分別是列數與欄數；只會使用兩者的乘積。
@@ -63,6 +69,6 @@ $$
 
 所有測試案例（官方尺寸的縮小版本）都已在 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [Leaky ReLU](../leaky-relu/)、[向量加法](../vector-addition/)、LeetGPU [ReLU](../../leetgpu/021-relu/)。

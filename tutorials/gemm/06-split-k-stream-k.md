@@ -39,6 +39,8 @@ second 6 % full, so $\eta = 53\%$.
 
 ## 2. Split-K
 
+### 2.1 Splitting the Reduction
+
 Split the reduction into $S$ ranges; block $(x, y, z)$ computes tile
 $(y, x)$ over range $z$ only:
 
@@ -56,6 +58,8 @@ $$
 
 ![Split-K: S partial tiles summed into C](../figures/gemm-split-k.svg)
 
+### 2.2 Combining the Partial Tiles
+
 The main loop from Vectorized Loads simply runs from `k_begin` to `k_end`. The partial
 tiles are combined in one of two ways (`./split_k --atomic` selects the
 first):
@@ -64,6 +68,8 @@ first):
 |---|---|---|---|
 | Atomic | `cudaMemset(C, 0)`, then every split does `atomicAdd` per element | $S\cdot MN\cdot 4$ bytes of atomics (resolved in L2) | No: FP32 addition order varies |
 | Workspace | Split $z$ writes its partial to `workspace[z]`; a second kernel sums $z = 0 \dots S-1$ | $2\,S\cdot MN\cdot 4$ bytes | Yes |
+
+### 2.3 Choosing the Split Factor
 
 The program chooses $S$ so that $T\cdot S \approx 2P$ while keeping at least
 4 slices of $K$ per split:
@@ -85,6 +91,8 @@ decode-time GEMMs in LLM inference ($M$ = batch, small) and is what AITER's
 
 ## 3. Stream-K
 
+### 3.1 Distributing Iterations Instead of Tiles
+
 Split-K still quantizes: $T\cdot S$ blocks of equal size on $P$ SMs.
 Stream-K removes quantization altogether by distributing *MAC-loop
 iterations* instead of tiles:
@@ -105,6 +113,8 @@ A block's range crosses tile boundaries, so a tile can be computed by
 several blocks:
 
 ![Stream-K ranges: contributors publish partial tiles, the owner adds them](../figures/gemm-stream-k-ranges.svg)
+
+### 3.2 Contributors and Owners
 
 For each tile segment in its range, block $g$ does one of three things:
 
@@ -137,7 +147,9 @@ if (seg_end < tile_end) {                        // contributor
 }
 ```
 
-Details that make this correct:
+### 3.3 Why the Protocol Is Correct
+
+Five details make it correct:
 
 - **Only the last segment of a range can be a contributor**, so one
   workspace slot per block is enough ($G\cdot B_MB_N\cdot4$ bytes: about
@@ -153,6 +165,8 @@ Details that make this correct:
 - **Determinism.** Partials are added in a fixed order, so results are
   bitwise reproducible, unlike atomics.
 - **Flags are reset per launch** (`cudaMemsetAsync`).
+
+### 3.4 Hybrid Schedules
 
 The paper also describes *hybrid* schedules: full waves of whole tiles
 first (no fix-up cost), Stream-K only for the remainder. hipBLASLt ships a

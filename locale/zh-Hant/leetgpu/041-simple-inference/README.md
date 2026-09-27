@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 簡單 · [題目敘述](https://leetgpu.com/challenges/simple-inference)
 
-## 問題
+## 題意
 
 對一個批次執行已訓練 `torch.nn.Linear` 的正向傳播：`input` 為
 $B \times d_{\text{in}}$，而 `output` 必須接收
@@ -22,7 +22,13 @@ $B \times d_{\text{out}}$
 起始程式，因此解答為 `solution.py`。重點是將該層表示成**一次融合的函式庫
 呼叫**，並直接寫入指定的輸出緩衝區。
 
-## 公式
+## 圖解
+
+![線性層就是一次帶偏差 epilogue 的 GEMM：Y = X Wᵀ + b](figure.svg)
+
+X 為 B × dᵢₙ，Wᵀ 為 dᵢₙ × dₒᵤₜ，Y 為 B × dₒᵤₜ。一次函式庫呼叫即可完成乘法並加上偏差，結果直接寫入輸出緩衝區。
+
+## 數學表述
 
 $$
 Y = X W^{\mathsf T} + \mathbf 1\,\mathbf b^{\mathsf T}, \qquad Y_{ro} = \sum_{i=0}^{d_{\text{in}}-1} X_{ri}\, W_{oi} + b_o
@@ -38,7 +44,7 @@ $$
 | $\mathbf 1$ | 全為 1 的欄向量（將偏置廣播至每一列） |
 | $Y$ | 輸出，$B \times d_{\text{out}}$ |
 
-## 方法
+## 解題思路
 
 ```python
 with torch.inference_mode():
@@ -80,7 +86,7 @@ cuBLAS 能以接近峰值的效能執行（若啟用，會使用 TF32 Tensor Cor
 
 已透過執行器的 PyTorch 路徑測試所有 LeetGPU 案例，包括有偏置與無偏置。
 
-## 相關內容
+## 延伸閱讀
 
 - [矩陣乘法](../002-matrix-multiplication/)（GEMM 內部執行的運算）、
   [LoRA 線性層](../085-lora-linear/)。

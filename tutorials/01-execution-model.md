@@ -505,6 +505,8 @@ The full solution with its cost analysis is
 
 ## Exercises
 
+### Occupancy and Waves
+
 1. A kernel uses 96 registers per thread and 20 KB of shared memory per
    256-thread block on an A100. What is its occupancy, and what limits it?
 
@@ -526,6 +528,8 @@ The full solution with its cost analysis is
     216 or 432 blocks there would be no tail.
 
     </details>
+
+### Divergence and Latency
 
 3. In `if (threadIdx.x % 4 == 0) x = expensive(x);`, what fraction of lanes
    does useful work while `expensive` runs? Rewrite the work split so that

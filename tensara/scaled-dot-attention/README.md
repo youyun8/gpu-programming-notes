@@ -19,6 +19,13 @@ $(B, H, S, E)$, matching `F.scaled_dot_product_attention` without mask or
 dropout. Test shapes range from $(16, 32, 256, 64)$ to $(8, 16, 2048, 64)$
 and $(8, 16, 512, 256)$. The check is `rtol = 2e-2`, `atol = 5e-3`.
 
+## Visual Overview
+
+![Scaled dot-product attention for every (batch, head): full softmax without a mask](figure.svg)
+
+Each (b, h) pair is an independent attention problem. A block of queries
+(green) streams over the key tiles (blue shades) with the online softmax.
+
 ## Formulation
 
 For every batch $b$ and head $h$ independently:

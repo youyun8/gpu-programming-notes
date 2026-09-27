@@ -21,6 +21,14 @@ is how modern low-precision formats (DeepSeek-V3's FP8 weights, MX formats)
 keep quantisation error local. The kernel is the "unpack" step that runs
 before, or fused into, a GEMM.
 
+## Visual Overview
+
+![Tile-wise dequantisation: every T × T tile of X shares one scale from S](figure.svg)
+
+Colours match each tile of X (left) with its entry in the scale matrix S
+(right). Every element is multiplied by the scale of its tile; edge tiles may
+be partial.
+
 ## Formulation
 
 $$

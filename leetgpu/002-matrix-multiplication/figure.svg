@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 334" width="720" height="334" class="fig-svg" role="img">
+<title>Tiled matrix multiplication: one block owns a C tile and walks the inner dimension</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="leetgpu-002-matrix-multiplication-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="leetgpu-002-matrix-multiplication-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="334" class="fig-paper"/>
+<rect x="40" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="60" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="80" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="100" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="120" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="140" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="60" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="80" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="100" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="120" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="140" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="60" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="80" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="100" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="120" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="140" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="60" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="80" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="100" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="120" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="140" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="40" y="260" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="60" y="260" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="80" y="260" width="20" height="20" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="100" y="260" width="20" height="20" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="120" y="260" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="140" y="260" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="40" y="280" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="60" y="280" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="80" y="280" width="20" height="20" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="100" y="280" width="20" height="20" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="120" y="280" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="140" y="280" width="20" height="20" rx="0" class="f-a s-line" stroke-width="0.8"/>
+<rect x="40" y="180" width="120" height="120" rx="0" class="fig-none s-a" stroke-width="1.4"/>
+<rect x="190" y="30" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="30" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="30" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="30" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="30" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="290" y="30" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="190" y="50" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="50" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="50" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="50" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="50" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="290" y="50" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="190" y="70" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="70" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="70" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="70" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="70" width="20" height="20" rx="0" class="f-b2 s-line" stroke-width="0.8"/>
+<rect x="290" y="70" width="20" height="20" rx="0" class="f-b2 s-line" stroke-width="0.8"/>
+<rect x="190" y="90" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="90" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="90" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="90" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="90" width="20" height="20" rx="0" class="f-b2 s-line" stroke-width="0.8"/>
+<rect x="290" y="90" width="20" height="20" rx="0" class="f-b2 s-line" stroke-width="0.8"/>
+<rect x="190" y="110" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="110" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="110" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="110" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="110" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="290" y="110" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="190" y="130" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="130" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="130" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="130" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="130" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="290" y="130" width="20" height="20" rx="0" class="f-b s-line" stroke-width="0.8"/>
+<rect x="190" y="30" width="120" height="120" rx="0" class="fig-none s-b" stroke-width="1.4"/>
+<rect x="190" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="290" y="180" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="190" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="290" y="200" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="190" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="290" y="220" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="190" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="290" y="240" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="190" y="260" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="260" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="260" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="260" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="260" width="20" height="20" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="290" y="260" width="20" height="20" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="190" y="280" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="210" y="280" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="230" y="280" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="250" y="280" width="20" height="20" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="270" y="280" width="20" height="20" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="290" y="280" width="20" height="20" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="190" y="180" width="120" height="120" rx="0" class="fig-none s-c" stroke-width="1.4"/>
+<text x="100" y="314" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">A  (M × N)</text>
+<text x="178" y="90" text-anchor="end" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">B  (N × K)</text>
+<text x="250" y="314" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">C  (M × K)</text>
+<text x="344" y="50" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">One block computes one C tile (dark green).</text>
+<text x="344" y="67" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Per step it stages a slice of A and a slice</text>
+<text x="344" y="84" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">of B (dark blue / orange) in shared memory,</text>
+<text x="344" y="101" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">then moves on along N, the inner dimension</text>
+<text x="344" y="118" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">in this problem. Each staged value is reused</text>
+<text x="344" y="135" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">by a whole row or column of the tile.</text>
+</svg>

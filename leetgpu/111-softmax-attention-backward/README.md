@@ -22,6 +22,13 @@ kernel as much as the forward. Like the forward pass, it must avoid storing
 the $M\times N$ probability matrix: 128 MB at the benchmark size, 40 GB at the
 upper limit.
 
+## Visual Overview
+
+![Attention backward without storing P: recompute it tile by tile from Q, K and the LSE](figure.svg)
+
+The boxes show how the gradients depend on each other: P is rebuilt from Q, K
+and the saved log-sum-exp, then dV, dP, dS, dQ and dK follow tile by tile.
+
 ## Formulation
 
 Forward: $S = QK^{\mathsf T}/\sqrt d$, $P = \operatorname{softmax}_{\text{row}}(S)$, $O = PV$. Backward:

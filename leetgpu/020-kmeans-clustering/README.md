@@ -21,6 +21,14 @@ assigns every point to its nearest centroid, then moves each centroid to the
 mean of its points. Outputs are the final centroids and the labels of the
 last assignment, with tolerance `1e-4`.
 
+## Visual Overview
+
+![Lloyd's k-means: assign every point to its nearest centroid, then move the centroids](figure.svg)
+
+Left: points take the colour of their nearest centroid (square). Right: each
+centroid moves from its old position (dashed) to the mean of its points. One
+iteration of the algorithm is exactly these two steps.
+
 ## Formulation
 
 For iteration $t = 0, \dots, T-1$:

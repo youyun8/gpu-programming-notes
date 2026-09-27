@@ -21,6 +21,14 @@ $[-100, 100]$; benchmark $M = 10^4$; tolerance `1e-4`). Replacing
 $\exp(\mathbf q\cdot\mathbf k)$ by $\phi(\mathbf q)\cdot\phi(\mathbf k)$
 turns the $O(M^2 d)$ attention into $O(Md^2)$ **by associativity**.
 
+## Visual Overview
+
+![Linear attention: associativity turns an M × M product into a d × d state](figure.svg)
+
+Computing (φ(Q)φ(K)ᵀ)V builds an M × M matrix; computing φ(Q)(φ(K)ᵀV) only
+needs the d × d state S and the vector z. The bottom row is the order the
+kernel uses; the plot shows the feature map φ.
+
 ## Formulation
 
 $$

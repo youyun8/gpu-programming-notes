@@ -18,6 +18,13 @@ Multiply two symmetric $N\times N$ FP32 matrices ($N$ = 4096 … 9216).
 The check is `rtol = 1e-6`, `atol = 5e-3`, so effectively an absolute
 tolerance. The interesting question is whether symmetry helps.
 
+## Visual Overview
+
+![Symmetric inputs, general output: AB is symmetric only if A and B commute](figure.svg)
+
+Even though A and B are symmetric, their product usually is not, so all N²
+outputs are computed with the general tiled SGEMM.
+
 ## Formulation
 
 $$
@@ -70,6 +77,8 @@ All matmul pages on Tensara use the same register-blocked FP32 kernel
 5. `kTransB = true` reads $B$ as $N\times K$ ("NT", the `nn.Linear`
    weight layout) and transposes it while staging.
 
+#### Data Reuse
+
 Data reuse at each level of the hierarchy:
 
 $$
@@ -83,6 +92,8 @@ $$
 | $r_M, r_N$ | per-thread register tile: 4 × 4 |
 | $I_{\text{L2}}$ | Flops per byte loaded from L2/DRAM into shared memory |
 | $I_{\text{smem}}$ | Flops per byte read from shared memory (16 FMAs per 8 loads) |
+
+#### How Far It Gets
 
 This reaches roughly 40–60 % of FP32 peak. The next steps are the ones
 covered in the [SGEMM tutorial](../../tutorials/04-tiled-matmul.md):

@@ -20,6 +20,13 @@ runtime margin, matching `nn.TripletMarginLoss(margin)` (L2 distance,
 mean reduction). The output is one scalar. The check is
 `rtol = atol = 6e-4`.
 
+## Visual Overview
+
+![Triplet margin loss: pull the positive closer than the negative by at least m](figure.svg)
+
+The red ring has radius d(a, p) + m around the anchor. The negative lies
+inside it, so this triplet still has a positive loss.
+
 ## Formulation
 
 $$

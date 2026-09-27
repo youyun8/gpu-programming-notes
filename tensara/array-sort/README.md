@@ -19,6 +19,14 @@ with an exact check. The GPU sort of choice for fixed-width keys is LSD
 radix sort, which works on *unsigned* digits. The only twist is a one-bit
 transform that makes signed order equal unsigned order.
 
+## Visual Overview
+
+![Sorting signed int32 with radix sort: flip the sign bit so that unsigned order equals signed order](figure.svg)
+
+The table shows each value, its raw bits, and the key after flipping bit 31.
+Sorting the keys as unsigned numbers gives the ranks in the last column, which
+are the signed order.
+
 ## Formulation
 
 $$

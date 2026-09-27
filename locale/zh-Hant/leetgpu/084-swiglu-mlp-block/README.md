@@ -12,7 +12,7 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 中等 · [題目說明](https://leetgpu.com/challenges/swiglu-mlp-block)
 
-## 問題
+## 題意
 
 實作 LLaMA／Mistral／Gemma 的前饋區塊。輸入
 $X \in \mathbb R^{M\times d}$ 會經過兩個平行投影（「gate」與「up」）擴展到
@@ -22,7 +22,13 @@ $M = 512$、$d = 4096$、$d_f = 14\,336$，即 LLaMA-3 8B 的 MLP；
 容許誤差 `1e-4`）。三個 GEMM 約佔 LLM FLOP 的三分之二。可融合的部分，
 就是它們之間的逐元素閘門。
 
-## 公式
+## 圖解
+
+![SwiGLU MLP：兩個輸入投影、一個融合的閘控、一個輸出投影](figure.svg)
+
+gate 與 up 兩個投影讀取同一個 X；SiLU 閘控在該 GEMM 的 epilogue 中完成，因此在 down 投影之前，G 與 U 從不寫回記憶體。
+
+## 數學表述
 
 $$
 G = XW_g, \qquad U = XW_u, \qquad H = \operatorname{SiLU}(G)\odot U, \qquad Y = HW_d
@@ -45,7 +51,7 @@ $$
 | $H$ | 經閘門處理的隱藏活化值 |
 | $Y$ | 輸出，$M\times d$ |
 
-## 方法
+## 解題思路
 
 ### 核心 1：具有融合閘門的雙 GEMM
 
@@ -94,7 +100,7 @@ $Q_{\text{saved}} \approx 120$ MB。當 $M = 512$ 時，權重佔主要流量
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-4`
 通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [SwiGLU](../054-swiglu/)、[LLaMA Transformer 區塊](../093-llama-transformer-block/)、
   [GPT-2 區塊](../074-gpt2-block/)（GELU MLP）、[MoE Top-k 閘門](../067-moe-topk-gating/)。

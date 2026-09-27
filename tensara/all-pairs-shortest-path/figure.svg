@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 283" width="720" height="283" class="fig-svg" role="img">
+<title>All-pairs shortest paths: Floyd–Warshall with 0 = no edge and −1 = unreachable</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-all-pairs-shortest-path-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-all-pairs-shortest-path-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-all-pairs-shortest-path-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-all-pairs-shortest-path-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-all-pairs-shortest-path-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-all-pairs-shortest-path-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-all-pairs-shortest-path-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="283" class="fig-paper"/>
+<line x1="87" y1="70" x2="181" y2="70" class="s-muted" stroke-width="1.1" marker-end="url(#tensara-all-pairs-shortest-path-ah-muted)"/>
+<rect x="125.84" y="60.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="135" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">3</text>
+<line x1="200" y1="87" x2="200" y2="171" class="s-muted" stroke-width="1.1" marker-end="url(#tensara-all-pairs-shortest-path-ah-muted)"/>
+<rect x="190.84" y="120.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="200" y="130" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">2</text>
+<line x1="70" y1="87" x2="70" y2="171" class="s-muted" stroke-width="1.1" marker-end="url(#tensara-all-pairs-shortest-path-ah-muted)"/>
+<rect x="60.84" y="120.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="70" y="130" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">7</text>
+<line x1="183" y1="190" x2="89" y2="190" class="s-muted" stroke-width="1.1" marker-end="url(#tensara-all-pairs-shortest-path-ah-muted)"/>
+<rect x="125.84" y="180.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="135" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<rect x="53" y="53" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="70" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">0</text>
+<rect x="183" y="53" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="200" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">1</text>
+<rect x="183" y="173" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="200" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">2</text>
+<rect x="53" y="173" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="70" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">3</text>
+<text x="340" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">0</text>
+<text x="380" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<text x="420" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">2</text>
+<text x="460" y="38" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">3</text>
+<text x="310" y="70" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">0</text>
+<rect x="320" y="50" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="340" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="360" y="50" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="380" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="400" y="50" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="420" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">5</text>
+<rect x="440" y="50" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="460" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">6</text>
+<text x="310" y="110" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">1</text>
+<rect x="320" y="90" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="340" y="110" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="360" y="90" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="380" y="110" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="400" y="90" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="420" y="110" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="440" y="90" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="460" y="110" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<text x="310" y="150" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">2</text>
+<rect x="320" y="130" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="340" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="360" y="130" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="380" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="400" y="130" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="420" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="440" y="130" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="460" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<text x="310" y="190" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">3</text>
+<rect x="320" y="170" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="340" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="360" y="170" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="380" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="400" y="170" width="40" height="40" rx="0" class="fig-panel s-hl" stroke-width="1.2"/>
+<text x="420" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="440" y="170" width="40" height="40" rx="0" class="f-c s-c" stroke-width="1.2"/>
+<text x="460" y="190" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<text x="504" y="60" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">output distances</text>
+<text x="504" y="77" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">(row = from, col = to)</text>
+<text x="504" y="111" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">d(0, 3) = min(7, 3+2+1) = 6</text>
+<text x="504" y="128" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">grey: unreachable → −1</text>
+<text x="40" y="244" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Input 0 off the diagonal means "no edge" and becomes +∞ before the k-loop; +∞ left at the</text>
+<text x="40" y="261" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">end becomes −1. The k-loop is the blocked three-phase kernel (pivot, pivot row/column, rest).</text>
+</svg>

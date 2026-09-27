@@ -12,14 +12,20 @@ status: solved
 
 **平台：** Tensara · **難度：** easy · [題目說明](https://tensara.org/problems/elu)
 
-## 問題
+## 題意
 
 將指數線性單元逐元素套用至 $M\times N$ float32 矩陣，執行期間會傳入
 參數 $\alpha$（測試中為 1.0），結果須與 `F.elu(x, alpha)` 一致。測試
 矩陣從 $4096\times4096$ 至 $8192\times8192$（最多 67 M 個元素）。
 檢查條件為 `rtol = 1e-4`、`atol = 5e-5`。
 
-## 公式
+## 圖解
+
+![ELU：x > 0 時為恆等函數，x ≤ 0 時為平滑的指數曲線，並飽和於 −α](figure.svg)
+
+M × N 矩陣的每個元素各自獨立映射，因此 kernel 只是一連串 float4 的載入與儲存。虛線是飽和值 −α。
+
+## 數學表述
 
 $$
 C_{ij} = \operatorname{ELU}_\alpha(A_{ij}), \qquad
@@ -46,7 +52,7 @@ $$
 |---|---|
 | $\operatorname{expm1}(x)$ | 不先建立 $e^x$ 而計算 $e^x - 1$，精確度約為 1 ulp |
 
-## 方法
+## 解題思路
 
 所有 Tensara 逐元素問題都採用同一種核心形狀：
 
@@ -77,7 +83,7 @@ $$
 每個元素的 `expm1f` 需要數十條指令，仍遠低於 GPU 在搬移 8 位元組期間
 可執行的約 100 條指令。
 
-## 注意事項
+## 常見陷阱
 
 - **接近零時的精確度**：使用 `expm1f`，不要使用 `expf(x) - 1.0f`。
 - **條件**：線性分支的條件是 $x > 0$；在 $x = 0$ 時兩個分支都得到 0。
@@ -88,7 +94,7 @@ $$
 所有測試案例（官方尺寸的縮小版本）都已在
 [cuemu](../../tools/cuemu/README.md) 上通過，結果與 PyTorch 參考實作一致。
 
-## 相關內容
+## 延伸閱讀
 
 - [SELU](../selu/)、[Leaky ReLU](../leaky-relu/)、[ReLU](../relu/)、
   [GELU](../gelu/)。

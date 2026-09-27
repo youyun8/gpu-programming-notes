@@ -12,12 +12,18 @@ status: solved
 
 **平台：** LeetGPU · **難度：** 簡單 · [題目說明](https://leetgpu.com/challenges/sigmoid-activation)
 
-## 問題
+## 題意
 
 對 $N$ 個 float32 值套用 logistic sigmoid（$N \le 10^8$，輸入皆為有限值；
 基準測試 $N = 5\times10^7$；容許誤差 `1e-5`）。
 
-## 公式
+## 圖解
+
+![邏輯斯 sigmoid 把任何輸入壓縮到 (0, 1)](figure.svg)
+
+曲線通過 (0, 0.5)（紅點），兩端分別趨近 0 與 1。直接套用公式，在 float32 下兩個極端都能得到正確結果。
+
+## 數學表述
 
 $$
 \sigma(x) = \frac{1}{1 + e^{-x}}, \qquad \sigma(-x) = 1 - \sigma(x), \qquad \sigma'(x) = \sigma(x)\bigl(1 - \sigma(x)\bigr)
@@ -34,7 +40,7 @@ $$
 $e^{-x} \to 0$，結果恰好為 1。因此，在 float32 中直接使用此公式很安全，
 不需要分支。
 
-## 方法
+## 解題思路
 
 使用 `float4` 的逐元素範本（參見 [ReLU](../021-relu/)）：每個執行緒計算
 4 個 sigmoid，尾端不足的部分則以純量處理。每個元素需要一次精確的 `expf`
@@ -66,7 +72,7 @@ GPU（HBM3）上，它可能轉為計算受限。以 `__frcp_rn` 或 `__fdividef
 所有 LeetGPU 測試案例皆在 [cuemu](../../tools/cuemu/README.md) 上以 `1e-5`
 通過。
 
-## 相關內容
+## 延伸閱讀
 
 - [SiLU](../052-silu/)、[Logistic 迴歸](../034-logistic-regression/)、Tensara [Sigmoid](../../tensara/sigmoid/)、
   [Hard Sigmoid](../../tensara/hard-sigmoid/)。

@@ -45,6 +45,8 @@ The examples and source links in this chapter use:
 AITER v0.1.23 pins FlyDSL 0.3.4.1. FlyDSL changes quickly, so use the tagged
 examples instead of copying an API from current online documentation.
 
+### 1.1 Check the machine
+
 Check the machine before building:
 
 ```bash
@@ -490,6 +492,8 @@ Tensor parallelism splits dense work. Expert parallelism places experts on
 different ranks. K3 needs consistent routing metadata and data movement around
 the grouped GEMMs.
 
+### 9.1 Relevant public communication families
+
 Public FlyDSL/AITER communication families relevant to this design include:
 
 - intra-node dispatch/combine;
@@ -500,6 +504,8 @@ Public FlyDSL/AITER communication families relevant to this design include:
 
 Availability in source does not show that a particular K3 recipe selected a
 family. Runtime flags, world size, topology, data type, and shape still decide.
+
+### 9.2 Correctness rules
 
 For correctness:
 
@@ -606,6 +612,8 @@ the machine before launching it.
 
 ## 12. Eight-GPU MAD Recipe
 
+### 12.1 Requirements and Frameworks
+
 The public
 [ROCm MAD K3 recipe](https://github.com/ROCm/MAD/blob/develop/benchmark/kimi_k3/README.md)
 is the source of truth for full-model commands and images. It requires:
@@ -627,6 +635,8 @@ madengine run --tags pyt_sglang_kimi-k3 --keep-model-dir --live-output
 madengine run --tags pyt_atom_kimi-k3 --keep-model-dir --live-output
 ```
 
+### 12.2 The FlyDSL Path in SGLang
+
 For the FlyDSL-focused SGLang path, the published container uses:
 
 ```bash
@@ -647,6 +657,8 @@ sglang serve --model-path /model_weights \
   --disable-radix-cache \
   --reasoning-parser kimi_k3 --tool-call-parser kimi_k3
 ```
+
+### 12.3 What Counts as Evidence
 
 Use the image and complete command from MAD rather than combining flags from
 different releases. A successful local FlyDSL test is necessary evidence, but
