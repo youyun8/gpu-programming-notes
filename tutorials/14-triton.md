@@ -287,7 +287,7 @@ more warps for longer rows so each thread holds at most ~32 values up to
 16 384 columns;
 beyond a few tens of thousands of columns the kernel spills. The fix is
 online softmax: loop over the row in blocks, keeping
-$(m, z)$ as the state (exercise 2).
+$(m, z)$ as the state (exercise 3).
 
 ### 4.4 Kernel 3: Fused LayerNorm
 
