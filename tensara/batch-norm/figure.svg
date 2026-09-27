@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 279" width="720" height="279" class="fig-svg" role="img">
+<title>BatchNorm2d: one mean and variance per channel f, over the batch and both spatial axes</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-batch-norm-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-batch-norm-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-batch-norm-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-batch-norm-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-batch-norm-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-batch-norm-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-batch-norm-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="279" class="fig-paper"/>
+<rect x="150" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="218" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="252" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="286" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="320" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="388" y="40" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="150" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="184" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="218" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="252" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="286" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="320" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="354" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="388" y="66" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="150" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="218" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="252" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="286" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="320" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="388" y="92" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="150" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="184" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="218" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="252" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="286" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="320" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="354" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="388" y="118" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="150" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="218" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="252" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="286" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="320" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="354" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="388" y="144" width="34" height="26" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="150" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="184" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="218" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="252" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="286" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="320" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="354" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="388" y="170" width="34" height="26" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="150" y="40" width="272" height="156" rx="0" class="fig-none s-a" stroke-width="1.4"/>
+<text x="286" y="26" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">D₁·D₂ positions →</text>
+<text x="140" y="118" text-anchor="end" dominant-baseline="central" class="fig-txt t-muted fig-small">(b, f) planes</text>
+<line x1="426" y1="60" x2="470" y2="60" class="s-a" stroke-width="1.2" marker-end="url(#tensara-batch-norm-ah-a)"/>
+<rect x="472" y="40" width="228" height="86" rx="4" class="f-d s-d" stroke-width="1.2"/>
+<text x="482" y="56" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">channel f = 1</text>
+<text x="482" y="74" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">all rows (b, f = 1)</text>
+<text x="482" y="92" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">N = B·D₁·D₂ values</text>
+<text x="482" y="110" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">float64 sums</text>
+<line x1="586" y1="128" x2="586" y2="158" class="s-d" stroke-width="1.2" marker-end="url(#tensara-batch-norm-ah-d)"/>
+<rect x="472" y="160" width="228" height="50" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="482" y="176" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">y = (x − μ<tspan baseline-shift="sub" font-size="75%">f</tspan>)</text>
+<text x="482" y="194" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">  / √(σ<tspan baseline-shift="sub" font-size="75%">f</tspan>² + ε)</text>
+<text x="40" y="240" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">Rows are the (b, f) planes of a (B = 3, F = 2) tensor; channel 1 is spread over three</text>
+<text x="40" y="257" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">separate planes. No affine and no running statistics (training-mode BatchNorm2d).</text>
+</svg>

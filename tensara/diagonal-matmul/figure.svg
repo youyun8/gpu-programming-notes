@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 255" width="720" height="255" class="fig-svg" role="img">
+<title>diag(a) · B: never build the N × N diagonal matrix — just scale row i of B by a_i</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-diagonal-matmul-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-diagonal-matmul-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-diagonal-matmul-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-diagonal-matmul-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-diagonal-matmul-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-diagonal-matmul-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-diagonal-matmul-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="255" class="fig-paper"/>
+<rect x="40" y="50" width="30" height="30" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="55" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="40" y="84" width="30" height="30" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="55" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="40" y="118" width="30" height="30" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="55" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0.5</text>
+<rect x="40" y="152" width="30" height="30" rx="2" class="f-a s-a" stroke-width="1.2"/>
+<text x="55" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<text x="55" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">a</text>
+<rect x="130" y="50" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="145" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="164" y="50" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="179" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="198" y="50" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="213" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="232" y="50" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="247" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="266" y="50" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="281" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="130" y="84" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="145" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="164" y="84" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="179" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="198" y="84" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="213" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="232" y="84" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="247" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="266" y="84" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="281" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−2</text>
+<rect x="130" y="118" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="145" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="164" y="118" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="179" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="198" y="118" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="213" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">6</text>
+<rect x="232" y="118" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="247" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="266" y="118" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="281" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="130" y="152" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="145" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="164" y="152" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="179" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="198" y="152" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="213" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="232" y="152" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="247" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="266" y="152" width="30" height="30" rx="2" class="f-b s-b" stroke-width="1.2"/>
+<text x="281" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<text x="215" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">B (N × M)</text>
+<text x="100" y="116" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-big">⊙</text>
+<rect x="370" y="50" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="385" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="404" y="50" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="419" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">4</text>
+<rect x="438" y="50" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="453" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="472" y="50" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="487" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−2</text>
+<rect x="506" y="50" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="521" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">6</text>
+<rect x="370" y="84" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="385" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−4</text>
+<rect x="404" y="84" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="419" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="438" y="84" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="453" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−1</text>
+<rect x="472" y="84" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="487" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−2</text>
+<rect x="506" y="84" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="521" y="99" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="370" y="118" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="385" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="404" y="118" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="419" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">1</text>
+<rect x="438" y="118" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="453" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="472" y="118" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="487" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="506" y="118" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="521" y="133" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">2</text>
+<rect x="370" y="152" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="385" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="404" y="152" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="419" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">−3</text>
+<rect x="438" y="152" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="453" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">0</text>
+<rect x="472" y="152" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="487" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">3</text>
+<rect x="506" y="152" width="30" height="30" rx="2" class="f-c s-c" stroke-width="1.2"/>
+<text x="521" y="167" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">6</text>
+<text x="455" y="36" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">C<tspan baseline-shift="sub" font-size="75%">ij</tspan> = a<tspan baseline-shift="sub" font-size="75%">i</tspan> · B<tspan baseline-shift="sub" font-size="75%">ij</tspan></text>
+<line x1="308" y1="116" x2="360" y2="116" class="s-muted" stroke-width="1.2" marker-end="url(#tensara-diagonal-matmul-ah-muted)"/>
+<text x="40" y="216" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">The reference's torch.diag(A) @ B costs N³ FLOPs; the direct form is N·M multiplies</text>
+<text x="40" y="233" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">and pure streaming: one broadcast a<tspan baseline-shift="sub" font-size="75%">i</tspan> per row, float4 loads of B.</text>
+</svg>

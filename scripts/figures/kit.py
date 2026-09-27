@@ -16,7 +16,7 @@ import re
 from . import svg as _svg
 
 # x_s after any letter (also Greek, primes or accents) becomes a subscript; svg.rich only does this after ASCII.
-_LOOSE_SUB = re.compile(r"(?<=[^\s_{(\[])_([^\s_{}])(?=[\s,.;:)\]·/+−=²]|$)")
+_LOOSE_SUB = re.compile(r"(?<=[^\x00-\x7F])_([^\s_{}])(?=[\s,.;:)\]·/+−=²]|$)")
 
 
 class Svg(_svg.Svg):
@@ -160,7 +160,7 @@ class Plot:
             s.line(self.x - 4, self.py(t), self.x, self.py(t), stroke="s-muted", sw=1)
             s.text(self.x - 7, self.py(t), fmt(t), size="tiny", role="muted", anchor="end")
         s.text(self.x + self.w / 2, self.y + self.h + 30, xlabel, size="small", role="muted", italic=True)
-        s.text(self.x - 34, self.y + self.h / 2, ylabel, size="small", role="muted", italic=True, rotate=-90)
+        s.text(self.x - 42, self.y + self.h / 2, ylabel, size="small", role="muted", italic=True, rotate=-90)
 
     def curve(self, f, role="a", sw=2.2, dash=None, n=240):
         pts = []
@@ -191,16 +191,15 @@ def function_plot(name, title, curves, xr, yr, xticks, yticks, formula_lines, po
                   height=270, legend=None, xlabel="x", ylabel="f(x)"):
     """curves: [(f, role, dash)]; formula_lines: text on the right; points: [(x, y, role)]."""
     s = Svg(name, W, height, title)
-    p = Plot(s, 70, 20, 330, height - 70, xr, yr)
+    p = Plot(s, 70, 20, 300, height - 70, xr, yr)
     p.axes(xticks, yticks, xlabel, ylabel)
     for f, role, dash in curves:
         p.curve(f, role=role, dash=dash)
     for xv, yv, role in points:
         p.dot(xv, yv, role=role)
-    tx = 440
+    tx = 400
     for i, ln in enumerate(formula_lines):
-        s.text(tx, 36 + i * 22, ln, anchor="start", size=None if i == 0 else "small",
-               bold=(i == 0), role="ink")
+        s.text(tx, 36 + i * 22, ln, anchor="start", size="small", bold=(i == 0), role="ink")
     y = 36 + len(formula_lines) * 22 + 8
     if legend:
         s.legend(tx, y + 6, legend)
@@ -326,12 +325,12 @@ def reduce_axis(name, title, grid, op_name, out_row, note_lines=(), out_role="c"
     # shadow slices for the outer axis O
     for k in (2, 1):
         s.rect(x0 + 8 * k, y0 - 8 * k, I * cw, R * 30, fill="fig-panel", stroke="s-line", sw=0.8)
-    s.text(x0 + I * cw + 24, y0 - 20, "o = 0 … O−1", anchor="start", size="small", role="muted")
+    s.text(x0 + I * cw + 26, y0 - 4, "o = 0 … O−1", anchor="start", size="small", role="muted")
     for j in range(R):
         fills = ["f-a2" if i == highlight_col else None for i in range(I)]
         cells(s, x0, y0 + j * 30, [fmt(v) for v in grid[j]], cw=cw, ch=30, role="a", fills=fills)
         row_label(s, x0 - 12, y0 + j * 30 + 15, f"j = {j}", role="muted")
-    s.text(x0 + I * cw / 2, y0 - 26, "i = 0 … I−1 (contiguous)", size="small", role="muted")
+    s.text(x0 + 16 + I * cw / 2, y0 - 32, "i = 0 … I−1 (contiguous)", size="small", role="muted")
     s.brace_v(x0 - 70, y0, y0 + R * 30, "", role="b")
     s.text(x0 - 80, y0 + R * 30 / 2, "R", anchor="end", role="b", bold=True)
     yo = y0 + R * 30 + 40
@@ -474,7 +473,7 @@ def window_2d(name, title, rows, cols, k, out_rc=(1, 1), stride=1, pad=0, note_l
         return None if inside else "fig-panel"
 
     matrix(s, x0, y0, tot_r, tot_c, cw, fill_fn=f, role="a")
-    s.text(x0 + tot_c * cw / 2, y0 - 14, in_label, size="small", role="a", bold=True)
+    s.text(x0, y0 - 14, in_label, size="small", role="a", bold=True, anchor="start")
     wr = min(r for r, _ in win), max(r for r, _ in win)
     wc = min(c for _, c in win), max(c for _, c in win)
     s.rect(x0 + wc[0] * cw, y0 + wr[0] * cw, (wc[1] - wc[0] + 1) * cw, (wr[1] - wr[0] + 1) * cw,
@@ -555,12 +554,11 @@ def graph(s: Svg, nodes, edges, directed=False, hl_edges=(), node_role=None, lab
             s.line(sx, sy, ex, ey, stroke=f"s-{role}", sw=2.4 if hl else 1.1)
         if wgt != "":
             mx, my = x1 + (x2 - x1) * weight_pos, y1 + (y2 - y1) * weight_pos
-            s.circle(mx, my, 10, fill="fig-paper", stroke=f"s-{role}", sw=0.8)
-            s.text(mx, my, str(wgt), size="tiny", role=role, bold=hl)
+            s.text(mx, my, str(wgt), size="small", role=role, bold=hl, plate=True)
     for nid, (x, y) in nodes.items():
         role = node_role.get(nid, "a")
-        s.circle(x, y, r, fill=f"f-{role}", stroke=f"s-{role}", sw=1.4)
-        s.text(x, y, labels.get(nid, str(nid)) if labels else str(nid), size="small", bold=True)
+        s.box(x - r, y - r, 2 * r, 2 * r, labels.get(nid, str(nid)) if labels else str(nid), role=role, rx=r,
+              size="small", bold=True, sw=1.4)
 
 
 # ----- 10. normalisation -------------------------------------------------------------------------------------

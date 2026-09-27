@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 347" width="720" height="347" class="fig-svg" role="img">
+<title>NVFP4 GEMM: E2M1 blocks of 16 with E4M3 scales and one global factor per operand</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-nvfp4-gemm-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-nvfp4-gemm-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-nvfp4-gemm-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-nvfp4-gemm-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-nvfp4-gemm-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-nvfp4-gemm-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-nvfp4-gemm-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="347" class="fig-paper"/>
+<text x="110" y="64" text-anchor="end" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">row i of A</text>
+<rect x="120" y="50" width="110" height="28" rx="2" class="f-a s-a" stroke-width="1"/>
+<text x="175" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="149" y="84" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="175" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σA0</text>
+<rect x="238" y="50" width="110" height="28" rx="2" class="f-a2 s-a" stroke-width="1"/>
+<text x="293" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="267" y="84" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="293" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σA1</text>
+<rect x="356" y="50" width="110" height="28" rx="2" class="f-a s-a" stroke-width="1"/>
+<text x="411" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="385" y="84" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="411" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σA2</text>
+<rect x="474" y="50" width="110" height="28" rx="2" class="f-a s-a" stroke-width="1"/>
+<text x="529" y="64" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="503" y="84" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="529" y="95" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σA3</text>
+<text x="110" y="134" text-anchor="end" dominant-baseline="central" class="fig-txt t-b fig-small fig-bold">row j of B</text>
+<rect x="120" y="120" width="110" height="28" rx="2" class="f-b s-b" stroke-width="1"/>
+<text x="175" y="134" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="149" y="154" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="175" y="165" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σB0</text>
+<rect x="238" y="120" width="110" height="28" rx="2" class="f-b2 s-b" stroke-width="1"/>
+<text x="293" y="134" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="267" y="154" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="293" y="165" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σB1</text>
+<rect x="356" y="120" width="110" height="28" rx="2" class="f-b s-b" stroke-width="1"/>
+<text x="411" y="134" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="385" y="154" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="411" y="165" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σB2</text>
+<rect x="474" y="120" width="110" height="28" rx="2" class="f-b s-b" stroke-width="1"/>
+<text x="529" y="134" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">16 × E2M1</text>
+<rect x="503" y="154" width="52" height="22" rx="2" class="f-d s-d" stroke-width="1.2"/>
+<text x="529" y="165" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-tiny">σB3</text>
+<rect x="120" y="210" width="470" height="34" rx="4" class="f-c s-c" stroke-width="1.2"/>
+<text x="355" y="227" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">c<tspan baseline-shift="sub" font-size="75%">ij</tspan> = Σ<tspan baseline-shift="sub" font-size="75%">β</tspan> σ<tspan baseline-shift="super" font-size="75%">A</tspan><tspan baseline-shift="sub" font-size="75%">iβ</tspan> σ<tspan baseline-shift="super" font-size="75%">B</tspan><tspan baseline-shift="sub" font-size="75%">jβ</tspan> · (Σ<tspan baseline-shift="sub" font-size="75%">ℓ∈β</tspan> x<tspan baseline-shift="super" font-size="75%">A</tspan><tspan baseline-shift="sub" font-size="75%">iℓ</tspan> x<tspan baseline-shift="super" font-size="75%">B</tspan><tspan baseline-shift="sub" font-size="75%">jℓ</tspan>)</text>
+<line x1="293" y1="178" x2="310" y2="208" class="s-c" stroke-width="1.1" marker-end="url(#tensara-nvfp4-gemm-ah-c)"/>
+<text x="40" y="274" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">K is cut into blocks of 16; every block has one E4M3 scale per row (σ). The inner</text>
+<text x="40" y="291" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">sum over a block runs on low-precision tensor-core MMAs (block-scaled MMA instructions</text>
+<text x="40" y="308" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">apply both scales); the global factors enter once at the end: c = acc / (g<tspan baseline-shift="sub" font-size="75%">A</tspan> · g<tspan baseline-shift="sub" font-size="75%">B</tspan>),</text>
+<text x="40" y="325" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">then the FP16 output is written. Smaller blocks (16) track local magnitudes better than MX.</text>
+</svg>

@@ -66,7 +66,7 @@
 <rect x="208" y="178" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
 <rect x="232" y="178" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
 <rect x="40" y="34" width="216" height="168" rx="0" class="fig-none s-a" stroke-width="1.4"/>
-<text x="148" y="20" text-anchor="middle" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">input</text>
+<text x="40" y="20" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">input</text>
 <rect x="40" y="34" width="72" height="72" rx="0" class="fig-none s-hl" stroke-width="2"/>
 <rect x="406" y="58" width="24" height="24" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
 <rect x="430" y="58" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>

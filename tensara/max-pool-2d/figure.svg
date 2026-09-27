@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 337" width="720" height="337" class="fig-svg" role="img">
+<title>2-D max pooling with dilation δ = 2: a spread-out k × k window</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-max-pool-2d-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-max-pool-2d-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-max-pool-2d-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-max-pool-2d-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-max-pool-2d-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-max-pool-2d-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-max-pool-2d-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="337" class="fig-paper"/>
+<rect x="40" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="88" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="112" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="136" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="160" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="184" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="208" y="34" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="58" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="58" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="58" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="58" width="24" height="24" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="136" y="58" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="58" width="24" height="24" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="184" y="58" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="58" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="82" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="82" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="82" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="106" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="106" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="106" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="106" width="24" height="24" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="136" y="106" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="106" width="24" height="24" rx="0" class="f-a2 s-line" stroke-width="0.8"/>
+<rect x="184" y="106" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="106" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="130" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="130" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="130" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="154" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="154" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="154" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="178" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="88" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="112" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="136" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="160" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="184" y="178" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="208" y="178" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="64" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="88" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="112" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="136" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="160" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="184" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="208" y="202" width="24" height="24" rx="0" class="fig-panel s-line" stroke-width="0.8"/>
+<rect x="40" y="34" width="192" height="192" rx="0" class="fig-none s-a" stroke-width="1.4"/>
+<text x="40" y="20" text-anchor="start" dominant-baseline="central" class="fig-txt t-a fig-small fig-bold">input</text>
+<rect x="112" y="58" width="72" height="72" rx="0" class="fig-none s-hl" stroke-width="2"/>
+<rect x="382" y="94" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="406" y="94" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="430" y="94" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="382" y="118" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="406" y="118" width="24" height="24" rx="0" class="f-c2 s-line" stroke-width="0.8"/>
+<rect x="430" y="118" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="382" y="142" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="406" y="142" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="430" y="142" width="24" height="24" rx="0" class="fig-paper s-line" stroke-width="0.8"/>
+<rect x="382" y="94" width="72" height="72" rx="0" class="fig-none s-c" stroke-width="1.4"/>
+<text x="418" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">output</text>
+<line x1="186" y1="94" x2="416" y2="130" class="s-hl" stroke-width="1.3" marker-end="url(#tensara-max-pool-2d-ah-hl)"/>
+<text x="307" y="246" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small">max over the 4 taps</text>
+<rect x="40" y="266" width="14" height="12" rx="2" class="fig-panel s-line" stroke-width="1"/>
+<text x="60" y="272" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">padding (−∞, never wins)</text>
+<text x="40" y="298" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">k = 2, S = 2, P = 1, δ = 2: the window spans δ(k−1) + 1 = 3 cells per axis but reads</text>
+<text x="40" y="315" text-anchor="start" dominant-baseline="central" class="fig-txt t-muted fig-small">only k² = 4 of them. X<tspan baseline-shift="sub" font-size="75%">out</tspan> = ⌊(X + 2P − δ(k−1) − 1)/S⌋ + 1 = 3.</text>
+</svg>

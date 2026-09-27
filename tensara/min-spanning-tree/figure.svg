@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 276" width="720" height="276" class="fig-svg" role="img">
+<title>Minimum spanning tree by Prim: repeatedly add the cheapest edge leaving the tree</title><style>.fig-paper{fill:var(--fig-paper,#ffffff)}.fig-panel{fill:var(--fig-panel,#f8fafc)}.fig-none{fill:none}.s-ink{stroke:var(--fig-ink,#1f2937)}.t-ink{fill:var(--fig-ink,#1f2937)}.f-ink{fill:var(--fig-ink-soft,#f3f4f6)}.f-ink2{fill:var(--fig-ink-mid,#e5e7eb)}.k-ink{fill:var(--fig-ink,#1f2937)}.s-muted{stroke:var(--fig-muted,#6b7280)}.t-muted{fill:var(--fig-muted,#6b7280)}.f-muted{fill:var(--fig-muted-soft,#f9fafb)}.f-muted2{fill:var(--fig-muted-mid,#e5e7eb)}.k-muted{fill:var(--fig-muted,#6b7280)}.s-line{stroke:var(--fig-line,#9ca3af)}.t-line{fill:var(--fig-line,#9ca3af)}.f-line{fill:var(--fig-line-soft,#f3f4f6)}.f-line2{fill:var(--fig-line-mid,#d1d5db)}.k-line{fill:var(--fig-line,#9ca3af)}.s-a{stroke:var(--fig-a,#2563eb)}.t-a{fill:var(--fig-a,#2563eb)}.f-a{fill:var(--fig-a-soft,#dbeafe)}.f-a2{fill:var(--fig-a-mid,#93c5fd)}.k-a{fill:var(--fig-a,#2563eb)}.s-b{stroke:var(--fig-b,#c2410c)}.t-b{fill:var(--fig-b,#c2410c)}.f-b{fill:var(--fig-b-soft,#ffedd5)}.f-b2{fill:var(--fig-b-mid,#fdba74)}.k-b{fill:var(--fig-b,#c2410c)}.s-c{stroke:var(--fig-c,#15803d)}.t-c{fill:var(--fig-c,#15803d)}.f-c{fill:var(--fig-c-soft,#dcfce7)}.f-c2{fill:var(--fig-c-mid,#86efac)}.k-c{fill:var(--fig-c,#15803d)}.s-d{stroke:var(--fig-d,#7c3aed)}.t-d{fill:var(--fig-d,#7c3aed)}.f-d{fill:var(--fig-d-soft,#ede9fe)}.f-d2{fill:var(--fig-d-mid,#c4b5fd)}.k-d{fill:var(--fig-d,#7c3aed)}.s-hl{stroke:var(--fig-hl,#dc2626)}.t-hl{fill:var(--fig-hl,#dc2626)}.f-hl{fill:var(--fig-hl-soft,#fee2e2)}.f-hl2{fill:var(--fig-hl-mid,#fca5a5)}.k-hl{fill:var(--fig-hl,#dc2626)}.fig-txt{font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:15px}.fig-mono{font-family:'Ubuntu Mono',ui-monospace,Menlo,monospace;font-size:15px}.fig-small{font-size:13px}.fig-tiny{font-size:11px}.fig-big{font-size:17px}.fig-plate{fill:var(--fig-paper,#ffffff);fill-opacity:.92}.fig-bold{font-weight:600}.fig-it{font-style:italic}</style>
+<defs><marker id="tensara-min-spanning-tree-ah-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-ink"/></marker><marker id="tensara-min-spanning-tree-ah-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-muted"/></marker><marker id="tensara-min-spanning-tree-ah-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-a"/></marker><marker id="tensara-min-spanning-tree-ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-b"/></marker><marker id="tensara-min-spanning-tree-ah-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-c"/></marker><marker id="tensara-min-spanning-tree-ah-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-d"/></marker><marker id="tensara-min-spanning-tree-ah-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="k-hl"/></marker></defs>
+<rect x="0" y="0" width="720" height="276" class="fig-paper"/>
+<line x1="96.67" y1="76.67" x2="211.37" y2="53.73" class="s-muted" stroke-width="1.1"/>
+<rect x="145.84" y="55.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="155" y="65" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">4</text>
+<line x1="85.72" y1="96.01" x2="123.61" y2="202.11" class="s-c" stroke-width="2.4"/>
+<rect x="95.84" y="140.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="105" y="150" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">2</text>
+<line x1="138.62" y1="205.35" x2="220.37" y2="66.38" class="s-c" stroke-width="2.4"/>
+<rect x="170.84" y="125.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="180" y="135" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">1</text>
+<line x1="246.43" y1="54.38" x2="361.64" y2="85.1" class="s-muted" stroke-width="1.1"/>
+<rect x="295.84" y="60.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="305" y="70" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">5</text>
+<line x1="146.87" y1="217.89" x2="271.15" y2="202.36" class="s-muted" stroke-width="1.1"/>
+<rect x="200.84" y="200.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="210" y="210" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">7</text>
+<line x1="236.31" y1="65.78" x2="282.94" y2="182.36" class="s-c" stroke-width="2.4"/>
+<rect x="250.84" y="115.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="260" y="125" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">3</text>
+<line x1="300.77" y1="186.84" x2="367.97" y2="104.71" class="s-c" stroke-width="2.4"/>
+<rect x="325.84" y="135.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="335" y="145" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">1</text>
+<line x1="306.62" y1="203.56" x2="411.42" y2="226.02" class="s-c" stroke-width="2.4"/>
+<rect x="350.84" y="205.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="360" y="215" text-anchor="middle" dominant-baseline="central" class="fig-txt t-c fig-small fig-bold">2</text>
+<line x1="385.72" y1="106.01" x2="423.61" y2="212.11" class="s-muted" stroke-width="1.1"/>
+<rect x="395.84" y="150.9" width="18.32" height="18.2" rx="3" class="fig-plate"/>
+<text x="405" y="160" text-anchor="middle" dominant-baseline="central" class="fig-txt t-muted fig-small">6</text>
+<rect x="63" y="63" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="80" y="80" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">0</text>
+<rect x="213" y="33" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="230" y="50" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">1</text>
+<rect x="363" y="73" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="380" y="90" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">2</text>
+<rect x="113" y="203" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="130" y="220" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">3</text>
+<rect x="273" y="183" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="290" y="200" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">4</text>
+<rect x="413" y="213" width="34" height="34" rx="17" class="f-a s-a" stroke-width="1.4"/>
+<text x="430" y="230" text-anchor="middle" dominant-baseline="central" class="fig-txt t-ink fig-small fig-bold">5</text>
+<text x="490" y="60" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">green: the MST, total weight 9</text>
+<text x="490" y="94" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Prim on a dense matrix: key[v] =</text>
+<text x="490" y="111" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">cheapest edge from the tree to v.</text>
+<text x="490" y="128" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Each of the n steps is an argmin</text>
+<text x="490" y="145" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">over n keys (one block, shared-</text>
+<text x="490" y="162" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">memory reduction) plus a key</text>
+<text x="490" y="179" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">update from the new vertex's row.</text>
+<text x="490" y="196" text-anchor="start" dominant-baseline="central" class="fig-txt t-ink fig-small">Disconnected graph → +∞.</text>
+</svg>
